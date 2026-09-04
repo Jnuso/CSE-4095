@@ -347,7 +347,7 @@ function renderSwapLog() {
     swapLog.innerHTML = `
       <div class="empty-log">
         <span class="empty-log-icon" aria-hidden="true">↔</span>
-        <p>Press Start or Next to reveal the recursive swap sequence.</p>
+        <p>Press Play or Next to reveal the recursive swap sequence.</p>
       </div>
     `;
     return;
@@ -389,7 +389,7 @@ function renderControls() {
   const atStart = currentFrame === 0;
   const atEnd = currentFrame === frames.length - 1;
 
-  startButton.textContent = atEnd ? "Replay" : "Start";
+  startButton.textContent = atEnd && currentFrame > 0 ? "Replay" : "Play";
   startButton.disabled = isPlaying;
   pauseButton.disabled = !isPlaying && (atStart || atEnd);
   pauseButton.textContent = isPlaying ? "Pause" : "Resume";
@@ -407,6 +407,26 @@ checkerCountInput.addEventListener("keydown", event => {
   if (event.key === "Enter") {
     startAnimation();
   }
+});
+
+checkerCountInput.addEventListener("input", () => {
+  const n = getValidCheckerCount(false);
+
+  if (n === null) {
+    isPlaying = false;
+    cancelMotion();
+    startButton.textContent = "Play";
+    startButton.disabled = false;
+    pauseButton.disabled = true;
+    previousButton.disabled = true;
+    nextButton.disabled = true;
+    statusMessage.textContent = `Enter a whole number from ${MIN_CHECKERS} to ${MAX_CHECKERS}.`;
+    return;
+  }
+
+  prepareSolution(n);
+  statusMessage.textContent = "Ready to play with the new checker count";
+  renderControls();
 });
 
 speedSlider.addEventListener("input", () => {
