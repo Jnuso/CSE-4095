@@ -337,6 +337,7 @@ main {
   font-size: clamp(0.7rem, 1.2vw, 0.9rem);
   font-weight: 900;
   transition: transform 220ms ease, filter 220ms ease, box-shadow 220ms ease;
+  will-change: transform;
 }
 
 .checker-red {
@@ -351,13 +352,22 @@ main {
 
 .checker-swapped {
   z-index: 2;
-  filter: brightness(1.18);
-  transform: translateY(-10px);
-  box-shadow:
-    inset 0 3px 3px rgb(255 255 255 / 25%),
-    inset 0 -7px 11px rgb(0 0 0 / 30%),
-    0 0 0 4px rgb(101 167 255 / 32%),
-    0 17px 27px rgb(0 0 0 / 52%);
+  animation: settle-pulse 420ms ease-out;
+}
+
+@keyframes settle-pulse {
+  0% {
+    filter: brightness(1.22);
+    box-shadow:
+      inset 0 3px 3px rgb(255 255 255 / 25%),
+      inset 0 -7px 11px rgb(0 0 0 / 30%),
+      0 0 0 4px rgb(101 167 255 / 38%),
+      0 14px 24px rgb(0 0 0 / 48%);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
 }
 
 .state-array {
@@ -421,6 +431,8 @@ main {
 .swap-log {
   height: 230px;
   overflow-y: auto;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
   outline: none;
   background: rgb(7 10 15 / 55%);
   scrollbar-color: #465166 #11161e;

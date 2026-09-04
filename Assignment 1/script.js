@@ -2,7 +2,7 @@
 
 const MIN_CHECKERS = 1;
 const MAX_CHECKERS = 20;
-const BASE_DELAY = 900;
+const BASE_STEP_DURATION = 1000;
 
 const checkerCountInput = document.querySelector("#checker-count");
 const startButton = document.querySelector("#start-button");
@@ -27,6 +27,8 @@ let currentFrame = 0;
 let activeN = Number(checkerCountInput.value);
 let timerId = null;
 let isPlaying = false;
+let activeAnimations = [];
+let motionGeneration = 0;
 
 /**
  * Build every state in the solution using the same recursive strategy as the
@@ -102,7 +104,7 @@ function getValidCheckerCount(showMessage = true) {
 }
 
 function prepareSolution(n) {
-  stopTimer();
+  cancelMotion();
   activeN = n;
   frames = buildRecursiveSolution(n);
   currentFrame = 0;
@@ -117,8 +119,11 @@ function stopTimer() {
   }
 }
 
-function animationDelay() {
-  return BASE_DELAY / Number(speedSlider.value);
+function cancelMotion() {
+  stopTimer();
+  motionGeneration += 1;
+  activeAnimations.forEach(animation => animation.cancel());
+  activeAnimations = [];
 }
 
 function scheduleNextFrame() {
@@ -132,11 +137,77 @@ function scheduleNextFrame() {
     return;
   }
 
-  timerId = window.setTimeout(() => {
+  const pauseBetweenSwaps = (BASE_STEP_DURATION * 0.14) / Number(speedSlider.value);
+  timerId = window.setTimeout(animateNextSwap, pauseBetweenSwaps);
+}
+
+async function animateNextSwap() {
+  timerId = null;
+  if (!isPlaying || currentFrame >= frames.length - 1) {
+    return;
+  }
+
+  const nextFrame = frames[currentFrame + 1];
+  const leftChecker = checkerBoard.children[nextFrame.leftIndex];
+  const rightChecker = checkerBoard.children[nextFrame.rightIndex];
+
+  if (!leftChecker || !rightChecker || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     currentFrame += 1;
     render();
     scheduleNextFrame();
-  }, animationDelay());
+    return;
+  }
+
+  const horizontalDistance = rightChecker.getBoundingClientRect().left
+    - leftChecker.getBoundingClientRect().left;
+  const liftDistance = Math.max(22, leftChecker.getBoundingClientRect().height * 0.48);
+  const animationDuration = BASE_STEP_DURATION * 0.82;
+  const generation = ++motionGeneration;
+
+  statusMessage.textContent = `Moving red above and black below — positions ${nextFrame.leftIndex + 1} and ${nextFrame.rightIndex + 1}`;
+
+  const redAnimation = leftChecker.animate([
+    { transform: "translate(0, 0)", offset: 0 },
+    { transform: `translate(0, ${-liftDistance}px)`, offset: 0.24 },
+    { transform: `translate(${horizontalDistance}px, ${-liftDistance}px)`, offset: 0.76 },
+    { transform: `translate(${horizontalDistance}px, 0)`, offset: 1 },
+  ], {
+    duration: animationDuration,
+    easing: "cubic-bezier(0.45, 0, 0.2, 1)",
+    fill: "forwards",
+  });
+
+  const blackAnimation = rightChecker.animate([
+    { transform: "translate(0, 0)", offset: 0 },
+    { transform: `translate(0, ${liftDistance}px)`, offset: 0.24 },
+    { transform: `translate(${-horizontalDistance}px, ${liftDistance}px)`, offset: 0.76 },
+    { transform: `translate(${-horizontalDistance}px, 0)`, offset: 1 },
+  ], {
+    duration: animationDuration,
+    easing: "cubic-bezier(0.45, 0, 0.2, 1)",
+    fill: "forwards",
+  });
+
+  activeAnimations = [redAnimation, blackAnimation];
+  const playbackSpeed = Number(speedSlider.value);
+  activeAnimations.forEach(animation => {
+    animation.playbackRate = playbackSpeed;
+  });
+
+  try {
+    await Promise.all(activeAnimations.map(animation => animation.finished));
+  } catch {
+    return;
+  }
+
+  if (!isPlaying || generation !== motionGeneration) {
+    return;
+  }
+
+  activeAnimations = [];
+  currentFrame += 1;
+  render();
+  scheduleNextFrame();
 }
 
 function startAnimation() {
@@ -160,7 +231,7 @@ function startAnimation() {
 function togglePause() {
   if (isPlaying) {
     isPlaying = false;
-    stopTimer();
+    cancelMotion();
     statusMessage.textContent = "Animation paused";
     renderControls();
     return;
@@ -176,14 +247,14 @@ function togglePause() {
 
 function finishAnimation() {
   isPlaying = false;
-  stopTimer();
+  cancelMotion();
   statusMessage.textContent = "Solved — the checkers now alternate red and black";
   renderControls();
 }
 
 function pauseForManualStep() {
   isPlaying = false;
-  stopTimer();
+  cancelMotion();
 }
 
 function showNextFrame() {
@@ -307,8 +378,10 @@ function renderSwapLog() {
   }));
 
   window.requestAnimationFrame(() => {
-    const activeEntry = swapLog.querySelector(".log-entry-current");
-    activeEntry?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    swapLog.scrollTo({
+      top: swapLog.scrollHeight,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
   });
 }
 
@@ -338,7 +411,10 @@ checkerCountInput.addEventListener("keydown", event => {
 
 speedSlider.addEventListener("input", () => {
   speedOutput.value = `${Number(speedSlider.value)}×`;
-  if (isPlaying) {
+  activeAnimations.forEach(animation => {
+    animation.playbackRate = Number(speedSlider.value);
+  });
+  if (isPlaying && activeAnimations.length === 0) {
     scheduleNextFrame();
   }
 });
