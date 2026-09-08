@@ -1,7 +1,7 @@
 # Fibonacci and Benford's Law
 
-`benford_fibonacci.py` accepts `n` from the command line, examines the first
-`n` terms of a selected mathematical sequence, extracts each leading digit,
+`benford.py` is one refactored program for all Benford experiments. It accepts
+a sequence name and `n`, extracts each leading digit,
 and compares the observed percentage to Benford's predicted percentage:
 
 `P(first digit = d) = log10(1 + 1/d)` for `d = 1, ..., 9`.
@@ -9,8 +9,8 @@ and compares the observed percentage to Benford's predicted percentage:
 Run it from this folder:
 
 ```powershell
-python benford_fibonacci.py 1000
-python benford_fibonacci.py 20 --show-terms
+python benford.py fibonacci 1000
+python benford.py fibonacci 20 --show-terms
 ```
 
 ## Experiment 2: powers of 2
@@ -24,26 +24,37 @@ that logarithm. The code adds `log10(2)` each iteration and keeps only its
 fractional part.
 
 ```powershell
-python benford_fibonacci.py 1000000 --sequence powers-of-2
+python benford.py power2 1000000
+```
+
+## Factorials
+
+Factorials are also available through the same shared Benford counting and
+reporting code. This command examines `1!` through `n!` by accumulating
+logarithms rather than constructing enormous factorial integers:
+
+```powershell
+python benford.py factorial 1000000
 ```
 
 ## When `n` becomes very large
 
-The normal mode is exact: it really constructs every Fibonacci integer. The
-number of digits in `F_n` grows about `0.209n`, so both memory and arithmetic
-time grow substantially as `n` grows. On current Python versions, converting
-very large integers to decimal strings can also reach a safety limit; the
-program explains this case instead of giving an unclear traceback.
+For Fibonacci inputs through 10,000, the normal mode constructs every
+Fibonacci integer exactly. The number of digits in `F_n` grows about `0.209n`,
+so both memory and arithmetic time grow substantially as `n` grows. On current
+Python versions, converting very large integers to decimal strings can also
+reach a safety limit when `--exact` is used.
 
 For a large Fibonacci experiment, use:
 
 ```powershell
-python benford_fibonacci.py 1000000 --fast
+python benford.py fibonacci 1000000
 ```
 
-This begins with 50 exact terms, then uses Binet's formula,
+For Fibonacci inputs over 10,000, the program automatically begins with 50
+exact terms, then uses Binet's formula,
 `F_k ≈ phi^k / sqrt(5)`. Thus `log10(F_k) ≈ k log10(phi) - log10(sqrt(5))`,
 and only the fractional part is needed to find the first digit. It avoids
 big-integer storage, but still needs one loop per term; floating-point rounding
 eventually makes either logarithmic method unreliable for astronomically large
-indices.
+indices. Add `--exact` to force direct Fibonacci integer generation.
