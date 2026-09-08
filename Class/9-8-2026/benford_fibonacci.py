@@ -1,7 +1,8 @@
-"""Compare Fibonacci leading digits with Benford's Law.
+"""Compare Fibonacci numbers or powers of two with Benford's Law.
 
-The program treats F_1 = 1 and F_2 = 1, so it examines the first n
-positive Fibonacci terms.  Example:  python benford_fibonacci.py 1000
+Examples:
+    python benford_fibonacci.py 1000
+    python benford_fibonacci.py 1000000 --sequence powers-of-2
 """
 
 from __future__ import annotations
@@ -31,6 +32,12 @@ def leading_digit(number: int) -> int:
     return int(str(number)[0])
 
 
+def leading_digit_from_fraction(fractional_part: float) -> int:
+    """Convert a base-10 logarithm's fractional part to its leading digit."""
+    # The small tolerance fixes values such as 7.999999999999999 for 2**3.
+    return min(9, int(10**fractional_part + 1e-12))
+
+
 def analyze_exact(n: int, show_terms: bool) -> list[int]:
     """Generate actual Fibonacci integers and count their leading digits."""
     counts = [0] * 10
@@ -47,19 +54,42 @@ def leading_fibonacci_digit_by_log(index: int) -> int:
     phi = (1 + math.sqrt(5)) / 2
     fractional_part = (index * math.log10(phi) - math.log10(math.sqrt(5))) % 1
     # The approximation is not reliable for astronomically large indexes.
-    return min(9, int(10**fractional_part))
+    return leading_digit_from_fraction(fractional_part)
 
 
-def analyze_fast(n: int) -> list[int]:
-    """Count estimated leading digits without building enormous Fibonacci integers."""
+def analyze_large_fibonacci(n: int, exact_terms: int = 50) -> list[int]:
+    """Use exact early terms, then Binet's formula without building large integers.
+
+    log10(F_k) is approximately k * log10(phi) - log10(sqrt(5)).  Its
+    fractional part determines F_k's leading digit.
+    """
     counts = [0] * 10
-    for index in range(1, n + 1):
+    exact_count = min(n, exact_terms)
+    for term in fibonacci_terms(exact_count):
+        counts[leading_digit(term)] += 1
+    for index in range(exact_count + 1, n + 1):
         counts[leading_fibonacci_digit_by_log(index)] += 1
     return counts
 
 
-def print_report(n: int, counts: list[int], elapsed: float, method: str) -> None:
-    print(f"\nFibonacci terms examined: {n:,} ({method} method)")
+def analyze_powers_of_two(max_exponent: int) -> list[int]:
+    """Count leading digits of 2**0 through 2**max_exponent in log space.
+
+    We update only the fractional part of k * log10(2), never calculate 2**k.
+    """
+    counts = [0] * 10
+    fractional = 0.0
+    log_two = math.log10(2)
+    for _ in range(max_exponent + 1):
+        counts[leading_digit_from_fraction(fractional)] += 1
+        fractional += log_two
+        if fractional >= 1.0:
+            fractional -= 1.0
+    return counts
+
+
+def print_report(n: int, counts: list[int], elapsed: float, experiment: str) -> None:
+    print(f"\nTerms examined: {n:,} ({experiment})")
     print("digit  observed count  observed %  Benford %  difference")
     print("-----  --------------  ----------  ---------  ----------")
     for digit in range(1, 10):
@@ -74,7 +104,7 @@ def print_report(n: int, counts: list[int], elapsed: float, method: str) -> None
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Compare Fibonacci leading digits with Benford's Law."
+        description="Compare a mathematical sequence's leading digits with Benford's Law."
     )
     parser.add_argument("n", type=int, help="number of positive Fibonacci terms to examine")
     parser.add_argument(
@@ -83,7 +113,13 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--fast",
         action="store_true",
-        help="estimate leading digits with logarithms instead of generating huge integers",
+        help="for Fibonacci, use Binet's formula after the first 50 exact terms",
+    )
+    parser.add_argument(
+        "--sequence",
+        choices=("fibonacci", "powers-of-2"),
+        default="fibonacci",
+        help="sequence to test (default: fibonacci)",
     )
     return parser.parse_args()
 
@@ -92,12 +128,23 @@ def main() -> None:
     args = parse_arguments()
     if args.n < 1:
         raise SystemExit("n must be a positive integer.")
-    if args.show_terms and args.fast:
-        raise SystemExit("--show-terms cannot be used with --fast (terms are not generated).")
+    if args.show_terms and (args.fast or args.sequence == "powers-of-2"):
+        raise SystemExit("--show-terms is available only for exact Fibonacci mode.")
 
     started = time.perf_counter()
     try:
-        counts = analyze_fast(args.n) if args.fast else analyze_exact(args.n, args.show_terms)
+        if args.sequence == "powers-of-2":
+            counts = analyze_powers_of_two(args.n)
+            experiment = "powers of 2; logarithmic fractional-part method"
+            terms_examined = args.n + 1
+        elif args.fast:
+            counts = analyze_large_fibonacci(args.n)
+            experiment = "Fibonacci; Binet's logarithmic approximation"
+            terms_examined = args.n
+        else:
+            counts = analyze_exact(args.n, args.show_terms)
+            experiment = "Fibonacci; exact integers"
+            terms_examined = args.n
     except ValueError as error:
         if "string conversion" in str(error):
             raise SystemExit(
@@ -105,7 +152,7 @@ def main() -> None:
                 "Try a smaller n or use --fast."
             ) from error
         raise
-    print_report(args.n, counts, time.perf_counter() - started, "fast" if args.fast else "exact")
+    print_report(terms_examined, counts, time.perf_counter() - started, experiment)
 
 
 if __name__ == "__main__":
