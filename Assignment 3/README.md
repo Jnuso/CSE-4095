@@ -1,4 +1,4 @@
-# Fibonacci and Benford's Law
+# Benford's Law Sequence Experiments
 
 `benford.py` is one refactored program for all Benford experiments. It accepts
 a sequence name and `n`, extracts each leading digit,
@@ -13,6 +13,16 @@ python benford.py fibonacci 1000
 python benford.py fibonacci 20 --show-terms
 ```
 
+## Dark-mode chart
+
+Add `--plot` to save a dependency-free dark-mode SVG bar chart comparing
+observed leading-digit percentages to Benford's prediction. Charts are saved
+in `output/plots/`.
+
+```powershell
+python benford.py fibonacci 1000 --plot
+```
+
 ## Experiment 2: powers of 2
 
 The second sequence is `1, 2, 4, 8, 16, ...`, or `2^k` beginning at `k = 0`.
@@ -25,6 +35,16 @@ fractional part.
 
 ```powershell
 python benford.py power2 1000000
+```
+
+## Your own experiment: powers of 3
+
+The program also supports powers of 3. Before running it, our prediction is
+that it will approach Benford's Law because the fractional parts of
+`k * log10(3)` spread across the interval from 0 up to 1.
+
+```powershell
+python benford.py power3 1000000 --plot
 ```
 
 ## Factorials

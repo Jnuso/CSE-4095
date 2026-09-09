@@ -12,6 +12,7 @@ import argparse
 import math
 import time
 from collections.abc import Callable, Iterator
+from pathlib import Path
 
 
 BENFORD = {digit: math.log10(1 + 1 / digit) * 100 for digit in range(1, 10)}
@@ -77,10 +78,10 @@ def count_fractional_logs(n: int, increment: Callable[[int], float]) -> list[int
     return counts
 
 
-def count_powers_of_two(max_exponent: int) -> list[int]:
-    """Count 2^0 through 2^max_exponent without calculating those powers."""
-    log_two = math.log10(2)
-    return count_fractional_logs(max_exponent + 1, lambda _: log_two)
+def count_powers(base: int, max_exponent: int) -> list[int]:
+    """Count base^0 through base^max_exponent without constructing powers."""
+    log_base = math.log10(base)
+    return count_fractional_logs(max_exponent + 1, lambda _: log_base)
 
 
 def count_factorials(n: int) -> list[int]:
@@ -103,17 +104,77 @@ def print_report(terms_examined: int, counts: list[int], elapsed: float, method:
     print(f"\nElapsed time: {elapsed:.3f} seconds")
 
 
+def save_dark_mode_plot(
+    sequence: str, n: int, terms_examined: int, counts: list[int]
+) -> Path:
+    """Save a dependency-free dark-mode SVG comparison chart."""
+    digits = list(range(1, 10))
+    observed = [counts[digit] / terms_examined * 100 for digit in digits]
+    predicted = [BENFORD[digit] for digit in digits]
+    canvas_width, canvas_height = 1000, 620
+    left, right, top, bottom = 95, 45, 105, 100
+    plot_width = canvas_width - left - right
+    plot_height = canvas_height - top - bottom
+    y_max = max(max(observed), max(predicted)) * 1.15
+    group_width = plot_width / len(digits)
+    bar_width = group_width * 0.34
+
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{canvas_width}" height="{canvas_height}" viewBox="0 0 {canvas_width} {canvas_height}" role="img" aria-label="Dark-mode Benford comparison chart for {sequence}">',
+        '<rect width="100%" height="100%" fill="#101417"/>',
+        f'<rect x="{left}" y="{top}" width="{plot_width}" height="{plot_height}" fill="#192126"/>',
+        f'<text x="{canvas_width / 2}" y="45" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="25" font-weight="bold">Benford&apos;s Law: {sequence} (n = {n:,})</text>',
+        f'<text x="{canvas_width / 2}" y="74" text-anchor="middle" fill="#c9d6dc" font-family="Arial, sans-serif" font-size="15">Observed first-digit percentages compared with Benford&apos;s prediction</text>',
+        f'<text x="{left + 10}" y="{top - 25}" fill="#4cc9f0" font-family="Arial, sans-serif" font-size="15">Observed</text>',
+        f'<rect x="{left - 14}" y="{top - 37}" width="10" height="10" fill="#4cc9f0"/>',
+        f'<text x="{left + 125}" y="{top - 25}" fill="#f9c74f" font-family="Arial, sans-serif" font-size="15">Benford prediction</text>',
+        f'<rect x="{left + 101}" y="{top - 37}" width="10" height="10" fill="#f9c74f"/>',
+    ]
+
+    for tick in range(6):
+        value = y_max * tick / 5
+        y = top + plot_height - plot_height * value / y_max
+        svg.append(f'<line x1="{left}" y1="{y:.1f}" x2="{left + plot_width}" y2="{y:.1f}" stroke="#53636d" stroke-opacity="0.55"/>')
+        svg.append(f'<text x="{left - 10}" y="{y + 5:.1f}" text-anchor="end" fill="#d8e1e5" font-family="Arial, sans-serif" font-size="13">{value:.0f}%</text>')
+
+    for index, digit in enumerate(digits):
+        center = left + group_width * (index + 0.5)
+        observed_height = plot_height * observed[index] / y_max
+        predicted_height = plot_height * predicted[index] / y_max
+        svg.append(f'<rect x="{center - bar_width - 3:.1f}" y="{top + plot_height - observed_height:.1f}" width="{bar_width:.1f}" height="{observed_height:.1f}" fill="#4cc9f0"/>')
+        svg.append(f'<rect x="{center + 3:.1f}" y="{top + plot_height - predicted_height:.1f}" width="{bar_width:.1f}" height="{predicted_height:.1f}" fill="#f9c74f"/>')
+        svg.append(f'<text x="{center:.1f}" y="{top + plot_height + 25}" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="15">{digit}</text>')
+
+    svg.extend([
+        f'<line x1="{left}" y1="{top}" x2="{left}" y2="{top + plot_height}" stroke="#8fa3ad"/>',
+        f'<line x1="{left}" y1="{top + plot_height}" x2="{left + plot_width}" y2="{top + plot_height}" stroke="#8fa3ad"/>',
+        f'<text x="{canvas_width / 2}" y="{canvas_height - 32}" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="16">Leading digit</text>',
+        f'<text x="27" y="{top + plot_height / 2}" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" transform="rotate(-90 27 {top + plot_height / 2})">Percentage of terms</text>',
+        '</svg>',
+    ])
+
+    output = Path("output") / "plots" / f"benford_{sequence}_{n}.svg"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("\n".join(svg), encoding="utf-8")
+    return output
+
+
 def parse_arguments(arguments: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Compare a mathematical sequence's leading digits with Benford's Law."
     )
-    parser.add_argument("sequence", choices=("fibonacci", "power2", "factorial"))
+    parser.add_argument("sequence", choices=("fibonacci", "power2", "factorial", "power3"))
     parser.add_argument("n", type=int, help="number of terms (maximum exponent for power2)")
     parser.add_argument("--show-terms", action="store_true", help="print exact Fibonacci terms")
     parser.add_argument(
         "--exact",
         action="store_true",
         help="force exact Fibonacci integer generation, even when n is large",
+    )
+    parser.add_argument(
+        "--plot",
+        action="store_true",
+        help="save a dark-mode observed-versus-Benford bar chart under output/plots",
     )
     return parser.parse_args(arguments)
 
@@ -137,8 +198,11 @@ def main(arguments: list[str] | None = None) -> None:
                 counts = count_large_fibonacci(args.n)
                 method = "Fibonacci; Binet's logarithmic approximation"
         elif args.sequence == "power2":
-            counts = count_powers_of_two(args.n)
+            counts = count_powers(2, args.n)
             method = "powers of 2; logarithmic fractional-part method"
+        elif args.sequence == "power3":
+            counts = count_powers(3, args.n)
+            method = "powers of 3; logarithmic fractional-part method"
         else:
             counts = count_factorials(args.n)
             method = "factorials; logarithmic fractional-part method"
@@ -150,8 +214,11 @@ def main(arguments: list[str] | None = None) -> None:
             ) from error
         raise
 
-    terms_examined = args.n + 1 if args.sequence == "power2" else args.n
+    terms_examined = args.n + 1 if args.sequence in ("power2", "power3") else args.n
     print_report(terms_examined, counts, time.perf_counter() - started, method)
+    if args.plot:
+        plot_path = save_dark_mode_plot(args.sequence, args.n, terms_examined, counts)
+        print(f"Dark-mode chart saved to: {plot_path}")
 
 
 if __name__ == "__main__":
