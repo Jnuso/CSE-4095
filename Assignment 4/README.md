@@ -117,11 +117,12 @@ Assignment 4/
 |-- card24.py
 |-- card24.html
 |-- reflection.pdf
+|-- PART1_PLAN.md
 `-- README.md
 ```
 
-The AI conversation link will be submitted separately wherever the course submission system requests it.
+`README.md` and `PART1_PLAN.md` are working documentation and are not listed as submission files. The AI conversation link will be submitted separately wherever the course submission system requests it.
 
 ## Current Status
 
-This README records the requirements before planning or implementation begins. No implementation decisions have been finalized yet.
+The requirements and Part 1 plan have been reviewed. The Part 1 command-line game is implemented in `card24.py` and has passed its initial functional and input-safety tests. The Part 2 solver and the web version have not been started.
