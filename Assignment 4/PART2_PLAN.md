@@ -115,7 +115,11 @@ Introduce a small internal representation containing an exact `Fraction` value a
 
 The solver will be added without weakening or replacing Part 1. The current game will still generate cards, accept the player's expression, and check it safely.
 
-How the solution is revealed in the command-line interface is a review decision. The recommended option is to ask whether the player wants to see a solution after checking the attempted answer. If the solver returns `None`, the program will report that the hand has no solution.
+After checking the player's attempted answer, the program will ask whether the player wants to see a solution. If the player answers yes, the program will display one solution or report that the hand has no solution.
+
+The cards will remain fully random. The program will not discard an unsolvable hand and generate a replacement. This preserves the assignment's random-generation behavior and allows the player to encounter both solvable and unsolvable hands naturally.
+
+All required Python functionality will remain in `card24.py`. We will not create a separate solver test file for submission. Solver checks can be run from temporary test commands during development so that the final submitted Python program stays self-contained.
 
 ## Correctness Rules
 
@@ -148,6 +152,8 @@ We will also test many randomly generated hands. For every expression returned b
 
 The no-solution examples will be verified by the exhaustive search rather than assumed from intuition.
 
+These tests will be executed during development without adding another required submission file. The final Python deliverable will be the self-contained `card24.py` specified by the assignment.
+
 ## Performance Expectations
 
 Only four starting values are involved, so the search space is small. Pair reduction plus duplicate suppression and failed-state memoization should solve individual hands nearly instantly on a normal computer.
@@ -166,4 +172,10 @@ During implementation, we should preserve evidence useful for the final reflecti
 
 ## Current Status
 
-This document is for review only. No Part 2 solver code has been added yet.
+The design decisions were reviewed and approved, and Part 2 is now implemented in `card24.py`. The implementation was checked against an independent exact-arithmetic subset solver for all 1,820 distinct four-card rank multisets. All solvability results agreed, and every returned expression passed the Part 1 expression and card-usage checker.
+
+## Reviewed Decisions
+
+1. Keep the original randomly generated hand even when it has no solution.
+2. Ask the player whether they want to see a solution after checking their answer.
+3. Keep all functionality required for submission in `card24.py`; do not create a separate solver-test submission file.

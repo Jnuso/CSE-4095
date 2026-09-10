@@ -1,8 +1,9 @@
-"""Command-line version of Card Game 24 (Assignment 4, Part 1).
+"""Command-line version of Card Game 24 (Assignment 4, Parts 1 and 2).
 
 The player receives four card values and enters an arithmetic expression that
 attempts to make 24. Expressions are parsed with ``ast`` and evaluated by this
-program; arbitrary Python code is never passed to ``eval``.
+program; arbitrary Python code is never passed to ``eval``. The program can
+also search every legal arithmetic combination and show one solution.
 """
 
 from __future__ import annotations
@@ -35,6 +36,14 @@ class AnswerResult:
     @property
     def is_correct(self) -> bool:
         return self.status == "correct"
+
+
+@dataclass(frozen=True)
+class _SolutionItem:
+    """An exact intermediate value and the expression that produced it."""
+
+    value: Fraction
+    expression: str
 
 
 def generate_cards(rng: random.Random | None = None) -> list[int]:
@@ -174,9 +183,128 @@ def check_answer(expression: str, cards: list[int]) -> AnswerResult:
 
     return AnswerResult(
         "incorrect",
-        f"That expression equals {formatted_value}, not 24. Try again next round!",
+        f"That expression equals {formatted_value}, not 24.",
         value,
     )
+
+
+def _combine_solution_items(
+    left: _SolutionItem, right: _SolutionItem
+) -> list[_SolutionItem]:
+    """Return the distinct legal results of combining two search items."""
+
+    candidates: list[_SolutionItem] = []
+    seen_values: set[Fraction] = set()
+
+    def add_candidate(value: Fraction, expression: str) -> None:
+        # For finding one solution, equivalent numerical results lead to the
+        # same future possibilities, so only one expression is needed.
+        if value not in seen_values:
+            seen_values.add(value)
+            candidates.append(_SolutionItem(value, expression))
+
+    left_expression = left.expression
+    right_expression = right.expression
+
+    add_candidate(
+        left.value + right.value,
+        f"({left_expression} + {right_expression})",
+    )
+    add_candidate(
+        left.value * right.value,
+        f"({left_expression} * {right_expression})",
+    )
+    add_candidate(
+        left.value - right.value,
+        f"({left_expression} - {right_expression})",
+    )
+    add_candidate(
+        right.value - left.value,
+        f"({right_expression} - {left_expression})",
+    )
+
+    if right.value != 0:
+        add_candidate(
+            left.value / right.value,
+            f"({left_expression} / {right_expression})",
+        )
+    if left.value != 0:
+        add_candidate(
+            right.value / left.value,
+            f"({right_expression} / {left_expression})",
+        )
+
+    return candidates
+
+
+def _search_for_solution(
+    items: list[_SolutionItem],
+    failed_states: set[tuple[Fraction, ...]],
+) -> str | None:
+    """Recursively search all pair reductions for one expression equal to 24."""
+
+    state = tuple(sorted(item.value for item in items))
+    if state in failed_states:
+        return None
+
+    if len(items) == 1:
+        if items[0].value == TARGET:
+            return items[0].expression
+        failed_states.add(state)
+        return None
+
+    for left_index in range(len(items) - 1):
+        for right_index in range(left_index + 1, len(items)):
+            left = items[left_index]
+            right = items[right_index]
+            remaining = [
+                item
+                for index, item in enumerate(items)
+                if index not in (left_index, right_index)
+            ]
+
+            for combined in _combine_solution_items(left, right):
+                solution = _search_for_solution(
+                    remaining + [combined], failed_states
+                )
+                if solution is not None:
+                    return solution
+
+    failed_states.add(state)
+    return None
+
+
+def find_solution(cards: list[int]) -> str | None:
+    """Return one expression that makes 24, or ``None`` if none exists."""
+
+    if len(cards) != 4:
+        raise ValueError("The solver requires exactly four card values.")
+    if any(type(card) is not int or not 1 <= card <= 13 for card in cards):
+        raise ValueError("Card values must be integers from 1 through 13.")
+
+    starting_items = [
+        _SolutionItem(Fraction(card), str(card)) for card in cards
+    ]
+    return _search_for_solution(starting_items, set())
+
+
+def ask_to_show_solution() -> bool:
+    """Ask whether the player wants a solution, handling invalid input safely."""
+
+    while True:
+        try:
+            response = input("Would you like to see a solution? (y/n): ")
+        except (EOFError, KeyboardInterrupt):
+            print("\nGame ended without showing a solution.")
+            return False
+
+        normalized_response = response.strip().casefold()
+        if normalized_response in {"y", "yes"}:
+            return True
+        if normalized_response in {"n", "no"}:
+            return False
+
+        print("Please enter yes or no.")
 
 
 def main() -> None:
@@ -198,6 +326,13 @@ def main() -> None:
 
     result = check_answer(expression, cards)
     print(result.message)
+
+    if ask_to_show_solution():
+        solution = find_solution(cards)
+        if solution is None:
+            print("No solution exists for these cards.")
+        else:
+            print(f"One solution: {solution} = 24")
 
 
 if __name__ == "__main__":

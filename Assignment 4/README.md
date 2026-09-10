@@ -125,4 +125,4 @@ Assignment 4/
 
 ## Current Status
 
-The requirements and Part 1 plan have been reviewed. The Part 1 command-line game is implemented in `card24.py` and has passed its initial functional and input-safety tests. The Part 2 solver and the web version have not been started.
+The requirements and Python plans have been reviewed. Parts 1 and 2 are implemented together in `card24.py`: the command-line game safely checks player expressions and can find a solution or determine that none exists. The Python implementation passed functional, input-safety, CLI, and exhaustive solver tests. The static web version has not been started.
