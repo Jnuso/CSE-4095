@@ -118,11 +118,14 @@ Assignment 4/
 |-- card24.html
 |-- reflection.pdf
 |-- PART1_PLAN.md
+|-- PART2_PLAN.md
+|-- PART3_PLAN.md
+|-- PART4_PLAN.md
 `-- README.md
 ```
 
-`README.md` and `PART1_PLAN.md` are working documentation and are not listed as submission files. The AI conversation link will be submitted separately wherever the course submission system requests it.
+The Markdown files are working documentation and are not listed as submission files. The AI conversation link will be submitted separately wherever the course submission system requests it.
 
 ## Current Status
 
-The requirements and Python plans have been reviewed. Parts 1 and 2 are implemented together in `card24.py`: the command-line game safely checks player expressions and can find a solution or determine that none exists. The Python implementation passed functional, input-safety, CLI, and exhaustive solver tests. The static web version has not been started.
+All four implementation parts are complete. Parts 1 and 2 are implemented together in `card24.py`: the command-line game safely checks player expressions and can find a solution or determine that none exists. Parts 3 and 4 are implemented in the self-contained, dark-mode `card24.html`, including safe expression checking, a solution reveal, ordinary random deals, and an optional solvable-only mode. Both implementations passed their automated functional and input-safety tests. The reflection and final submission review remain to be completed.
