@@ -185,6 +185,10 @@ def main(arguments: list[str] | None = None) -> None:
         raise SystemExit("n must be a positive integer.")
     if args.show_terms and args.sequence != "fibonacci":
         raise SystemExit("--show-terms is available only for Fibonacci.")
+    if args.show_terms and args.n > EXACT_FIBONACCI_LIMIT:
+        raise SystemExit(
+            f"--show-terms requires n <= {EXACT_FIBONACCI_LIMIT:,} because it prints exact Fibonacci terms."
+        )
     if args.exact and args.sequence != "fibonacci":
         raise SystemExit("--exact is available only for Fibonacci.")
 
