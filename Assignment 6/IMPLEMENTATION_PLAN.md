@@ -11,21 +11,23 @@ Create a command-line Python version of Chopsticks with two ways to run it:
    game by watching.
 
 The computer player will use minimax search over the legal move graph, with a
-proposed search limit of 50 plies (individual player moves).
+search limit of 50 plies (individual player moves).
 
-## Proposed Files
+## Project Files
 
 ```text
 Assignment 6/
+|-- README.md
 |-- RULES.md
 |-- IMPLEMENTATION_PLAN.md
+|-- AI_LOGIC_GRAPH.md
 |-- chopsticks.py
 `-- test_chopsticks.py
 ```
 
-Only the two Markdown files are being created during the planning stage. The
-Python and test files will be added after the open rule decisions are
-confirmed.
+The Markdown planning files were completed before implementation and now track
+the working first iteration. The Python game and automated tests have been
+added and will be refined as later features are developed.
 
 ## Command-Line Experience
 
@@ -42,6 +44,10 @@ When `chopsticks.py` starts, it will:
    crashing or losing the turn.
 7. Apply the move, explain the result, and continue until a player wins or
    the agreed draw condition is reached.
+
+Both modes retain a high defensive turn cap for protection against an
+implementation error. Under correct play, the threefold-repetition rule ends
+a cyclic game before that safeguard is reached.
 
 The executable portion will be protected by `if __name__ == "__main__":` so
 the game logic can be imported and tested without starting an interactive
@@ -91,30 +97,32 @@ produce the same canonical state will be returned only once.
 For redistribution, the generator will:
 
 1. Add the current player's two hand values.
-2. Enumerate legal pairs whose values have the same total.
+2. Enumerate pairs from `1` through `4` whose values have the same total.
 3. Exclude the current canonical pair and simple left/right swaps.
-4. Follow the confirmed rules about maximum values and reviving knocked-out
-   hands.
+4. Allow a knocked-out hand to be revived, but do not allow a player to knock
+   out one of their own hands through redistribution.
 5. Remove multiple moves that lead to the same state.
 
 ## Minimax and the Move Graph
 
-The computer will generate the graph as needed from the current state instead
-of constructing a large permanent tree at startup. This still examines all
-legal continuations within the search limit while avoiding work on positions
-the current game never reaches.
+The computer will build the complete reachable base-state graph once when a
+game mode starts. The finalized graph contains only 342 states and 844 legal
+transitions, so keeping it in memory is inexpensive and avoids regenerating
+legal moves during each search.
 
 The planned search includes:
 
-- A default horizon of **50 plies**, if "50 possible steps" means 50
-  individual moves.
+- A default horizon of **50 plies**, meaning 50 individual player moves.
 - A win/loss score that favors winning and prefers faster wins.
 - A heuristic at the depth limit based on active hands, finger counts, and
   immediate threats.
-- Alpha-beta pruning to skip branches that cannot affect the choice.
-- Memoization keyed by canonical state, remaining depth, and perspective.
-- Explicit cycle/repetition detection because redistributions can return to
-  earlier positions.
+- History-aware alpha-beta pruning to skip branches that cannot affect the
+  choice while carrying occurrence counts through the simulated path.
+- A memoized `(state, remaining depth)` table used only to order promising
+  moves. Final values come from the repetition-aware alpha-beta search, so the
+  history-blind ordering cache cannot change the selected answer.
+- Explicit threefold-repetition detection because redistributions can return
+  to earlier positions.
 - Deterministic tie-breaking so demonstrations and tests are reproducible.
 
 Although minimax is often drawn as a tree, the same game position can be
@@ -131,7 +139,9 @@ Autonomous mode will:
 - Print the calculation for attacks and the before/after values for splits.
 - Show the full state after every move.
 - Identify a win or draw clearly.
-- Enforce a turn cap as a final safeguard against an endless demonstration.
+- Declare a draw when the same complete state occurs for the third time.
+- Enforce a turn cap as an additional safeguard against an implementation
+  error or an unexpectedly long demonstration.
 
 The output may optionally pause between turns or accept Enter to advance, but
 the default can run continuously so it is easy to test.
@@ -145,7 +155,7 @@ Automated tests will cover:
 - The inability to attack with or target a knocked-out hand.
 - Legal and illegal redistributions.
 - Finger-total preservation during redistribution.
-- Whether a knocked-out hand may be revived, once confirmed.
+- Reviving a knocked-out hand through redistribution.
 - Win detection when both hands reach zero.
 - Deduplication of symmetric states and moves.
 - Minimax choosing a forced win and avoiding an immediate loss.
@@ -155,19 +165,18 @@ Automated tests will cover:
 Interactive input/output will receive a small set of tests using patched input
 and captured output; most tests will target the pure game functions.
 
-## Decisions Needed Before Implementation
+## Finalized Design Decisions
 
-1. Does a hand get knocked out at `5`, or only when it becomes greater than
-   `5`?
-2. When an attack exceeds the limit, does the hand become `0`, or does the
-   value wrap around (for example, `7` becoming `2`)?
-3. May a split revive a knocked-out hand?
-4. Are all total-preserving redistributions allowed, or only particular
-   splits?
-5. Does "50 possible steps" mean a minimax depth of 50 individual moves, a
-   limit of 50 generated positions, or a maximum of 50 turns for a game?
-6. How should repeated positions be resolved: threefold repetition as a draw,
-   a fixed turn limit, or another rule supplied by the assignment?
-
-Once these decisions are confirmed, implementation can proceed without
-embedding an unintended Chopsticks variant.
+- A hand becomes knocked out when an attack makes its value `5` or greater.
+- A knocked-out hand becomes `0`; values do not wrap around.
+- A knocked-out hand cannot attack or be targeted.
+- Redistributing fingers may revive a knocked-out hand.
+- Any genuinely different, total-preserving redistribution is allowed when
+  both resulting hands contain from `1` through `4` fingers.
+- A left/right swap by itself is not a move, and redistribution cannot be used
+  to knock out one of the current player's hands.
+- Player 1 is Player A, moves first, and maximizes minimax scores. Player 2 is
+  Player B and minimizes scores, all measured from Player A's perspective.
+- The minimax horizon is 50 plies.
+- The same complete state occurring three times is a draw. A complete state
+  includes both players' hands and whose turn it is.
