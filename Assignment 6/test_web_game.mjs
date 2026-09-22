@@ -22,6 +22,25 @@ import {
   stateKey,
 } from './web/game.js';
 
+const WEB_HTML = readFileSync(new URL('./web/index.html', import.meta.url), 'utf8');
+const WEB_APP = readFileSync(new URL('./web/app.js', import.meta.url), 'utf8');
+const WEB_CSS = readFileSync(new URL('./web/styles.css', import.meta.url), 'utf8');
+
+function cssDeclarations(selector) {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = WEB_CSS.match(new RegExp(`${escaped}\\s*\\{([^}]*)\\}`));
+  assert(match, `Missing CSS rule for ${selector}`);
+  return match[1];
+}
+
+function functionSource(name) {
+  const start = WEB_APP.search(new RegExp(`(?:async\\s+)?function\\s+${name}\\s*\\(`));
+  assert.notEqual(start, -1, `Missing ${name}()`);
+  const remainder = WEB_APP.slice(start);
+  const next = remainder.slice(1).search(/\n(?:async\s+)?function\s+\w+\s*\(/);
+  return next < 0 ? remainder : remainder.slice(0, next + 1);
+}
+
 function referenceNextMoves(state) {
   const [a, b, level] = state;
   if (a.every((value) => value === 0) || b.every((value) => value === 0)) {
@@ -252,16 +271,91 @@ test('the browser graph and opening decision match the Python reference', () => 
 });
 
 test('the page contains every controller target exactly once', () => {
-  const html = readFileSync(new URL('./web/index.html', import.meta.url), 'utf8');
-  const controller = readFileSync(new URL('./web/app.js', import.meta.url), 'utf8');
-  const htmlIds = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
+  const htmlIds = [...WEB_HTML.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(htmlIds).size, htmlIds.length, 'Duplicate HTML IDs');
-  const required = [...controller.matchAll(/byId\('([^']+)'\)/g)].map((match) => match[1]);
+  const required = [...WEB_APP.matchAll(/byId\('([^']+)'\)/g)].map((match) => match[1]);
   for (const player of ['a', 'b']) {
     required.push(`player-${player}-card`);
     for (const hand of ['left', 'right']) required.push(`hand-${player}-${hand}`);
   }
   for (const id of required) assert(htmlIds.includes(id), `Missing #${id}`);
+});
+
+test('the simplified arena keeps large responsive hands centered in the play area', () => {
+  const row = cssDeclarations('.player-row');
+  const pair = cssDeclarations('.hand-pair');
+  const hand = cssDeclarations('.hand');
+  const art = cssDeclarations('.hand-art svg');
+
+  assert.match(row, /justify-content:\s*center/,
+    'Each player row should center its contents');
+  assert.match(pair, /justify-content:\s*center/,
+    'Each pair of hands should remain centered as a unit');
+  assert.match(hand, /(?:inline-size|width|min-width):\s*clamp\(/,
+    'Hand controls should scale responsively instead of using a small fixed size');
+  assert.match(art, /(?:inline-size|width):\s*clamp\(/,
+    'Hand artwork should scale responsively with the arena');
+
+  const handIds = [...WEB_HTML.matchAll(/<button\b[^>]*\bid="(hand-[ab]-(?:left|right))"/g)]
+    .map((match) => match[1]);
+  assert.deepEqual(new Set(handIds), new Set([
+    'hand-a-left', 'hand-a-right', 'hand-b-left', 'hand-b-right',
+  ]));
+});
+
+test('attack moves animate the exact source and target before state mutation', () => {
+  const animation = functionSource('animateAttack');
+  assert.match(animation, /move\.kind\s*!==\s*['"]attack['"]/,
+    'Splits should not be presented as hand taps');
+  assert.match(animation, /\.classList\.add\(['"]is-tapping['"]\)/);
+  assert.match(animation, /\.classList\.add\(['"]is-receiving-tap['"]\)/);
+  assert.match(animation, /\.classList\.add\(['"]is-animating['"]\)/);
+  assert.match(WEB_APP, /\.classList\.remove\([^)]*['"]is-tapping['"]/);
+  assert.match(WEB_APP, /\.classList\.remove\([^)]*['"]is-receiving-tap['"]/);
+  assert.match(WEB_APP, /\.classList\.remove\(['"]is-animating['"]\)/);
+
+  const commit = functionSource('commitMove');
+  const animationCall = commit.search(/await\s+animateAttack\(\s*(?:state|positionBeforeMove)\s*,\s*chosen\s*,\s*sourceOverride\s*\)/);
+  const stateMutation = commit.indexOf('state = structuredClone(chosen.nextState)');
+  assert(animationCall >= 0, 'commitMove() must await its attack animation');
+  assert(stateMutation >= 0, 'commitMove() must still apply the selected next state');
+  assert(animationCall < stateMutation,
+    'The old finger counts must remain visible until the hands finish tapping');
+});
+
+test('tap animation CSS has source, target, stage, and reduced-motion hooks', () => {
+  assert.match(WEB_CSS, /@keyframes\s+hand-tap\b/);
+  assert.match(WEB_CSS, /@keyframes\s+hand-receive-tap\b/);
+  assert.match(cssDeclarations('.hand.is-tapping'), /animation:\s*hand-tap\b/);
+  assert.match(cssDeclarations('.hand.is-receiving-tap'), /animation:\s*hand-receive-tap\b/);
+  assert.match(WEB_CSS, /\.game-stage\.is-animating\b/,
+    'The stage needs an animation-state hook to prevent conflicting interactions');
+
+  const reducedStart = WEB_CSS.indexOf('@media (prefers-reduced-motion: reduce)');
+  assert(reducedStart >= 0, 'Missing reduced-motion media query');
+  const reducedEnd = WEB_CSS.indexOf('\n@media ', reducedStart + 1);
+  const reduced = WEB_CSS.slice(reducedStart, reducedEnd < 0 ? undefined : reducedEnd);
+  assert.match(reduced, /\.hand\.is-tapping/);
+  assert.match(reduced, /\.hand\.is-receiving-tap/);
+  assert.match(reduced, /animation:\s*none\s*!important/,
+    'Tap motion should be fully disabled when reduced motion is requested');
+});
+
+test('the controller builds dynamic interface text without executable HTML sinks', () => {
+  for (const [name, pattern] of [
+    ['innerHTML', /\.innerHTML\s*=/],
+    ['outerHTML', /\.outerHTML\s*=/],
+    ['insertAdjacentHTML', /\.insertAdjacentHTML\s*\(/],
+    ['document.write', /document\.write\s*\(/],
+    ['eval', /\beval\s*\(/],
+    ['Function constructor', /\bnew\s+Function\s*\(/],
+  ]) {
+    assert.doesNotMatch(WEB_APP, pattern, `${name} can turn dynamic text into executable markup`);
+  }
+  assert.doesNotMatch(WEB_HTML, /\son[a-z]+\s*=/i,
+    'Event handlers belong in the controller, not executable HTML attributes');
+  assert.doesNotMatch(WEB_HTML, /\b(?:href|src)\s*=\s*["']\s*javascript:/i,
+    'The page must not contain javascript: URLs');
 });
 
 test('two optimal autonomous players finish within the fixed horizon', () => {

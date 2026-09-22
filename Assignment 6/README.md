@@ -165,9 +165,10 @@ server with `Ctrl+C` when finished.
 
 ## Browser Features
 
-- Four visual hands, with finger counts, knocked-out states, and accessible
-  labels. Tap by choosing a live source hand and a live opponent hand, or use
-  the listed legal moves. Redistribute with the split control.
+- Four large, centered visual hands, with finger counts, knocked-out states,
+  and accessible labels. Tap by choosing a live source hand and then a live
+  opponent hand; the source hand visibly travels toward its target before the
+  new finger count appears. Redistribute with the split control.
 - Play as A or B, restart, or watch autonomous A-versus-B play with play/pause,
   single-step, and speed controls.
 - Turn progress, outcome, and move history, including a brief explanation of
@@ -175,8 +176,8 @@ server with `Ctrl+C` when finished.
 - A focused move-graph view showing the current position and its legal next
   positions with minimax values. The browser computes the same 20-ply
   outcome model as the Python reference.
-- Responsive layout with keyboard-operable controls and reduced-motion
-  styling.
+- A simplified game-first responsive layout with keyboard-operable controls.
+  Reduced-motion preferences skip the hand-travel animation.
 
 ## Local CLI Security Scope
 

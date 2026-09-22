@@ -54,6 +54,8 @@ let lastExplanation = '';
 let autoRunning = false;
 let pendingTimer = null;
 let generation = 0;
+let gameRevision = 0;
+let isAnimating = false;
 
 function currentPlayer(position = state) {
   return position[2] % 2 === 0 ? 'A' : 'B';
@@ -139,7 +141,7 @@ function handSvg(count) {
 }
 
 function humanMayMove() {
-  return mode === 'human' && currentPlayer() === humanPlayer && getResult(state) === null;
+  return !isAnimating && mode === 'human' && currentPlayer() === humanPlayer && getResult(state) === null;
 }
 
 function renderHands() {
@@ -207,8 +209,9 @@ function renderControls() {
   ui.playerControls.hidden = mode !== 'human';
   ui.autoControls.hidden = mode !== 'auto';
   ui.autoPlay.textContent = autoRunning ? 'Pause playback' : 'Play both sides';
-  ui.autoPlay.disabled = mode !== 'auto' || getResult(state) !== null;
-  ui.autoStep.disabled = mode !== 'auto' || getResult(state) !== null;
+  ui.autoPlay.disabled = mode !== 'auto' || getResult(state) !== null ||
+    (isAnimating && !autoRunning);
+  ui.autoStep.disabled = mode !== 'auto' || getResult(state) !== null || isAnimating;
   ui.autoSpeedLabel.textContent = `${(Number(ui.autoSpeed.value) / 1000).toFixed(1)}s / turn`;
   const splitAvailable = humanMayMove() && legalMoves(state).some((move) => move.kind === 'split');
   ui.split.disabled = !splitAvailable;
@@ -226,13 +229,27 @@ function renderMoveOptions() {
     ui.moveOptions.append(note);
     return;
   }
+  if (!showingSplits) {
+    const guide = document.createElement('div');
+    guide.className = 'move-guide';
+    const chooseSource = document.createElement('span');
+    chooseSource.className = `guide-step${selectedSource === null ? ' is-current' : ' is-complete'}`;
+    chooseSource.textContent = selectedSource === null ? '1 · Choose one of your hands' :
+      `✓ ${HAND_NAMES[selectedSource]} hand selected`;
+    const chooseTarget = document.createElement('span');
+    chooseTarget.className = `guide-step${selectedSource !== null ? ' is-current' : ''}`;
+    chooseTarget.textContent = '2 · Tap an opponent hand';
+    guide.append(chooseSource, chooseTarget);
+    ui.moveOptions.append(guide);
+    return;
+  }
+
   const heading = document.createElement('p');
   heading.className = 'option-heading';
-  heading.textContent = showingSplits ? 'Legal finger redistributions' : 'Legal taps';
+  heading.textContent = 'Choose a new finger distribution';
   ui.moveOptions.append(heading);
 
-  const choices = legalMoves(state).filter((move) =>
-    showingSplits ? move.kind === 'split' : move.kind === 'attack');
+  const choices = legalMoves(state).filter((move) => move.kind === 'split');
   for (const move of choices) {
     const button = document.createElement('button');
     button.type = 'button';
@@ -342,8 +359,71 @@ function clearPending() {
   }
 }
 
+function clearAttackAnimation() {
+  document.querySelectorAll('.hand.is-tapping, .hand.is-receiving-tap').forEach((hand) => {
+    hand.classList.remove('is-tapping', 'is-receiving-tap');
+    hand.style.removeProperty('--tap-x');
+    hand.style.removeProperty('--tap-y');
+  });
+  document.querySelectorAll('.player-row.is-attacking').forEach((row) => {
+    row.classList.remove('is-attacking');
+  });
+  const stage = document.querySelector('.game-stage');
+  stage?.classList.remove('is-animating');
+  stage?.removeAttribute('aria-busy');
+}
+
+function animateAttack(position, move, sourceOverride = null) {
+  if (move.kind !== 'attack' ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return Promise.resolve();
+  }
+
+  const actor = currentPlayer(position);
+  const targetPlayer = opposite(actor);
+  const sourceIndex = sourceOverride ?? move.source;
+  const source = byId(`hand-${actor.toLowerCase()}-${HAND_NAMES[sourceIndex]}`);
+  const target = byId(`hand-${targetPlayer.toLowerCase()}-${HAND_NAMES[move.target]}`);
+  const sourceBounds = source.getBoundingClientRect();
+  const targetBounds = target.getBoundingClientRect();
+  const distanceX = targetBounds.left + targetBounds.width / 2 -
+    (sourceBounds.left + sourceBounds.width / 2);
+  const distanceY = targetBounds.top + targetBounds.height / 2 -
+    (sourceBounds.top + sourceBounds.height / 2);
+
+  source.style.setProperty('--tap-x', `${distanceX * 0.72}px`);
+  source.style.setProperty('--tap-y', `${distanceY * 0.72}px`);
+  const stage = document.querySelector('.game-stage');
+  stage?.classList.add('is-animating');
+  stage?.setAttribute('aria-busy', 'true');
+  source.closest('.player-row')?.classList.add('is-attacking');
+  source.classList.add('is-tapping');
+  target.classList.add('is-receiving-tap');
+
+  return new Promise((resolve) => {
+    let finished = false;
+    let fallback;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(fallback);
+      source.removeEventListener('animationend', handleAnimationEnd);
+      clearAttackAnimation();
+      resolve();
+    };
+    const handleAnimationEnd = (event) => {
+      if (event.target === source && event.animationName === 'hand-tap') finish();
+    };
+    fallback = window.setTimeout(finish, 760);
+    source.addEventListener('animationend', handleAnimationEnd);
+  });
+}
+
 function resetGame() {
   clearPending();
+  gameRevision += 1;
+  isAnimating = false;
+  clearAttackAnimation();
   state = structuredClone(INITIAL_STATE);
   selectedSource = null;
   showingSplits = false;
@@ -354,14 +434,24 @@ function resetGame() {
   scheduleComputerIfNeeded();
 }
 
-function commitMove(move, sourceOverride = null, computer = false) {
-  if (getResult(state) !== null) return;
+async function commitMove(move, sourceOverride = null, computer = false) {
+  if (isAnimating || getResult(state) !== null) return;
   const legal = legalMoves(state);
   const chosen = legal.find((candidate) => stateKey(candidate.nextState) === stateKey(move.nextState));
   if (!chosen) throw new Error('The chosen move is no longer legal.');
+  const positionBeforeMove = structuredClone(state);
+  const revisionBeforeMove = gameRevision;
   const actor = currentPlayer();
   const label = moveLabel(state, chosen, sourceOverride);
   const score = table.get(stateKey(chosen.nextState)).score;
+  isAnimating = true;
+  ui.title.textContent = `${actor} is tapping…`;
+  ui.detail.textContent = label;
+  renderControls();
+  for (const hand of document.querySelectorAll('.hand')) hand.disabled = true;
+  await animateAttack(positionBeforeMove, chosen, sourceOverride);
+  if (revisionBeforeMove !== gameRevision) return;
+  isAnimating = false;
   history.push({ turn: state[2] + 1, label });
   state = structuredClone(chosen.nextState);
   selectedSource = null;
@@ -374,7 +464,8 @@ function commitMove(move, sourceOverride = null, computer = false) {
 }
 
 function scheduleComputerIfNeeded() {
-  if (mode !== 'human' || currentPlayer() === humanPlayer || getResult(state) !== null) return;
+  if (pendingTimer !== null || isAnimating || mode !== 'human' ||
+      currentPlayer() === humanPlayer || getResult(state) !== null) return;
   const ticket = generation;
   pendingTimer = setTimeout(() => {
     pendingTimer = null;
@@ -386,7 +477,8 @@ function scheduleComputerIfNeeded() {
 }
 
 function scheduleAutoTick() {
-  if (mode !== 'auto' || !autoRunning || getResult(state) !== null) return;
+  if (pendingTimer !== null || isAnimating || mode !== 'auto' ||
+      !autoRunning || getResult(state) !== null) return;
   const ticket = generation;
   const delay = Math.max(150, Math.min(2000, Number(ui.autoSpeed.value) || 700));
   pendingTimer = setTimeout(() => {
