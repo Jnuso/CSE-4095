@@ -14,11 +14,16 @@ import {
   INITIAL_STATE,
   bestMove,
   bestMoveDP,
+  buildCompletionStrategy,
+  buildGameSolver,
   buildReachableGraph,
+  chooseMove,
   getResult,
   legalMoves,
   nextMoves,
   overflowSum,
+  playAutonomousGame,
+  positionKey,
   stateKey,
 } from './web/game.js';
 
@@ -88,38 +93,9 @@ function referenceNextMoves(state) {
   return result;
 }
 
-function referenceDP(depth) {
-  const table = new Map();
-  for (let level = depth; level >= 0; level -= 1) {
-    for (let al = 0; al < 5; al += 1) {
-      for (let ar = 0; ar < 5; ar += 1) {
-        for (let bl = 0; bl < 5; bl += 1) {
-          for (let br = 0; br < 5; br += 1) {
-            const position = [[al, ar], [bl, br], level];
-            let score = 0;
-            let bestState = null;
-            if (al === 0 && ar === 0 && (bl !== 0 || br !== 0)) {
-              score = -1;
-            } else if (bl === 0 && br === 0 && (al !== 0 || ar !== 0)) {
-              score = 1;
-            } else if (level < depth && (al !== 0 || ar !== 0) &&
-                       (bl !== 0 || br !== 0)) {
-              for (const child of referenceNextMoves(position)) {
-                const childScore = table.get(JSON.stringify(child)).score;
-                if (bestState === null ||
-                    (level % 2 === 0 ? childScore > score : childScore < score)) {
-                  bestState = child;
-                  score = childScore;
-                }
-              }
-            }
-            table.set(JSON.stringify(position), { score, bestState });
-          }
-        }
-      }
-    }
-  }
-  return table;
+function stateFromPositionKey(key) {
+  const [a, b, level] = key.split('|');
+  return [a.split(',').map(Number), b.split(',').map(Number), Number(level)];
 }
 
 test('starts with one finger on each hand and gives A the first turn', () => {
@@ -170,11 +146,14 @@ test('a dead hand can be revived by a split, but cannot attack', () => {
     JSON.stringify(move.newHands) !== '[4,0]'));
 });
 
-test('terminal wins take priority over a tie at the horizon', () => {
+test('only a knockout ends the game, regardless of the turn number', () => {
   assert.equal(getResult([[0, 0], [1, 1], 20]), 'B');
   assert.equal(getResult([[1, 1], [0, 0], 20]), 'A');
-  assert.equal(getResult([[1, 1], [1, 1], 20]), 'tie');
-  assert.equal(getResult([[1, 1], [1, 1], 19]), null);
+  for (const level of [19, 20, 21, 50, 1_000]) {
+    const live = [[1, 1], [1, 1], level];
+    assert.equal(getResult(live), null, `Live state ended at turn ${level}`);
+    assert(legalMoves(live).length > 0, `Live state has no moves at turn ${level}`);
+  }
   assert.deepEqual(nextMoves([[0, 0], [1, 1], 4]), []);
 });
 
@@ -186,9 +165,12 @@ test('state keys distinguish handedness and absolute turn level', () => {
     [[1, 4], [2, 3], 1],
   ];
   assert.equal(new Set(states.map(stateKey)).size, states.length);
+  assert.equal(positionKey(states[0]), positionKey([[1, 4], [2, 3], 20]));
+  assert.equal(positionKey(states[3]), positionKey([[1, 4], [2, 3], 101]));
+  assert.notEqual(positionKey(states[0]), positionKey(states[3]));
 });
 
-test('golden positions match the Python assignment reference', () => {
+test('golden move positions match the assignment reference', () => {
   const examples = [
     [
       [[1, 1], [1, 1], 0],
@@ -216,8 +198,6 @@ test('golden positions match the Python assignment reference', () => {
   for (const [position, successors] of examples) {
     assert.deepEqual(nextMoves(position), successors);
   }
-  const opening = bestMoveDP(10).get(stateKey(INITIAL_STATE));
-  assert.deepEqual(opening, { score: 0, bestState: [[1, 1], [2, 1], 1] });
 });
 
 test('all 1,250 ordered positions match the independent move oracle', () => {
@@ -239,23 +219,106 @@ test('all 1,250 ordered positions match the independent move oracle', () => {
   assert.equal(checked, 1_250);
 });
 
-test('every 20-ply DP score and chosen child matches the independent oracle', () => {
-  const expected = referenceDP(20);
+test('the parity-based AI selects legal moves before and after turn 20', () => {
   const table = bestMoveDP();
   assert(table instanceof Map);
-  assert.equal(table.size, 625 * 21);
-  assert.equal(expected.size, table.size);
-  for (const [serializedState, expectedEntry] of expected) {
-    const position = JSON.parse(serializedState);
-    assert.deepEqual(table.get(stateKey(position)), expectedEntry,
-      `DP row ${serializedState}`);
+  for (let al = 0; al < 5; al += 1) {
+    for (let ar = 0; ar < 5; ar += 1) {
+      for (let bl = 0; bl < 5; bl += 1) {
+        for (let br = 0; br < 5; br += 1) {
+          for (const level of [0, 1, 20, 21, 100, 101]) {
+            const position = [[al, ar], [bl, br], level];
+            const decision = bestMove(position, table);
+            if (getResult(position) !== null) {
+              assert.equal(decision, null, `Terminal state selected a move: ${stateKey(position)}`);
+              continue;
+            }
+            assert(decision, `Missing AI move for ${stateKey(position)}`);
+            assert(legalMoves(position).some((move) =>
+              stateKey(move.nextState) === stateKey(decision.nextState)),
+            `AI selected an illegal move for ${stateKey(position)}`);
+            assert([-1, 0, 1].includes(decision.score), 'AI score must remain minimax-compatible');
+          }
+        }
+      }
+    }
   }
 });
 
-test('the DP rejects unsupported horizons rather than building an unbounded table', () => {
-  for (const depth of [-2, 0, 1, 3, 51, 100, true, '20']) {
-    assert.throws(() => bestMoveDP(depth), Error);
+test('the infinite-horizon solver proves B wins the opening position', () => {
+  const solver = buildGameSolver();
+  const graph = buildReachableGraph();
+  assert(solver instanceof Map);
+  assert.equal(solver.size, graph.size);
+  const opening = solver.get(positionKey(INITIAL_STATE));
+  assert(opening, 'The solver is missing the opening position');
+  assert.equal(opening.score, -1, 'Player B should be able to force the win');
+  assert.equal(opening.distance, 26, 'Optimal play should take 26 moves');
+  assert(opening.bestState);
+  assert(legalMoves(INITIAL_STATE).some((move) =>
+    positionKey(move.nextState) === positionKey(opening.bestState)));
+
+  let draws = 0;
+  for (const key of graph.keys()) {
+    const position = stateFromPositionKey(key);
+    const entry = solver.get(key);
+    assert(entry, `Missing solver row ${key}`);
+    assert([-1, 0, 1].includes(entry.score), `Invalid score for ${key}`);
+    if (entry.score === 0) draws += 1;
+
+    if (getResult(position) !== null) {
+      assert.equal(entry.distance, 0);
+      assert.equal(entry.bestState, null);
+      continue;
+    }
+
+    assert(entry.bestState, `Live solver row has no move: ${key}`);
+    assert(legalMoves(position).some((move) =>
+      positionKey(move.nextState) === positionKey(entry.bestState)),
+    `Solver selected an illegal move for ${key}`);
+    const child = solver.get(positionKey(entry.bestState));
+    assert.equal(child.score, entry.score, `Selected child changed value at ${key}`);
+    if (entry.score === 0) {
+      assert.equal(entry.distance, null);
+    } else {
+      assert.equal(entry.distance, child.distance + 1,
+        `Solved distance did not decrease at ${key}`);
+    }
   }
+  assert.equal(draws, 52);
+});
+
+test('the completion strategy is acyclic and reaches a knockout from every live position', () => {
+  const completion = buildCompletionStrategy();
+  const graph = buildReachableGraph();
+  assert(completion instanceof Map);
+  assert.equal(completion.size, graph.size);
+
+  let liveRows = 0;
+  for (const key of graph.keys()) {
+    const position = stateFromPositionKey(key);
+    const entry = completion.get(key);
+    assert(entry, `Missing completion row ${key}`);
+    assert(Number.isSafeInteger(entry.distance) && entry.distance >= 0,
+      `Invalid completion distance for ${key}`);
+
+    if (getResult(position) !== null) {
+      assert.equal(entry.distance, 0);
+      assert.equal(entry.bestState, null);
+      continue;
+    }
+
+    liveRows += 1;
+    assert(entry.bestState, `Live row has no completion move: ${key}`);
+    assert(legalMoves(position).some((move) =>
+      positionKey(move.nextState) === positionKey(entry.bestState)),
+    `Completion strategy selected an illegal move for ${key}`);
+    const child = completion.get(positionKey(entry.bestState));
+    assert(child, `Missing completion child for ${key}`);
+    assert.equal(child.distance, entry.distance - 1,
+      `Completion distance did not decrease for ${key}`);
+  }
+  assert(liveRows > 0);
 });
 
 test('the browser graph and opening decision match the Python reference', () => {
@@ -265,9 +328,78 @@ test('the browser graph and opening decision match the Python reference', () => 
 
   const table = bestMoveDP();
   const choice = bestMove(INITIAL_STATE, table);
-  assert.deepEqual(choice.nextState, [[1, 1], [2, 1], 1]);
-  assert.equal(choice.score, 0);
-  assert.equal(bestMove([[1, 1], [1, 1], 20], table), null);
+  assert(choice);
+  assert(legalMoves(INITIAL_STATE).some((move) =>
+    stateKey(move.nextState) === stateKey(choice.nextState)));
+
+  const afterTwenty = [[1, 1], [1, 1], 20];
+  const laterChoice = bestMove(afterTwenty, table);
+  assert(laterChoice, 'The AI must keep playing a live position after turn 20');
+  assert(legalMoves(afterTwenty).some((move) =>
+    stateKey(move.nextState) === stateKey(laterChoice.nextState)));
+});
+
+test('a repeated minimax child activates the cycle-free completion policy', () => {
+  const solver = buildGameSolver();
+  const completion = buildCompletionStrategy();
+  let cycleState = null;
+  let decision = null;
+
+  for (let al = 0; al < 5 && !decision; al += 1) {
+    for (let ar = 0; ar < 5 && !decision; ar += 1) {
+      for (let bl = 0; bl < 5 && !decision; bl += 1) {
+        for (let br = 0; br < 5 && !decision; br += 1) {
+          for (const level of [0, 1]) {
+            const candidate = [[al, ar], [bl, br], level];
+            if (getResult(candidate) !== null ||
+                solver.get(positionKey(candidate))?.score !== 0) continue;
+            const primary = chooseMove(candidate, {
+              solver,
+              completion,
+              visited: new Set(),
+              completionMode: false,
+            });
+            if (!primary) continue;
+            const repeated = chooseMove(candidate, {
+              solver,
+              completion,
+              visited: new Set([positionKey(primary.nextState)]),
+              completionMode: false,
+            });
+            if (repeated?.completionMode) {
+              cycleState = candidate;
+              decision = repeated;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  assert(cycleState, 'Expected at least one true draw state with a repeated solver child');
+  assert(decision);
+  assert.equal(decision.completionMode, true);
+  assert.equal(decision.policy, 'completion');
+
+  const before = completion.get(positionKey(cycleState));
+  const after = completion.get(positionKey(decision.nextState));
+  assert.equal(after.distance, before.distance - 1,
+    'Once a cycle is detected, the selected move must make terminal progress');
+
+  const following = chooseMove(decision.nextState, {
+    solver,
+    completion,
+    visited: new Set([positionKey(cycleState), positionKey(decision.nextState)]),
+    completionMode: decision.completionMode,
+  });
+  if (getResult(decision.nextState) === null) {
+    assert(following);
+    assert.equal(following.completionMode, true);
+    assert.equal(following.policy, 'completion');
+    const followingEntry = completion.get(positionKey(following.nextState));
+    assert.equal(followingEntry.distance, after.distance - 1);
+  }
 });
 
 test('the page contains every controller target exactly once', () => {
@@ -358,14 +490,38 @@ test('the controller builds dynamic interface text without executable HTML sinks
     'The page must not contain javascript: URLs');
 });
 
-test('two optimal autonomous players finish within the fixed horizon', () => {
-  const table = bestMoveDP();
+test('the interface does not present turn 20 as a game-ending horizon', () => {
+  const status = functionSource('renderStatus');
+  assert.doesNotMatch(status, /Turn\s*\$\{[^}]+\}\s*of\s*\$\{/,
+    'Turn status must not display a fixed final turn');
+  assert.doesNotMatch(status, /survived the 20-turn horizon/i);
+  assert.doesNotMatch(WEB_HTML, /20-turn (?:limit|horizon)/i);
+});
+
+test('autonomous play survives cycles and stops only after a knockout', () => {
+  const run = playAutonomousGame();
+  assert(run && typeof run === 'object');
+  assert(['A', 'B'].includes(run.result), 'Autonomous play must produce a winner');
+  assert.equal(getResult(run.state), run.result);
+  assert(Array.isArray(run.moves) && run.moves.length > 0);
+  assert.equal(run.result, 'B');
+  assert.equal(run.moves.length, 26);
+  assert.equal(run.completionMode, false,
+    'The solved opening line should finish without needing cycle fallback');
+
   let position = structuredClone(INITIAL_STATE);
-  while (getResult(position) === null) {
-    const move = bestMove(position, table);
-    assert(move, 'A live position must have a selected move');
+  for (const [index, move] of run.moves.entries()) {
+    assert.equal(getResult(position), null,
+      `Autonomous play continued after move ${index} had already ended the game`);
+    assert(legalMoves(position).some((candidate) =>
+      stateKey(candidate.nextState) === stateKey(move.nextState)),
+    `Autonomous move ${index + 1} was illegal`);
     position = move.nextState;
   }
-  assert.equal(position[2], 20);
-  assert.equal(getResult(position), 'tie');
+  assert.deepEqual(position, run.state);
+  assert.equal(position[2], run.moves.length);
+  assert.equal(getResult(position), run.result);
+  assert(position[0].every((value) => value === 0) ||
+    position[1].every((value) => value === 0),
+  'Autonomous play must stop because both hands of one player were knocked out');
 });

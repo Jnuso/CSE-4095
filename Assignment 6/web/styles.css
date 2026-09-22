@@ -129,11 +129,8 @@ h1 em { font-style: normal; background: linear-gradient(110deg, #4c65d4 10%, #69
 .status-kicker { color: var(--soft); font-size: 9px; }
 .status-copy h3 { margin: 5px 0 3px; font-size: 18px; font-weight: 760; letter-spacing: -.04em; }
 .status-copy p:last-child { max-width: 440px; margin: 0 auto; color: var(--muted); font-size: 13px; line-height: 1.5; }
-.progress-block { margin: 18px 0 0; }
-.progress-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; font-weight: 670; }
-.progress-meta span:last-child { color: var(--text); }
-.progress-track { overflow: hidden; height: 5px; margin-top: 9px; border-radius: 99px; background: #edf0f6; }
-.progress-track > span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--teal)); transition: width .35s ease; }
+.turn-summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(245, 247, 251, .72); color: var(--muted); font-size: 12px; }
+.turn-summary strong { flex: none; color: var(--text); font-size: 12px; }
 .action-panel { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
 .action-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .action-heading h3 { margin: 5px 0 0; font-size: 16px; letter-spacing: -.035em; }
@@ -370,7 +367,7 @@ h1 em { font-style: normal; background: linear-gradient(110deg, #4c65d4 10%, #69
   .hand-count { background: #35406c; color: #d6dcff; }
   .hand-b .hand-count { background: #22504c; color: #a9ede3; }
   .turn-orb { border-color: #3d4d66; background: #263248; }
-  .progress-track { background: #344257; }
+  .turn-summary { background: #1b2940; }
   .auto-controls { background: #1b2940; }
   .score-card { border-color: #424a76; background: radial-gradient(circle at 95% 0%, rgba(41,190,171,.09), transparent 45%), linear-gradient(135deg, #2b3458, #212e45); }
   .graph-current { border-color: #4d5c9c; }

@@ -123,9 +123,9 @@
                 </div>
               </div>
 
-              <div class="progress-block" aria-label="Game progress">
-                <div class="progress-meta"><span>Game progress</span><span id="turn-count">Turn 1 of 20</span></div>
-                <div class="progress-track" role="progressbar" aria-label="Turns completed" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0"><span id="progress-fill"></span></div>
+              <div class="turn-summary" aria-label="Game progress">
+                <span>Play continues until one player loses both hands.</span>
+                <strong id="turn-count">0 moves played</strong>
               </div>
 
               <div class="action-panel">
@@ -150,8 +150,8 @@
           <aside class="insight-column" aria-label="AI and move analysis">
             <section class="panel insight-panel" aria-labelledby="insight-title">
               <div class="panel-heading"><div><p class="section-kicker">Inside the algorithm</p><h2 id="insight-title">AI thinking</h2></div><span class="insight-icon" aria-hidden="true">✳</span></div>
-              <div class="score-card"><span class="score-label">Position value for A</span><strong id="ai-score">Even</strong><span class="score-footnote">+1 A wins <span aria-hidden="true">·</span> 0 tie <span aria-hidden="true">·</span> −1 B wins</span></div>
-              <p id="ai-reason" class="ai-reason">The AI compares legal moves by looking ahead to wins, losses, or a tie at the 20-turn horizon.</p>
+              <div class="score-card"><span class="score-label">Position value for A</span><strong id="ai-score">Calculating…</strong><span class="score-footnote">+1 A can force a win <span aria-hidden="true">·</span> 0 cycle possible <span aria-hidden="true">·</span> −1 B can force a win</span></div>
+              <p id="ai-reason" class="ai-reason">The AI solves the complete cyclic graph and follows forced wins until a player is knocked out.</p>
               <div class="algorithm-legend"><span><i class="legend-dot dot-a" aria-hidden="true"></i> A maximizes</span><span><i class="legend-dot dot-b" aria-hidden="true"></i> B minimizes</span></div>
             </section>
 

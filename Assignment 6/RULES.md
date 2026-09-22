@@ -112,20 +112,28 @@ These are not legal redistributions:
 - Because no fingers remain at `0 | 0`, there is nothing left to redistribute
   and the player cannot revive either hand.
 - The other player wins immediately.
-- If both players still have at least one live hand, play continues until
-  the fixed turn horizon is reached.
+- In the browser, if both players still have a live hand, play continues;
+  there is no turn-number cutoff.
 
-## Fixed-Horizon Tie Rule
+## Ending Policies
 
-The starter game uses a fixed horizon of **20 individual turns** (10 turns
+The browser game ends only with a real knockout. It can continue past move
+20, and its cyclic-graph AI predicts forced wins without using a turn limit.
+When autonomous play encounters one of the graph's genuine repeating states,
+it takes a finish-seeking route so the demonstration still reaches a winner.
+
+The starter Python program separately retains its supplied fixed horizon of
+**20 individual turns** (10 turns
 for A and 10 for B) by default. A win ends the game immediately. If both
 players still have a live hand after turn 20, the result is a tie. A
 position returning to an earlier configuration does **not** end the game;
 there is no threefold-repetition rule. The horizon ensures that even a
 cycle ends after a finite number of turns.
 
-For AI scoring, an A win has value `+1`, a B win has value `-1`, and a tie
-at the horizon has value `0`. This scoring does not change the legal moves.
+In both implementations, an A win has value `+1` and a B win has value
+`-1`. Python uses `0` for its horizon tie; the browser uses `0` for a graph
+position where neither player can force a knockout under perfect defense.
+This scoring does not change the legal moves.
 
 ## Display Convention
 

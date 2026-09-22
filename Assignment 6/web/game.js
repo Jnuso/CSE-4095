@@ -1,4 +1,4 @@
-// Pure game rules and the finite-horizon minimax table. No DOM access.
+// Pure rules, starter-compatible finite DP, and the browser's cyclic solver.
 export const DEFAULT_DEPTH = 20;
 export const INITIAL_STATE = Object.freeze([[1, 1], [1, 1], 0]);
 
@@ -34,8 +34,13 @@ export function stateKey(state) {
   return `${state[0][0]},${state[0][1]}|${state[1][0]},${state[1][1]}|${state[2]}`;
 }
 
-function positionKey(state) {
+export function positionKey(state) {
+  assertState(state);
   return `${state[0][0]},${state[0][1]}|${state[1][0]},${state[1][1]}|${state[2] % 2}`;
+}
+
+function normalizedPosition(state) {
+  return [[...state[0]], [...state[1]], state[2] % 2];
 }
 
 export function overflowSum(a, b) {
@@ -46,18 +51,14 @@ export function overflowSum(a, b) {
   return a + b >= KNOCKOUT_TOTAL ? 0 : a + b;
 }
 
-export function getResult(state, depth = DEFAULT_DEPTH) {
+export function getResult(state) {
   assertState(state);
-  assertDepth(depth);
-  if (state[2] > depth) {
-    throw new RangeError('The state level exceeds the horizon.');
-  }
   const aDead = state[0][0] === 0 && state[0][1] === 0;
   const bDead = state[1][0] === 0 && state[1][1] === 0;
   if (aDead && bDead) return 'tie'; // Synthetic row in the complete DP table.
   if (aDead) return 'B';
   if (bDead) return 'A';
-  return state[2] === depth ? 'tie' : null;
+  return null;
 }
 
 export function legalMoves(state) {
@@ -136,9 +137,11 @@ export function bestMoveDP(depth = DEFAULT_DEPTH) {
           for (let bRight = 0; bRight <= HAND_LIMIT; bRight += 1) {
             const state = [[aLeft, aRight], [bLeft, bRight], level];
             const key = stateKey(state);
-            const result = getResult(state, depth);
-            if (result !== null) {
-              table.set(key, { score: result === 'A' ? 1 : result === 'B' ? -1 : 0, bestState: null });
+            const aDead = aLeft === 0 && aRight === 0;
+            const bDead = bLeft === 0 && bRight === 0;
+            if (aDead || bDead || level === depth) {
+              const score = aDead && !bDead ? -1 : bDead && !aDead ? 1 : 0;
+              table.set(key, { score, bestState: null });
               continue;
             }
 
@@ -169,10 +172,11 @@ export function bestMoveDP(depth = DEFAULT_DEPTH) {
 export function bestMove(state, table) {
   assertState(state);
   if (!(table instanceof Map)) throw new TypeError('A minimax table is required.');
-  const entry = table.get(stateKey(state));
+  const searchState = normalizedPosition(state);
+  const entry = table.get(stateKey(searchState));
   if (!entry || entry.bestState === null) return null;
-  const target = stateKey(entry.bestState);
-  const move = legalMoves(state).find((candidate) => stateKey(candidate.nextState) === target);
+  const target = positionKey(entry.bestState);
+  const move = legalMoves(state).find((candidate) => positionKey(candidate.nextState) === target);
   if (!move) throw new Error('The minimax table selected an illegal move.');
   return { ...move, score: entry.score };
 }
@@ -194,4 +198,254 @@ export function buildReachableGraph() {
     }
   }
   return graph;
+}
+
+function collectReachablePositions() {
+  const states = new Map();
+  const edges = new Map();
+  const queue = [structuredClone(INITIAL_STATE)];
+  let head = 0;
+  while (head < queue.length) {
+    const state = normalizedPosition(queue[head++]);
+    const key = positionKey(state);
+    if (states.has(key)) continue;
+    states.set(key, state);
+    const children = legalMoves(state).map(({ nextState }) => normalizedPosition(nextState));
+    edges.set(key, children);
+    for (const child of children) {
+      if (!states.has(positionKey(child))) queue.push(child);
+    }
+  }
+  return { states, edges };
+}
+
+export function buildGameSolver() {
+  const { states, edges } = collectReachablePositions();
+  const solver = new Map();
+
+  for (const [key, state] of states) {
+    const result = getResult(state);
+    if (result === 'A' || result === 'B') {
+      solver.set(key, {
+        score: result === 'A' ? 1 : -1,
+        distance: 0,
+        bestState: null,
+      });
+    }
+  }
+
+  // Resolve the cyclic graph in attractor waves. A chooses +1 whenever it
+  // can and B chooses -1 whenever it can. A state is a forced loss only once
+  // every successor is already a forced win for the opponent.
+  while (true) {
+    const additions = [];
+    for (const [key, state] of states) {
+      if (solver.has(key)) continue;
+      const children = edges.get(key) ?? [];
+      const childEntries = children.map((child) => solver.get(positionKey(child)));
+      const aTurn = state[2] % 2 === 0;
+      const winningScore = aTurn ? 1 : -1;
+      const losingScore = -winningScore;
+      const winningChildren = children.filter(
+        (child) => solver.get(positionKey(child))?.score === winningScore,
+      );
+
+      let score = null;
+      let candidates = [];
+      let finishQuickly = false;
+      if (winningChildren.length > 0) {
+        score = winningScore;
+        candidates = winningChildren;
+        finishQuickly = true;
+      } else if (childEntries.length > 0 &&
+                 childEntries.every((entry) => entry?.score === losingScore)) {
+        score = losingScore;
+        candidates = children;
+      }
+      if (score === null) continue;
+
+      let bestState = candidates[0];
+      for (const child of candidates.slice(1)) {
+        const childDistance = solver.get(positionKey(child)).distance;
+        const bestDistance = solver.get(positionKey(bestState)).distance;
+        if ((finishQuickly && childDistance < bestDistance) ||
+            (!finishQuickly && childDistance > bestDistance)) {
+          bestState = child;
+        }
+      }
+      additions.push([key, {
+        score,
+        distance: solver.get(positionKey(bestState)).distance + 1,
+        bestState,
+      }]);
+    }
+    if (additions.length === 0) break;
+    for (const [key, entry] of additions) solver.set(key, entry);
+  }
+
+  // Unresolved states are genuine minimax draws caused by cycles. Preserve a
+  // draw when possible; chooseMove can later switch to the completion policy
+  // if that choice begins repeating during a demonstration.
+  for (const [key] of states) {
+    if (!solver.has(key)) solver.set(key, { score: 0, distance: null, bestState: null });
+  }
+  for (const [key, state] of states) {
+    const entry = solver.get(key);
+    if (entry.score !== 0) continue;
+    const drawChild = (edges.get(key) ?? []).find(
+      (child) => solver.get(positionKey(child)).score === 0,
+    );
+    if (!drawChild) throw new Error('A drawn state has no draw-preserving move.');
+    solver.set(key, { ...entry, bestState: drawChild });
+  }
+  return solver;
+}
+
+function solvedMove(state, solver) {
+  if (!(solver instanceof Map)) throw new TypeError('A cyclic game solver is required.');
+  const entry = solver.get(positionKey(state));
+  if (!entry || entry.bestState === null) return null;
+  const target = positionKey(entry.bestState);
+  const move = legalMoves(state).find((candidate) => positionKey(candidate.nextState) === target);
+  if (!move) throw new Error('The cyclic game solver selected an illegal move.');
+  return { ...move, score: entry.score, distance: entry.distance, policy: 'minimax' };
+}
+
+export function buildCompletionStrategy() {
+  const states = new Map();
+  const edges = new Map();
+  const reverse = new Map();
+  const queue = [structuredClone(INITIAL_STATE)];
+  let head = 0;
+
+  while (head < queue.length) {
+    const state = normalizedPosition(queue[head++]);
+    const key = positionKey(state);
+    if (states.has(key)) continue;
+    states.set(key, state);
+    const children = legalMoves(state).map(({ nextState }) => normalizedPosition(nextState));
+    edges.set(key, children);
+    if (!reverse.has(key)) reverse.set(key, []);
+    for (const child of children) {
+      const childKey = positionKey(child);
+      if (!reverse.has(childKey)) reverse.set(childKey, []);
+      reverse.get(childKey).push(key);
+      if (!states.has(childKey)) queue.push(child);
+    }
+  }
+
+  // Distance is the fewest progress-making moves to any real knockout.
+  const distance = new Map();
+  const distanceQueue = [];
+  for (const [key, state] of states) {
+    const result = getResult(state);
+    if (result === 'A' || result === 'B') {
+      distance.set(key, 0);
+      distanceQueue.push(key);
+    }
+  }
+  for (let index = 0; index < distanceQueue.length; index += 1) {
+    const childKey = distanceQueue[index];
+    for (const parentKey of reverse.get(childKey) ?? []) {
+      if (!distance.has(parentKey)) {
+        distance.set(parentKey, distance.get(childKey) + 1);
+        distanceQueue.push(parentKey);
+      }
+    }
+  }
+  if (distance.size !== states.size) {
+    throw new Error('Some reachable game positions cannot progress to a knockout.');
+  }
+
+  const strategy = new Map();
+  const greatestDistance = Math.max(...distance.values());
+  for (let step = 0; step <= greatestDistance; step += 1) {
+    for (const [key, state] of states) {
+      if (distance.get(key) !== step) continue;
+      const result = getResult(state);
+      if (step === 0) {
+        strategy.set(key, {
+          distance: 0,
+          score: result === 'A' ? 1 : -1,
+          bestState: null,
+        });
+        continue;
+      }
+
+      const candidates = (edges.get(key) ?? []).filter(
+        (child) => distance.get(positionKey(child)) === step - 1,
+      );
+      const maximizing = state[2] % 2 === 0;
+      let bestState = null;
+      let bestScore = maximizing ? -Infinity : Infinity;
+      for (const child of candidates) {
+        const childEntry = strategy.get(positionKey(child));
+        if (!childEntry) throw new Error('The completion strategy is missing a child.');
+        if (bestState === null ||
+            (maximizing && childEntry.score > bestScore) ||
+            (!maximizing && childEntry.score < bestScore)) {
+          bestState = child;
+          bestScore = childEntry.score;
+        }
+      }
+      if (bestState === null) throw new Error('A live position has no progress-making move.');
+      strategy.set(key, { distance: step, score: bestScore, bestState });
+    }
+  }
+  return strategy;
+}
+
+function completionMove(state, strategy) {
+  if (!(strategy instanceof Map)) throw new TypeError('A completion strategy is required.');
+  const entry = strategy.get(positionKey(state));
+  if (!entry || entry.bestState === null) return null;
+  const target = positionKey(entry.bestState);
+  const move = legalMoves(state).find((candidate) => positionKey(candidate.nextState) === target);
+  if (!move) throw new Error('The completion strategy selected an illegal move.');
+  return { ...move, score: entry.score, distance: entry.distance, policy: 'completion' };
+}
+
+export function chooseMove(state, {
+  solver = null,
+  table,
+  completion,
+  visited = new Set(),
+  completionMode = false,
+} = {}) {
+  assertState(state);
+  if (!(visited instanceof Set)) throw new TypeError('Visited positions must be a Set.');
+  const minimaxMove = solver === null ? bestMove(state, table) : solvedMove(state, solver);
+  if (minimaxMove === null) return null;
+  const repeatsPosition = visited.has(positionKey(minimaxMove.nextState));
+  if (completionMode || repeatsPosition) {
+    const progressMove = completionMove(state, completion);
+    if (!progressMove) return null;
+    return { ...progressMove, completionMode: true };
+  }
+  return { ...minimaxMove, policy: 'minimax', completionMode: false };
+}
+
+export function playAutonomousGame() {
+  const solver = buildGameSolver();
+  const completion = buildCompletionStrategy();
+  const visited = new Set([positionKey(INITIAL_STATE)]);
+  const moves = [];
+  let state = structuredClone(INITIAL_STATE);
+  let completionMode = false;
+
+  // The graph contains 1,116 reachable positions. Once a cycle is detected,
+  // completion distance falls every turn, so this guard should never be hit.
+  while (getResult(state) === null && moves.length <= 2_500) {
+    const move = chooseMove(state, { solver, completion, visited, completionMode });
+    if (!move) throw new Error('A live autonomous position has no move.');
+    completionMode = move.completionMode;
+    moves.push(move);
+    state = structuredClone(move.nextState);
+    visited.add(positionKey(state));
+  }
+  const result = getResult(state);
+  if (result !== 'A' && result !== 'B') {
+    throw new Error('Autonomous play did not reach a knockout.');
+  }
+  return { state, result, moves, completionMode };
 }

@@ -5,8 +5,9 @@
 This project implements the two-player Chopsticks hand game in both a Python
 command-line program and a browser interface built with HTML, CSS, and
 JavaScript. Both offer human-versus-computer play and an autonomous
-computer-versus-computer demonstration. The computer strategy uses a graph
-of legal game states and a bottom-up dynamic-programming (DP) minimax table:
+computer-versus-computer demonstration. The Python reference uses the
+starter's bottom-up finite-horizon minimax table. The browser solves the
+cyclic state graph directly so play can continue until a real knockout.
 Player A maximizes the result, while Player B minimizes it.
 
 This README is the living overview of the project. Detailed game rules are in
@@ -30,8 +31,9 @@ the AI is in [AI_LOGIC_GRAPH.md](AI_LOGIC_GRAPH.md).
   positions. A redistribution must preserve the total, remain within `0` to
   `4` per hand, and genuinely change more than just swapping the hands.
 - A player loses when both of their hands are `0`.
-- A win ends play immediately. Otherwise the game is a tie after **20 total
-  turns** by default. Repeating a position does not itself end play.
+- A win ends play immediately. Browser games have no turn cutoff and continue
+  until one player loses both hands. The Python reference retains the
+  starter's separate 20-ply teaching horizon.
 
 ## Features
 
@@ -45,7 +47,7 @@ the AI is in [AI_LOGIC_GRAPH.md](AI_LOGIC_GRAPH.md).
   entry stores a `-1`, `0`, or `+1` result and a selected next position.
 - Player A chooses the largest child value; Player B chooses the smallest.
   Equal-valued choices are broken deterministically.
-- A default 20-ply whole-game horizon, corresponding to the starter's
+- The Python CLI has a default 20-ply whole-game horizon, corresponding to the starter's
   `moves=10`. The game and AI use the same horizon, rather than starting a
   fresh 20-ply search after every turn.
 - Starter-compatible `overflow_sum`, `next_moves`, `best_move_dp`, `display`,
@@ -80,11 +82,11 @@ level.
 - [x] Review the first-iteration command-line experience and documentation.
 - [x] Add a browser interface with visible hands and move analysis.
 - [x] Add JavaScript rule and minimax regression tests.
+- [x] Replace the browser cutoff with an infinite-horizon cyclic-graph solver.
 
-The Python program remains the reference implementation. The browser version
-has its own JavaScript rules and DP engine, while presenting both players'
-hands, legal choices, and AI decisions visually. Tests and later refinements
-will continue to be tracked here.
+The Python program remains the starter-compatible reference implementation.
+The browser shares its legal moves but uses an infinite-horizon graph solver,
+while presenting both players' hands, choices, and AI decisions visually.
 
 ## Verified Baseline
 
@@ -100,6 +102,9 @@ will continue to be tracked here.
   subtests passed**; the dependency-free unittest suite has **18 tests**.
 - Both command-line modes are covered by regression tests, and autonomous
   play terminates at a win or the fixed horizon.
+- The browser solver classifies 532 A-win states, 532 B-win states, and 52
+  genuine cycle states. From the opening, optimal autonomous play reaches a
+  Player B knockout on move 26 rather than stopping on move 20.
 
 ## File Map
 
@@ -117,7 +122,7 @@ Assignment 6/
 `-- web/
     |-- index.html            # Browser interface
     |-- styles.css            # Responsive visual design
-    |-- game.js               # Pure rules, graph, and bottom-up minimax
+    |-- game.js               # Pure rules, finite DP, and cyclic graph solver
     `-- app.js                # UI rendering and interaction
 ```
 
@@ -127,13 +132,13 @@ Assignment 6/
 - **State:** Both players' hand values plus whose turn it is; a DP table key
   also records the turn level.
 - **Move:** One attack or redistribution performed during a turn.
-- **Ply:** One player's move; the default game horizon is 20 plies.
+- **Ply:** One player's move. Browser play has no fixed number of plies.
 - **Move graph:** Unique game states connected by legal moves.
 - **Minimax:** Search in which Player A chooses the highest-valued continuation
   and Player B chooses the lowest-valued continuation.
 - **Terminal state:** A state in which one player has `0 | 0` and has lost.
-- **Horizon tie:** A `0` result when both players are alive at the fixed
-  final turn.
+- **Cycle state:** A browser position where perfect defense could repeat
+  indefinitely. Autonomous mode uses a finish-seeking route if one repeats.
 
 ## Running and Testing
 
@@ -171,11 +176,11 @@ server with `Ctrl+C` when finished.
   new finger count appears. Redistribute with the split control.
 - Play as A or B, restart, or watch autonomous A-versus-B play with play/pause,
   single-step, and speed controls.
-- Turn progress, outcome, and move history, including a brief explanation of
+- Moves played, outcome, and move history, including a brief explanation of
   the AI's choice.
 - A focused move-graph view showing the current position and its legal next
-  positions with minimax values. The browser computes the same 20-ply
-  outcome model as the Python reference.
+  positions with minimax values. The browser solves all 1,116 reachable
+  positions and plays until a player is actually knocked out.
 - A simplified game-first responsive layout with keyboard-operable controls.
   Reduced-motion preferences skip the hand-travel animation.
 
@@ -213,6 +218,7 @@ departure from the current legal rules before changing the implementation.
 
 ## Next Steps
 
-1. Keep the Python and JavaScript rules in sync as future features are added.
+1. Keep the Python and JavaScript legal moves in sync while documenting their
+   intentionally different ending policies.
 2. Consider replay, undo, or deeper graph exploration after reviewing the
    first browser-play experience.

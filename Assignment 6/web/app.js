@@ -1,11 +1,12 @@
 import {
-  DEFAULT_DEPTH,
   INITIAL_STATE,
-  bestMove,
-  bestMoveDP,
+  buildCompletionStrategy,
+  buildGameSolver,
   buildReachableGraph,
+  chooseMove,
   getResult,
   legalMoves,
+  positionKey,
   stateKey,
 } from './game.js';
 
@@ -26,7 +27,6 @@ const ui = {
   title: byId('status-title'),
   detail: byId('status-detail'),
   turn: byId('turn-count'),
-  progress: byId('progress-fill'),
   moveOptions: byId('move-options'),
   autoControls: byId('auto-controls'),
   autoPlay: byId('auto-play'),
@@ -41,7 +41,8 @@ const ui = {
 };
 
 const HAND_NAMES = ['left', 'right'];
-const table = bestMoveDP(DEFAULT_DEPTH);
+const solver = buildGameSolver();
+const completionStrategy = buildCompletionStrategy();
 const graph = buildReachableGraph();
 const graphEdges = [...graph.values()].reduce((total, children) => total + children.length, 0);
 let state = structuredClone(INITIAL_STATE);
@@ -56,6 +57,8 @@ let pendingTimer = null;
 let generation = 0;
 let gameRevision = 0;
 let isAnimating = false;
+let visitedPositions = new Set([positionKey(INITIAL_STATE)]);
+let completionMode = false;
 
 function currentPlayer(position = state) {
   return position[2] % 2 === 0 ? 'A' : 'B';
@@ -72,13 +75,13 @@ function handsFor(position, player) {
 function scoreShort(score) {
   if (score === 1) return '+1 · A can force a win';
   if (score === -1) return '−1 · B can force a win';
-  return '0 · optimal play ties';
+  return '0 · a cycle is possible';
 }
 
 function scoreDetail(score) {
-  if (score === 1) return 'Player A can force a win before the 20-turn limit.';
-  if (score === -1) return 'Player B can force a win before the 20-turn limit.';
-  return 'Neither player can force a win before the 20-turn limit.';
+  if (score === 1) return 'Player A can force a knockout from this position.';
+  if (score === -1) return 'Player B can force a knockout from this position.';
+  return 'Perfect defense can repeat here, so the demonstration will take a finish-seeking route if needed.';
 }
 
 function compactState(position) {
@@ -172,15 +175,9 @@ function renderHands() {
 
 function renderStatus() {
   const result = getResult(state);
-  ui.turn.textContent = result ? `${state[2]} / ${DEFAULT_DEPTH} turns` :
-    `Turn ${state[2] + 1} of ${DEFAULT_DEPTH}`;
-  ui.progress.style.width = `${Math.min(100, (state[2] / DEFAULT_DEPTH) * 100)}%`;
-  ui.progress.parentElement?.setAttribute('aria-valuenow', String(state[2]));
+  ui.turn.textContent = `${state[2]} ${state[2] === 1 ? 'move' : 'moves'} played`;
 
-  if (result === 'tie') {
-    ui.title.textContent = "It's a tie";
-    ui.detail.textContent = 'Both players survived the 20-turn horizon. The game is a tie.';
-  } else if (result === 'A' || result === 'B') {
+  if (result === 'A' || result === 'B') {
     ui.title.textContent = `Player ${result} wins`;
     ui.detail.textContent = `Player ${opposite(result)} has no active hands remaining.`;
   } else if (mode === 'auto') {
@@ -193,7 +190,7 @@ function renderStatus() {
         `Your ${HAND_NAMES[selectedSource]} hand is selected. Now choose an active opponent hand.`;
   } else {
     ui.title.textContent = `Computer's move · Player ${currentPlayer()}`;
-    ui.detail.textContent = 'The computer is consulting the bottom-up minimax table.';
+    ui.detail.textContent = 'The computer is evaluating the complete cyclic game graph.';
   }
 }
 
@@ -254,7 +251,7 @@ function renderMoveOptions() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'move-option';
-    const score = table.get(stateKey(move.nextState)).score;
+    const score = solver.get(positionKey(move.nextState)).score;
     button.textContent = `${moveLabel(state, move)}  ·  ${scoreShort(score)}`;
     button.addEventListener('click', () => {
       if (humanMayMove()) commitMove(move);
@@ -264,11 +261,13 @@ function renderMoveOptions() {
 }
 
 function renderAI() {
-  const entry = table.get(stateKey(state));
+  const entry = solver.get(positionKey(state));
   const result = getResult(state);
-  ui.aiScore.textContent = result === 'tie' ? '0 · tie' :
-    result ? `${result === 'A' ? '+1' : '−1'} · Player ${result} wins` : scoreShort(entry.score);
-  ui.aiReason.textContent = lastExplanation || scoreDetail(entry.score);
+  ui.aiScore.textContent = result ? `${result === 'A' ? '+1' : '−1'} · Player ${result} wins` :
+    scoreShort(entry.score);
+  ui.aiReason.textContent = completionMode ?
+    'A cycle was detected, so the demonstration is taking a shortest route to a knockout.' :
+    lastExplanation || scoreDetail(entry.score);
 }
 
 function renderHistory() {
@@ -294,10 +293,10 @@ function renderHistory() {
 
 function addGraphBranch(parent, position, move) {
   const child = move.nextState;
-  const childEntry = table.get(stateKey(child));
-  const parentEntry = table.get(stateKey(position));
+  const childEntry = solver.get(positionKey(child));
+  const parentEntry = solver.get(positionKey(position));
   const isBest = parentEntry.bestState !== null &&
-    stateKey(parentEntry.bestState) === stateKey(child);
+    positionKey(parentEntry.bestState) === positionKey(child);
   const details = document.createElement('details');
   details.className = `graph-branch${isBest ? ' is-best' : ''}`;
   const summary = document.createElement('summary');
@@ -317,7 +316,7 @@ function addGraphBranch(parent, position, move) {
     children.className = 'graph-children';
     if (childResult) {
       const text = document.createElement('p');
-      text.textContent = childResult === 'tie' ? 'Horizon reached: tie.' : `Player ${childResult} wins here.`;
+      text.textContent = `Player ${childResult} wins here.`;
       children.append(text);
     } else {
       for (const next of legalMoves(child)) addGraphBranch(children, child, next);
@@ -430,6 +429,8 @@ function resetGame() {
   history = [];
   lastExplanation = '';
   autoRunning = false;
+  visitedPositions = new Set([positionKey(INITIAL_STATE)]);
+  completionMode = false;
   render();
   scheduleComputerIfNeeded();
 }
@@ -443,7 +444,7 @@ async function commitMove(move, sourceOverride = null, computer = false) {
   const revisionBeforeMove = gameRevision;
   const actor = currentPlayer();
   const label = moveLabel(state, chosen, sourceOverride);
-  const score = table.get(stateKey(chosen.nextState)).score;
+  const score = solver.get(positionKey(chosen.nextState)).score;
   isAnimating = true;
   ui.title.textContent = `${actor} is tapping…`;
   ui.detail.textContent = label;
@@ -454,13 +455,26 @@ async function commitMove(move, sourceOverride = null, computer = false) {
   isAnimating = false;
   history.push({ turn: state[2] + 1, label });
   state = structuredClone(chosen.nextState);
+  visitedPositions.add(positionKey(state));
+  completionMode = completionMode || move.completionMode === true;
   selectedSource = null;
   showingSplits = false;
-  lastExplanation = `${computer ? 'The computer chose' : 'You chose'}: ${label}. ${scoreDetail(score)}`;
+  const policyNote = move.policy === 'completion' ?
+    ' This move leaves a repeated cycle and advances toward a knockout.' : '';
+  lastExplanation = `${computer ? 'The computer chose' : 'You chose'}: ${label}. ${scoreDetail(score)}${policyNote}`;
   if (getResult(state) !== null) autoRunning = false;
   render();
   if (mode === 'auto' && autoRunning) scheduleAutoTick();
   if (mode === 'human') scheduleComputerIfNeeded();
+}
+
+function selectComputerMove() {
+  return chooseMove(state, {
+    solver,
+    completion: completionStrategy,
+    visited: visitedPositions,
+    completionMode,
+  });
 }
 
 function scheduleComputerIfNeeded() {
@@ -470,7 +484,7 @@ function scheduleComputerIfNeeded() {
   pendingTimer = setTimeout(() => {
     pendingTimer = null;
     if (ticket !== generation || mode !== 'human' || currentPlayer() === humanPlayer) return;
-    const move = bestMove(state, table);
+    const move = selectComputerMove();
     if (!move) throw new Error('The computer has no legal move.');
     commitMove(move, null, true);
   }, 420);
@@ -484,7 +498,7 @@ function scheduleAutoTick() {
   pendingTimer = setTimeout(() => {
     pendingTimer = null;
     if (ticket !== generation || mode !== 'auto' || !autoRunning) return;
-    const move = bestMove(state, table);
+    const move = selectComputerMove();
     if (!move) throw new Error('The autonomous player has no legal move.');
     commitMove(move, null, true);
   }, delay);
@@ -538,7 +552,7 @@ ui.autoStep.addEventListener('click', () => {
   if (mode !== 'auto' || getResult(state) !== null) return;
   clearPending();
   autoRunning = false;
-  const move = bestMove(state, table);
+  const move = selectComputerMove();
   if (!move) throw new Error('The autonomous player has no legal move.');
   commitMove(move, null, true);
 });
