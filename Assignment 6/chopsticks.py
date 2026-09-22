@@ -1,4 +1,4 @@
-"""Command-line Chopsticks game with a graph-based minimax opponent.
+"""Command-line Chopsticks game with starter-compatible bottom-up minimax.
 
 Player A (Player 1) is the maximizing player. Player B (Player 2) is
 the minimizing player. Every score is measured from Player A's perspective.
@@ -9,10 +9,10 @@ The rules implemented here use the common cutoff variation:
 * An attack adds the attacking live hand to an opponent's live hand.
 * A target that reaches 5 or more becomes 0; values do not wrap around.
 * A 0 hand is inactive for attacks, but it may be revived by a split.
-* A split preserves the player's total, changes the unordered hand pair, and
-  leaves both resulting hands live (values 1 through 4).
+* A split transfers fingers between labeled left/right hands, preserves the
+  total, and may leave one hand at 0; a pure left/right swap is not a move.
 * A player loses when both hands are 0.
-* The same complete state occurring three times is a draw.
+* An unfinished game is a tie after the fixed 20-ply default horizon.
 
 The game logic is intentionally independent from terminal input/output so it
 can be imported and tested without starting an interactive game.
@@ -20,9 +20,9 @@ can be imported and tested without starting an interactive game.
 
 from __future__ import annotations
 
-from collections import Counter, deque
+from collections import deque
 from dataclasses import dataclass
-from functools import lru_cache
+from itertools import islice
 from typing import Callable, Iterable, Mapping
 
 
@@ -32,26 +32,32 @@ PLAYERS = (PLAYER_A, PLAYER_B)
 
 KNOCKOUT_TOTAL = 5
 MAX_LIVE_VALUE = KNOCKOUT_TOTAL - 1
-DEFAULT_SEARCH_DEPTH = 50
-DEFAULT_MAX_TURNS = 1_000
-REPETITIONS_FOR_DRAW = 3
-WIN_SCORE = 10_000
-FORCED_RESULT_THRESHOLD = WIN_SCORE // 2
-SEARCH_INFINITY = WIN_SCORE + DEFAULT_SEARCH_DEPTH + 1
+MAX_SUCCESSORS_PER_STATE = 7
+DEFAULT_MOVES = 10
+DEFAULT_GAME_PLIES = 2 * DEFAULT_MOVES
+MAX_GAME_PLIES = 50
+MAX_INPUT_LENGTH = 100
 
 DRAW = "draw"
-TURN_LIMIT = "turn_limit"
 QUIT = "quit"
 
 Hands = tuple[int, int]
+TupleState = tuple[Hands, Hands, int]
+DPEntry = tuple[int, TupleState | list[object]]
 InputFunction = Callable[[str], str]
 OutputFunction = Callable[[str], None]
 
 
-def canonical_hands(values: Iterable[int]) -> Hands:
-    """Validate two hand values and return them in ascending order."""
+def validate_hands(values: Iterable[int]) -> Hands:
+    """Validate and preserve a player's left and right hand values."""
 
-    hands = tuple(values)
+    try:
+        # Read one item beyond the required pair so an accidental infinite
+        # iterable cannot make validation run forever.
+        hands = tuple(islice(iter(values), 3))
+    except TypeError as error:
+        raise ValueError("Hand values must be an iterable with exactly two values.") from error
+
     if len(hands) != 2:
         raise ValueError("A player must have exactly two hand values.")
 
@@ -61,7 +67,11 @@ def canonical_hands(values: Iterable[int]) -> Hands:
                 f"Hand values must be whole numbers from 0 through {MAX_LIVE_VALUE}."
             )
 
-    return tuple(sorted(hands))  # type: ignore[return-value]
+    return hands  # type: ignore[return-value]
+
+
+# Keep the earlier public name as an alias for callers of the first version.
+canonical_hands = validate_hands
 
 
 def other_player(player: str) -> str:
@@ -76,15 +86,15 @@ def other_player(player: str) -> str:
 
 @dataclass(frozen=True, slots=True)
 class GameState:
-    """An immutable, canonical Chopsticks position."""
+    """An immutable Chopsticks position with distinct left and right hands."""
 
     a_hands: Hands
     b_hands: Hands
     turn: str = PLAYER_A
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "a_hands", canonical_hands(self.a_hands))
-        object.__setattr__(self, "b_hands", canonical_hands(self.b_hands))
+        object.__setattr__(self, "a_hands", validate_hands(self.a_hands))
+        object.__setattr__(self, "b_hands", validate_hands(self.b_hands))
 
         if self.turn not in PLAYERS:
             raise ValueError("The turn must belong to Player A or Player B.")
@@ -109,7 +119,7 @@ INITIAL_STATE = GameState((1, 1), (1, 1), PLAYER_A)
 
 @dataclass(frozen=True, slots=True)
 class Move:
-    """One attack or split; the acting player is implied by the state."""
+    """One attack or split; attack indices are 0=left and 1=right."""
 
     kind: str
     source: int | None = None
@@ -121,11 +131,11 @@ class Move:
             if (
                 type(self.source) is not int
                 or type(self.target) is not int
-                or not 1 <= self.source <= MAX_LIVE_VALUE
-                or not 1 <= self.target <= MAX_LIVE_VALUE
+                or self.source not in (0, 1)
+                or self.target not in (0, 1)
                 or self.new_hands is not None
             ):
-                raise ValueError("An attack needs live source and target values.")
+                raise ValueError("An attack needs left/right source and target indices.")
             return
 
         if self.kind == "split":
@@ -134,17 +144,17 @@ class Move:
             if self.new_hands is None:
                 raise ValueError("A split needs its resulting hand values.")
 
-            normalized = canonical_hands(self.new_hands)
-            if normalized[0] == 0:
-                raise ValueError("Both hands must be live after a split.")
-            object.__setattr__(self, "new_hands", normalized)
+            validated = validate_hands(self.new_hands)
+            if validated == (0, 0):
+                raise ValueError("A split cannot leave both hands knocked out.")
+            object.__setattr__(self, "new_hands", validated)
             return
 
         raise ValueError("A move kind must be 'attack' or 'split'.")
 
     @classmethod
     def attack(cls, source: int, target: int) -> Move:
-        """Construct an attack move."""
+        """Construct an attack using left/right hand indices 0 or 1."""
 
         return cls("attack", source=source, target=target)
 
@@ -177,43 +187,33 @@ def winner(state: GameState) -> str | None:
     return None
 
 
-def is_threefold_repetition(
-    state: GameState,
-    occurrences: Mapping[GameState, int],
-) -> bool:
-    """Return whether ``state`` has occurred enough times to be a draw."""
-
-    return occurrences.get(state, 0) >= REPETITIONS_FOR_DRAW
-
-
 def game_result(
     state: GameState,
-    occurrences: Mapping[GameState, int] | None = None,
+    level: int,
+    depth: int = DEFAULT_GAME_PLIES,
 ) -> str | None:
-    """Return ``A``, ``B``, ``draw``, or ``None`` for an unfinished game.
+    """Return a winner, a horizon tie, or ``None`` while play continues.
 
-    A win takes precedence over repetition because a terminal attack ends the
-    game immediately.
+    A knockout on the final allowed move takes priority over a horizon tie.
     """
 
+    _validate_level_and_depth(level, depth)
     victor = winner(state)
     if victor is not None:
         return victor
-    if occurrences is not None and is_threefold_repetition(state, occurrences):
+    if level >= depth:
         return DRAW
     return None
 
 
-def _replace_one(hands: Hands, old_value: int, new_value: int) -> Hands:
-    """Replace one occurrence in ``hands`` and return a canonical pair."""
+def _replace_one(hands: Hands, index: int, new_value: int) -> Hands:
+    """Replace the selected left/right hand without changing hand identity."""
 
+    if type(index) is not int or index not in (0, 1):
+        raise ValueError("A hand index must be 0 (left) or 1 (right).")
     updated = list(hands)
-    try:
-        index = updated.index(old_value)
-    except ValueError as error:
-        raise ValueError("The selected hand value is not present.") from error
     updated[index] = new_value
-    return canonical_hands(updated)
+    return validate_hands(updated)
 
 
 def _next_state_after_attack(
@@ -221,8 +221,10 @@ def _next_state_after_attack(
     source: int,
     target: int,
 ) -> GameState:
-    total = source + target
-    new_target = 0 if total >= KNOCKOUT_TOTAL else total
+    new_target = overflow_sum(
+        state.current_hands[source],
+        state.opponent_hands[target],
+    )
     updated_opponent = _replace_one(state.opponent_hands, target, new_target)
 
     if state.turn == PLAYER_A:
@@ -239,8 +241,8 @@ def _next_state_after_split(state: GameState, new_hands: Hands) -> GameState:
 def legal_successors(state: GameState) -> tuple[tuple[Move, GameState], ...]:
     """Return every unique legal ``(move, next_state)`` pair.
 
-    Physical choices that reach the same canonical state are represented by
-    the first deterministic move that reaches that state.
+    Left and right are distinct, as in the supplied starter program. Exact
+    duplicate resulting states are represented by their first move.
     """
 
     if winner(state) is not None:
@@ -249,32 +251,39 @@ def legal_successors(state: GameState) -> tuple[tuple[Move, GameState], ...]:
     successors: list[tuple[Move, GameState]] = []
     seen_states: set[GameState] = set()
 
-    live_sources = sorted({value for value in state.current_hands if value > 0})
-    live_targets = sorted({value for value in state.opponent_hands if value > 0})
-
-    for source in live_sources:
-        for target in live_targets:
+    for source in (0, 1):
+        if state.current_hands[source] == 0:
+            continue
+        for target in (0, 1):
+            if state.opponent_hands[target] == 0:
+                continue
             move = Move.attack(source, target)
             child = _next_state_after_attack(state, source, target)
             if child not in seen_states:
                 successors.append((move, child))
                 seen_states.add(child)
 
-    total = sum(state.current_hands)
-    for low_value in range(1, MAX_LIVE_VALUE + 1):
-        high_value = total - low_value
-        if not low_value <= high_value <= MAX_LIVE_VALUE:
-            continue
+    for donor in (0, 1):
+        receiver = 1 - donor
+        for amount in range(1, state.current_hands[donor] + 1):
+            if state.current_hands[receiver] + amount > MAX_LIVE_VALUE:
+                continue
 
-        new_hands = (low_value, high_value)
-        if new_hands == state.current_hands:
-            continue
+            updated = list(state.current_hands)
+            updated[donor] -= amount
+            updated[receiver] += amount
+            new_hands = validate_hands(updated)
 
-        move = Move.split(new_hands)
-        child = _next_state_after_split(state, new_hands)
-        if child not in seen_states:
-            successors.append((move, child))
-            seen_states.add(child)
+            # The reference excludes a transfer that only exchanges the two
+            # labeled hand values; no fingers actually change strategically.
+            if new_hands == state.current_hands[::-1]:
+                continue
+
+            move = Move.split(new_hands)
+            child = _next_state_after_split(state, new_hands)
+            if child not in seen_states:
+                successors.append((move, child))
+                seen_states.add(child)
 
     return tuple(successors)
 
@@ -322,255 +331,158 @@ def build_game_graph(start: GameState = INITIAL_STATE) -> Graph:
 build_reachable_graph = build_game_graph
 
 
-def heuristic_score(state: GameState) -> int:
-    """Estimate a nonterminal position from Player A's perspective."""
+def _validate_depth(depth: int) -> None:
+    """Keep the complete bottom-up table within a practical fixed horizon."""
 
-    a_live_hands = sum(value > 0 for value in state.a_hands)
-    b_live_hands = sum(value > 0 for value in state.b_hands)
-    return (
-        10 * (a_live_hands - b_live_hands)
-        + sum(state.a_hands)
-        - sum(state.b_hands)
-    )
-
-
-class MinimaxAI:
-    """History-aware alpha-beta minimax over the reachable game graph.
-
-    ``value`` is a fast, history-blind minimax table used only to order moves.
-    The final decision comes from ``_search``, which carries occurrence counts
-    through every simulated move and therefore evaluates threefold repetition
-    correctly. Using the cached table only for ordering is safe: ordering can
-    improve pruning efficiency, but it cannot change alpha-beta's answer.
-    """
-
-    def __init__(
-        self,
-        depth_limit: int = DEFAULT_SEARCH_DEPTH,
-        graph: Graph | None = None,
-    ) -> None:
-        if (
-            type(depth_limit) is not int
-            or not 1 <= depth_limit <= DEFAULT_SEARCH_DEPTH
-        ):
-            raise ValueError(
-                f"The minimax depth must be from 1 through {DEFAULT_SEARCH_DEPTH}."
-            )
-
-        self.depth_limit = depth_limit
-        self.graph = graph if graph is not None else build_game_graph()
-        self.last_search_nodes = 0
-        self._cached_value = lru_cache(maxsize=None)(self._value_uncached)
-
-    def _successors(
-        self,
-        state: GameState,
-    ) -> tuple[tuple[Move, GameState], ...]:
-        if state in self.graph:
-            return self.graph[state]
-        return legal_successors(state)
-
-    @staticmethod
-    def _terminal_score(victor: str, depth: int) -> int:
-        """Score a terminal state while preferring faster forced wins."""
-
-        if victor == PLAYER_A:
-            return WIN_SCORE + depth
-        return -WIN_SCORE - depth
-
-    def value(self, state: GameState, depth: int) -> int:
-        """Return a history-blind score used solely for move ordering."""
-
-        return self._cached_value(state, depth)
-
-    def _value_uncached(self, state: GameState, depth: int) -> int:
-        """Calculate one entry for the per-instance move-ordering cache."""
-
-        victor = winner(state)
-        if victor is not None:
-            return self._terminal_score(victor, depth)
-        if depth <= 0:
-            return heuristic_score(state)
-
-        child_scores = [
-            self.value(child, depth - 1)
-            for _move, child in self._successors(state)
-        ]
-
-        if not child_scores:
-            raise RuntimeError("A nonterminal state unexpectedly has no legal moves.")
-        if state.turn == PLAYER_A:
-            return max(child_scores)
-        return min(child_scores)
-
-    def _ordered_successors(
-        self,
-        state: GameState,
-        child_depth: int,
-    ) -> tuple[tuple[Move, GameState], ...]:
-        """Order moves using the cached table while preserving stable ties."""
-
-        successors = self._successors(state)
-        return tuple(
-            sorted(
-                successors,
-                key=lambda item: self.value(item[1], child_depth),
-                reverse=state.turn == PLAYER_A,
-            )
+    if (
+        type(depth) is not int
+        or depth % 2 != 0
+        or not 2 <= depth <= MAX_GAME_PLIES
+    ):
+        raise ValueError(
+            f"The game depth must be an even number from 2 through {MAX_GAME_PLIES}."
         )
 
-    def _search(
-        self,
-        state: GameState,
-        depth: int,
-        alpha: int,
-        beta: int,
-        occurrences: Counter[GameState],
-    ) -> int:
-        """Return the exact repetition-aware value for this search horizon."""
 
-        self.last_search_nodes += 1
+def _validate_moves(moves: int) -> None:
+    """Validate a count of two-ply A/B rounds."""
 
-        victor = winner(state)
-        if victor is not None:
-            return self._terminal_score(victor, depth)
-        if occurrences[state] >= REPETITIONS_FOR_DRAW:
-            return 0
-        if depth <= 0:
-            return heuristic_score(state)
+    if type(moves) is not int or not 1 <= moves <= MAX_GAME_PLIES // 2:
+        raise ValueError(
+            f"The number of rounds must be from 1 through {MAX_GAME_PLIES // 2}."
+        )
 
-        successors = self._ordered_successors(state, depth - 1)
-        if not successors:
-            raise RuntimeError("A nonterminal state unexpectedly has no legal moves.")
 
-        if state.turn == PLAYER_A:
-            best_value = -SEARCH_INFINITY
-            for _move, child in successors:
-                occurrences[child] += 1
-                try:
-                    child_value = self._search(
-                        child,
-                        depth - 1,
-                        alpha,
-                        beta,
-                        occurrences,
-                    )
-                finally:
-                    occurrences[child] -= 1
-                    if occurrences[child] == 0:
-                        del occurrences[child]
+def _validate_level_and_depth(level: int, depth: int) -> None:
+    _validate_depth(depth)
+    if type(level) is not int or not 0 <= level <= depth:
+        raise ValueError("The level must be a whole number within the game horizon.")
 
-                best_value = max(best_value, child_value)
-                alpha = max(alpha, best_value)
-                if alpha >= beta:
-                    break
-            return best_value
 
-        best_value = SEARCH_INFINITY
-        for _move, child in successors:
-            occurrences[child] += 1
-            try:
-                child_value = self._search(
-                    child,
-                    depth - 1,
-                    alpha,
-                    beta,
-                    occurrences,
-                )
-            finally:
-                occurrences[child] -= 1
-                if occurrences[child] == 0:
-                    del occurrences[child]
+def overflow_sum(a: int, b: int) -> int:
+    """Return 0 when adding two hand values reaches five, else their sum.
 
-            best_value = min(best_value, child_value)
-            beta = min(beta, best_value)
-            if alpha >= beta:
-                break
-        return best_value
+    The supplied starter accepts values through five at this helper boundary;
+    playable hand states themselves are restricted to zero through four.
+    """
 
-    def choose_move(
-        self,
-        state: GameState,
-        occurrences: Mapping[GameState, int] | None = None,
-        depth_limit: int | None = None,
-    ) -> SearchDecision:
-        """Choose the deterministic best move for the player whose turn it is."""
+    if (
+        type(a) is not int
+        or type(b) is not int
+        or not 0 <= a <= KNOCKOUT_TOTAL
+        or not 0 <= b <= KNOCKOUT_TOTAL
+    ):
+        raise ValueError("The values to add must be whole numbers from 0 through 5.")
+    return 0 if a + b >= KNOCKOUT_TOTAL else a + b
 
-        if winner(state) is not None:
-            raise ValueError("A move cannot be selected from a finished game.")
 
-        depth = self.depth_limit if depth_limit is None else depth_limit
-        if type(depth) is not int or not 1 <= depth <= DEFAULT_SEARCH_DEPTH:
-            raise ValueError(
-                f"The minimax depth must be from 1 through {DEFAULT_SEARCH_DEPTH}."
-            )
+def next_moves(v: TupleState) -> list[TupleState]:
+    """Return starter-format successor states in deterministic order.
 
-        history: Counter[GameState] = Counter(occurrences or {})
-        if history[state] == 0:
-            history[state] = 1
-        if history[state] >= REPETITIONS_FOR_DRAW:
-            raise ValueError("A move cannot be selected after a repetition draw.")
+    A starter state is ((A left, A right), (B left, B right), level).
+    The level is even on A's turn and odd on B's turn.
+    """
 
-        successors = self._ordered_successors(state, depth - 1)
-        if not successors:
-            raise RuntimeError("A nonterminal state unexpectedly has no legal moves.")
+    if not isinstance(v, tuple) or len(v) != 3:
+        raise ValueError("A starter state must contain A hands, B hands, and level.")
+    a_hands = validate_hands(v[0])
+    b_hands = validate_hands(v[1])
+    level = v[2]
+    if type(level) is not int or level < 0:
+        raise ValueError("The starter level must be a nonnegative whole number.")
 
-        self.last_search_nodes = 1
-        alpha = -SEARCH_INFINITY
-        beta = SEARCH_INFINITY
-        best: SearchDecision | None = None
+    if a_hands == (0, 0) or b_hands == (0, 0):
+        return []
 
-        for move, child in successors:
-            history[child] += 1
-            try:
-                score = self._search(
-                    child,
-                    depth - 1,
-                    alpha,
-                    beta,
-                    history,
-                )
-            finally:
-                history[child] -= 1
-                if history[child] == 0:
-                    del history[child]
+    player = PLAYER_A if level % 2 == 0 else PLAYER_B
+    state = GameState(a_hands, b_hands, player)
+    return [
+        (child.a_hands, child.b_hands, level + 1)
+        for _move, child in legal_successors(state)
+    ]
 
-            candidate = SearchDecision(move, child, score)
-            if best is None:
-                best = candidate
-            elif state.turn == PLAYER_A and score > best.score:
-                best = candidate
-            elif state.turn == PLAYER_B and score < best.score:
-                best = candidate
 
-            if state.turn == PLAYER_A:
-                alpha = max(alpha, score)
-            else:
-                beta = min(beta, score)
+def best_move_dp(depth: int = DEFAULT_GAME_PLIES) -> dict[TupleState, DPEntry]:
+    """Fill the complete finite-horizon minimax table bottom up.
 
-        assert best is not None
-        return best
+    Each entry stores (score, best_child), where scores are -1, 0, or +1
+    from A's perspective. Terminal and horizon entries store [] as their
+    no-move marker, matching the supplied starter's shape.
+    """
 
-    def cache_info(self):
-        """Expose minimax cache statistics for diagnostics and tests."""
+    _validate_depth(depth)
+    hands = tuple(
+        (left, right)
+        for left in range(KNOCKOUT_TOTAL)
+        for right in range(KNOCKOUT_TOTAL)
+    )
+    table: dict[TupleState, DPEntry] = {}
 
-        return self._cached_value.cache_info()
+    for level in range(depth, -1, -1):
+        for a_hands in hands:
+            for b_hands in hands:
+                state: TupleState = (a_hands, b_hands, level)
+
+                if a_hands == (0, 0) and b_hands == (0, 0):
+                    table[state] = (0, [])
+                elif a_hands == (0, 0):
+                    table[state] = (-1, [])
+                elif b_hands == (0, 0):
+                    table[state] = (1, [])
+                elif level == depth:
+                    table[state] = (0, [])
+                else:
+                    children = next_moves(state)
+                    if not children:
+                        raise RuntimeError(
+                            "A nonterminal position unexpectedly has no legal move."
+                        )
+                    if level % 2 == 0:
+                        best_child = max(children, key=lambda child: table[child][0])
+                    else:
+                        best_child = min(children, key=lambda child: table[child][0])
+                    table[state] = (table[best_child][0], best_child)
+
+    return table
 
 
 def choose_computer_move(
     state: GameState,
-    depth_limit: int = DEFAULT_SEARCH_DEPTH,
-    occurrences: Mapping[GameState, int] | None = None,
+    level: int = 0,
+    depth: int = DEFAULT_GAME_PLIES,
+    table: dict[TupleState, DPEntry] | None = None,
 ) -> SearchDecision:
-    """Convenience wrapper that builds an AI and chooses one move."""
+    """Choose the table's best legal move at an absolute game level."""
 
-    return MinimaxAI(depth_limit=depth_limit).choose_move(state, occurrences)
+    if type(state) is not GameState:
+        raise ValueError("A computer move requires a GameState.")
+    _validate_level_and_depth(level, depth)
+    expected_turn = PLAYER_A if level % 2 == 0 else PLAYER_B
+    if state.turn != expected_turn:
+        raise ValueError("The state turn does not match the supplied level.")
+    if winner(state) is not None or level == depth:
+        raise ValueError("A move cannot be selected from a finished game.")
+
+    if table is None:
+        table = best_move_dp(depth)
+    key = (state.a_hands, state.b_hands, level)
+    if key not in table:
+        raise ValueError("The DP table does not contain the current position.")
+    score, best_child = table[key]
+    if not isinstance(best_child, tuple):
+        raise RuntimeError("A live DP position has no selected successor.")
+
+    for move, child in legal_successors(state):
+        candidate = (child.a_hands, child.b_hands, level + 1)
+        if candidate == best_child:
+            return SearchDecision(move, child, score)
+    raise RuntimeError("The DP table selected a move that is not legal.")
 
 
 def format_hands(hands: Hands) -> str:
-    """Return a human-readable hand pair."""
+    """Return a labeled left/right hand pair."""
 
-    return f"{hands[0]} | {hands[1]}"
+    return f"left {hands[0]} | right {hands[1]}"
 
 
 def format_state(state: GameState) -> str:
@@ -585,17 +497,34 @@ def format_state(state: GameState) -> str:
     )
 
 
+def display(w: TupleState, output_function: OutputFunction = print) -> None:
+    """Print A and B's hands in the supplied starter's display format."""
+
+    if not isinstance(w, tuple) or len(w) != 3:
+        raise ValueError("A starter state must contain A hands, B hands, and level.")
+    a_hands = validate_hands(w[0])
+    b_hands = validate_hands(w[1])
+    output_function("***********************")
+    output_function(f"A: {a_hands}")
+    output_function(f"B: {b_hands}")
+
+
 def describe_move(state: GameState, move: Move) -> str:
     """Return a clear explanation of ``move`` from ``state``."""
 
     if move.kind == "attack":
         assert move.source is not None and move.target is not None
-        total = move.source + move.target
+        source_value = state.current_hands[move.source]
+        target_value = state.opponent_hands[move.target]
+        source_side = "left" if move.source == 0 else "right"
+        target_side = "left" if move.target == 0 else "right"
+        total = source_value + target_value
         result = 0 if total >= KNOCKOUT_TOTAL else total
         knockout = " (knocked out)" if result == 0 else ""
         return (
-            f"Player {state.turn} attacks with {move.source} into {move.target}: "
-            f"{move.target} + {move.source} = {total}, target becomes "
+            f"Player {state.turn} attacks with {source_side} ({source_value}) "
+            f"into the opponent's {target_side} ({target_value}): "
+            f"{target_value} + {source_value} = {total}, target becomes "
             f"{result}{knockout}."
         )
 
@@ -607,17 +536,34 @@ def describe_move(state: GameState, move: Move) -> str:
 
 
 def describe_score(score: int) -> str:
-    """Explain a minimax score briefly."""
+    """Explain the starter's A-centric three-valued DP score."""
 
-    if score > FORCED_RESULT_THRESHOLD:
-        return f"{score:+d}, a predicted forced win for Player A"
-    if score < -FORCED_RESULT_THRESHOLD:
-        return f"{score:+d}, a predicted forced win for Player B"
-    if score > 0:
-        return f"{score:+d}, position estimated in Player A's favor"
-    if score < 0:
-        return f"{score:+d}, position estimated in Player B's favor"
-    return "0, an even position or draw"
+    if score == 1:
+        return "+1, Player A can force a win within the horizon"
+    if score == -1:
+        return "-1, Player B can force a win within the horizon"
+    if score == 0:
+        return "0, neither player can force a win before the horizon"
+    raise ValueError("A DP score must be -1, 0, or +1.")
+
+
+def _read_bounded_response(
+    prompt: str,
+    input_function: InputFunction,
+    output_function: OutputFunction,
+) -> str | None:
+    """Read and normalize one short line without ever echoing its contents."""
+
+    response = input_function(prompt)
+    if not isinstance(response, str):
+        output_function("Input must be text.")
+        return None
+    if len(response) > MAX_INPUT_LENGTH:
+        output_function(
+            f"Input is too long; enter at most {MAX_INPUT_LENGTH} characters."
+        )
+        return None
+    return response.strip().lower()
 
 
 def _prompt_menu_choice(
@@ -627,7 +573,9 @@ def _prompt_menu_choice(
     output_function: OutputFunction,
 ) -> str:
     while True:
-        response = input_function(prompt).strip().lower()
+        response = _read_bounded_response(prompt, input_function, output_function)
+        if response is None:
+            continue
         if response in choices:
             return choices[response]
         output_function("Please enter one of the listed choices.")
@@ -672,6 +620,30 @@ def prompt_human_player(
     )
 
 
+def prompt_yes_no(
+    prompt: str,
+    input_function: InputFunction = input,
+    output_function: OutputFunction = print,
+    default: bool = False,
+) -> bool:
+    """Read a bounded yes/no answer, using ``default`` for an empty line."""
+
+    if type(default) is not bool:
+        raise ValueError("The yes/no default must be a Boolean value.")
+
+    while True:
+        response = _read_bounded_response(prompt, input_function, output_function)
+        if response is None:
+            continue
+        if response in {"y", "yes"}:
+            return True
+        if response in {"n", "no"}:
+            return False
+        if response == "":
+            return default
+        output_function("Please enter y or n.")
+
+
 def prompt_human_move(
     state: GameState,
     input_function: InputFunction = input,
@@ -680,12 +652,21 @@ def prompt_human_move(
     """List legal moves and return the selected successor, or ``None`` to quit."""
 
     successors = legal_successors(state)
+    if not successors:
+        raise ValueError("A move cannot be requested from a finished game.")
+
     output_function("Legal moves:")
     for number, (move, _child) in enumerate(successors, start=1):
         output_function(f"  {number}. {describe_move(state, move)}")
 
     while True:
-        response = input_function("Select a move number (or q to quit): ").strip().lower()
+        response = _read_bounded_response(
+            "Select a move number (or q to quit): ",
+            input_function,
+            output_function,
+        )
+        if response is None:
+            continue
         if response in {"q", "quit", "exit"}:
             return None
 
@@ -704,39 +685,35 @@ def _announce_result(result: str, output_function: OutputFunction) -> None:
     if result in PLAYERS:
         output_function(f"Player {result} wins!")
     elif result == DRAW:
-        output_function("Draw: the same complete position occurred three times.")
-    elif result == TURN_LIMIT:
-        output_function("Draw: the game reached its safety turn limit.")
+        output_function("It is a tie: the fixed game horizon was reached.")
     elif result == QUIT:
         output_function("Game ended by the user.")
 
 
 def run_human_vs_computer(
     human_player: str,
-    depth_limit: int = DEFAULT_SEARCH_DEPTH,
-    max_turns: int = DEFAULT_MAX_TURNS,
+    moves: int = DEFAULT_MOVES,
     input_function: InputFunction = input,
     output_function: OutputFunction = print,
 ) -> str:
-    """Run one human-versus-computer game and return its result."""
+    """Play a fixed-length game against the bottom-up DP computer."""
 
     if human_player not in PLAYERS:
         raise ValueError("The human player must be A or B.")
-
-    graph = build_game_graph()
-    ai = MinimaxAI(depth_limit=depth_limit, graph=graph)
+    _validate_moves(moves)
+    depth = 2 * moves
+    table = best_move_dp(depth)
     state = INITIAL_STATE
-    occurrences: Counter[GameState] = Counter({state: 1})
 
     output_function("")
     output_function(
         f"You are Player {human_player}. Player A moves first. "
-        f"The AI searches {depth_limit} plies."
+        f"The game ends after at most {depth} individual turns."
     )
 
-    for turn_number in range(1, max_turns + 1):
+    for level in range(depth):
         output_function("")
-        output_function(f"Turn {turn_number}")
+        output_function(f"Turn {level + 1} of {depth}")
         output_function(format_state(state))
 
         if state.turn == human_player:
@@ -747,36 +724,37 @@ def run_human_vs_computer(
             move, next_state = selection
             output_function(describe_move(state, move))
         else:
-            decision = ai.choose_move(state, occurrences)
-            move, next_state = decision.move, decision.next_state
-            output_function(describe_move(state, move))
-            output_function(f"AI evaluation: {describe_score(decision.score)}.")
+            decision = choose_computer_move(state, level, depth, table)
+            next_state = decision.next_state
+            output_function(describe_move(state, decision.move))
+            output_function(f"DP evaluation: {describe_score(decision.score)}.")
 
         state = next_state
-        occurrences[state] += 1
-        result = game_result(state, occurrences)
+        result = game_result(state, level + 1, depth)
         if result is not None:
             output_function(format_state(state))
             _announce_result(result, output_function)
             return result
 
-    _announce_result(TURN_LIMIT, output_function)
-    return TURN_LIMIT
+    raise RuntimeError("The fixed-horizon game ended without a result.")
 
 
 def run_autonomous(
-    depth_limit: int = DEFAULT_SEARCH_DEPTH,
-    max_turns: int = DEFAULT_MAX_TURNS,
+    moves: int = DEFAULT_MOVES,
     pause: bool = False,
     input_function: InputFunction = input,
     output_function: OutputFunction = print,
 ) -> str:
-    """Run an explained computer-versus-computer demonstration."""
+    """Demonstrate both players following one bottom-up DP table."""
 
+    _validate_moves(moves)
+    if type(pause) is not bool:
+        raise ValueError("The pause option must be a Boolean value.")
+
+    depth = 2 * moves
+    table = best_move_dp(depth)
     graph = build_game_graph()
-    ai = MinimaxAI(depth_limit=depth_limit, graph=graph)
     state = INITIAL_STATE
-    occurrences: Counter[GameState] = Counter({state: 1})
     edge_count = sum(len(edges) for edges in graph.values())
 
     output_function("")
@@ -784,30 +762,55 @@ def run_autonomous(
     output_function(
         f"Reachable graph: {len(graph)} states and {edge_count} legal transitions."
     )
-    output_function(f"Both players search up to {depth_limit} plies.")
+    output_function(
+        f"Bottom-up DP: {len(table)} state-level entries; "
+        f"fixed horizon of {depth} individual turns."
+    )
 
-    for turn_number in range(1, max_turns + 1):
+    for level in range(depth):
         output_function("")
-        output_function(f"Turn {turn_number}")
+        output_function(f"Turn {level + 1} of {depth}")
         output_function(format_state(state))
 
-        decision = ai.choose_move(state, occurrences)
+        decision = choose_computer_move(state, level, depth, table)
         output_function(describe_move(state, decision.move))
-        output_function(f"Minimax evaluation: {describe_score(decision.score)}.")
+        output_function(f"DP evaluation: {describe_score(decision.score)}.")
 
         state = decision.next_state
-        occurrences[state] += 1
-        result = game_result(state, occurrences)
+        result = game_result(state, level + 1, depth)
         if result is not None:
             output_function(format_state(state))
             _announce_result(result, output_function)
             return result
 
         if pause:
-            input_function("Press Enter for the next move...")
+            _read_bounded_response(
+                "Press Enter for the next move...",
+                input_function,
+                output_function,
+            )
 
-    _announce_result(TURN_LIMIT, output_function)
-    return TURN_LIMIT
+    raise RuntimeError("The fixed-horizon demonstration ended without a result.")
+
+
+def chopsticks_game(
+    moves: int = DEFAULT_MOVES,
+    index: int = 0,
+    input_function: InputFunction = input,
+    output_function: OutputFunction = print,
+) -> str:
+    """Run the starter-style human game; index 0 moves first, index 1 second."""
+
+    _validate_moves(moves)
+    if type(index) is not int or index not in (0, 1):
+        raise ValueError("The player index must be 0 (first) or 1 (second).")
+    human_player = PLAYER_A if index == 0 else PLAYER_B
+    return run_human_vs_computer(
+        human_player,
+        moves=moves,
+        input_function=input_function,
+        output_function=output_function,
+    )
 
 
 def main() -> None:
@@ -816,17 +819,22 @@ def main() -> None:
     print("Assignment 6: Chopsticks")
     print("A dead hand is inactive, but a legal split can revive it.")
     print("A player loses only when both hands are dead (0 | 0).")
+    print("An unfinished game is a tie after 20 individual turns.")
     print()
 
     try:
         mode = prompt_mode()
         if mode == "human":
             human_player = prompt_human_player()
-            run_human_vs_computer(human_player)
+            index = 0 if human_player == PLAYER_A else 1
+            chopsticks_game(DEFAULT_MOVES, index)
             return
 
-        pause_response = input("Pause after every autonomous move? (y/N): ")
-        pause = pause_response.strip().lower() in {"y", "yes"}
+        pause = prompt_yes_no(
+            "Pause after every autonomous move? (y/N): ",
+            input_function=input,
+            output_function=print,
+        )
         run_autonomous(pause=pause)
     except (EOFError, KeyboardInterrupt):
         print("\nGame ended.")

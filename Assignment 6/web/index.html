@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fb">
+    <meta name="description" content="Play Chopsticks against a minimax AI, or watch two computer players explore the game.">
+    <title>Chopsticks · Assignment 6</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="brand" aria-label="Chopsticks, Assignment 6">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span></span>
+          <span class="brand-name">chopsticks<span class="brand-dot">.</span></span>
+        </div>
+        <span class="header-tag">Assignment 6 <span aria-hidden="true">/</span> Game theory lab</span>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <div class="intro-copy">
+            <p class="eyebrow"><span class="eyebrow-indicator" aria-hidden="true"></span> A small game with a big decision tree</p>
+            <h1 id="page-title">Think a few <em>moves ahead.</em></h1>
+            <p class="intro-description">Tap hands, redistribute your fingers, and see how a minimax AI weighs every outcome. Play it yourself or let the computers show you how.</p>
+          </div>
+          <div class="intro-side" aria-label="Game summary">
+            <div class="intro-stat"><strong>20</strong><span>turn horizon</span></div>
+            <div class="intro-divider" aria-hidden="true"></div>
+            <div class="intro-stat"><strong>2</strong><span>ways to play</span></div>
+          </div>
+        </section>
+
+        <section class="workspace" aria-label="Chopsticks game and analysis">
+          <div class="primary-column">
+            <section class="panel setup-panel" aria-labelledby="setup-title">
+              <div class="panel-heading setup-heading">
+                <div>
+                  <p class="section-kicker">01 / Configure</p>
+                  <h2 id="setup-title">Your game</h2>
+                </div>
+                <button type="button" id="restart-button" class="button button-quiet">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16.5 9.25A6.55 6.55 0 1 1 14.7 5M16.5 3.5V7h-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  New game
+                </button>
+              </div>
+              <div class="setup-grid">
+                <div class="control-group">
+                  <span class="control-label" id="mode-label">Mode</span>
+                  <div class="segmented-control" role="group" aria-labelledby="mode-label">
+                    <button type="button" id="mode-human" class="segment" aria-pressed="true">You vs AI</button>
+                    <button type="button" id="mode-auto" class="segment" aria-pressed="false">Watch AI vs AI</button>
+                  </div>
+                </div>
+                <div class="control-group" id="player-controls">
+                  <span class="control-label" id="side-label">Play as</span>
+                  <div class="segmented-control" role="group" aria-labelledby="side-label">
+                    <button type="button" id="player-a" class="segment" aria-pressed="true">Player A <span class="segment-caption">first</span></button>
+                    <button type="button" id="player-b" class="segment" aria-pressed="false">Player B <span class="segment-caption">second</span></button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel arena-panel" aria-labelledby="arena-title">
+              <div class="panel-heading arena-heading">
+                <div>
+                  <p class="section-kicker">02 / Play</p>
+                  <h2 id="arena-title">The arena</h2>
+                </div>
+                <span class="live-pill"><span aria-hidden="true"></span> Live game</span>
+              </div>
+
+              <div class="game-stage">
+                <div class="player-row player-row-b" id="player-b-card">
+                  <div class="player-identity">
+                    <span class="player-avatar avatar-b" aria-hidden="true">B</span>
+                    <div><strong>Player B</strong><span>Minimizing player</span></div>
+                  </div>
+                  <div class="hand-pair" role="group" aria-label="Player B hands">
+                    <button type="button" id="hand-b-left" class="hand hand-b" data-player="B" data-hand="0" data-count="1" aria-label="Player B left hand: 1 finger">
+                      <span class="hand-art" aria-hidden="true"><span class="finger"></span><span class="finger"></span><span class="finger"></span><span class="finger"></span></span>
+                      <span class="hand-name">Left hand</span>
+                      <span class="hand-count">1</span>
+                      <span class="hand-state">Ready</span>
+                    </button>
+                    <button type="button" id="hand-b-right" class="hand hand-b" data-player="B" data-hand="1" data-count="1" aria-label="Player B right hand: 1 finger">
+                      <span class="hand-art" aria-hidden="true"><span class="finger"></span><span class="finger"></span><span class="finger"></span><span class="finger"></span></span>
+                      <span class="hand-name">Right hand</span>
+                      <span class="hand-count">1</span>
+                      <span class="hand-state">Ready</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="stage-center" aria-live="polite" aria-atomic="true">
+                  <span class="stage-rule" aria-hidden="true"></span>
+                  <div class="turn-orb" aria-hidden="true"><span>↗</span></div>
+                  <span class="stage-rule" aria-hidden="true"></span>
+                  <div class="status-copy">
+                    <p class="status-kicker">Current position</p>
+                    <h3 id="status-title">Player A starts</h3>
+                    <p id="status-detail">Choose one of your hands, then tap a live hand across the board.</p>
+                  </div>
+                </div>
+
+                <div class="player-row player-row-a" id="player-a-card">
+                  <div class="player-identity">
+                    <span class="player-avatar avatar-a" aria-hidden="true">A</span>
+                    <div><strong>Player A</strong><span>Maximizing player</span></div>
+                  </div>
+                  <div class="hand-pair" role="group" aria-label="Player A hands">
+                    <button type="button" id="hand-a-left" class="hand hand-a" data-player="A" data-hand="0" data-count="1" aria-label="Player A left hand: 1 finger">
+                      <span class="hand-art" aria-hidden="true"><span class="finger"></span><span class="finger"></span><span class="finger"></span><span class="finger"></span></span>
+                      <span class="hand-name">Left hand</span>
+                      <span class="hand-count">1</span>
+                      <span class="hand-state">Ready</span>
+                    </button>
+                    <button type="button" id="hand-a-right" class="hand hand-a" data-player="A" data-hand="1" data-count="1" aria-label="Player A right hand: 1 finger">
+                      <span class="hand-art" aria-hidden="true"><span class="finger"></span><span class="finger"></span><span class="finger"></span><span class="finger"></span></span>
+                      <span class="hand-name">Right hand</span>
+                      <span class="hand-count">1</span>
+                      <span class="hand-state">Ready</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="progress-block" aria-label="Game progress">
+                <div class="progress-meta"><span>Game progress</span><span id="turn-count">Turn 1 of 20</span></div>
+                <div class="progress-track" role="progressbar" aria-label="Turns completed" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0"><span id="progress-fill"></span></div>
+              </div>
+
+              <div class="action-panel">
+                <div class="action-heading"><div><p class="section-kicker">Your next move</p><h3>Choose an action</h3></div><button type="button" id="split-button" class="button button-split">Split fingers <span aria-hidden="true">↔</span></button></div>
+                <p class="action-hint">Select your source hand, then a live opponent hand to tap. You can also use a move button below; splitting can revive a hand at 0.</p>
+                <div id="move-options" class="move-options" aria-live="polite"><p class="empty-note">Select one of your hands to see its legal taps.</p></div>
+              </div>
+
+              <div id="auto-controls" class="auto-controls" hidden>
+                <div class="auto-control-buttons"><button type="button" id="auto-play" class="button button-primary">Play simulation</button><button type="button" id="auto-step" class="button button-quiet">Step once <span aria-hidden="true">→</span></button></div>
+                <label class="speed-control" for="auto-speed"><span>Time per turn</span><span id="auto-speed-label">0.7 s / turn</span></label>
+                <input type="range" id="auto-speed" min="250" max="1800" step="50" value="700">
+              </div>
+            </section>
+
+            <section class="panel history-panel" aria-labelledby="history-title">
+              <div class="panel-heading"><div><p class="section-kicker">03 / Review</p><h2 id="history-title">Move history</h2></div><span class="panel-caption">Newest first</span></div>
+              <ol id="history-list" class="history-list" aria-live="polite"><li class="history-empty">The first move will appear here.</li></ol>
+            </section>
+          </div>
+
+          <aside class="insight-column" aria-label="AI and move analysis">
+            <section class="panel insight-panel" aria-labelledby="insight-title">
+              <div class="panel-heading"><div><p class="section-kicker">Inside the algorithm</p><h2 id="insight-title">AI thinking</h2></div><span class="insight-icon" aria-hidden="true">✳</span></div>
+              <div class="score-card"><span class="score-label">Position value for A</span><strong id="ai-score">Even</strong><span class="score-footnote">+1 A wins <span aria-hidden="true">·</span> 0 tie <span aria-hidden="true">·</span> −1 B wins</span></div>
+              <p id="ai-reason" class="ai-reason">The AI compares legal moves by looking ahead to wins, losses, or a tie at the 20-turn horizon.</p>
+              <div class="algorithm-legend"><span><i class="legend-dot dot-a" aria-hidden="true"></i> A maximizes</span><span><i class="legend-dot dot-b" aria-hidden="true"></i> B minimizes</span></div>
+            </section>
+
+            <section class="panel graph-panel" aria-labelledby="graph-title">
+              <div class="panel-heading"><div><p class="section-kicker">Explore the tree</p><h2 id="graph-title">Move graph</h2></div><span class="graph-icon" aria-hidden="true"><span></span><span></span><span></span></span></div>
+              <p class="graph-intro">The current state branches into every legal next position. Follow the highlighted move to see the AI’s preferred path.</p>
+              <div id="graph-current" class="graph-current" aria-live="polite"><span class="node-label">Current state</span><strong>A 1 · 1 <span aria-hidden="true">/</span> B 1 · 1</strong></div>
+              <div class="graph-connector" aria-hidden="true"><span></span></div>
+              <div id="graph-choices" class="graph-choices" aria-live="polite"><p class="empty-note">Legal next positions will appear here.</p></div>
+            </section>
+
+            <section class="rules-note" aria-labelledby="rules-title"><span class="rules-note-icon" aria-hidden="true">i</span><div><h2 id="rules-title">A quick reminder</h2><p>A tap adds fingers to the target hand. Five or more knocks it out. Lose both hands and you lose the game.</p></div></section>
+          </aside>
+        </section>
+      </main>
+
+      <footer class="site-footer"><span>Chopsticks <span aria-hidden="true">/</span> Assignment 6</span><span>Built to make the decision tree visible.</span></footer>
+    </div>
+  </body>
+</html>

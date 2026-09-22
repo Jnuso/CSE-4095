@@ -73,8 +73,8 @@ present on their own two hands.
 A legal redistribution must follow all of these rules:
 
 - The total number of fingers must stay the same.
-- Both resulting hands must be live, so each result must be from `1` through
-  `4`.
+- Each resulting hand must be from `0` through `4`. A player may move all
+  fingers off one hand, leaving that hand at `0`.
 - The distribution must genuinely change.
 - Merely swapping the two hand values does not count as a move.
 
@@ -93,14 +93,16 @@ After:  2 | 2
 ```
 
 Redistribution is flexible; it does not have to divide the fingers evenly.
-For example, `0 | 4` may become either `1 | 3` or `2 | 2`.
+For example, `0 | 4` may become `1 | 3`, `2 | 2`, or `3 | 1`. A redistribution
+can also create a dead hand: `1 | 3` may become `0 | 4`. The total stays at
+four in each case. This follows the supplied starter code's transfer rule.
 
 These are not legal redistributions:
 
 ```text
 1 | 4 -> 4 | 1   (only swaps the hands)
 2 | 2 -> 2 | 2   (does not change anything)
-1 | 3 -> 0 | 4   (the move would produce a dead hand)
+4 | 1 -> 0 | 5   (a hand cannot have five fingers)
 ```
 
 ## Winning and Losing
@@ -110,23 +112,20 @@ These are not legal redistributions:
 - Because no fingers remain at `0 | 0`, there is nothing left to redistribute
   and the player cannot revive either hand.
 - The other player wins immediately.
-- If both players still have at least one live hand, play continues unless
-  the repetition rule declares a draw.
+- If both players still have at least one live hand, play continues until
+  the fixed turn horizon is reached.
 
-## Repetition and Draws
+## Fixed-Horizon Tie Rule
 
-Redistributions can cause the game to return to earlier positions. To prevent
-an endless software game, a draw is declared when the same **full game state**
-occurs for the third time.
+The starter game uses a fixed horizon of **20 individual turns** (10 turns
+for A and 10 for B) by default. A win ends the game immediately. If both
+players still have a live hand after turn 20, the result is a tie. A
+position returning to an earlier configuration does **not** end the game;
+there is no threefold-repetition rule. The horizon ensures that even a
+cycle ends after a finite number of turns.
 
-A full game state includes:
-
-- both of Player A's hand values;
-- both of Player B's hand values; and
-- whose turn it is.
-
-Therefore, identical hand values with a different player to move are not the
-same state.
+For AI scoring, an A win has value `+1`, a B win has value `-1`, and a tie
+at the horizon has value `0`. This scoring does not change the legal moves.
 
 ## Display Convention
 
@@ -138,9 +137,15 @@ Player B: 1 | 1
 Turn: Player A
 ```
 
-The program sorts each pair from low to high because left and right have no
-strategic difference. Human choices are listed as numbered moves, so the
-display does not imply a permanent left/right identity.
+The first number is the **left** hand and the second is the **right** hand.
+The program keeps those positions distinct, just as the supplied starter
+code does: `0 | 2` and `2 | 0` are different states. Attacks identify the
+source and target by left/right position. A pure swap is still not a legal
+redistribution, even though the two ordered positions differ.
+
+At the initial `A: 1 | 1`, `B: 1 | 1` position, A has four ordered successor
+states: attack B's left, attack B's right, transfer to A's left to reach
+`2 | 0`, or transfer to A's right to reach `0 | 2`.
 
 The program will explain each selected action and show the updated position
 after every turn, especially in autonomous mode.
