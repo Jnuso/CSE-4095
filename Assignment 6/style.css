@@ -158,6 +158,17 @@ h1 em { font-style: normal; background: linear-gradient(110deg, #4c65d4 10%, #69
 .history-list small, .history-list time { color: var(--soft); }
 
 .insight-panel, .graph-panel { padding: 25px 25px 26px; }
+.analysis-panel { grid-column: 1 / -1; }
+.analysis-content { margin-top: 18px; }
+.analysis-content[hidden] { display: none; }
+.analysis-summary { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 18px; align-items: stretch; }
+.analysis-summary .score-card { margin-top: 0; }
+.analysis-facts { display: grid; align-content: start; gap: 0; margin: 0; border-top: 1px solid var(--line); }
+.analysis-facts div { display: grid; grid-template-columns: 105px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.analysis-facts dt { color: var(--soft); font-size: 10px; font-weight: 740; }
+.analysis-facts dd { min-width: 0; margin: 0; color: var(--text); font-size: 12px; font-weight: 680; line-height: 1.45; overflow-wrap: anywhere; }
+.analysis-graph { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
+.analysis-graph h3 { margin: 4px 0 0; font-size: 16px; letter-spacing: -.035em; }
 .insight-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; background: var(--accent-pale); color: var(--accent); font-size: 19px; }
 .score-card { display: grid; gap: 4px; margin-top: 23px; padding: 20px; border: 1px solid #dfe4ff; border-radius: 15px; background: radial-gradient(circle at 95% 0%, rgba(41,190,171,.12), transparent 45%), linear-gradient(135deg, #f2f4ff, #f8faff); }
 .score-label { color: var(--muted); font-size: 10px; font-weight: 700; }
@@ -317,6 +328,8 @@ h1 em { font-style: normal; background: linear-gradient(110deg, #4c65d4 10%, #69
   .hand-art, .hand-art svg { width: clamp(70px, 21vw, 88px); height: clamp(78px, 23vw, 96px); }
   .stage-center { padding: 14px 4px; }
   .insight-column { grid-template-columns: 1fr; }
+  .analysis-summary { grid-template-columns: 1fr; }
+  .analysis-facts div { grid-template-columns: 92px minmax(0, 1fr); }
   .rules-note { grid-column: auto; }
   .action-heading { align-items: flex-start; }
   .action-heading h3 { font-size: 15px; }

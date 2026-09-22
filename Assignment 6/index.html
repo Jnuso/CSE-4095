@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f5f7fb">
-    <meta name="description" content="Play Chopsticks against a minimax AI, or watch two computer players explore the game.">
+    <meta name="description" content="Play Chopsticks against a bottom-up depth-20 minimax AI, or watch both computer players.">
     <title>Chopsticks · Assignment 6</title>
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./style.css">
     <script type="module" src="./app.js"></script>
   </head>
   <body>
@@ -124,8 +124,8 @@
               </div>
 
               <div class="turn-summary" aria-label="Game progress">
-                <span>Play continues until one player loses both hands.</span>
-                <strong id="turn-count">0 moves played</strong>
+                <span>Assignment mode ends at a knockout or after 20 moves.</span>
+                <strong><span id="turn-count">0 moves played</span><span aria-hidden="true"> · </span><span id="remaining-moves">20 moves remaining</span></strong>
               </div>
 
               <div class="action-panel">
@@ -148,22 +148,35 @@
           </div>
 
           <aside class="insight-column" aria-label="AI and move analysis">
-            <section class="panel insight-panel" aria-labelledby="insight-title">
-              <div class="panel-heading"><div><p class="section-kicker">Inside the algorithm</p><h2 id="insight-title">AI thinking</h2></div><span class="insight-icon" aria-hidden="true">✳</span></div>
-              <div class="score-card"><span class="score-label">Position value for A</span><strong id="ai-score">Calculating…</strong><span class="score-footnote">+1 A can force a win <span aria-hidden="true">·</span> 0 cycle possible <span aria-hidden="true">·</span> −1 B can force a win</span></div>
-              <p id="ai-reason" class="ai-reason">The AI solves the complete cyclic graph and follows forced wins until a player is knocked out.</p>
-              <div class="algorithm-legend"><span><i class="legend-dot dot-a" aria-hidden="true"></i> A maximizes</span><span><i class="legend-dot dot-b" aria-hidden="true"></i> B minimizes</span></div>
+            <section id="ai-panel" class="panel insight-panel analysis-panel" aria-labelledby="insight-title">
+              <div class="panel-heading">
+                <div><p class="section-kicker">Inside the algorithm</p><h2 id="insight-title">AI Analysis</h2></div>
+                <button type="button" id="ai-toggle" class="button button-quiet" aria-expanded="true" aria-controls="ai-analysis-content">Hide analysis</button>
+              </div>
+
+              <div id="ai-analysis-content" class="analysis-content">
+                <div class="analysis-summary">
+                  <div class="score-card"><span class="score-label">Predicted result from A’s perspective</span><strong id="ai-score">Calculating…</strong><span class="score-footnote">+1 WIN for A <span aria-hidden="true">·</span> 0 TIE within the horizon <span aria-hidden="true">·</span> −1 LOSS for A</span></div>
+                  <dl class="analysis-facts">
+                    <div><dt>Current state</dt><dd id="ai-state">A 1 · 1 / B 1 · 1 / level 0</dd></div>
+                    <div><dt>Current role</dt><dd id="ai-role">Player A · MAX</dd></div>
+                    <div><dt>Selected move</dt><dd id="ai-selected">Calculating…</dd></div>
+                  </dl>
+                </div>
+                <p id="ai-reason" class="ai-reason">The AI reads a complete bottom-up table from level 20 back to level 0.</p>
+                <div class="algorithm-legend"><span><i class="legend-dot dot-a" aria-hidden="true"></i> A chooses the maximum</span><span><i class="legend-dot dot-b" aria-hidden="true"></i> B chooses the minimum</span></div>
+
+                <div class="analysis-graph" aria-labelledby="graph-title">
+                  <div class="panel-heading"><div><p class="section-kicker">Legal moves considered</p><h3 id="graph-title">Current minimax branches</h3></div><span class="graph-icon" aria-hidden="true"><span></span><span></span><span></span></span></div>
+                  <p class="graph-intro">Every branch comes from the shared rule engine. Its value comes from the depth-20 DP table; the selected move is highlighted.</p>
+                  <div id="graph-current" class="graph-current" aria-live="polite"><span class="node-label">Current state</span><strong>A 1 · 1 <span aria-hidden="true">/</span> B 1 · 1 <span aria-hidden="true">/</span> level 0</strong></div>
+                  <div class="graph-connector" aria-hidden="true"><span></span></div>
+                  <div id="graph-choices" class="graph-choices" aria-live="polite"><p class="empty-note">Legal next positions will appear here.</p></div>
+                </div>
+              </div>
             </section>
 
-            <section class="panel graph-panel" aria-labelledby="graph-title">
-              <div class="panel-heading"><div><p class="section-kicker">Explore the tree</p><h2 id="graph-title">Move graph</h2></div><span class="graph-icon" aria-hidden="true"><span></span><span></span><span></span></span></div>
-              <p class="graph-intro">The current state branches into every legal next position. Follow the highlighted move to see the AI’s preferred path.</p>
-              <div id="graph-current" class="graph-current" aria-live="polite"><span class="node-label">Current state</span><strong>A 1 · 1 <span aria-hidden="true">/</span> B 1 · 1</strong></div>
-              <div class="graph-connector" aria-hidden="true"><span></span></div>
-              <div id="graph-choices" class="graph-choices" aria-live="polite"><p class="empty-note">Legal next positions will appear here.</p></div>
-            </section>
-
-            <section class="rules-note" aria-labelledby="rules-title"><span class="rules-note-icon" aria-hidden="true">i</span><div><h2 id="rules-title">A quick reminder</h2><p>A tap adds fingers to the target hand. Five or more knocks it out. Lose both hands and you lose the game.</p></div></section>
+            <section class="rules-note" aria-labelledby="rules-title"><span class="rules-note-icon" aria-hidden="true">i</span><div><h2 id="rules-title">A quick reminder</h2><p>A tap adds fingers to the target hand. Five or more knocks it out. Lose both hands and you lose; if both players survive 20 moves, the assignment scores a tie.</p></div></section>
           </aside>
         </section>
       </main>

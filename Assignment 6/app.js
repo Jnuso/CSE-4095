@@ -1,14 +1,16 @@
 import {
+  DEFAULT_DEPTH,
   INITIAL_STATE,
-  buildCompletionStrategy,
-  buildGameSolver,
-  buildReachableGraph,
-  chooseMove,
   getResult,
   legalMoves,
-  positionKey,
   stateKey,
 } from './game.js';
+import {
+  bestMove,
+  bestMoveDP,
+  evaluateMoves,
+  outcomeLabel,
+} from './ai.js';
 
 const byId = (id) => {
   const element = document.getElementById(id);
@@ -27,6 +29,7 @@ const ui = {
   title: byId('status-title'),
   detail: byId('status-detail'),
   turn: byId('turn-count'),
+  remaining: byId('remaining-moves'),
   moveOptions: byId('move-options'),
   autoControls: byId('auto-controls'),
   autoPlay: byId('auto-play'),
@@ -36,15 +39,17 @@ const ui = {
   history: byId('history-list'),
   graphCurrent: byId('graph-current'),
   graphChoices: byId('graph-choices'),
+  aiToggle: byId('ai-toggle'),
+  aiContent: byId('ai-analysis-content'),
+  aiRole: byId('ai-role'),
+  aiState: byId('ai-state'),
   aiScore: byId('ai-score'),
   aiReason: byId('ai-reason'),
+  aiSelected: byId('ai-selected'),
 };
 
 const HAND_NAMES = ['left', 'right'];
-const solver = buildGameSolver();
-const completionStrategy = buildCompletionStrategy();
-const graph = buildReachableGraph();
-const graphEdges = [...graph.values()].reduce((total, children) => total + children.length, 0);
+const minimaxTable = bestMoveDP(DEFAULT_DEPTH);
 let state = structuredClone(INITIAL_STATE);
 let mode = 'human';
 let humanPlayer = 'A';
@@ -57,8 +62,6 @@ let pendingTimer = null;
 let generation = 0;
 let gameRevision = 0;
 let isAnimating = false;
-let visitedPositions = new Set([positionKey(INITIAL_STATE)]);
-let completionMode = false;
 
 function currentPlayer(position = state) {
   return position[2] % 2 === 0 ? 'A' : 'B';
@@ -73,19 +76,19 @@ function handsFor(position, player) {
 }
 
 function scoreShort(score) {
-  if (score === 1) return '+1 · A can force a win';
-  if (score === -1) return '−1 · B can force a win';
-  return '0 · a cycle is possible';
+  if (score === 1) return '+1 · WIN for A';
+  if (score === -1) return '−1 · LOSS for A';
+  return '0 · TIE within 20 moves';
 }
 
 function scoreDetail(score) {
-  if (score === 1) return 'Player A can force a knockout from this position.';
-  if (score === -1) return 'Player B can force a knockout from this position.';
-  return 'Perfect defense can repeat here, so the demonstration will take a finish-seeking route if needed.';
+  if (score === 1) return 'Player A can force a knockout before the 20-move limit.';
+  if (score === -1) return 'Player B can force a knockout before the 20-move limit.';
+  return 'Neither player can force a knockout before the 20-move limit, so optimal play is scored as a tie.';
 }
 
 function compactState(position) {
-  return `A ${position[0][0]} · ${position[0][1]}   /   B ${position[1][0]} · ${position[1][1]}`;
+  return `A ${position[0][0]} · ${position[0][1]} / B ${position[1][0]} · ${position[1][1]} / level ${position[2]}`;
 }
 
 function moveLabel(position, move, sourceOverride = null) {
@@ -176,13 +179,18 @@ function renderHands() {
 function renderStatus() {
   const result = getResult(state);
   ui.turn.textContent = `${state[2]} ${state[2] === 1 ? 'move' : 'moves'} played`;
+  const remaining = Math.max(0, DEFAULT_DEPTH - state[2]);
+  ui.remaining.textContent = `${remaining} ${remaining === 1 ? 'move' : 'moves'} remaining`;
 
   if (result === 'A' || result === 'B') {
     ui.title.textContent = `Player ${result} wins`;
     ui.detail.textContent = `Player ${opposite(result)} has no active hands remaining.`;
+  } else if (result === 'tie') {
+    ui.title.textContent = 'Maximum depth reached · Tie';
+    ui.detail.textContent = `Both players still have an active hand after ${DEFAULT_DEPTH} moves.`;
   } else if (mode === 'auto') {
     ui.title.textContent = autoRunning ? 'Autonomous game in motion' : 'Autonomous game paused';
-    ui.detail.textContent = `Player ${currentPlayer()} moves next. Step through or play both optimal strategies.`;
+    ui.detail.textContent = `Player ${currentPlayer()} moves next. Both sides follow the depth-${DEFAULT_DEPTH} minimax table.`;
   } else if (humanMayMove()) {
     ui.title.textContent = `Your move · Player ${humanPlayer}`;
     ui.detail.textContent = showingSplits ? 'Choose a legal split below. A split uses your turn.' :
@@ -190,7 +198,7 @@ function renderStatus() {
         `Your ${HAND_NAMES[selectedSource]} hand is selected. Now choose an active opponent hand.`;
   } else {
     ui.title.textContent = `Computer's move · Player ${currentPlayer()}`;
-    ui.detail.textContent = 'The computer is evaluating the complete cyclic game graph.';
+    ui.detail.textContent = `The computer is reading the bottom-up depth-${DEFAULT_DEPTH} minimax table.`;
   }
 }
 
@@ -251,7 +259,7 @@ function renderMoveOptions() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'move-option';
-    const score = solver.get(positionKey(move.nextState)).score;
+    const score = minimaxTable.get(stateKey(move.nextState)).score;
     button.textContent = `${moveLabel(state, move)}  ·  ${scoreShort(score)}`;
     button.addEventListener('click', () => {
       if (humanMayMove()) commitMove(move);
@@ -261,13 +269,26 @@ function renderMoveOptions() {
 }
 
 function renderAI() {
-  const entry = solver.get(positionKey(state));
+  const entry = minimaxTable.get(stateKey(state));
+  if (!entry) throw new Error('The current state is missing from the minimax table.');
   const result = getResult(state);
-  ui.aiScore.textContent = result ? `${result === 'A' ? '+1' : '−1'} · Player ${result} wins` :
-    scoreShort(entry.score);
-  ui.aiReason.textContent = completionMode ?
-    'A cycle was detected, so the demonstration is taking a shortest route to a knockout.' :
-    lastExplanation || scoreDetail(entry.score);
+  const role = currentPlayer() === 'A' ? 'MAX · chooses the highest value' :
+    'MIN · chooses the lowest value';
+  ui.aiRole.textContent = `Player ${currentPlayer()} · ${role}`;
+  ui.aiState.textContent = compactState(state);
+  ui.aiScore.textContent = `${entry.score > 0 ? '+' : entry.score < 0 ? '−' : ''}${Math.abs(entry.score)} · ${outcomeLabel(entry.score)}`;
+  ui.aiReason.textContent = lastExplanation || scoreDetail(entry.score);
+
+  const selected = evaluateMoves(state, minimaxTable).find((move) => move.selected);
+  if (selected) {
+    ui.aiSelected.textContent = moveLabel(state, selected);
+  } else if (result === 'tie') {
+    ui.aiSelected.textContent = `No move selected: the ${DEFAULT_DEPTH}-move horizon has been reached.`;
+  } else if (result === 'A' || result === 'B') {
+    ui.aiSelected.textContent = `No move selected: Player ${result} has already won.`;
+  } else {
+    ui.aiSelected.textContent = 'No legal move is available.';
+  }
 }
 
 function renderHistory() {
@@ -293,10 +314,11 @@ function renderHistory() {
 
 function addGraphBranch(parent, position, move) {
   const child = move.nextState;
-  const childEntry = solver.get(positionKey(child));
-  const parentEntry = solver.get(positionKey(position));
+  const childEntry = minimaxTable.get(stateKey(child));
+  const parentEntry = minimaxTable.get(stateKey(position));
+  if (!childEntry || !parentEntry) throw new Error('The graph is missing a minimax row.');
   const isBest = parentEntry.bestState !== null &&
-    positionKey(parentEntry.bestState) === positionKey(child);
+    stateKey(parentEntry.bestState) === stateKey(child);
   const details = document.createElement('details');
   details.className = `graph-branch${isBest ? ' is-best' : ''}`;
   const summary = document.createElement('summary');
@@ -316,10 +338,14 @@ function addGraphBranch(parent, position, move) {
     children.className = 'graph-children';
     if (childResult) {
       const text = document.createElement('p');
-      text.textContent = `Player ${childResult} wins here.`;
+      text.textContent = childResult === 'tie' ?
+        `The ${DEFAULT_DEPTH}-move limit makes this position a tie.` :
+        `Player ${childResult} wins here.`;
       children.append(text);
     } else {
-      for (const next of legalMoves(child)) addGraphBranch(children, child, next);
+      for (const next of evaluateMoves(child, minimaxTable)) {
+        addGraphBranch(children, child, next);
+      }
     }
     details.append(children);
   });
@@ -327,8 +353,8 @@ function addGraphBranch(parent, position, move) {
 }
 
 function renderGraph() {
-  const options = legalMoves(state);
-  ui.graphCurrent.textContent = `${compactState(state)} · Player ${currentPlayer()} to move · ${options.length} legal choices. Full graph: ${graph.size.toLocaleString()} positions, ${graphEdges.toLocaleString()} transitions.`;
+  const options = evaluateMoves(state, minimaxTable);
+  ui.graphCurrent.textContent = `${compactState(state)} · Player ${currentPlayer()} is ${currentPlayer() === 'A' ? 'MAX' : 'MIN'} · ${options.length} legal choices · ${minimaxTable.size.toLocaleString()} DP rows.`;
   ui.graphChoices.replaceChildren();
   if (options.length === 0 || getResult(state)) {
     const text = document.createElement('p');
@@ -429,8 +455,6 @@ function resetGame() {
   history = [];
   lastExplanation = '';
   autoRunning = false;
-  visitedPositions = new Set([positionKey(INITIAL_STATE)]);
-  completionMode = false;
   render();
   scheduleComputerIfNeeded();
 }
@@ -444,7 +468,7 @@ async function commitMove(move, sourceOverride = null, computer = false) {
   const revisionBeforeMove = gameRevision;
   const actor = currentPlayer();
   const label = moveLabel(state, chosen, sourceOverride);
-  const score = solver.get(positionKey(chosen.nextState)).score;
+  const score = minimaxTable.get(stateKey(chosen.nextState)).score;
   isAnimating = true;
   ui.title.textContent = `${actor} is tapping…`;
   ui.detail.textContent = label;
@@ -455,13 +479,9 @@ async function commitMove(move, sourceOverride = null, computer = false) {
   isAnimating = false;
   history.push({ turn: state[2] + 1, label });
   state = structuredClone(chosen.nextState);
-  visitedPositions.add(positionKey(state));
-  completionMode = completionMode || move.completionMode === true;
   selectedSource = null;
   showingSplits = false;
-  const policyNote = move.policy === 'completion' ?
-    ' This move leaves a repeated cycle and advances toward a knockout.' : '';
-  lastExplanation = `${computer ? 'The computer chose' : 'You chose'}: ${label}. ${scoreDetail(score)}${policyNote}`;
+  lastExplanation = `${computer ? 'The computer chose' : 'You chose'}: ${label}. ${scoreDetail(score)}`;
   if (getResult(state) !== null) autoRunning = false;
   render();
   if (mode === 'auto' && autoRunning) scheduleAutoTick();
@@ -469,12 +489,7 @@ async function commitMove(move, sourceOverride = null, computer = false) {
 }
 
 function selectComputerMove() {
-  return chooseMove(state, {
-    solver,
-    completion: completionStrategy,
-    visited: visitedPositions,
-    completionMode,
-  });
+  return bestMove(state, minimaxTable);
 }
 
 function scheduleComputerIfNeeded() {
@@ -528,6 +543,12 @@ ui.modeAuto.addEventListener('click', () => { mode = 'auto'; resetGame(); });
 ui.playerA.addEventListener('click', () => { humanPlayer = 'A'; resetGame(); });
 ui.playerB.addEventListener('click', () => { humanPlayer = 'B'; resetGame(); });
 ui.restart.addEventListener('click', resetGame);
+ui.aiToggle.addEventListener('click', () => {
+  const expanded = ui.aiToggle.getAttribute('aria-expanded') === 'true';
+  ui.aiToggle.setAttribute('aria-expanded', String(!expanded));
+  ui.aiContent.hidden = expanded;
+  ui.aiToggle.textContent = expanded ? 'Show analysis' : 'Hide analysis';
+});
 ui.split.addEventListener('click', () => {
   if (!humanMayMove()) return;
   showingSplits = !showingSplits;

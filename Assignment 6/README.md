@@ -1,224 +1,347 @@
-# Assignment 6: Chopsticks
+# Chopsticks AI Web Game
 
-## Project Purpose
+## Overview
 
-This project implements the two-player Chopsticks hand game in both a Python
-command-line program and a browser interface built with HTML, CSS, and
-JavaScript. Both offer human-versus-computer play and an autonomous
-computer-versus-computer demonstration. The Python reference uses the
-starter's bottom-up finite-horizon minimax table. The browser solves the
-cyclic state graph directly so play can continue until a real knockout.
-Player A maximizes the result, while Player B minimizes it.
+This project turns the supplied Python Chopsticks reference into a single-page
+HTML, CSS, and JavaScript game. A person can play as Player A or Player B, or
+watch the autonomous demonstration. The browser uses the same attack,
+redistribution, and ending rules as the starter code.
 
-This README is the living overview of the project. Detailed game rules are in
-[RULES.md](RULES.md), the program design is in
-[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md), and a visual explanation of
-the AI is in [AI_LOGIC_GRAPH.md](AI_LOGIC_GRAPH.md).
+The computer is not random. It uses a complete, bottom-up dynamic-programming
+minimax table with a fixed depth of 20 moves. Player A is the maximizing player
+and Player B is the minimizing player. The interface displays both players'
+hands, guides the user through legal actions, and includes an AI Analysis panel
+that explains the computer's evaluation.
 
-## Current Legal-Move Rules
+The browser application is the required product. The Python version and its
+tests remain in the project as a reference implementation and parity check.
 
-- Player A and Player B each start with two active hands at `1 | 1`.
-- Player A moves first, and each turn contains exactly one action.
-- An attack adds the value of one active hand to one active opponent hand.
-- A hand whose total reaches **5 or more** is knocked out and becomes `0`;
-  values do not wrap around.
-- A knocked-out hand is temporarily inactive: it cannot attack or be
-  attacked, but it is not permanently removed.
-- Instead of attacking, a player may redistribute their total between their
-  hands. This can revive a `0` hand or leave one hand at `0`, as in the
-  supplied starter code.
-- Each hand is identified as left or right; `0 | 2` and `2 | 0` are different
-  positions. A redistribution must preserve the total, remain within `0` to
-  `4` per hand, and genuinely change more than just swapping the hands.
-- A player loses when both of their hands are `0`.
-- A win ends play immediately. Browser games have no turn cutoff and continue
-  until one player loses both hands. The Python reference retains the
-  starter's separate 20-ply teaching horizon.
+## Running the Web Game
 
-## Features
-
-- Human versus computer, with the user choosing Player A or Player B.
-- Autonomous computer-versus-computer demonstration with move explanations.
-- Complete legal attack and redistribution generation.
-- Immutable ordered states that retain left/right hand identity.
-- A graph of reachable states with duplicate positions shared rather than
-  rebuilt.
-- A bottom-up DP table indexed by both hand pairs and the turn level. Each
-  entry stores a `-1`, `0`, or `+1` result and a selected next position.
-- Player A chooses the largest child value; Player B chooses the smallest.
-  Equal-valued choices are broken deterministically.
-- The Python CLI has a default 20-ply whole-game horizon, corresponding to the starter's
-  `moves=10`. The game and AI use the same horizon, rather than starting a
-  fresh 20-ply search after every turn.
-- Starter-compatible `overflow_sum`, `next_moves`, `best_move_dp`, `display`,
-  and `chopsticks_game` functions, with the existing CLI and autonomous mode
-  as extensions.
-- Bounded input and runtime-argument validation.
-- Standard-library and pytest regression tests for rules, AI behavior, edge
-  cases, and local CLI safety.
-
-## Why Bottom-Up DP Fits
-
-The ordered base graph has only 1,116 reachable positions. In a starter-style
-time-layered table, a level fixes whose turn it is, and there are at most
-`5^4 = 625` hand configurations per level. A full 20-ply table therefore
-has at most `625 × 21 = 13,125` entries, even though an unmerged game tree
-could contain vastly more paths. The table evaluates terminal positions and
-20-ply ties first, then works backward to level zero. Cycles in the base
-graph cannot create a cycle in the table because every edge advances the
-level.
-
-## Current Status
-
-- [x] Align legal move generation with the supplied starter code.
-- [x] Document the game rules.
-- [x] Draft the Python implementation plan.
-- [x] Document the move graph and minimax model.
-- [x] Implement the Python game model and legal moves.
-- [x] Implement graph generation and starter-style bottom-up minimax DP.
-- [x] Implement human-versus-computer mode.
-- [x] Implement autonomous demonstration mode.
-- [x] Add and run automated tests.
-- [x] Review the first-iteration command-line experience and documentation.
-- [x] Add a browser interface with visible hands and move analysis.
-- [x] Add JavaScript rule and minimax regression tests.
-- [x] Replace the browser cutoff with an infinite-horizon cyclic-graph solver.
-
-The Python program remains the starter-compatible reference implementation.
-The browser shares its legal moves but uses an infinite-horizon graph solver,
-while presenting both players' hands, choices, and AI decisions visually.
-
-## Verified Baseline
-
-- Reachable ordered move graph: **1,116 states** and **4,080 directed legal
-  moves**, including **48 terminal states**.
-- Maximum branching from one state: **7 unique moves**.
-- Automated standard-library and pytest suites cover rule and CLI behavior.
-- A complementary pytest suite exercises malformed and oversized input,
-  exhaustive move invariants, horizon/DP behavior, runtime limits, and a
-  defense-in-depth architecture guard against accidentally adding dynamic
-  execution, shell, network, or gameplay-file calls.
-- Verified after the DP migration: **141 pytest-collected tests plus 1,128
-  subtests passed**; the dependency-free unittest suite has **18 tests**.
-- Both command-line modes are covered by regression tests, and autonomous
-  play terminates at a win or the fixed horizon.
-- The browser solver classifies 532 A-win states, 532 B-win states, and 52
-  genuine cycle states. From the opening, optimal autonomous play reaches a
-  Player B knockout on move 26 rather than stopping on move 20.
-
-## File Map
-
-```text
-Assignment 6/
-|-- README.md                 # Living project overview and progress
-|-- RULES.md                  # Current game rules and examples
-|-- IMPLEMENTATION_PLAN.md    # Python architecture and design decisions
-|-- AI_LOGIC_GRAPH.md         # State graph and minimax explanation
-|-- chopsticks.py             # Game, graph, AI, and command-line modes
-|-- test_chopsticks.py        # Standard-library automated tests
-|-- test_chopsticks_pytest.py # Pytest edge-case and safety regressions
-|-- test_web_game.mjs         # Browser-engine rule and minimax tests
-|-- pytest.ini                # Stable local pytest discovery settings
-`-- web/
-    |-- index.html            # Browser interface
-    |-- styles.css            # Responsive visual design
-    |-- game.js               # Pure rules, finite DP, and cyclic graph solver
-    `-- app.js                # UI rendering and interaction
-```
-
-## Terminology
-
-- **Hand value:** Number of fingers on one hand; `0` means knocked out.
-- **State:** Both players' hand values plus whose turn it is; a DP table key
-  also records the turn level.
-- **Move:** One attack or redistribution performed during a turn.
-- **Ply:** One player's move. Browser play has no fixed number of plies.
-- **Move graph:** Unique game states connected by legal moves.
-- **Minimax:** Search in which Player A chooses the highest-valued continuation
-  and Player B chooses the lowest-valued continuation.
-- **Terminal state:** A state in which one player has `0 | 0` and has lost.
-- **Cycle state:** A browser position where perfect defense could repeat
-  indefinitely. Autonomous mode uses a finish-seeking route if one repeats.
-
-## Running and Testing
-
-Run these commands from the `Assignment 6` directory:
-
-```powershell
-python .\chopsticks.py
-
-# Run the complete regression suite (including unittest-style tests).
-python -m pytest -q
-
-# Run only the dependency-free standard-library suite.
-python -m unittest -v test_chopsticks.py
-
-# Test the JavaScript rules and minimax engine (requires Node.js).
-node --test-isolation=none --test test_web_game.mjs
-```
-
-To use the browser version, serve this directory over HTTP, then open
-[http://localhost:8000/web/](http://localhost:8000/web/) in a browser:
+From the `Assignment 6` directory, start a static web server:
 
 ```powershell
 python -m http.server 8000
 ```
 
-Opening `web/index.html` directly as a `file:` URL may prevent its JavaScript
-modules from loading; the local HTTP server avoids that restriction. Stop the
-server with `Ctrl+C` when finished.
+Then open [http://localhost:8000/](http://localhost:8000/) in a modern browser.
+Stop the server with `Ctrl+C` when finished.
 
-## Browser Features
+Opening `index.html` directly with a `file:` URL may prevent JavaScript modules
+from loading. The local server avoids that browser restriction. The project
+does not require a database, backend, account, or internet service.
 
-- Four large, centered visual hands, with finger counts, knocked-out states,
-  and accessible labels. Tap by choosing a live source hand and then a live
-  opponent hand; the source hand visibly travels toward its target before the
-  new finger count appears. Redistribute with the split control.
-- Play as A or B, restart, or watch autonomous A-versus-B play with play/pause,
-  single-step, and speed controls.
-- Moves played, outcome, and move history, including a brief explanation of
-  the AI's choice.
-- A focused move-graph view showing the current position and its legal next
-  positions with minimax values. The browser solves all 1,116 reachable
-  positions and plays until a player is actually knocked out.
-- A simplified game-first responsive layout with keyboard-operable controls.
-  Reduced-motion preferences skip the hand-travel animation.
+The supplemental Python command-line version can be run with:
 
-## Local CLI Security Scope
+```powershell
+python .\chopsticks.py
+```
 
-This is an offline, local command-line game. It does not evaluate user input
-as Python, invoke a shell, start external processes, access the network, or
-read and write gameplay files. Menu entries are treated only as text and are
-matched against known choices.
+## Game Rules
 
-Defensive limits keep accidental or malformed use predictable:
+The starter program is authoritative for this project. Its rules are:
 
-- A single interactive response is limited to **100 characters**.
-- The DP horizon must be an even integer from **2 through 50 plies**;
-  the default is **20**. The corresponding `moves` count is 1 through 25
-  A/B rounds.
-- The fixed game horizon ends cycles without a repetition rule. Defensive
-  runtime limits may still reject unreasonable arguments.
-- States, moves, and runtime options are validated before
-  use; invalid values produce a controlled error or another prompt.
-- End-of-file and `Ctrl+C` at the command line exit cleanly instead of
-  displaying a traceback.
+1. Player A and Player B begin with `1 | 1` fingers.
+2. Player A moves first. The players alternate, and one attack or
+   redistribution counts as one move.
+3. To attack, the current player selects one active hand and taps one active
+   opponent hand. The source value is added to the target value.
+4. If that sum is 5 or greater, the target is knocked out and becomes `0`.
+   Values do not wrap around.
+5. A `0` hand cannot attack and cannot be attacked.
+6. Instead of attacking, a player may transfer fingers between their own
+   labeled hands. The total must stay the same, both resulting values must be
+   from 0 through 4, and the move must do more than merely swap the left and
+   right values. Redistribution may revive a `0` hand or leave a hand at `0`.
+7. A player loses immediately when both of their hands are `0`.
+8. The assignment game has a 20-move search horizon. If level 20 is reached
+   and neither player has been eliminated, the game ends in a tie.
 
-These measures harden the intended CLI against unintended input and local
-resource abuse; they do **not** make the module a security sandbox. Python
-code that already has permission to import and call the module runs with the
-same permissions as the user and must still be trusted.
+The knockout check takes priority at level 20. Therefore, a player who loses
+their second hand on move 20 loses; the result is not a tie.
 
-## Maintaining This README
+More examples and rule details are available in [RULES.md](RULES.md).
 
-Update this file whenever a rule, interface, file name, completed feature, or
-next step changes. Keep the status checklist synchronized with the actual
-files, move detailed explanations into the linked documents, and record any
-departure from the current legal rules before changing the implementation.
+## State Representation
 
-## Next Steps
+JavaScript represents a state as:
 
-1. Keep the Python and JavaScript legal moves in sync while documenting their
-   intentionally different ending policies.
-2. Consider replay, undo, or deeper graph exploration after reviewing the
-   first browser-play experience.
+```javascript
+[[aLeft, aRight], [bLeft, bRight], level]
+```
+
+For example:
+
+```javascript
+[[1, 3], [0, 2], 7]
+```
+
+means that A has `1 | 3`, B has `0 | 2`, and seven moves have been played.
+The level determines both the turn and the number of moves remaining:
+
+- An even level is Player A's turn, so A chooses the maximum value.
+- An odd level is Player B's turn, so B chooses the minimum value.
+- `20 - level` is the number of moves remaining in the assignment horizon.
+
+Hands are ordered and labeled. Consequently, `0 | 2` and `2 | 0` are distinct
+states even though they contain the same total number of fingers. A DP key
+includes all four hand values and the absolute level because the same hands
+can have a different result when a different number of moves remains.
+
+## `overflowSum()` and `nextMoves()`
+
+`overflowSum(a, b)` implements an attack result. It returns `a + b` when the
+sum is below 5 and returns `0` when the sum is 5 or greater.
+
+`legalMoves(state, depth)` is the single source of truth for attacks and
+redistributions. It:
+
+1. Determines the actor from the level's parity.
+2. Generates every attack between a nonzero source and nonzero target.
+3. Generates every starter-compatible redistribution by transferring one or
+   more fingers from one labeled hand to the other.
+4. Rejects out-of-range results, unchanged results, and pure left/right swaps.
+5. Removes duplicate successors and advances the level by one.
+6. Returns no successors after a knockout or at the depth-20 boundary.
+
+`nextMoves(state, depth)` presents the same engine output as successor states.
+The AI and interface both use this move generator. The interface does not
+maintain a second copy of the game rules, so a redistribution shown to the
+user is legal for exactly the same reason that it is legal to the minimax AI.
+
+## Minimax Values
+
+Every state receives a value from Player A's perspective:
+
+| Value | Meaning |
+|---:|---|
+| `+1` | A can force a win within the remaining moves. |
+| `0` | Neither player can force a win before the depth-20 boundary. |
+| `-1` | B can force a win within the remaining moves. |
+
+At an even level, A selects the legal successor with the greatest value. At
+an odd level, B selects the successor with the smallest value. This models
+both players making optimal decisions. Equal-valued choices use stable move
+ordering so tests and demonstrations remain reproducible.
+
+The terminal/base values are:
+
+- A has `0 | 0`: `-1`
+- B has `0 | 0`: `+1`
+- Both players are alive at level 20: `0`
+
+## Bottom-Up Dynamic Programming
+
+`bestMoveDP(20)` builds the entire table from the deepest level back to the
+opening instead of recursively rebuilding the same subtrees:
+
+```text
+for level from 20 down to 0:
+    for every A-left, A-right, B-left, and B-right value from 0 to 4:
+        if A is knocked out, store -1
+        else if B is knocked out, store +1
+        else if level is 20, store 0
+        else:
+            generate legal successor states
+            look up their already-computed values at level + 1
+            store MAX(successors) on A's turn
+            store MIN(successors) on B's turn
+            also store the selected move
+```
+
+Each of the four hands has five possible values, producing at most
+`5^4 = 625` hand configurations at one level. Levels 0 through 20 produce at
+most `625 × 21 = 13,125` entries. This complete table is small for a browser,
+and every repeated state/level combination is evaluated once.
+
+The reverse traversal is essential: while evaluating level 19, every needed
+level-20 value must already exist. A forward traversal would ask for child
+values that had not yet been computed.
+
+`bestMove(state, table)` retrieves the stored optimal move. The AI Analysis
+panel uses `evaluateMoves(state, table)` to display all legal candidates and
+their minimax values, and `outcomeLabel(score)` translates the numeric value
+to `WIN`, `TIE`, or `LOSS` from A's perspective.
+
+## Interface and AI Analysis
+
+The interface provides:
+
+- Large visual hands for A and B, with finger counts and knocked-out styling
+- Choice of playing first as A or second as B
+- Direct hand selection for attacks
+- Redistribution choices generated by the rules engine
+- Move number, moves remaining, whose turn it is, and game result
+- Restart/New Game controls
+- Computer thinking, selection, tap, knockout, and turn-change feedback
+- Autonomous A-versus-B play with pause, step, and speed controls
+- A show/hide AI Analysis panel
+
+For the current computer decision, AI Analysis reports the complete state,
+whether the turn is MAX or MIN, every legal move considered, each successor's
+minimax value, the selected move, and the predicted `WIN`, `TIE`, or `LOSS`
+from Player A's perspective. It explains the same depth-20 table that actually
+chooses the move.
+
+## Software Organization
+
+```text
+Assignment 6/
+|-- index.html                 # Single-page interface and semantic structure
+|-- style.css                  # Responsive design and animations
+|-- game.js                    # State validation, rules, and move generation
+|-- ai.js                      # Depth-20 DP, minimax, and analysis helpers
+|-- app.js                     # Rendering, controls, and turn coordination
+|-- README.md                  # Setup, design, testing, and reflections
+|-- VIBE_LOG.md                # Record of meaningful AI-assisted work
+|-- chopsticks.py              # Supplemental Python reference and CLI
+|-- test_web_game.mjs          # JavaScript engine and interface regressions
+|-- test_chopsticks.py         # Dependency-free Python tests
+|-- test_chopsticks_pytest.py  # Extended Python and safety tests
+|-- pytest.ini                 # Pytest discovery configuration
+|-- RULES.md                   # Expanded rules and examples
+|-- IMPLEMENTATION_PLAN.md     # Earlier architecture decisions
+`-- AI_LOGIC_GRAPH.md          # Visual explanation of the minimax graph
+```
+
+Keeping `game.js` and `ai.js` separate prevents presentation code from
+silently changing the rules or algorithm. `app.js` consumes those modules and
+does not calculate its own legal moves. The additional Python and Markdown
+files are supporting material; the required web application remains static.
+
+## Testing
+
+Run all Python tests from `Assignment 6` with:
+
+```powershell
+python -m pytest -q
+```
+
+Run the dependency-free Python suite with:
+
+```powershell
+python -m unittest -v test_chopsticks.py
+```
+
+Run the JavaScript tests with a current Node.js installation:
+
+```powershell
+node --test-isolation=none --test test_web_game.mjs
+```
+
+The regression suite covers:
+
+- The `1 | 1` versus `1 | 1` initial state
+- Zero-hand attack restrictions and overflow knockouts
+- Legal and illegal redistributions, including revival
+- Invalid states and malformed inputs
+- A-knockout and B-knockout terminal scores
+- The level-20 nonterminal tie
+- MAX selection on A turns and MIN selection on B turns
+- A position whose successor values differ
+- Legal computer move selection on representative A and B turns
+- Interface contract checks for restart wiring and guards that reject illegal
+  selections before state mutation
+- Autonomous play ending in a knockout or at the fixed horizon
+- Agreement between representative JavaScript and Python states
+- Required interface controls and explicit wide/narrow CSS layout rules
+
+Before submission, the web application should also be opened manually at a
+wide desktop size and a narrow mobile size. Confirm that attacks,
+redistributions, both player choices, autonomous mode, restart, AI Analysis,
+and the move-20 tie work without console errors.
+
+## Security and Input Handling
+
+The project is a local static application. It does not evaluate user-provided
+code, invoke a shell from gameplay, use network APIs, or save gameplay data.
+The rules modules validate hand values, levels, and the DP depth. The browser
+builds game output with DOM text rather than interpreting move descriptions as
+HTML. The Python CLI limits input length and validates menu selections and
+runtime arguments.
+
+These controls make unintended local input predictable; they do not turn an
+imported Python or JavaScript module into a security sandbox.
+
+## Known Limitations
+
+- A `0` score means no forced winner was found within 20 moves. It does not
+  prove that the unlimited cyclic version of the game is a permanent draw.
+- The depth is intentionally fixed at 20 for assignment compliance.
+- Game progress is not saved after the page is closed or refreshed.
+- The computer optimizes only the `-1`, `0`, and `+1` outcome. Among equally
+  valued moves, it uses stable ordering rather than preferring the fastest win
+  or longest defense.
+- The interface is designed for one local browser and has no networked
+  multiplayer mode.
+
+## Possible Extensions
+
+After the assignment version is complete and verified, possible extensions
+include:
+
+- A user-selectable search depth while keeping 20 as the assignment default
+- A larger interactive view of the immediate minimax tree
+- A DP statistics panel showing states evaluated and table-build time
+- Human-versus-human play
+- Saved/replayable move history
+- Optional sound and additional animations
+- A comparison between recursive minimax and bottom-up DP
+- A separate unlimited-play experiment for studying cycles
+- Static-site deployment
+
+## Reflection
+
+### 1. Why does Player A maximize while Player B minimizes?
+
+Scores are defined from A's perspective: `+1` is good for A and `-1` is good
+for B. Therefore A chooses the greatest available score. An optimal B tries
+to make A's result as small as possible, so B chooses the minimum. Reversing
+one of those roles would model that player deliberately helping the opponent.
+
+### 2. Why is the table filled from the deepest level toward level zero?
+
+A state's value depends on the values of its legal successors one level
+deeper. Starting with known terminal and depth-20 values means every child is
+available when its parent is evaluated. Working forward would require unknown
+future values or recursive revisiting.
+
+### 3. Why is dynamic programming faster than searching a plain game tree?
+
+Different sequences frequently reach the same hand values at the same level.
+A plain tree recalculates the shared continuation once per path. The DP table
+uses the state and level as a key, calculates that continuation once, and
+reuses the stored result. The bounded table has at most 13,125 entries even
+when the unmerged tree contains far more paths.
+
+### 4. Why does the interface use moves returned by the engine?
+
+One rules engine prevents the UI and AI from disagreeing. If the engine says
+a hand cannot attack, the UI cannot accidentally offer that attack. If it
+returns a redistribution, the AI can consider it and the UI can display the
+same move. This also lets the tests verify rules without driving the visual
+interface for every case.
+
+### 5. What did AI assistance help with most?
+
+It was most useful for comparing rule variants, mapping the starter functions
+to a browser architecture, identifying edge cases, and exposing the important
+difference between an unlimited cyclic solver and the assignment's finite
+depth-20 DP. Those suggestions were treated as proposals and checked against
+the starter code, assignment document, and automated tests.
+
+### 6. What AI-generated suggestion was verified, modified, or rejected?
+
+The unlimited solver was initially accepted because it satisfied the request
+to continue until a knockout. After reviewing the assignment, that design was
+modified: the required browser path now uses bottom-up depth-20 DP and declares
+a maximum-depth tie. This was not a cosmetic preference; the two models give
+different opening predictions. Keeping the assignment's specified horizon
+ensures that the displayed analysis, game ending, and grading expectations all
+describe the same algorithm.
+
+## Project Record
+
+See [VIBE_LOG.md](VIBE_LOG.md) for five meaningful AI-assisted interactions,
+including the rule decision, starter-code comparison, DP design, interface
+iteration, and the assignment-compliance correction.
