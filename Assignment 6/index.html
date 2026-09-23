@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#f5f7fb">
     <meta name="description" content="Play Chopsticks against a bottom-up depth-20 minimax AI, or watch both computer players.">
     <title>Chopsticks · Assignment 6</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./style.css">
     <script type="module" src="./app.js"></script>
   </head>
@@ -54,6 +55,19 @@
                   <div class="segmented-control" role="group" aria-labelledby="side-label">
                     <button type="button" id="player-a" class="segment" aria-pressed="true">Player A <span class="segment-caption">first</span></button>
                     <button type="button" id="player-b" class="segment" aria-pressed="false">Player B <span class="segment-caption">second</span></button>
+                  </div>
+                </div>
+              </div>
+              <div id="auto-controls" class="auto-controls setup-auto-controls" hidden>
+                <div class="auto-control-copy">
+                  <strong>AI vs AI controls</strong>
+                  <span>Start both computer players, advance one move, or change the playback speed.</span>
+                </div>
+                <div class="auto-control-actions">
+                  <div class="auto-control-buttons"><button type="button" id="auto-play" class="button button-primary">Start AI vs AI</button><button type="button" id="auto-step" class="button button-quiet">Play one AI move <span aria-hidden="true">→</span></button></div>
+                  <div class="auto-speed-control">
+                    <label class="speed-control" for="auto-speed"><span>Time per move</span><span id="auto-speed-label">0.7 s / move</span></label>
+                    <input type="range" id="auto-speed" min="250" max="1800" step="50" value="700">
                   </div>
                 </div>
               </div>
@@ -134,16 +148,11 @@
                 <div id="move-options" class="move-options" aria-live="polite"><p class="empty-note">Select one of your hands to see its legal taps.</p></div>
               </div>
 
-              <div id="auto-controls" class="auto-controls" hidden>
-                <div class="auto-control-buttons"><button type="button" id="auto-play" class="button button-primary">Play simulation</button><button type="button" id="auto-step" class="button button-quiet">Step once <span aria-hidden="true">→</span></button></div>
-                <label class="speed-control" for="auto-speed"><span>Time per turn</span><span id="auto-speed-label">0.7 s / turn</span></label>
-                <input type="range" id="auto-speed" min="250" max="1800" step="50" value="700">
-              </div>
             </section>
 
             <section class="panel history-panel" aria-labelledby="history-title">
               <div class="panel-heading"><div><p class="section-kicker">Review</p><h2 id="history-title">Move history</h2></div><span class="panel-caption">Newest first</span></div>
-              <ol id="history-list" class="history-list" aria-live="polite"><li class="history-empty">The first move will appear here.</li></ol>
+              <ol id="history-list" class="history-list" aria-live="polite" aria-label="Move history, newest move first"><li class="history-empty">The first move will appear here.</li></ol>
             </section>
           </div>
 
@@ -151,28 +160,67 @@
             <section id="ai-panel" class="panel insight-panel analysis-panel" aria-labelledby="insight-title">
               <div class="panel-heading">
                 <div><p class="section-kicker">Inside the algorithm</p><h2 id="insight-title">AI Analysis</h2></div>
-                <button type="button" id="ai-toggle" class="button button-quiet" aria-expanded="true" aria-controls="ai-analysis-content">Hide analysis</button>
+                <button type="button" id="ai-toggle" class="button button-quiet" aria-expanded="true" aria-controls="ai-analysis-content">Hide AI Analysis</button>
               </div>
 
               <div id="ai-analysis-content" class="analysis-content">
-                <div class="analysis-summary">
-                  <div class="score-card"><span class="score-label">Predicted result from A’s perspective</span><strong id="ai-score">Calculating…</strong><span class="score-footnote">+1 WIN for A <span aria-hidden="true">·</span> 0 TIE within the horizon <span aria-hidden="true">·</span> −1 LOSS for A</span></div>
-                  <dl class="analysis-facts">
-                    <div><dt>Current state</dt><dd id="ai-state">A 1 · 1 / B 1 · 1 / level 0</dd></div>
-                    <div><dt>Current role</dt><dd id="ai-role">Player A · MAX</dd></div>
-                    <div><dt>Selected move</dt><dd id="ai-selected">Calculating…</dd></div>
-                  </dl>
+                <div class="analysis-overview">
+                  <p class="analysis-question">What should happen if both players make their best choices?</p>
+                  <div class="analysis-outcome">
+                    <span class="score-label">Expected result</span>
+                    <strong id="ai-score">Calculating…</strong>
+                    <p id="ai-reason" class="ai-reason">The AI is checking every legal continuation through move 20.</p>
+                  </div>
+                  <div class="analysis-next-grid">
+                    <div class="analysis-next-item"><span>Whose decision?</span><strong id="ai-turn-simple">Player A is choosing now</strong></div>
+                    <div class="analysis-next-item"><span>Best next move</span><strong id="ai-selected">Calculating…</strong></div>
+                  </div>
+                  <p class="analysis-tip"><strong>In plain language:</strong> Player A tries to find the best result for A. Player B tries to prevent it. The explanation below uses that same rule.</p>
                 </div>
-                <p id="ai-reason" class="ai-reason">The AI reads a complete bottom-up table from level 20 back to level 0.</p>
-                <div class="algorithm-legend"><span><i class="legend-dot dot-a" aria-hidden="true"></i> A chooses the maximum</span><span><i class="legend-dot dot-b" aria-hidden="true"></i> B chooses the minimum</span></div>
 
-                <div class="analysis-graph" aria-labelledby="graph-title">
-                  <div class="panel-heading"><div><p class="section-kicker">Legal moves considered</p><h3 id="graph-title">Current minimax branches</h3></div><span class="graph-icon" aria-hidden="true"><span></span><span></span><span></span></span></div>
-                  <p class="graph-intro">Every branch comes from the shared rule engine. Its value comes from the depth-20 DP table; the selected move is highlighted.</p>
-                  <div id="graph-current" class="graph-current" aria-live="polite"><span class="node-label">Current state</span><strong>A 1 · 1 <span aria-hidden="true">/</span> B 1 · 1 <span aria-hidden="true">/</span> level 0</strong></div>
-                  <div class="graph-connector" aria-hidden="true"><span></span></div>
-                  <div id="graph-choices" class="graph-choices" aria-live="polite"><p class="empty-note">Legal next positions will appear here.</p></div>
-                </div>
+                <details id="ai-advanced-details" class="analysis-advanced">
+                  <summary>Explore the move tree and see how the AI calculated it</summary>
+                  <div class="analysis-advanced-content">
+                    <p class="advanced-intro">These are the technical details behind the summary above. The AI built 13,125 table rows from move 20 backward to the opening.</p>
+                    <div class="analysis-summary">
+                      <dl class="analysis-facts">
+                        <div><dt>Current state</dt><dd id="ai-state">A 1 · 1 / B 1 · 1 / level 0</dd></div>
+                        <div><dt>Current role</dt><dd id="ai-role">Player A · MAX</dd></div>
+                        <div><dt>Numeric value</dt><dd id="ai-raw-score">0</dd></div>
+                      </dl>
+                      <div class="score-key" aria-label="Minimax score key">
+                        <p><strong>+1</strong><span>Player A can force a win.</span></p>
+                        <p><strong>0</strong><span>Neither player can force a win before move 20.</span></p>
+                        <p><strong>−1</strong><span>Player B can force a win.</span></p>
+                      </div>
+                    </div>
+                    <div class="algorithm-legend"><span><i class="legend-dot dot-a" aria-hidden="true"></i> A is MAX and chooses the highest value</span><span><i class="legend-dot dot-b" aria-hidden="true"></i> B is MIN and chooses the lowest value</span></div>
+
+                    <div class="analysis-graph" aria-labelledby="graph-title">
+                      <div class="panel-heading"><div><p class="section-kicker">Interactive decision map</p><h3 id="graph-title">Move tree</h3></div><span class="graph-icon" aria-hidden="true"><span></span><span></span><span></span></span></div>
+                      <p class="graph-intro">The route shows how the game reached its current node. Under it, every legal next move creates a branch. Select a branch to preview the changed hands and the opponent’s possible replies; previewing never plays the move.</p>
+                      <div class="tree-legend" aria-label="Move tree legend"><span><i class="tree-swatch swatch-played" aria-hidden="true"></i>Played route</span><span><i class="tree-swatch swatch-current" aria-hidden="true"></i>Current node</span><span><i class="tree-swatch swatch-best" aria-hidden="true"></i>AI choice</span></div>
+
+                      <section class="tree-route" aria-labelledby="tree-route-title">
+                        <h4 id="tree-route-title">Route played so far</h4>
+                        <div id="tree-played-path" class="tree-played-path" aria-live="polite"><span class="tree-route-node is-current">Start</span></div>
+                      </section>
+
+                      <div id="move-tree" class="move-tree" aria-label="Current move tree">
+                        <p class="tree-level-label">Current position</p>
+                        <div id="graph-current" class="tree-current-node" aria-live="polite">A 1 · 1 / B 1 · 1 / level 0</div>
+                        <div class="tree-connector" aria-hidden="true"></div>
+                        <p class="tree-level-label">Legal next moves</p>
+                        <div id="graph-choices" class="tree-children" role="list" aria-live="polite"><p class="empty-note">Legal next positions will appear here.</p></div>
+                        <div id="tree-impact" class="tree-impact" aria-live="polite"><p>Select a move branch to see exactly what changes.</p></div>
+                        <div class="tree-reply-section">
+                          <p class="tree-level-label">Opponent’s possible replies to the previewed move</p>
+                          <div id="tree-replies" class="tree-children tree-replies" role="list"><p class="empty-note">Select a move to preview its replies.</p></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </details>
               </div>
             </section>
 

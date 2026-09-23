@@ -117,6 +117,24 @@ test('submission contains the assignment web-file structure', () => {
   assert.match(WEB_APP, /from\s+["']\.\/ai\.js["']/);
 });
 
+test('the page uses the local Chopsticks artwork as its browser icon', () => {
+  const iconTag = [...WEB_HTML.matchAll(/<link\b[^>]*>/gi)]
+    .map((match) => match[0])
+    .find((tag) => /\brel=["'][^"']*\bicon\b[^"']*["']/i.test(tag));
+  assert(iconTag, 'Missing a favicon <link rel="icon">');
+  const href = iconTag.match(/\bhref=["']([^"']+)["']/i)?.[1];
+  assert(href, 'The favicon link needs a local href');
+  assert.doesNotMatch(href, /^(?:[a-z]+:|\/\/)/i, 'The favicon must be a local project file');
+
+  const iconUrl = new URL(href, import.meta.url);
+  iconUrl.search = '';
+  iconUrl.hash = '';
+  assert(existsSync(iconUrl), `Missing favicon file: ${href}`);
+  const iconSource = readFileSync(iconUrl, 'utf8');
+  assert(iconSource.length > 50, 'The favicon file appears to be empty');
+  if (iconUrl.pathname.endsWith('.svg')) assert.match(iconSource, /<svg\b/i);
+});
+
 test('starts at A (MAX), enforces the depth-20 tie, and preserves knockouts', () => {
   assert.equal(DEFAULT_DEPTH, 20);
   assert.deepEqual(INITIAL_STATE, [[1, 1], [1, 1], 0]);
@@ -311,6 +329,40 @@ test('the interface exposes all required game and analysis information', () => {
   assert.match(WEB_HTML, /20[- ]move|depth\s*20|20\s*moves?/i);
 });
 
+test('AI-vs-AI playback controls are part of Game Setup and name the start action clearly', () => {
+  const setup = WEB_HTML.match(
+    /<section\b(?=[^>]*class=["'][^"']*\bsetup-panel\b[^"']*["'])[^>]*>[\s\S]*?<\/section>/i,
+  )?.[0];
+  assert(setup, 'Missing the Game Setup panel');
+  for (const id of ['mode-auto', 'auto-controls', 'auto-play', 'auto-step', 'auto-speed']) {
+    assert.match(setup, new RegExp(`\\bid=["']${id}["']`, 'i'), `#${id} must be inside Game Setup`);
+  }
+
+  const playButton = setup.match(
+    /<button\b(?=[^>]*\bid=["']auto-play["'])[^>]*>([\s\S]*?)<\/button>/i,
+  );
+  assert(playButton, 'Missing the AI-vs-AI start button');
+  const initialLabel = playButton[1].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  assert.match(initialLabel, /\bstart\s+AI\s+vs\.?\s+AI\b/i,
+    'The initial button label should make it clear that it starts AI vs AI');
+  assert.match(WEB_APP, /ui\.autoPlay\.textContent\s*=\s*autoRunning\s*\?\s*["']Pause AI vs AI["']\s*:\s*["']Start AI vs AI["']/,
+    'The dynamic play/pause labels should remain explicit');
+});
+
+test('move history starts roomy and scrolls instead of growing with every move', () => {
+  const historyCss = cssDeclarations('.history-list');
+  assert.match(historyCss,
+    /(?:^|;)\s*(?:height|block-size|min-height|min-block-size):\s*[^;]+/,
+    'Move history needs a roomy fixed or minimum size before moves are added');
+  assert.match(historyCss,
+    /(?:^|;)\s*(?:height|block-size|max-height|max-block-size):\s*[^;]+/,
+    'Move history needs a bounded size');
+  assert.match(historyCss, /overflow-y:\s*(?:auto|scroll)/,
+    'Move history should scroll vertically when it fills');
+  assert.match(historyCss, /scrollbar-gutter:\s*stable/,
+    'Reserving scrollbar space keeps history from shifting as it fills');
+});
+
 test('restart resets state and illegal UI actions are validated before mutation', () => {
   const reset = functionSource('resetGame');
   assert.match(reset, /structuredClone\(INITIAL_STATE\)/);
@@ -331,7 +383,7 @@ test('restart resets state and illegal UI actions are validated before mutation'
   assert.match(handClick, /selectedSource\s*===\s*null/);
 });
 
-test('AI analysis can collapse and reports state, role, candidates, and prediction', () => {
+test('AI analysis has a beginner summary plus optional advanced minimax details', () => {
   assert.match(WEB_APP, /aiToggle|ai-toggle|ui\.aiToggle/);
   assert.match(WEB_APP, /aria-expanded/);
   assert.match(WEB_APP, /aiContent|ai-analysis-content|ui\.aiContent/);
@@ -344,6 +396,77 @@ test('AI analysis can collapse and reports state, role, candidates, and predicti
   assert.match(analysis, /aiState|ai-state|ui\.aiState/);
   assert.match(analysis, /aiRole|ai-role|ui\.aiRole/);
   assert.match(WEB_APP, /evaluateMoves\(state/);
+
+  const beginnerIds = ['ai-score', 'ai-reason', 'ai-turn-simple', 'ai-selected'];
+  for (const id of beginnerIds) assert.match(WEB_HTML, new RegExp(`\\bid=["']${id}["']`, 'i'));
+
+  const advanced = WEB_HTML.match(
+    /<details\b(?=[^>]*\bid=["']ai-advanced-details["'])[^>]*>([\s\S]*?)<\/details>/i,
+  );
+  assert(advanced, 'Technical minimax information should live in a native hideable details panel');
+  assert.doesNotMatch(advanced[0].match(/^<details\b[^>]*>/i)?.[0] ?? '', /\sopen(?:\s|=|>)/i,
+    'Advanced details should start collapsed for first-time players');
+  assert.match(advanced[1],
+    /<summary\b[^>]*>[^<]*(?:advanced|details|how the AI|calculated)[^<]*<\/summary>/i,
+    'The disclosure label should explain that it reveals the AI calculation');
+  for (const id of beginnerIds) {
+    assert.doesNotMatch(advanced[1], new RegExp(`\\bid=["']${id}["']`, 'i'),
+      `#${id} belongs in the beginner summary, not Advanced details`);
+  }
+  for (const id of ['ai-state', 'ai-role', 'ai-raw-score', 'graph-current', 'graph-choices']) {
+    assert.match(advanced[1], new RegExp(`\\bid=["']${id}["']`, 'i'),
+      `#${id} should be inside Advanced details`);
+  }
+});
+
+test('interactive move tree connects the played route, current node, choices, impact, and replies', () => {
+  for (const id of [
+    'move-tree', 'tree-played-path', 'graph-current', 'graph-choices',
+    'tree-impact', 'tree-replies',
+  ]) assert.match(WEB_HTML, new RegExp(`\\bid=["']${id}["']`, 'i'), `Missing #${id}`);
+
+  const path = functionSource('renderPlayedPath');
+  assert.match(path, /INITIAL_STATE/);
+  assert.match(path, /history\.map\(/);
+  assert.match(path, /stateAfter/);
+  assert.match(path, /is-current/);
+  assert.match(path, /is-played/);
+
+  const graph = functionSource('renderGraph');
+  assert.match(graph, /evaluateMoves\(state,\s*minimaxTable\)/);
+  assert.match(graph, /previewedMoveKey/);
+  assert.match(graph, /renderImpact\(state,\s*previewed\)/);
+  assert.match(graph, /renderReplies\(previewed\)/);
+
+  const commit = functionSource('commitMove');
+  assert.match(commit, /stateAfter:\s*structuredClone\(state\)/,
+    'Committed moves should save their resulting node for the played route');
+});
+
+test('tree branch previews are accessible, explanatory, bounded, and never play a move', () => {
+  const branch = functionSource('createTreeBranch');
+  assert.match(branch, /document\.createElement\(interactive\s*\?\s*['"]button['"]\s*:\s*['"]div['"]\)/);
+  assert.match(branch, /aria-pressed/);
+  assert.match(branch, /aria-describedby[^\n]*tree-impact/);
+  assert.match(branch, /dataset\.treeNodeKey/);
+  assert.match(branch, /dataset\.previewState/);
+  assert.match(branch, /previewedMoveKey\s*=\s*childKey/);
+  assert.match(branch, /renderImpact\(position,\s*move\)/);
+  assert.match(branch, /renderReplies\(move\)/);
+  assert.doesNotMatch(branch, /\bstate\s*=/,
+    'Previewing a branch must not mutate the current game state');
+
+  const impact = functionSource('describeMoveImpact');
+  assert.match(impact, /move\.kind\s*===\s*['"]attack['"]/);
+  assert.match(impact, /redistributes/);
+  assert.match(impact, /remaining/);
+  assert.match(impact, /prediction/);
+
+  assert.match(cssDeclarations('.tree-played-path'), /overflow-x:\s*auto/);
+  assert.match(cssDeclarations('.tree-children'), /overflow-x:\s*auto/);
+  assert.match(cssDeclarations('.tree-branch'), /flex:\s*0\s+0\s+[^;]+/);
+  assert.match(WEB_CSS, /\.tree-node\.is-previewed\b/);
+  assert.match(WEB_CSS, /\.tree-node\.is-best\b/);
 });
 
 test('large hands stay centered and CSS supplies explicit wide/narrow layouts', () => {

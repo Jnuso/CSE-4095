@@ -174,20 +174,33 @@ The interface provides:
 - Move number, moves remaining, whose turn it is, and game result
 - Restart/New Game controls
 - Computer thinking, selection, tap, knockout, and turn-change feedback
-- Autonomous A-versus-B play with pause, step, and speed controls
-- A show/hide AI Analysis panel
+- Autonomous A-versus-B controls in Game Setup with clearly labeled start,
+  pause, single-move, and speed controls
+- A roomy, fixed-height move history that scrolls instead of expanding the page
+- A show/hide AI Analysis panel with a beginner summary and optional advanced
+  calculation details
+- An interactive move tree showing the route already played, the current node,
+  every legal next branch, its effect on the hands, and the opponent's replies
 
-For the current computer decision, AI Analysis reports the complete state,
-whether the turn is MAX or MIN, every legal move considered, each successor's
-minimax value, the selected move, and the predicted `WIN`, `TIE`, or `LOSS`
-from Player A's perspective. It explains the same depth-20 table that actually
+The always-visible AI summary answers three beginner questions: what result is
+expected, whose decision it is, and which move the AI prefers. The collapsed
+advanced section then reports the complete state, MAX/MIN role, numeric score
+key, every legal move considered, each successor's minimax value, and the
+highlighted selection. Both views explain the same depth-20 table that actually
 chooses the move.
+
+The Move Tree stays deliberately bounded: it shows the actual played route,
+the current state, every immediate legal move, and one reply layer for the
+selected branch. Selecting a branch is a preview only and does not change the
+game. This makes alternatives visible without attempting to render the
+exponentially larger collection of every path through all 20 levels at once.
 
 ## Software Organization
 
 ```text
 Assignment 6/
 |-- index.html                 # Single-page interface and semantic structure
+|-- favicon.svg                # Crossed-chopsticks browser-tab icon
 |-- style.css                  # Responsive design and animations
 |-- game.js                    # State validation, rules, and move generation
 |-- ai.js                      # Depth-20 DP, minimax, and analysis helpers
@@ -245,6 +258,8 @@ The regression suite covers:
 - Autonomous play ending in a knockout or at the fixed horizon
 - Agreement between representative JavaScript and Python states
 - Required interface controls and explicit wide/narrow CSS layout rules
+- Move-tree route tracking, legal branch previews, impact explanations,
+  non-mutating selection, and bounded horizontal scrolling
 
 Before submission, the web application should also be opened manually at a
 wide desktop size and a narrow mobile size. Confirm that attacks,

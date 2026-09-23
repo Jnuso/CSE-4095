@@ -37,13 +37,19 @@ const ui = {
   autoSpeed: byId('auto-speed'),
   autoSpeedLabel: byId('auto-speed-label'),
   history: byId('history-list'),
+  treePath: byId('tree-played-path'),
   graphCurrent: byId('graph-current'),
   graphChoices: byId('graph-choices'),
+  treeImpact: byId('tree-impact'),
+  treeReplies: byId('tree-replies'),
   aiToggle: byId('ai-toggle'),
   aiContent: byId('ai-analysis-content'),
+  aiAdvanced: byId('ai-advanced-details'),
   aiRole: byId('ai-role'),
   aiState: byId('ai-state'),
+  aiTurnSimple: byId('ai-turn-simple'),
   aiScore: byId('ai-score'),
+  aiRawScore: byId('ai-raw-score'),
   aiReason: byId('ai-reason'),
   aiSelected: byId('ai-selected'),
 };
@@ -62,6 +68,7 @@ let pendingTimer = null;
 let generation = 0;
 let gameRevision = 0;
 let isAnimating = false;
+let previewedMoveKey = null;
 
 function currentPlayer(position = state) {
   return position[2] % 2 === 0 ? 'A' : 'B';
@@ -85,6 +92,12 @@ function scoreDetail(score) {
   if (score === 1) return 'Player A can force a knockout before the 20-move limit.';
   if (score === -1) return 'Player B can force a knockout before the 20-move limit.';
   return 'Neither player can force a knockout before the 20-move limit, so optimal play is scored as a tie.';
+}
+
+function beginnerOutcome(score) {
+  if (score === 1) return 'Player A is expected to win';
+  if (score === -1) return 'Player B is expected to win';
+  return 'A tie is expected by move 20';
 }
 
 function compactState(position) {
@@ -190,7 +203,9 @@ function renderStatus() {
     ui.detail.textContent = `Both players still have an active hand after ${DEFAULT_DEPTH} moves.`;
   } else if (mode === 'auto') {
     ui.title.textContent = autoRunning ? 'Autonomous game in motion' : 'Autonomous game paused';
-    ui.detail.textContent = `Player ${currentPlayer()} moves next. Both sides follow the depth-${DEFAULT_DEPTH} minimax table.`;
+    ui.detail.textContent = autoRunning ?
+      `Player ${currentPlayer()} is moving. Both sides follow the depth-${DEFAULT_DEPTH} minimax table.` :
+      `Player ${currentPlayer()} moves next. Use Start AI vs AI in Game Setup, or play one AI move.`;
   } else if (humanMayMove()) {
     ui.title.textContent = `Your move · Player ${humanPlayer}`;
     ui.detail.textContent = showingSplits ? 'Choose a legal split below. A split uses your turn.' :
@@ -213,11 +228,11 @@ function renderControls() {
   ui.playerB.classList.toggle('is-active', humanPlayer === 'B');
   ui.playerControls.hidden = mode !== 'human';
   ui.autoControls.hidden = mode !== 'auto';
-  ui.autoPlay.textContent = autoRunning ? 'Pause playback' : 'Play both sides';
+  ui.autoPlay.textContent = autoRunning ? 'Pause AI vs AI' : 'Start AI vs AI';
   ui.autoPlay.disabled = mode !== 'auto' || getResult(state) !== null ||
     (isAnimating && !autoRunning);
   ui.autoStep.disabled = mode !== 'auto' || getResult(state) !== null || isAnimating;
-  ui.autoSpeedLabel.textContent = `${(Number(ui.autoSpeed.value) / 1000).toFixed(1)}s / turn`;
+  ui.autoSpeedLabel.textContent = `${(Number(ui.autoSpeed.value) / 1000).toFixed(1)} s / move`;
   const splitAvailable = humanMayMove() && legalMoves(state).some((move) => move.kind === 'split');
   ui.split.disabled = !splitAvailable;
   ui.split.setAttribute('aria-pressed', String(showingSplits && splitAvailable));
@@ -229,7 +244,7 @@ function renderMoveOptions() {
   if (!humanMayMove()) {
     const note = document.createElement('p');
     note.className = 'quiet-note';
-    note.textContent = mode === 'auto' ? 'Use the playback controls to explore each move.' :
+    note.textContent = mode === 'auto' ? 'Use the AI vs AI controls in Game Setup to start or step through the game.' :
       getResult(state) ? 'Start a new game to play again.' : 'The computer is choosing a move.';
     ui.moveOptions.append(note);
     return;
@@ -276,7 +291,10 @@ function renderAI() {
     'MIN · chooses the lowest value';
   ui.aiRole.textContent = `Player ${currentPlayer()} · ${role}`;
   ui.aiState.textContent = compactState(state);
-  ui.aiScore.textContent = `${entry.score > 0 ? '+' : entry.score < 0 ? '−' : ''}${Math.abs(entry.score)} · ${outcomeLabel(entry.score)}`;
+  ui.aiTurnSimple.textContent = result ? 'The game is complete' :
+    `Player ${currentPlayer()} is choosing now`;
+  ui.aiScore.textContent = beginnerOutcome(entry.score);
+  ui.aiRawScore.textContent = `${entry.score > 0 ? '+' : entry.score < 0 ? '−' : ''}${Math.abs(entry.score)} · ${outcomeLabel(entry.score)}`;
   ui.aiReason.textContent = lastExplanation || scoreDetail(entry.score);
 
   const selected = evaluateMoves(state, minimaxTable).find((move) => move.selected);
@@ -312,58 +330,181 @@ function renderHistory() {
   }
 }
 
-function addGraphBranch(parent, position, move) {
-  const child = move.nextState;
-  const childEntry = minimaxTable.get(stateKey(child));
-  const parentEntry = minimaxTable.get(stateKey(position));
-  if (!childEntry || !parentEntry) throw new Error('The graph is missing a minimax row.');
-  const isBest = parentEntry.bestState !== null &&
-    stateKey(parentEntry.bestState) === stateKey(child);
-  const details = document.createElement('details');
-  details.className = `graph-branch${isBest ? ' is-best' : ''}`;
-  const summary = document.createElement('summary');
-  const title = document.createElement('span');
-  title.className = 'graph-branch-title';
-  title.textContent = moveLabel(position, move);
-  const meta = document.createElement('span');
-  meta.className = 'graph-branch-meta';
-  const childResult = getResult(child);
-  meta.textContent = `${isBest ? 'Optimal choice · ' : ''}${scoreShort(childEntry.score)} · ${compactState(child)}${childResult ? ' · terminal' : ''}`;
-  summary.append(title, meta);
-  details.append(summary);
-  details.addEventListener('toggle', () => {
-    if (!details.open || details.dataset.loaded === 'true') return;
-    details.dataset.loaded = 'true';
-    const children = document.createElement('div');
-    children.className = 'graph-children';
-    if (childResult) {
-      const text = document.createElement('p');
-      text.textContent = childResult === 'tie' ?
-        `The ${DEFAULT_DEPTH}-move limit makes this position a tie.` :
-        `Player ${childResult} wins here.`;
-      children.append(text);
-    } else {
-      for (const next of evaluateMoves(child, minimaxTable)) {
-        addGraphBranch(children, child, next);
-      }
+function renderPlayedPath() {
+  ui.treePath.replaceChildren();
+  const positions = [structuredClone(INITIAL_STATE), ...history.map((record) => record.stateAfter)];
+
+  positions.forEach((position, index) => {
+    if (index > 0) {
+      const arrow = document.createElement('span');
+      arrow.className = 'tree-route-arrow';
+      arrow.setAttribute('aria-hidden', 'true');
+      arrow.textContent = '→';
+      ui.treePath.append(arrow);
     }
-    details.append(children);
+
+    const node = document.createElement('span');
+    const isCurrent = index === positions.length - 1;
+    node.className = `tree-route-node${isCurrent ? ' is-current' : ' is-played'}`;
+    node.dataset.treeNodeKey = stateKey(position);
+    node.textContent = index === 0 ? 'Start · A 1 · 1 / B 1 · 1' :
+      `Move ${position[2]} · A ${position[0][0]} · ${position[0][1]} / B ${position[1][0]} · ${position[1][1]}`;
+    ui.treePath.append(node);
   });
-  parent.append(details);
+
+  ui.treePath.scrollLeft = ui.treePath.scrollWidth;
+}
+
+function createTreeBranch(position, move, options) {
+  const interactive = options?.interactive ?? true;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'tree-branch';
+  wrapper.setAttribute('role', 'listitem');
+
+  const node = document.createElement(interactive ? 'button' : 'div');
+  if (interactive) node.type = 'button';
+  const childKey = stateKey(move.nextState);
+  const isPreviewed = childKey === previewedMoveKey;
+  node.className = `tree-node${move.selected ? ' is-best' : ''}${isPreviewed ? ' is-previewed' : ''}`;
+  node.dataset.treeNodeKey = childKey;
+  node.dataset.previewState = childKey;
+  if (interactive) {
+    node.setAttribute('aria-pressed', String(isPreviewed));
+    node.setAttribute('aria-describedby', 'tree-impact');
+  }
+
+  const kicker = document.createElement('span');
+  kicker.className = 'tree-node-kicker';
+  kicker.textContent = move.selected ? 'AI choice' : interactive ? 'Alternative move' : 'Possible reply';
+  const title = document.createElement('strong');
+  title.textContent = moveLabel(position, move);
+  const nextState = document.createElement('span');
+  nextState.className = 'tree-node-state';
+  nextState.textContent = compactState(move.nextState);
+  const value = document.createElement('span');
+  value.className = 'tree-node-value';
+  value.textContent = scoreShort(move.score);
+  node.append(kicker, title, nextState, value);
+
+  if (interactive) {
+    node.addEventListener('click', () => {
+      previewedMoveKey = childKey;
+      for (const candidate of ui.graphChoices.querySelectorAll('button.tree-node')) {
+        const selected = candidate.dataset.treeNodeKey === childKey;
+        candidate.classList.toggle('is-previewed', selected);
+        candidate.setAttribute('aria-pressed', String(selected));
+      }
+      renderImpact(position, move);
+      renderReplies(move);
+    });
+  }
+  wrapper.append(node);
+  return wrapper;
+}
+
+function describeMoveImpact(position, move) {
+  const actor = currentPlayer(position);
+  let change;
+  if (move.kind === 'attack') {
+    const targetPlayer = opposite(actor);
+    const sourceCount = handsFor(position, actor)[move.source];
+    const before = handsFor(position, targetPlayer)[move.target];
+    const after = handsFor(move.nextState, targetPlayer)[move.target];
+    change = after === 0 ?
+      `${actor}'s ${HAND_NAMES[move.source]} hand adds ${sourceCount} to ${targetPlayer}'s ${HAND_NAMES[move.target]} hand (${before}); five or more knocks that hand out.` :
+      `${targetPlayer}'s ${HAND_NAMES[move.target]} hand changes from ${before} to ${after}.`;
+  } else {
+    const before = handsFor(position, actor);
+    change = `${actor} redistributes ${before[0]} · ${before[1]} into ${move.newHands[0]} · ${move.newHands[1]}.`;
+  }
+
+  const nextPlayer = currentPlayer(move.nextState);
+  const nextRole = nextPlayer === 'A' ? 'MAX' : 'MIN';
+  const remaining = Math.max(0, DEFAULT_DEPTH - move.nextState[2]);
+  return {
+    change,
+    consequence: `The branch moves to level ${move.nextState[2]}. Player ${nextPlayer} responds as ${nextRole}, with ${remaining} ${remaining === 1 ? 'move' : 'moves'} remaining.`,
+    prediction: scoreDetail(move.score),
+  };
+}
+
+function renderImpact(position, move) {
+  ui.treeImpact.replaceChildren();
+  const heading = document.createElement('strong');
+  heading.textContent = 'Previewed impact';
+  const moveText = document.createElement('p');
+  moveText.className = 'tree-impact-move';
+  moveText.textContent = moveLabel(position, move);
+  const impact = describeMoveImpact(position, move);
+  const details = document.createElement('ul');
+  for (const text of [impact.change, impact.consequence, impact.prediction]) {
+    const item = document.createElement('li');
+    item.textContent = text;
+    details.append(item);
+  }
+  const note = document.createElement('p');
+  note.className = 'tree-preview-note';
+  note.textContent = 'Preview only — the game state has not changed.';
+  ui.treeImpact.append(heading, moveText, details, note);
+}
+
+function renderReplies(move) {
+  ui.treeReplies.replaceChildren();
+  const result = getResult(move.nextState);
+  if (result) {
+    const text = document.createElement('p');
+    text.className = 'quiet-note';
+    text.textContent = result === 'tie' ?
+      `This branch reaches the move-${DEFAULT_DEPTH} tie boundary.` :
+      `This branch ends with Player ${result} winning.`;
+    ui.treeReplies.append(text);
+    return;
+  }
+
+  const replies = evaluateMoves(move.nextState, minimaxTable);
+  for (const reply of replies) {
+    ui.treeReplies.append(createTreeBranch(move.nextState, reply, { interactive: false }));
+  }
 }
 
 function renderGraph() {
+  renderPlayedPath();
   const options = evaluateMoves(state, minimaxTable);
-  ui.graphCurrent.textContent = `${compactState(state)} · Player ${currentPlayer()} is ${currentPlayer() === 'A' ? 'MAX' : 'MIN'} · ${options.length} legal choices · ${minimaxTable.size.toLocaleString()} DP rows.`;
+  const result = getResult(state);
+
+  ui.graphCurrent.replaceChildren();
+  ui.graphCurrent.dataset.treeNodeKey = stateKey(state);
+  const currentLabel = document.createElement('span');
+  currentLabel.textContent = 'You are here';
+  const currentState = document.createElement('strong');
+  currentState.textContent = compactState(state);
+  const currentMeta = document.createElement('span');
+  currentMeta.textContent = result ? 'Game complete' :
+    `Player ${currentPlayer()} · ${currentPlayer() === 'A' ? 'MAX' : 'MIN'} · ${options.length} legal moves`;
+  ui.graphCurrent.append(currentLabel, currentState, currentMeta);
+
   ui.graphChoices.replaceChildren();
-  if (options.length === 0 || getResult(state)) {
+  if (options.length === 0 || result) {
+    previewedMoveKey = null;
     const text = document.createElement('p');
     text.className = 'quiet-note';
-    text.textContent = 'This game position is complete.';
+    text.textContent = 'This is a terminal node, so it has no outgoing branches.';
     ui.graphChoices.append(text);
+    ui.treeImpact.replaceChildren(text.cloneNode(true));
+    ui.treeReplies.replaceChildren(text.cloneNode(true));
     return;
   }
-  for (const move of options) addGraphBranch(ui.graphChoices, state, move);
+
+  if (!options.some((move) => stateKey(move.nextState) === previewedMoveKey)) {
+    const defaultMove = options.find((move) => move.selected) ?? options[0];
+    previewedMoveKey = stateKey(defaultMove.nextState);
+  }
+
+  for (const move of options) ui.graphChoices.append(createTreeBranch(state, move));
+  const previewed = options.find((move) => stateKey(move.nextState) === previewedMoveKey);
+  if (!previewed) throw new Error('The previewed move is no longer legal.');
+  renderImpact(state, previewed);
+  renderReplies(previewed);
 }
 
 function render() {
@@ -455,6 +596,7 @@ function resetGame() {
   history = [];
   lastExplanation = '';
   autoRunning = false;
+  previewedMoveKey = null;
   render();
   scheduleComputerIfNeeded();
 }
@@ -477,8 +619,9 @@ async function commitMove(move, sourceOverride = null, computer = false) {
   await animateAttack(positionBeforeMove, chosen, sourceOverride);
   if (revisionBeforeMove !== gameRevision) return;
   isAnimating = false;
-  history.push({ turn: state[2] + 1, label });
   state = structuredClone(chosen.nextState);
+  history.push({ turn: state[2], label, stateAfter: structuredClone(state) });
+  previewedMoveKey = null;
   selectedSource = null;
   showingSplits = false;
   lastExplanation = `${computer ? 'The computer chose' : 'You chose'}: ${label}. ${scoreDetail(score)}`;
@@ -547,7 +690,13 @@ ui.aiToggle.addEventListener('click', () => {
   const expanded = ui.aiToggle.getAttribute('aria-expanded') === 'true';
   ui.aiToggle.setAttribute('aria-expanded', String(!expanded));
   ui.aiContent.hidden = expanded;
-  ui.aiToggle.textContent = expanded ? 'Show analysis' : 'Hide analysis';
+  ui.aiToggle.textContent = expanded ? 'Show AI Analysis' : 'Hide AI Analysis';
+});
+ui.aiAdvanced.addEventListener('toggle', () => {
+  if (!ui.aiAdvanced.open) return;
+  window.requestAnimationFrame(() => {
+    ui.treePath.scrollLeft = ui.treePath.scrollWidth;
+  });
 });
 ui.split.addEventListener('click', () => {
   if (!humanMayMove()) return;
