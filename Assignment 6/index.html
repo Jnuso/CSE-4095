@@ -224,6 +224,30 @@
               </div>
             </section>
 
+            <section id="dp-stats-panel" class="panel dp-stats-panel" aria-labelledby="dp-stats-title">
+              <div class="panel-heading">
+                <div><p class="section-kicker">Implemented extension</p><h2 id="dp-stats-title">DP Statistics</h2></div>
+                <span class="extension-pill">Live</span>
+              </div>
+              <p class="dp-stats-intro">These numbers show the size and current workload of the bottom-up minimax system. They update as the game moves through its 20-level table.</p>
+              <dl class="dp-stats-grid">
+                <div><dt>Table rows</dt><dd id="dp-table-rows">13,125</dd><small>All states and levels</small></div>
+                <div><dt>Build time</dt><dd id="dp-build-time">Calculating…</dd><small>On this device</small></div>
+                <div><dt>Current level</dt><dd id="dp-current-level">0 / 20</dd><small>Moves already played</small></div>
+                <div><dt>Moves remaining</dt><dd id="dp-moves-remaining">20</dd><small>Until the tie boundary</small></div>
+                <div><dt>Legal branches</dt><dd id="dp-legal-branches">4</dd><small>Choices from this node</small></div>
+                <div><dt>Active role</dt><dd id="dp-active-role">A · MAX</dd><small>Who chooses the value</small></div>
+              </dl>
+              <div id="dp-depth-progress" class="dp-depth-progress" role="progressbar" aria-label="Game depth used" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0">
+                <div><span>Depth used</span><strong id="dp-progress-label">0 of 20 moves</strong></div>
+                <span class="dp-progress-track" aria-hidden="true"><span id="dp-progress-bar"></span></span>
+              </div>
+              <details class="dp-stats-help">
+                <summary>What do these statistics mean?</summary>
+                <p>The table contains 625 possible four-hand combinations at each level and 21 levels from 0 through 20. It is built once when the page loads. “Legal branches” is the number of attacks and redistributions available from the current node; A chooses the maximum score and B chooses the minimum.</p>
+              </details>
+            </section>
+
             <section class="rules-note" aria-labelledby="rules-title"><span class="rules-note-icon" aria-hidden="true">i</span><div><h2 id="rules-title">A quick reminder</h2><p>A tap adds fingers to the target hand. Five or more knocks it out. Lose both hands and you lose; if both players survive 20 moves, the assignment scores a tie.</p></div></section>
           </aside>
         </section>

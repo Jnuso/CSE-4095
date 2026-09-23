@@ -2,7 +2,11 @@
 // AI search belongs in ai.js so the interface and AI share one rule engine.
 
 export const DEFAULT_DEPTH = 20;
-export const INITIAL_STATE = Object.freeze([[1, 1], [1, 1], 0]);
+export const INITIAL_STATE = Object.freeze([
+  Object.freeze([1, 1]),
+  Object.freeze([1, 1]),
+  0,
+]);
 
 const HAND_LIMIT = 4;
 const KNOCKOUT_TOTAL = 5;
@@ -113,10 +117,10 @@ export function legalMoves(state, depth = DEFAULT_DEPTH) {
       newHands[receiver] += amount;
       if (newHands[0] === current[1] && newHands[1] === current[0]) continue;
       addMove(
-        { kind: 'split', newHands },
+        { kind: 'split', newHands: [...newHands] },
         [
-          actor === 0 ? newHands : [...a],
-          actor === 1 ? newHands : [...b],
+          actor === 0 ? [...newHands] : [...a],
+          actor === 1 ? [...newHands] : [...b],
           level + 1,
         ],
       );

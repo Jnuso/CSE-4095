@@ -181,6 +181,8 @@ The interface provides:
   calculation details
 - An interactive move tree showing the route already played, the current node,
   every legal next branch, its effect on the hands, and the opponent's replies
+- A live DP Statistics panel showing table size, build time, current level,
+  remaining moves, legal branches, and the active MAX/MIN role
 
 The always-visible AI summary answers three beginner questions: what result is
 expected, whose decision it is, and which move the AI prefers. The collapsed
@@ -242,24 +244,65 @@ Run the JavaScript tests with a current Node.js installation:
 node --test-isolation=none --test test_web_game.mjs
 ```
 
+Run the optional real-browser Selenium tests with Chrome and Selenium 4:
+
+```powershell
+python -m pip install pytest selenium
+python -m pytest -q test_web_selenium.py
+```
+
+The Selenium suite starts a loopback-only static server, opens Chrome in
+headless mode, and closes both when testing finishes. Selenium Manager normally
+selects the matching ChromeDriver. These optional environment variables can be
+used when automatic discovery is unavailable:
+
+```powershell
+$env:SELENIUM_BROWSER_BINARY = 'C:\path\to\chrome.exe'
+$env:SELENIUM_DRIVER_PATH = 'C:\path\to\chromedriver.exe'
+$env:SELENIUM_HEADLESS = '0' # Show the browser while the tests run.
+$env:SELENIUM_REQUIRED = '1' # Fail instead of skip if Chrome cannot start.
+python -m pytest -q test_web_selenium.py
+```
+
+The browser tests skip with an explanatory reason when Selenium, Chrome, or a
+compatible driver is unavailable. That keeps the dependency-free engine suite
+usable on systems without browser automation.
+
 The regression suite covers:
 
 - The `1 | 1` versus `1 | 1` initial state
+- Every accepted overflow input and all 1,250 ordered hand configurations for
+  both player turns against an independent move-generation oracle
 - Zero-hand attack restrictions and overflow knockouts
 - Legal and illegal redistributions, including revival
 - Invalid states and malformed inputs
+- Move uniqueness, determinism, value bounds, finger-total preservation, and
+  caller-state immutability across 3,750 state-and-level combinations
 - A-knockout and B-knockout terminal scores
 - The level-20 nonterminal tie
 - MAX selection on A turns and MIN selection on B turns
 - A position whose successor values differ
+- Every row in the 13,125-entry DP table, including stable first-optimum
+  tie-breaking through the public AI functions
+- Complete table construction and autonomous play at depths 2, 4, 6, and 20
 - Legal computer move selection on representative A and B turns
 - Interface contract checks for restart wiring and guards that reject illegal
   selections before state mutation
-- Autonomous play ending in a knockout or at the fixed horizon
+- Autonomous play ending in a knockout or at the fixed horizon from every live
+  hand configuration at five representative levels (2,880 simulations)
 - Agreement between representative JavaScript and Python states
 - Required interface controls and explicit wide/narrow CSS layout rules
+- DOM-ID and ARIA-reference integrity, button behavior, keyboard focus styles,
+  reduced-motion support, and local dependency boundaries
 - Move-tree route tracking, legal branch previews, impact explanations,
   non-mutating selection, and bounded horizontal scrolling
+- Live DP statistics, one-time table-build timing, depth progress, and responsive
+  metric layout
+- Presence and structure of the required README sections and five-entry AI log
+- Selenium browser coverage for first render, setup and playback controls, the
+  source-to-target tap animation, restart, analysis disclosure, non-mutating
+  tree previews, a complete AI-versus-AI game, browser-console errors, and a
+  390-pixel mobile viewport
 
 Before submission, the web application should also be opened manually at a
 wide desktop size and a narrow mobile size. Confirm that attacks,
@@ -290,14 +333,28 @@ imported Python or JavaScript module into a security sandbox.
 - The interface is designed for one local browser and has no networked
   multiplayer mode.
 
+## Implemented Extensions
+
+The completed optional extensions are:
+
+- Interactive immediate move tree with the played route and reply previews
+- Scrollable move history
+- Animated attacks with reduced-motion support
+- AI-versus-AI playback with pause, step, and speed controls
+- Live DP Statistics panel with the 13,125-row table size, device-specific build
+  time, current depth, remaining moves, legal branches, and MAX/MIN role
+
+The statistics panel measures the single `bestMoveDP(20)` construction when the
+page loads. Its other values update after every move and restart, using the same
+state and legal-move engine as the game.
+
 ## Possible Extensions
 
 After the assignment version is complete and verified, possible extensions
 include:
 
 - A user-selectable search depth while keeping 20 as the assignment default
-- A larger interactive view of the immediate minimax tree
-- A DP statistics panel showing states evaluated and table-build time
+- A selectable one-, two-, or three-reply depth for the move-tree preview
 - Human-versus-human play
 - Saved/replayable move history
 - Optional sound and additional animations

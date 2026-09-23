@@ -1,5 +1,9 @@
 __pycache__/
 **/__pycache__/
+.pytest_cache/
+**/.pytest_cache/
+pytest-cache-files-*/
+**/pytest-cache-files-*/
 *.py[cod]
 **/output/pdf/*.pdf
 **/output/plots/

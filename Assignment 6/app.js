@@ -52,10 +52,21 @@ const ui = {
   aiRawScore: byId('ai-raw-score'),
   aiReason: byId('ai-reason'),
   aiSelected: byId('ai-selected'),
+  dpTableRows: byId('dp-table-rows'),
+  dpBuildTime: byId('dp-build-time'),
+  dpCurrentLevel: byId('dp-current-level'),
+  dpMovesRemaining: byId('dp-moves-remaining'),
+  dpLegalBranches: byId('dp-legal-branches'),
+  dpActiveRole: byId('dp-active-role'),
+  dpDepthProgress: byId('dp-depth-progress'),
+  dpProgressLabel: byId('dp-progress-label'),
+  dpProgressBar: byId('dp-progress-bar'),
 };
 
 const HAND_NAMES = ['left', 'right'];
+const tableBuildStarted = clockNow();
 const minimaxTable = bestMoveDP(DEFAULT_DEPTH);
+const tableBuildDuration = clockNow() - tableBuildStarted;
 let state = structuredClone(INITIAL_STATE);
 let mode = 'human';
 let humanPlayer = 'A';
@@ -69,6 +80,10 @@ let generation = 0;
 let gameRevision = 0;
 let isAnimating = false;
 let previewedMoveKey = null;
+
+function clockNow() {
+  return globalThis.performance?.now?.() ?? Date.now();
+}
 
 function currentPlayer(position = state) {
   return position[2] % 2 === 0 ? 'A' : 'B';
@@ -309,6 +324,25 @@ function renderAI() {
   }
 }
 
+function renderDPStats() {
+  const result = getResult(state);
+  const branches = legalMoves(state).length;
+  const remaining = Math.max(0, DEFAULT_DEPTH - state[2]);
+  const role = currentPlayer() === 'A' ? 'A · MAX' : 'B · MIN';
+  const depthPercent = Math.min(100, (state[2] / DEFAULT_DEPTH) * 100);
+
+  ui.dpTableRows.textContent = minimaxTable.size.toLocaleString();
+  ui.dpBuildTime.textContent = tableBuildDuration < 1 ? '< 1 ms' :
+    `${tableBuildDuration.toFixed(1)} ms`;
+  ui.dpCurrentLevel.textContent = `${state[2]} / ${DEFAULT_DEPTH}`;
+  ui.dpMovesRemaining.textContent = String(remaining);
+  ui.dpLegalBranches.textContent = String(branches);
+  ui.dpActiveRole.textContent = result ? 'Game complete' : role;
+  ui.dpDepthProgress.setAttribute('aria-valuenow', String(state[2]));
+  ui.dpProgressLabel.textContent = `${state[2]} of ${DEFAULT_DEPTH} moves`;
+  ui.dpProgressBar.style.width = `${depthPercent}%`;
+}
+
 function renderHistory() {
   ui.history.replaceChildren();
   if (history.length === 0) {
@@ -513,6 +547,7 @@ function render() {
   renderHands();
   renderMoveOptions();
   renderAI();
+  renderDPStats();
   renderHistory();
   renderGraph();
 }

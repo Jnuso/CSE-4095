@@ -15,17 +15,23 @@ import { test } from 'node:test';
 import {
   DEFAULT_DEPTH,
   INITIAL_STATE,
+  assertDepth,
+  assertState,
   getResult,
   legalMoves,
   nextMoves,
   overflowSum,
   stateKey,
 } from './game.js';
-import { bestMove, bestMoveDP, evaluateMoves } from './ai.js';
+import { bestMove, bestMoveDP, evaluateMoves, outcomeLabel } from './ai.js';
 
 const WEB_HTML = readFileSync(new URL('./index.html', import.meta.url), 'utf8');
 const WEB_APP = readFileSync(new URL('./app.js', import.meta.url), 'utf8');
 const WEB_CSS = readFileSync(new URL('./style.css', import.meta.url), 'utf8');
+const WEB_GAME = readFileSync(new URL('./game.js', import.meta.url), 'utf8');
+const WEB_AI = readFileSync(new URL('./ai.js', import.meta.url), 'utf8');
+const README = readFileSync(new URL('./README.md', import.meta.url), 'utf8');
+const VIBE_LOG = readFileSync(new URL('./VIBE_LOG.md', import.meta.url), 'utf8');
 const DP_TABLE = bestMoveDP(DEFAULT_DEPTH);
 
 function cssDeclarations(selector) {
@@ -105,6 +111,20 @@ function entry(state) {
   return value;
 }
 
+function* orderedStates(levels) {
+  for (const level of levels) {
+    for (let aLeft = 0; aLeft < 5; aLeft += 1) {
+      for (let aRight = 0; aRight < 5; aRight += 1) {
+        for (let bLeft = 0; bLeft < 5; bLeft += 1) {
+          for (let bRight = 0; bRight < 5; bRight += 1) {
+            yield [[aLeft, aRight], [bLeft, bRight], level];
+          }
+        }
+      }
+    }
+  }
+}
+
 test('submission contains the assignment web-file structure', () => {
   for (const name of [
     'index.html', 'style.css', 'game.js', 'ai.js', 'app.js', 'README.md', 'VIBE_LOG.md',
@@ -157,6 +177,19 @@ test('overflow follows the supplied Python cutoff rule', () => {
   }
 });
 
+test('overflow is deterministic for every accepted input pair', () => {
+  let checked = 0;
+  for (let source = 0; source <= 5; source += 1) {
+    for (let target = 0; target <= 5; target += 1) {
+      const expected = source + target >= 5 ? 0 : source + target;
+      assert.equal(overflowSum(source, target), expected, `${source} + ${target}`);
+      assert.equal(overflowSum(source, target), expected, 'Repeated calls must agree');
+      checked += 1;
+    }
+  }
+  assert.equal(checked, 36);
+});
+
 test('attacks can knock out a hand and cannot use dead hands', () => {
   const attacks = legalMoves([[4, 0], [1, 2], 0]).filter((move) => move.kind === 'attack');
   assert.equal(attacks.length, 2);
@@ -190,6 +223,116 @@ test('invalid, terminal, and horizon states cannot generate unintended moves', (
   assert.deepEqual(legalMoves([[0, 0], [1, 1], 4]), []);
   assert.deepEqual(legalMoves([[1, 1], [0, 0], 4]), []);
   assert.deepEqual(legalMoves([[1, 1], [1, 1], DEFAULT_DEPTH]), []);
+});
+
+test('public rule and AI APIs reject malformed values with bounded validation', () => {
+  assert.doesNotThrow(() => assertState([[0, 4], [3, 1], 0]));
+  assert.equal(assertState([[0, 4], [3, 1], 0]), undefined);
+  for (const invalid of [
+    undefined,
+    {},
+    [[1, 1], [1, 1]],
+    [[1, 1, 1], [1, 1], 0],
+    [[1, 1], [1, 1], Number.MAX_SAFE_INTEGER + 1],
+  ]) assert.throws(() => assertState(invalid), Error);
+
+  for (const depth of [2, 20, 50]) assert.doesNotThrow(() => assertDepth(depth));
+  for (const depth of [undefined, null, 0, 1, 3, 20.5, 52, '20', Infinity]) {
+    assert.throws(() => assertDepth(depth), RangeError);
+  }
+
+  assert.equal(stateKey([[1, 2], [3, 4], 5]), '1,2|3,4|5');
+  assert.throws(() => stateKey([[1, 2], [3, 5], 5]), RangeError);
+  assert.throws(() => bestMove(INITIAL_STATE, null), TypeError);
+  assert.throws(() => evaluateMoves(INITIAL_STATE, {}), TypeError);
+  assert.equal(outcomeLabel(1), 'WIN for Player A');
+  assert.equal(outcomeLabel(0), 'TIE within 20 moves');
+  assert.equal(outcomeLabel(-1), 'LOSS for Player A');
+  for (const score of [2, -2, null, '1', Number.NaN]) {
+    assert.throws(() => outcomeLabel(score), RangeError);
+  }
+});
+
+test('exported and generated states do not leak mutable aliases', () => {
+  assert(Object.isFrozen(INITIAL_STATE));
+  assert(Object.isFrozen(INITIAL_STATE[0]));
+  assert(Object.isFrozen(INITIAL_STATE[1]));
+  assert.throws(() => { INITIAL_STATE[0][0] = 4; }, TypeError);
+  assert.deepEqual(INITIAL_STATE, [[1, 1], [1, 1], 0]);
+
+  const input = [[0, 4], [1, 2], 0];
+  const before = structuredClone(input);
+  const moves = legalMoves(input);
+  assert.deepEqual(input, before, 'Generating moves must not mutate the caller state');
+
+  const split = moves.find((move) => move.kind === 'split');
+  assert(split, 'Expected a redistribution from 0 | 4');
+  assert.notStrictEqual(split.newHands, split.nextState[0]);
+  const successorBefore = structuredClone(split.nextState);
+  split.newHands[0] = 4;
+  assert.deepEqual(split.nextState, successorBefore,
+    'Changing descriptive metadata must not alter the successor state');
+  split.nextState[0][0] = 3;
+  assert.deepEqual(input, before, 'Changing a returned state must not alter the input state');
+});
+
+test('all generated moves preserve rule invariants, uniqueness, and input state', () => {
+  let statesChecked = 0;
+  let movesChecked = 0;
+  for (const state of orderedStates([0, 1, 5, 6, 18, 19])) {
+    const before = structuredClone(state);
+    const first = legalMoves(state);
+    const second = legalMoves(state);
+    assert.deepEqual(first, second, `Move generation changed for ${stateKey(state)}`);
+    assert.deepEqual(state, before, `Move generation mutated ${stateKey(state)}`);
+
+    const successorKeys = first.map((move) => stateKey(move.nextState));
+    assert.equal(new Set(successorKeys).size, successorKeys.length,
+      `Duplicate successors for ${stateKey(state)}`);
+    if (getResult(state) === null) {
+      assert(first.length > 0, `Live state has no legal move: ${stateKey(state)}`);
+    } else {
+      assert.equal(first.length, 0, `Terminal state generated moves: ${stateKey(state)}`);
+    }
+
+    const actor = state[2] % 2;
+    const opponent = 1 - actor;
+    for (const move of first) {
+      const next = move.nextState;
+      assert.equal(next[2], state[2] + 1);
+      assert(next[0].concat(next[1]).every(
+        (value) => Number.isInteger(value) && value >= 0 && value <= 4,
+      ));
+
+      if (move.kind === 'attack') {
+        assert(state[actor][move.source] > 0, 'An attack used a dead source');
+        assert(state[opponent][move.target] > 0, 'An attack targeted a dead hand');
+        assert.deepEqual(next[actor], state[actor], 'An attack changed the acting player');
+        assert.equal(next[opponent][1 - move.target], state[opponent][1 - move.target]);
+        assert.equal(
+          next[opponent][move.target],
+          overflowSum(state[actor][move.source], state[opponent][move.target]),
+        );
+      } else if (move.kind === 'split') {
+        assert.deepEqual(next[opponent], state[opponent], 'A split changed the opponent');
+        assert.equal(
+          next[actor][0] + next[actor][1],
+          state[actor][0] + state[actor][1],
+          'A split changed the finger total',
+        );
+        assert.deepEqual(move.newHands, next[actor]);
+        assert.notStrictEqual(move.newHands, next[actor]);
+        assert.notDeepEqual(next[actor], [state[actor][1], state[actor][0]],
+          'A pure left/right swap is not a legal split');
+      } else {
+        assert.fail(`Unknown move kind: ${move.kind}`);
+      }
+      movesChecked += 1;
+    }
+    statesChecked += 1;
+  }
+  assert.equal(statesChecked, 3_750);
+  assert(movesChecked > statesChecked);
 });
 
 test('all 1,250 ordered non-horizon positions match an independent oracle', () => {
@@ -243,6 +386,66 @@ test('every nonterminal DP row obeys the bottom-up MAX/MIN recurrence', () => {
     checked += 1;
   }
   assert(checked > 0);
+});
+
+test('public AI evaluations match every DP row and choose the first optimum', () => {
+  let liveRows = 0;
+  for (const [key, current] of DP_TABLE) {
+    const state = stateFromKey(key);
+    const rows = evaluateMoves(state, DP_TABLE);
+    const choice = bestMove(state, DP_TABLE);
+    if (getResult(state) !== null) {
+      assert.deepEqual(rows, []);
+      assert.equal(choice, null);
+      continue;
+    }
+
+    const moves = legalMoves(state);
+    assert.equal(rows.length, moves.length);
+    assert.equal(rows.filter((row) => row.selected).length, 1);
+    rows.forEach((row, index) => {
+      assert.equal(stateKey(row.nextState), stateKey(moves[index].nextState));
+      assert.equal(row.score, entry(row.nextState).score);
+    });
+
+    const firstOptimal = rows.findIndex((row) => row.score === current.score);
+    const selected = rows.findIndex((row) => row.selected);
+    assert.equal(selected, firstOptimal, `Tie-breaking changed at ${key}`);
+    assert(choice);
+    assert.equal(stateKey(choice.nextState), stateKey(rows[selected].nextState));
+    assert.equal(choice.score, current.score);
+    liveRows += 1;
+  }
+  assert.equal(liveRows, 576 * DEFAULT_DEPTH);
+});
+
+test('bottom-up construction remains correct at multiple supported horizons', () => {
+  for (const depth of [2, 4, 6]) {
+    const table = bestMoveDP(depth);
+    assert.equal(table.depth, depth);
+    assert.equal(table.size, 5 ** 4 * (depth + 1));
+    assert.equal(Object.prototype.propertyIsEnumerable.call(table, 'depth'), false);
+    assert.equal(table.has(stateKey([[1, 1], [1, 1], depth + 1])), false);
+    assert.deepEqual(table.get(stateKey([[1, 1], [1, 1], depth])), {
+      score: 0,
+      bestState: null,
+    });
+    assert.equal(bestMove([[1, 1], [1, 1], depth], table), null);
+
+    let state = structuredClone(INITIAL_STATE);
+    let turns = 0;
+    while (getResult(state, depth) === null) {
+      const choice = bestMove(state, table);
+      assert(choice, `Depth-${depth} table failed at ${stateKey(state)}`);
+      assert(legalMoves(state, depth).some(
+        (move) => stateKey(move.nextState) === stateKey(choice.nextState),
+      ));
+      state = structuredClone(choice.nextState);
+      turns += 1;
+      assert(turns <= depth);
+    }
+    assert(state[2] <= depth);
+  }
 });
 
 test('key minimax rows match the completed Python reference exactly', () => {
@@ -309,6 +512,30 @@ test('autonomous optimal play terminates no later than level 20', () => {
   assert.equal(state[2], moves.length);
   assert.equal(getResult(state), 'tie');
   assert.equal(state[2], DEFAULT_DEPTH);
+});
+
+test('optimal autonomous play completes from every live state at sampled levels', () => {
+  let simulations = 0;
+  for (const startingState of orderedStates([0, 5, 10, 15, 19])) {
+    if (getResult(startingState) !== null) continue;
+    let state = structuredClone(startingState);
+    let turns = 0;
+    while (getResult(state) === null) {
+      const choice = bestMove(state, DP_TABLE);
+      assert(choice, `No selected move at ${stateKey(state)}`);
+      assert(legalMoves(state).some(
+        (move) => stateKey(move.nextState) === stateKey(choice.nextState),
+      ));
+      assert.equal(choice.nextState[2], state[2] + 1);
+      state = structuredClone(choice.nextState);
+      turns += 1;
+      assert(turns <= DEFAULT_DEPTH - startingState[2]);
+    }
+    assert(state[2] <= DEFAULT_DEPTH);
+    assert(['A', 'B', 'tie'].includes(getResult(state)));
+    simulations += 1;
+  }
+  assert.equal(simulations, 5 * 24 * 24);
 });
 
 test('the interface exposes all required game and analysis information', () => {
@@ -469,6 +696,41 @@ test('tree branch previews are accessible, explanatory, bounded, and never play 
   assert.match(WEB_CSS, /\.tree-node\.is-best\b/);
 });
 
+test('DP Statistics panel exposes live table, depth, branch, timing, and role metrics', () => {
+  for (const id of [
+    'dp-stats-panel', 'dp-table-rows', 'dp-build-time', 'dp-current-level',
+    'dp-moves-remaining', 'dp-legal-branches', 'dp-active-role',
+    'dp-depth-progress', 'dp-progress-label', 'dp-progress-bar',
+  ]) assert.match(WEB_HTML, new RegExp(`\\bid=["']${id}["']`, 'i'), `Missing #${id}`);
+
+  assert.match(WEB_HTML,
+    /id=["']dp-depth-progress["'][^>]*role=["']progressbar["'][^>]*aria-valuemin=["']0["'][^>]*aria-valuemax=["']20["']/i);
+  assert.match(WEB_HTML, /What do these statistics mean\?/i);
+
+  const render = functionSource('renderDPStats');
+  assert.match(render, /minimaxTable\.size/);
+  assert.match(render, /tableBuildDuration/);
+  assert.match(render, /legalMoves\(state\)\.length/);
+  assert.match(render, /DEFAULT_DEPTH\s*-\s*state\[2\]/);
+  assert.match(render, /A · MAX/);
+  assert.match(render, /B · MIN/);
+  assert.match(render, /aria-valuenow/);
+  assert.match(render, /dpProgressBar\.style\.width/);
+  assert.match(functionSource('render'), /renderDPStats\(\)/);
+});
+
+test('DP Statistics panel is responsive and records the one-time table build', () => {
+  const start = WEB_APP.indexOf('const tableBuildStarted = clockNow()');
+  const build = WEB_APP.indexOf('const minimaxTable = bestMoveDP(DEFAULT_DEPTH)');
+  const finish = WEB_APP.indexOf('const tableBuildDuration = clockNow() - tableBuildStarted');
+  assert(start >= 0 && build > start && finish > build,
+    'Build timing must wrap the actual bestMoveDP call');
+  assert.match(cssDeclarations('.dp-stats-grid'), /grid-template-columns:\s*repeat\(3,/);
+  assert.match(WEB_CSS,
+    /@media\s*\(max-width:\s*600px\)[\s\S]*?\.dp-stats-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,/,
+    'The statistics grid should reduce to two columns on narrow screens');
+});
+
 test('large hands stay centered and CSS supplies explicit wide/narrow layouts', () => {
   assert.match(cssDeclarations('.player-row'), /justify-content:\s*center/);
   assert.match(cssDeclarations('.hand-pair'), /justify-content:\s*center/);
@@ -511,4 +773,119 @@ test('dynamic interface text avoids executable HTML and inline-script sinks', ()
   ]) assert.doesNotMatch(WEB_APP, pattern, `${name} can turn text into executable markup`);
   assert.doesNotMatch(WEB_HTML, /\son[a-z]+\s*=/i);
   assert.doesNotMatch(WEB_HTML, /\b(?:href|src)\s*=\s*["']\s*javascript:/i);
+});
+
+test('rule and AI modules stay deterministic, local, and independent of the DOM', () => {
+  for (const [name, source] of [['game.js', WEB_GAME], ['ai.js', WEB_AI]]) {
+    assert.doesNotMatch(source, /\b(?:document|window|localStorage|sessionStorage)\b/,
+      `${name} should remain usable without a browser DOM`);
+    assert.doesNotMatch(source, /\b(?:fetch|XMLHttpRequest|WebSocket)\b/,
+      `${name} should not depend on a network service`);
+    assert.doesNotMatch(source, /\b(?:Math\.random|Date\.now|setTimeout|setInterval)\b/,
+      `${name} should be deterministic`);
+  }
+  assert.doesNotMatch(WEB_GAME, /^\s*import\s/m,
+    'The foundational rule engine should not depend on higher-level modules');
+  assert.match(WEB_AI, /from\s+["']\.\/game\.js["']/);
+  assert.match(WEB_APP, /from\s+["']\.\/game\.js["']/);
+  assert.match(WEB_APP, /from\s+["']\.\/ai\.js["']/);
+  assert.doesNotMatch(WEB_HTML, /<(?:script|link)\b[^>]*(?:src|href)=["']https?:/i,
+    'The submitted app should not require third-party runtime resources');
+});
+
+test('every literal DOM lookup and ARIA reference resolves to a unique element', () => {
+  const ids = [...WEB_HTML.matchAll(/\bid=["']([^"']+)["']/gi)].map((match) => match[1]);
+  const idSet = new Set(ids);
+  assert.equal(idSet.size, ids.length, 'Duplicate IDs make DOM lookup ambiguous');
+
+  const lookups = [...WEB_APP.matchAll(/\bbyId\(\s*["']([^"']+)["']\s*\)/g)]
+    .map((match) => match[1]);
+  assert(lookups.length > 30, 'Expected the interface elements to be wired through byId()');
+  for (const id of lookups) assert(idSet.has(id), `app.js looks up missing #${id}`);
+
+  for (const match of WEB_HTML.matchAll(
+    /\baria-(?:controls|describedby|labelledby)=["']([^"']+)["']/gi,
+  )) {
+    for (const id of match[1].trim().split(/\s+/)) {
+      assert(idSet.has(id), `ARIA references missing #${id}`);
+    }
+  }
+  assert(idSet.has('tree-impact'));
+  assert.match(WEB_APP, /setAttribute\(["']aria-describedby["'],\s*["']tree-impact["']\)/);
+});
+
+test('interactive HTML controls have explicit behavior and accessible descriptions', () => {
+  const buttons = [...WEB_HTML.matchAll(/<button\b[^>]*>/gi)].map((match) => match[0]);
+  assert(buttons.length >= 10);
+  for (const button of buttons) {
+    assert.match(button, /\btype=["']button["']/i,
+      `Button could submit a surrounding form unexpectedly: ${button}`);
+  }
+
+  const ranges = [...WEB_HTML.matchAll(/<input\b[^>]*\btype=["']range["'][^>]*>/gi)]
+    .map((match) => match[0]);
+  assert(ranges.length > 0);
+  for (const range of ranges) {
+    const id = range.match(/\bid=["']([^"']+)["']/i)?.[1];
+    assert(id, 'Every range input needs an ID');
+    assert.match(WEB_HTML, new RegExp(`<label\\b[^>]*\\bfor=["']${id}["']`, 'i'));
+  }
+
+  const detailsCount = [...WEB_HTML.matchAll(/<details\b/gi)].length;
+  const summaryCount = [...WEB_HTML.matchAll(/<summary\b/gi)].length;
+  assert(detailsCount >= 2);
+  assert.equal(summaryCount, detailsCount, 'Every disclosure needs a visible summary');
+  assert.match(WEB_HTML, /\baria-live=["']polite["']/i);
+  assert.match(WEB_APP, /button\.type\s*=\s*["']button["']/);
+  assert.match(WEB_APP, /node\.type\s*=\s*["']button["']/);
+});
+
+test('stylesheet syntax and accessibility safeguards remain present', () => {
+  const withoutComments = WEB_CSS.replace(/\/\*[\s\S]*?\*\//g, '');
+  assert.equal(
+    [...withoutComments].filter((character) => character === '{').length,
+    [...withoutComments].filter((character) => character === '}').length,
+    'CSS block braces are unbalanced',
+  );
+  assert.match(WEB_CSS, /button:focus-visible/);
+  assert.match(WEB_CSS, /input:focus-visible/);
+  assert.match(WEB_CSS, /summary:focus-visible/);
+  assert.match(WEB_CSS, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.match(WEB_CSS, /animation:\s*none\s*!important/);
+  assert.match(WEB_HTML, /<html\s+lang=["']en["']/i);
+  assert.match(WEB_HTML, /<meta\s+name=["']viewport["']/i);
+});
+
+test('submission documentation retains required sections and five structured AI interactions', () => {
+  for (const heading of [
+    'Overview',
+    'Running the Web Game',
+    'Game Rules',
+    'State Representation',
+    'Minimax Values',
+    'Bottom-Up Dynamic Programming',
+    'Software Organization',
+    'Testing',
+    'Security and Input Handling',
+    'Known Limitations',
+    'Implemented Extensions',
+    'Possible Extensions',
+    'Reflection',
+  ]) {
+    assert.match(README, new RegExp(`^## ${heading}$`, 'm'));
+  }
+
+  const interactions = VIBE_LOG.split(/^## Interaction \d+:[^\n]*$/m).slice(1);
+  assert.equal(interactions.length, 5);
+  for (const [index, interaction] of interactions.entries()) {
+    for (const field of [
+      'Prompt',
+      'AI suggestion',
+      'What I accepted or changed',
+      'What I learned or verified',
+    ]) {
+      assert.match(interaction, new RegExp(`\\*\\*${field}\\*\\*`),
+        `Interaction ${index + 1} is missing ${field}`);
+    }
+  }
 });

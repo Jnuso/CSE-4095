@@ -1,0 +1,1074 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050506">
+  <meta name="description" content="An interactive A-star search visualizer for the classic 8-puzzle.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23050506'/%3E%3Cpath d='M13 46 27 17h10l14 29H40l-2.3-6H25.6L23 46Zm16-15h5.2L31.7 24Z' fill='%230a84ff'/%3E%3C/svg%3E">
+  <title>8-Puzzle A* Visualizer</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050506;
+      --panel: rgba(24, 24, 27, 0.76);
+      --panel-solid: #18181b;
+      --raised: #242428;
+      --line: rgba(255, 255, 255, 0.1);
+      --line-strong: rgba(255, 255, 255, 0.18);
+      --text: #f5f5f7;
+      --muted: #a1a1aa;
+      --dim: #71717a;
+      --blue: #0a84ff;
+      --cyan: #64d2ff;
+      --green: #30d158;
+      --orange: #ff9f0a;
+      --red: #ff453a;
+      --radius: 28px;
+      --shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
+      font-synthesis: none;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { min-width: 320px; background: var(--bg); }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 35% -12%, rgba(94, 92, 230, 0.22), transparent 34rem),
+        radial-gradient(circle at 100% 42%, rgba(10, 132, 255, 0.13), transparent 36rem),
+        var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .topbar {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      min-height: 82px;
+      padding: 14px max(24px, calc((100vw - 1240px) / 2));
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 5, 6, 0.8);
+      backdrop-filter: saturate(180%) blur(24px);
+      -webkit-backdrop-filter: saturate(180%) blur(24px);
+    }
+
+    .brand {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 12px;
+      min-width: max-content;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      color: var(--cyan);
+      background: linear-gradient(145deg, #302f38, #17171a);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.09);
+      font-size: 1.05rem;
+      font-weight: 720;
+    }
+
+    .brand-name { margin: 0; font-size: 1rem; font-weight: 650; letter-spacing: -0.02em; }
+    .brand-method { margin: 2px 0 0; color: var(--dim); font-size: 0.75rem; font-weight: 550; }
+
+    .toolbar {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .control {
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 0.875rem;
+      font-weight: 590;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, opacity 160ms ease;
+    }
+
+    .control:hover:not(:disabled) { border-color: var(--line-strong); background: rgba(255, 255, 255, 0.1); }
+    .control:active:not(:disabled) { transform: scale(0.97); }
+    .control:disabled { opacity: 0.36; cursor: not-allowed; }
+    .control.primary { border-color: transparent; color: white; background: var(--blue); box-shadow: 0 8px 24px rgba(10, 132, 255, 0.24); }
+    .control.primary:hover:not(:disabled) { border-color: transparent; background: #2997ff; }
+
+    .control:focus-visible,
+    .config-input:focus-visible,
+    .speed-slider:focus-visible,
+    .state-card:focus-visible {
+      outline: 3px solid rgba(10, 132, 255, 0.44);
+      outline-offset: 2px;
+    }
+
+    .toolbar-divider { width: 1px; height: 28px; margin: 0 6px; background: var(--line); }
+
+    .speed-control {
+      display: grid;
+      grid-template-columns: auto 105px;
+      grid-template-areas: "label value" "slider slider";
+      gap: 3px 12px;
+      width: 168px;
+      margin-left: 4px;
+    }
+
+    .speed-label, .speed-value { color: var(--muted); font-size: 0.75rem; font-weight: 620; }
+    .speed-label { grid-area: label; }
+    .speed-value { grid-area: value; justify-self: end; color: var(--text); font-variant-numeric: tabular-nums; }
+    .speed-slider { grid-area: slider; width: 100%; height: 18px; margin: 0; accent-color: var(--blue); cursor: pointer; }
+
+    main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 52px 0 72px; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(310px, 0.8fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow), inset 0 1px rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+    }
+
+    .visualizer { display: flex; flex-direction: column; min-height: 650px; padding: clamp(26px, 4vw, 46px); }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+    .eyebrow { margin: 0 0 8px; color: var(--cyan); font-size: 0.75rem; font-weight: 720; letter-spacing: 0.12em; text-transform: uppercase; }
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 0; font-size: clamp(1.7rem, 3vw, 2.45rem); font-weight: 650; letter-spacing: -0.045em; line-height: 1.08; }
+    h2 { font-size: 1.12rem; font-weight: 640; letter-spacing: -0.025em; }
+
+    .badge {
+      flex: 0 0 auto;
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.045);
+      font-size: 0.75rem;
+      font-weight: 630;
+    }
+
+    .badge.ready { border-color: rgba(48, 209, 88, 0.24); color: #72e38b; background: rgba(48, 209, 88, 0.08); }
+
+    .board-stage { display: grid; flex: 1; place-items: center; padding: 40px 0 36px; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: min(100%, 420px);
+      aspect-ratio: 1;
+      padding: 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 32px;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 70px rgba(0, 0, 0, 0.34);
+    }
+
+    .tile {
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 22px;
+      color: #fafafa;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)), var(--raised);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.11), 0 10px 24px rgba(0, 0, 0, 0.26);
+      font-size: clamp(2rem, 6vw, 3.6rem);
+      font-weight: 620;
+      font-variant-numeric: tabular-nums;
+      will-change: transform;
+    }
+
+    .tile.empty { border-color: rgba(255, 255, 255, 0.04); background: rgba(255, 255, 255, 0.015); box-shadow: inset 0 1px 12px rgba(0, 0, 0, 0.18); }
+
+    .progress-row { display: grid; grid-template-columns: auto minmax(100px, 1fr) auto; align-items: center; gap: 16px; padding-top: 22px; border-top: 1px solid var(--line); }
+    .progress-label, .step-count { color: var(--muted); font-size: 0.8125rem; font-weight: 620; }
+    .step-count { min-width: 52px; color: var(--text); text-align: right; font-variant-numeric: tabular-nums; }
+    .progress-track { overflow: hidden; height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); }
+    .progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--blue), #5e5ce6); transition: width 260ms ease; }
+
+    .side-panel { display: flex; flex-direction: column; }
+    .side-section { padding: 26px; }
+    .side-section + .side-section { border-top: 1px solid var(--line); }
+    .side-title { margin-bottom: 7px; }
+    .side-copy { margin-bottom: 20px; color: var(--muted); font-size: 0.875rem; line-height: 1.5; }
+
+    .config-grid { display: grid; grid-template-columns: repeat(3, 54px); gap: 8px; width: max-content; border-radius: 17px; }
+    .config-grid.attention { animation: pulse 700ms cubic-bezier(0.22, 1, 0.36, 1); }
+    .config-input {
+      width: 54px;
+      height: 54px;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 1.1rem;
+      font-weight: 630;
+      text-align: center;
+      appearance: textfield;
+    }
+
+    .config-input::-webkit-inner-spin-button, .config-input::-webkit-outer-spin-button { margin: 0; appearance: none; }
+    .config-input.invalid { border-color: rgba(255, 69, 58, 0.76); background: rgba(255, 69, 58, 0.09); }
+    .config-input:disabled { opacity: 0.55; }
+    .input-note, .status-message { min-height: 36px; margin: 14px 0 0; color: var(--dim); font-size: 0.78rem; line-height: 1.45; }
+    .input-note.error, .status-message.error { color: #ff817a; }
+    .goal-row { display: flex; justify-content: space-between; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.78rem; font-weight: 620; }
+    .goal-sequence { color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.08em; }
+
+    .score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+    .score-card { padding: 13px 10px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255, 255, 255, 0.035); text-align: center; }
+    .score-card.primary-score { border-color: rgba(10, 132, 255, 0.35); background: rgba(10, 132, 255, 0.08); }
+    .score-label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 0.72rem; font-weight: 650; }
+    .score-value { display: block; font-size: 1.35rem; font-weight: 680; font-variant-numeric: tabular-nums; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat { min-width: 0; padding: 13px 10px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255, 255, 255, 0.03); }
+    .stat-label { display: block; min-height: 28px; margin-bottom: 7px; color: var(--muted); font-size: 0.68rem; font-weight: 620; line-height: 1.25; }
+    .stat-value { display: block; overflow: hidden; font-size: 1rem; font-weight: 650; font-variant-numeric: tabular-nums; text-overflow: ellipsis; white-space: nowrap; }
+
+    .wide-panel { margin-top: 22px; padding: 28px; }
+    .wide-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
+    .wide-heading h2 { margin-bottom: 6px; }
+    .wide-heading p { margin-bottom: 0; }
+    .panel-count { flex: 0 0 auto; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: rgba(255, 255, 255, 0.04); font-size: 0.78rem; font-weight: 630; font-variant-numeric: tabular-nums; }
+
+    .candidate-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .candidate {
+      display: grid;
+      grid-template-columns: 94px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      background: rgba(255, 255, 255, 0.032);
+    }
+
+    .candidate.lowest { border-color: rgba(48, 209, 88, 0.38); background: rgba(48, 209, 88, 0.065); }
+    .candidate-copy { min-width: 0; }
+    .candidate-rank { display: block; margin-bottom: 9px; color: var(--green); font-size: 0.7rem; font-weight: 720; letter-spacing: 0.08em; text-transform: uppercase; }
+    .candidate:not(.lowest) .candidate-rank { color: var(--dim); }
+    .candidate-scores { display: grid; gap: 4px; color: var(--muted); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+    .candidate-scores strong { color: var(--text); font-weight: 650; }
+
+    .mini-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 5px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; background: rgba(0, 0, 0, 0.25); }
+    .mini-tile { display: grid; place-items: center; aspect-ratio: 1; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; background: rgba(255, 255, 255, 0.085); font-size: 0.72rem; font-weight: 650; }
+    .mini-tile.empty { border-color: rgba(255, 255, 255, 0.025); background: rgba(255, 255, 255, 0.015); }
+
+    .empty-panel { display: grid; min-height: 150px; place-items: center; border: 1px dashed var(--line-strong); border-radius: 20px; color: var(--dim); font-size: 0.9rem; text-align: center; }
+
+    .state-strip { display: flex; gap: 14px; min-height: 208px; overflow-x: auto; overflow-y: hidden; padding: 2px 2px 14px; scroll-snap-type: x proximity; scrollbar-color: rgba(255, 255, 255, 0.2) transparent; scrollbar-width: thin; }
+    .state-card { flex: 0 0 170px; align-self: flex-start; padding: 13px; border: 1px solid var(--line); border-radius: 18px; color: var(--text); background: rgba(255, 255, 255, 0.032); text-align: left; scroll-snap-align: start; cursor: pointer; transition: 180ms ease; }
+    .state-card:hover { border-color: var(--line-strong); background: rgba(255, 255, 255, 0.065); transform: translateY(-2px); }
+    .state-card.active { border-color: rgba(10, 132, 255, 0.75); background: rgba(10, 132, 255, 0.1); box-shadow: 0 10px 32px rgba(10, 132, 255, 0.12); }
+    .state-header { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .state-step { font-size: 0.8rem; font-weight: 660; }
+    .state-move { color: var(--dim); font-size: 0.7rem; font-weight: 620; }
+
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); } 35% { box-shadow: 0 0 0 7px rgba(10, 132, 255, 0.2); } }
+
+    @media (max-width: 1060px) {
+      .topbar { position: relative; flex-wrap: wrap; gap: 14px; padding: 16px 24px 18px; }
+      .toolbar { flex-basis: 100%; justify-content: flex-start; overflow-x: auto; padding-bottom: 2px; }
+      .candidate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 800px) {
+      main { width: min(100% - 24px, 600px); padding-top: 24px; }
+      .workspace { grid-template-columns: 1fr; }
+      .visualizer { min-height: 580px; }
+      .candidate-grid { grid-template-columns: 1fr; }
+      .wide-panel { padding: 24px 20px; }
+    }
+
+    @media (max-width: 560px) {
+      .topbar { padding-inline: 14px; }
+      .toolbar { gap: 6px; }
+      .control { min-height: 40px; padding-inline: 13px; font-size: 0.82rem; }
+      .toolbar-divider { display: none; }
+      .speed-control { flex: 0 0 154px; width: 154px; margin-left: 6px; }
+      .visualizer { min-height: 520px; padding: 24px 18px; border-radius: 22px; }
+      .badge { display: none; }
+      .board { gap: 8px; padding: 10px; border-radius: 24px; }
+      .tile { border-radius: 16px; }
+      .side-section { padding: 24px 20px; }
+      .wide-heading { align-items: flex-start; }
+      .state-card { flex-basis: 156px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" aria-label="8-Puzzle A-star Visualizer">
+      <div class="brand-mark" aria-hidden="true">A*</div>
+      <div>
+        <p class="brand-name">8-Puzzle</p>
+        <p class="brand-method">A* · Manhattan distance</p>
+      </div>
+    </div>
+
+    <nav class="toolbar" aria-label="Visualizer controls">
+      <button class="control primary" id="solve-button" type="button">Solve</button>
+      <button class="control" id="custom-button" type="button">Custom Start</button>
+      <button class="control" id="play-button" type="button" disabled>Play</button>
+      <button class="control" id="previous-button" type="button" disabled>Previous</button>
+      <button class="control" id="next-button" type="button" disabled>Next</button>
+      <button class="control" id="reset-button" type="button">Reset</button>
+      <span class="toolbar-divider" aria-hidden="true"></span>
+      <label class="speed-control" for="speed-slider">
+        <span class="speed-label">Playback speed</span>
+        <output class="speed-value" id="speed-value" for="speed-slider">1×</output>
+        <input class="speed-slider" id="speed-slider" type="range" min="0.25" max="2" step="0.25" value="1">
+      </label>
+    </nav>
+  </header>
+
+  <main>
+    <div class="workspace">
+      <section class="panel visualizer" aria-labelledby="visualizer-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Selected state</p>
+            <h1 id="visualizer-title">Ready to solve</h1>
+          </div>
+          <span class="badge" id="status-badge">Initial state</span>
+        </div>
+
+        <div class="board-stage">
+          <div class="board" id="puzzle-board" role="grid" aria-label="Current 8-puzzle state"></div>
+        </div>
+
+        <div class="progress-row">
+          <span class="progress-label">Current solution step</span>
+          <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+          <span class="step-count" id="step-count">0 / —</span>
+        </div>
+      </section>
+
+      <aside class="panel side-panel" aria-label="Configuration, scores, and statistics">
+        <section class="side-section" id="configuration-section" aria-labelledby="configuration-title">
+          <h2 class="side-title" id="configuration-title">Initial configuration</h2>
+          <p class="side-copy">Enter every number from 0 through 8 once. Zero represents the empty tile.</p>
+          <div class="config-grid" id="configuration-grid">
+            <input class="config-input" type="number" min="0" max="8" step="1" value="8" aria-label="Row 1 column 1">
+            <input class="config-input" type="number" min="0" max="8" step="1" value="7" aria-label="Row 1 column 2">
+            <input class="config-input" type="number" min="0" max="8" step="1" value="6" aria-label="Row 1 column 3">
+            <input class="config-input" type="number" min="0" max="8" step="1" value="5" aria-label="Row 2 column 1">
+            <input class="config-input" type="number" min="0" max="8" step="1" value="4" aria-label="Row 2 column 2">
+            <input class="config-input" type="number" min="0" max="8" step="1" value="3" aria-label="Row 2 column 3">
+            <input class="config-input" type="number" min="0" max="8" step="1" value="2" aria-label="Row 3 column 1">
+            <input class="config-input" type="number" min="0" max="8" step="1" value="1" aria-label="Row 3 column 2">
+            <input class="config-input" type="number" min="0" max="8" step="1" value="0" aria-label="Row 3 column 3">
+          </div>
+          <p class="input-note" id="input-note">Select Solve to calculate the optimal A* path.</p>
+          <div class="goal-row"><span>Goal state</span><span class="goal-sequence">1 2 3 · 4 5 6 · 7 8 □</span></div>
+        </section>
+
+        <section class="side-section" aria-labelledby="scores-title">
+          <h2 class="side-title" id="scores-title">A* priority</h2>
+          <p class="side-copy">A* selects the state with the smallest estimated total cost.</p>
+          <div class="score-grid">
+            <div class="score-card"><span class="score-label">g(n)</span><strong class="score-value" id="g-value">—</strong></div>
+            <div class="score-card"><span class="score-label">h(n)</span><strong class="score-value" id="h-value">—</strong></div>
+            <div class="score-card primary-score"><span class="score-label">f(n)</span><strong class="score-value" id="f-value">—</strong></div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat"><span class="stat-label">Tile moved</span><strong class="stat-value" id="moved-tile">—</strong></div>
+            <div class="stat"><span class="stat-label">Total moves</span><strong class="stat-value" id="total-moves">—</strong></div>
+            <div class="stat"><span class="stat-label">States expanded</span><strong class="stat-value" id="expanded-value">—</strong></div>
+            <div class="stat"><span class="stat-label">States discovered</span><strong class="stat-value" id="discovered-value">—</strong></div>
+            <div class="stat"><span class="stat-label">Initial h(n)</span><strong class="stat-value" id="initial-h-value">—</strong></div>
+            <div class="stat"><span class="stat-label">Selected priority</span><strong class="stat-value" id="priority-value">—</strong></div>
+          </div>
+          <p class="status-message" id="status-message" aria-live="polite">The initial board is ready.</p>
+        </section>
+      </aside>
+    </div>
+
+    <section class="panel wide-panel" aria-labelledby="open-list-title">
+      <div class="wide-heading">
+        <div>
+          <h2 id="open-list-title">A* open list</h2>
+          <p class="side-copy">Best waiting candidates, ordered by lowest f(n), then h(n), then insertion order.</p>
+        </div>
+        <span class="panel-count" id="open-count">No search yet</span>
+      </div>
+      <div class="candidate-grid" id="candidate-grid">
+        <div class="empty-panel">Solve the puzzle to inspect A* priorities.</div>
+      </div>
+    </section>
+
+    <section class="panel wide-panel" aria-labelledby="path-title">
+      <div class="wide-heading">
+        <div>
+          <h2 id="path-title">Complete solution path</h2>
+          <p class="side-copy">Scroll through every optimal-path state or select one to inspect its A* scores.</p>
+        </div>
+        <span class="panel-count" id="path-count">No path yet</span>
+      </div>
+      <div class="state-strip" id="state-strip" aria-label="All states in the solution path">
+        <div class="empty-panel">Solve the puzzle to display the optimal path.</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    const DEFAULT_STATE = "876543210";
+    const GOAL_STATE = "123456780";
+    const BOARD_SIZE = 3;
+    const MOVE_ORDER = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    const GOAL_POSITIONS = new Map([...GOAL_STATE].map((tile, index) => [tile, [Math.floor(index / 3), index % 3]]));
+
+    // --- A* search logic ---
+
+    class MinHeap {
+      constructor(compare) { this.data = []; this.compare = compare; }
+      get size() { return this.data.length; }
+      push(value) {
+        this.data.push(value);
+        let index = this.data.length - 1;
+        while (index > 0) {
+          const parent = Math.floor((index - 1) / 2);
+          if (this.compare(this.data[index], this.data[parent]) >= 0) break;
+          [this.data[index], this.data[parent]] = [this.data[parent], this.data[index]];
+          index = parent;
+        }
+      }
+      pop() {
+        if (this.data.length === 0) return null;
+        const first = this.data[0];
+        const last = this.data.pop();
+        if (this.data.length > 0) {
+          this.data[0] = last;
+          let index = 0;
+          while (true) {
+            const left = index * 2 + 1;
+            const right = left + 1;
+            let smallest = index;
+            if (left < this.data.length && this.compare(this.data[left], this.data[smallest]) < 0) smallest = left;
+            if (right < this.data.length && this.compare(this.data[right], this.data[smallest]) < 0) smallest = right;
+            if (smallest === index) break;
+            [this.data[index], this.data[smallest]] = [this.data[smallest], this.data[index]];
+            index = smallest;
+          }
+        }
+        return first;
+      }
+    }
+
+    function compareEntries(first, second) {
+      return first.f - second.f || first.h - second.h || first.order - second.order;
+    }
+
+    function getNeighbors(state) {
+      const blankIndex = state.indexOf("0");
+      const blankRow = Math.floor(blankIndex / BOARD_SIZE);
+      const blankColumn = blankIndex % BOARD_SIZE;
+      const neighbors = [];
+      for (const [rowChange, columnChange] of MOVE_ORDER) {
+        const newRow = blankRow + rowChange;
+        const newColumn = blankColumn + columnChange;
+        if (newRow < 0 || newRow >= BOARD_SIZE || newColumn < 0 || newColumn >= BOARD_SIZE) continue;
+        const swapIndex = newRow * BOARD_SIZE + newColumn;
+        const characters = [...state];
+        const tileMoved = characters[swapIndex];
+        [characters[blankIndex], characters[swapIndex]] = [characters[swapIndex], characters[blankIndex]];
+        neighbors.push({ state: characters.join(""), tileMoved });
+      }
+      return neighbors;
+    }
+
+    function manhattanDistance(state) {
+      let distance = 0;
+      [...state].forEach((tile, index) => {
+        if (tile === "0") return;
+        const [goalRow, goalColumn] = GOAL_POSITIONS.get(tile);
+        distance += Math.abs(Math.floor(index / 3) - goalRow) + Math.abs(index % 3 - goalColumn);
+      });
+      return distance;
+    }
+
+    function inversionCount(state) {
+      const values = [...state].filter(value => value !== "0").map(Number);
+      let inversions = 0;
+      for (let first = 0; first < values.length; first += 1) {
+        for (let second = first + 1; second < values.length; second += 1) {
+          if (values[first] > values[second]) inversions += 1;
+        }
+      }
+      return inversions;
+    }
+
+    function reconstructPath(parent, moveToState) {
+      const path = [];
+      const movedTiles = [];
+      let state = GOAL_STATE;
+      while (state !== null) {
+        path.push(state);
+        movedTiles.push(moveToState.get(state) ?? null);
+        state = parent.get(state);
+      }
+      path.reverse();
+      movedTiles.reverse();
+      return { path, movedTiles };
+    }
+
+    function makeEntry(state, g, order) {
+      const h = manhattanDistance(state);
+      return { state, g, h, f: g + h, order };
+    }
+
+    function bestCandidates(heap, bestG, limit = 6) {
+      const seen = new Set();
+      const valid = heap.data
+        .filter(entry => entry.g === bestG.get(entry.state))
+        .sort(compareEntries)
+        .filter(entry => {
+          if (seen.has(entry.state)) return false;
+          seen.add(entry.state);
+          return true;
+        });
+      return { candidates: valid.slice(0, limit).map(entry => ({ ...entry })), openSize: valid.length };
+    }
+
+    function captureFrames(initialState, path) {
+      const pathIndexes = new Map(path.map((state, index) => [state, index]));
+      const frames = Array(path.length);
+      const heap = new MinHeap(compareEntries);
+      const bestG = new Map([[initialState, 0]]);
+      let order = 0;
+      heap.push(makeEntry(initialState, 0, order));
+
+      while (heap.size > 0) {
+        const current = heap.pop();
+        if (current.g !== bestG.get(current.state)) continue;
+
+        if (current.state !== GOAL_STATE) {
+          for (const neighbor of getNeighbors(current.state)) {
+            const tentativeG = current.g + 1;
+            const previousG = bestG.get(neighbor.state);
+            if (previousG === undefined || tentativeG < previousG) {
+              bestG.set(neighbor.state, tentativeG);
+              order += 1;
+              heap.push(makeEntry(neighbor.state, tentativeG, order));
+            }
+          }
+        }
+
+        if (pathIndexes.has(current.state)) {
+          const snapshot = bestCandidates(heap, bestG);
+          frames[pathIndexes.get(current.state)] = {
+            g: current.g,
+            h: current.h,
+            f: current.f,
+            candidates: snapshot.candidates,
+            openSize: snapshot.openSize
+          };
+        }
+
+        if (current.state === GOAL_STATE) break;
+      }
+      return frames;
+    }
+
+    async function aStarSearch(initialState, version, onProgress, yieldControl) {
+      const heap = new MinHeap(compareEntries);
+      const bestG = new Map([[initialState, 0]]);
+      const parent = new Map([[initialState, null]]);
+      const moveToState = new Map([[initialState, null]]);
+      let order = 0;
+      let expanded = 0;
+      let discovered = 1;
+      heap.push(makeEntry(initialState, 0, order));
+
+      while (heap.size > 0) {
+        if (version !== getSearchVersion()) return null;
+        const current = heap.pop();
+        if (current.g !== bestG.get(current.state)) continue;
+
+        if (current.state === GOAL_STATE) {
+          const reconstructed = reconstructPath(parent, moveToState);
+          return {
+            ...reconstructed,
+            frames: captureFrames(initialState, reconstructed.path),
+            expanded,
+            discovered
+          };
+        }
+
+        expanded += 1;
+        for (const neighbor of getNeighbors(current.state)) {
+          const tentativeG = current.g + 1;
+          const previousG = bestG.get(neighbor.state);
+          if (previousG === undefined || tentativeG < previousG) {
+            if (previousG === undefined) discovered += 1;
+            bestG.set(neighbor.state, tentativeG);
+            parent.set(neighbor.state, current.state);
+            moveToState.set(neighbor.state, neighbor.tileMoved);
+            order += 1;
+            heap.push(makeEntry(neighbor.state, tentativeG, order));
+          }
+        }
+
+        if (expanded % 1024 === 0) {
+          onProgress(expanded, discovered);
+          await yieldControl();
+        }
+      }
+      return { path: null, movedTiles: null, frames: null, expanded, discovered };
+    }
+
+    // --- Interface rendering ---
+
+    const board = document.getElementById("puzzle-board");
+    const solveButton = document.getElementById("solve-button");
+    const customButton = document.getElementById("custom-button");
+    const playButton = document.getElementById("play-button");
+    const previousButton = document.getElementById("previous-button");
+    const nextButton = document.getElementById("next-button");
+    const resetButton = document.getElementById("reset-button");
+    const speedSlider = document.getElementById("speed-slider");
+    const speedValue = document.getElementById("speed-value");
+    const inputs = [...document.querySelectorAll(".config-input")];
+    const configurationSection = document.getElementById("configuration-section");
+    const configurationGrid = document.getElementById("configuration-grid");
+    const inputNote = document.getElementById("input-note");
+    const visualizerTitle = document.getElementById("visualizer-title");
+    const statusBadge = document.getElementById("status-badge");
+    const statusMessage = document.getElementById("status-message");
+    const progressFill = document.getElementById("progress-fill");
+    const stepCount = document.getElementById("step-count");
+    const gValue = document.getElementById("g-value");
+    const hValue = document.getElementById("h-value");
+    const fValue = document.getElementById("f-value");
+    const movedTile = document.getElementById("moved-tile");
+    const totalMoves = document.getElementById("total-moves");
+    const expandedValue = document.getElementById("expanded-value");
+    const discoveredValue = document.getElementById("discovered-value");
+    const initialHValue = document.getElementById("initial-h-value");
+    const priorityValue = document.getElementById("priority-value");
+    const candidateGrid = document.getElementById("candidate-grid");
+    const openCount = document.getElementById("open-count");
+    const stateStrip = document.getElementById("state-strip");
+    const pathCount = document.getElementById("path-count");
+
+    let solution = null;
+    let currentStep = 0;
+    let searchVersion = 0;
+    let isSearching = false;
+    let isPlaying = false;
+    let playbackTimer = null;
+
+    function getSearchVersion() { return searchVersion; }
+    function waitForPaint() { return new Promise(resolve => requestAnimationFrame(resolve)); }
+
+    function makeMiniBoard(state) {
+      const miniBoard = document.createElement("span");
+      miniBoard.className = "mini-board";
+      miniBoard.setAttribute("aria-hidden", "true");
+      for (const value of state) {
+        const tile = document.createElement("span");
+        tile.className = value === "0" ? "mini-tile empty" : "mini-tile";
+        tile.textContent = value === "0" ? "" : value;
+        miniBoard.appendChild(tile);
+      }
+      return miniBoard;
+    }
+
+    function renderBoard(state, previousState = null) {
+      board.replaceChildren();
+      for (const value of state) {
+        const tile = document.createElement("div");
+        tile.className = value === "0" ? "tile empty" : "tile";
+        tile.setAttribute("role", "gridcell");
+        tile.setAttribute("aria-label", value === "0" ? "Empty tile" : `Tile ${value}`);
+        tile.dataset.value = value;
+        tile.textContent = value === "0" ? "" : value;
+        board.appendChild(tile);
+      }
+
+      if (previousState && previousState !== state && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const oldBlank = previousState.indexOf("0");
+        const moved = state[oldBlank];
+        const oldIndex = previousState.indexOf(moved);
+        const newIndex = state.indexOf(moved);
+        const element = board.querySelector(`[data-value="${moved}"]`);
+        if (element && moved !== "0") {
+          const style = getComputedStyle(board);
+          const gap = parseFloat(style.columnGap);
+          const padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+          const cell = (board.clientWidth - padding - gap * 2) / 3;
+          const x = (oldIndex % 3 - newIndex % 3) * (cell + gap);
+          const y = (Math.floor(oldIndex / 3) - Math.floor(newIndex / 3)) * (cell + gap);
+          element.animate([{ transform: `translate(${x}px, ${y}px)`, filter: "brightness(1.25)" }, { transform: "translate(0, 0)", filter: "brightness(1)" }], { duration: 320, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
+        }
+      }
+    }
+
+    function renderOpenList(frame, isGoal) {
+      candidateGrid.replaceChildren();
+      if (isGoal) {
+        candidateGrid.innerHTML = '<div class="empty-panel">The goal has the smallest priority, so A* stops searching.</div>';
+        openCount.textContent = "Search complete";
+        return;
+      }
+      if (!frame || frame.candidates.length === 0) {
+        candidateGrid.innerHTML = '<div class="empty-panel">No candidate states are waiting.</div>';
+        openCount.textContent = "Open list empty";
+        return;
+      }
+
+      openCount.textContent = `Showing ${frame.candidates.length} of ${frame.openSize.toLocaleString()}`;
+      frame.candidates.forEach((candidate, index) => {
+        const card = document.createElement("article");
+        card.className = index === 0 ? "candidate lowest" : "candidate";
+        card.appendChild(makeMiniBoard(candidate.state));
+        const copy = document.createElement("div");
+        copy.className = "candidate-copy";
+        const rank = document.createElement("span");
+        rank.className = "candidate-rank";
+        rank.textContent = index === 0 ? "Lowest priority" : `Candidate ${index + 1}`;
+        const scores = document.createElement("div");
+        scores.className = "candidate-scores";
+        scores.innerHTML = `<span>g = <strong>${candidate.g}</strong></span><span>h = <strong>${candidate.h}</strong></span><span>f = <strong>${candidate.f}</strong></span>`;
+        copy.append(rank, scores);
+        card.appendChild(copy);
+        candidateGrid.appendChild(card);
+      });
+    }
+
+    function updateActiveCard(animate = true) {
+      let active = null;
+      for (const card of stateStrip.querySelectorAll(".state-card")) {
+        const selected = Number(card.dataset.step) === currentStep;
+        card.classList.toggle("active", selected);
+        if (selected) { card.setAttribute("aria-current", "step"); active = card; }
+        else card.removeAttribute("aria-current");
+      }
+      if (active) {
+        const left = active.offsetLeft - (stateStrip.clientWidth - active.offsetWidth) / 2;
+        stateStrip.scrollTo({ left: Math.max(0, left), behavior: animate ? "smooth" : "auto" });
+      }
+    }
+
+    function renderPath() {
+      stateStrip.replaceChildren();
+      if (!solution) {
+        stateStrip.innerHTML = '<div class="empty-panel">Solve the puzzle to display the optimal path.</div>';
+        pathCount.textContent = "No path yet";
+        return;
+      }
+      pathCount.textContent = `${solution.path.length} states`;
+      solution.path.forEach((state, step) => {
+        const card = document.createElement("button");
+        card.className = "state-card";
+        card.type = "button";
+        card.dataset.step = String(step);
+        card.setAttribute("aria-label", `View solution step ${step}`);
+        const header = document.createElement("span");
+        header.className = "state-header";
+        header.innerHTML = `<span class="state-step">Step ${step}</span><span class="state-move">${step === 0 ? "Start" : `Tile ${solution.movedTiles[step]}`}</span>`;
+        card.append(header, makeMiniBoard(state));
+        card.addEventListener("click", () => { pausePlayback(); renderStep(step); });
+        stateStrip.appendChild(card);
+      });
+      updateActiveCard(false);
+    }
+
+    function renderStep(newStep, animate = true) {
+      if (!solution) return;
+      const previousState = solution.path[currentStep];
+      currentStep = Math.max(0, Math.min(newStep, solution.path.length - 1));
+      const state = solution.path[currentStep];
+      const frame = solution.frames[currentStep];
+      const finalStep = solution.path.length - 1;
+      renderBoard(state, animate ? previousState : null);
+      stepCount.textContent = `${currentStep} / ${finalStep}`;
+      progressFill.style.width = `${finalStep === 0 ? 100 : currentStep / finalStep * 100}%`;
+      gValue.textContent = frame.g;
+      hValue.textContent = frame.h;
+      fValue.textContent = frame.f;
+      priorityValue.textContent = `f = ${frame.f}`;
+      movedTile.textContent = currentStep === 0 ? "—" : `Tile ${solution.movedTiles[currentStep]}`;
+      renderOpenList(frame, currentStep === finalStep);
+      updateActiveCard(animate);
+
+      if (currentStep === finalStep) {
+        visualizerTitle.textContent = "Goal reached";
+        statusBadge.textContent = "Complete";
+        statusBadge.classList.add("ready");
+        statusMessage.textContent = `Optimal solution complete in ${finalStep} moves.`;
+        pausePlayback();
+      } else {
+        visualizerTitle.textContent = currentStep === 0 ? "Optimal path ready" : `Step ${currentStep} of ${finalStep}`;
+        statusBadge.textContent = "State selected";
+        statusBadge.classList.add("ready");
+        statusMessage.textContent = `A* selected this state with f(n) = ${frame.f}.`;
+      }
+      updateControls();
+    }
+
+    function readConfiguration(showErrors = true) {
+      const values = inputs.map(input => input.value.trim());
+      const frequencies = new Map();
+      for (const value of values) if (/^[0-8]$/.test(value)) frequencies.set(value, (frequencies.get(value) ?? 0) + 1);
+      inputs.forEach((input, index) => {
+        const value = values[index];
+        const invalid = !/^[0-8]$/.test(value) || (frequencies.get(value) ?? 0) > 1;
+        input.classList.toggle("invalid", showErrors && invalid);
+        input.setAttribute("aria-invalid", showErrors && invalid ? "true" : "false");
+      });
+      if (values.some(value => !/^[0-8]$/.test(value))) return { error: "Each position must contain one number from 0 through 8." };
+      if (frequencies.size !== 9) return { error: "Use each number from 0 through 8 exactly once." };
+      const state = values.join("");
+      if (inversionCount(state) % 2 !== inversionCount(GOAL_STATE) % 2) return { error: "This configuration cannot reach the goal state." };
+      return { state };
+    }
+
+    function showConfiguration(showErrors = true) {
+      const result = readConfiguration(showErrors);
+      if (result.error) {
+        inputNote.textContent = result.error;
+        inputNote.classList.toggle("error", showErrors);
+        statusMessage.textContent = result.error;
+        statusMessage.classList.toggle("error", showErrors);
+        visualizerTitle.textContent = "Check configuration";
+        statusBadge.textContent = "Needs attention";
+        statusBadge.classList.remove("ready");
+        return null;
+      }
+      inputNote.textContent = "Select Solve to calculate the optimal A* path.";
+      inputNote.classList.remove("error");
+      statusMessage.textContent = "The board is ready to solve.";
+      statusMessage.classList.remove("error");
+      visualizerTitle.textContent = "Ready to solve";
+      statusBadge.textContent = "Initial state";
+      statusBadge.classList.remove("ready");
+      renderBoard(result.state);
+      initialHValue.textContent = manhattanDistance(result.state);
+      return result.state;
+    }
+
+    function clearResults() {
+      gValue.textContent = "—"; hValue.textContent = "—"; fValue.textContent = "—";
+      movedTile.textContent = "—"; totalMoves.textContent = "—"; expandedValue.textContent = "—"; discoveredValue.textContent = "—"; priorityValue.textContent = "—";
+      stepCount.textContent = "0 / —"; progressFill.style.width = "0%";
+      candidateGrid.innerHTML = '<div class="empty-panel">Solve the puzzle to inspect A* priorities.</div>';
+      openCount.textContent = "No search yet";
+      renderPath();
+    }
+
+    function updateControls() {
+      const hasSolution = Boolean(solution);
+      const last = hasSolution ? solution.path.length - 1 : 0;
+      solveButton.disabled = isSearching;
+      playButton.disabled = isSearching || !hasSolution || last === 0;
+      previousButton.disabled = isSearching || !hasSolution || currentStep === 0;
+      nextButton.disabled = isSearching || !hasSolution || currentStep === last;
+      playButton.textContent = isPlaying ? "Pause" : "Play";
+      inputs.forEach(input => { input.disabled = isSearching; });
+    }
+
+    function pausePlayback() {
+      if (playbackTimer !== null) clearTimeout(playbackTimer);
+      playbackTimer = null;
+      isPlaying = false;
+      updateControls();
+    }
+
+    function schedulePlayback() {
+      if (!isPlaying || !solution) return;
+      if (currentStep >= solution.path.length - 1) { pausePlayback(); return; }
+      playbackTimer = setTimeout(() => { playbackTimer = null; renderStep(currentStep + 1); schedulePlayback(); }, 900 / Number(speedSlider.value));
+    }
+
+    function startPlayback() {
+      if (!solution) return;
+      if (currentStep >= solution.path.length - 1) renderStep(0, false);
+      isPlaying = true;
+      updateControls();
+      schedulePlayback();
+    }
+
+    async function solveCurrentConfiguration() {
+      pausePlayback();
+      const initialState = showConfiguration(true);
+      if (!initialState) return null;
+      const version = searchVersion + 1;
+      searchVersion = version;
+      solution = null;
+      currentStep = 0;
+      isSearching = true;
+      solveButton.textContent = "Solving…";
+      visualizerTitle.textContent = "Searching by priority";
+      statusBadge.textContent = "A* running";
+      inputNote.textContent = "Evaluating g(n) + Manhattan distance…";
+      clearResults();
+      expandedValue.textContent = "0";
+      discoveredValue.textContent = "1";
+      updateControls();
+      await waitForPaint();
+
+      const result = await aStarSearch(
+        initialState,
+        version,
+        (expanded, discovered) => {
+          expandedValue.textContent = expanded.toLocaleString();
+          discoveredValue.textContent = discovered.toLocaleString();
+          statusMessage.textContent = `A* has discovered ${discovered.toLocaleString()} unique states…`;
+        },
+        waitForPaint
+      );
+
+      if (version !== searchVersion || result === null) return null;
+      isSearching = false;
+      solveButton.textContent = "Solve";
+      inputNote.textContent = "Change the configuration and select Solve to run again.";
+      if (!result.path) {
+        visualizerTitle.textContent = "No solution found";
+        statusMessage.textContent = "The priority queue was exhausted without reaching the goal.";
+        updateControls();
+        return null;
+      }
+      solution = result;
+      totalMoves.textContent = result.path.length - 1;
+      expandedValue.textContent = result.expanded.toLocaleString();
+      discoveredValue.textContent = result.discovered.toLocaleString();
+      initialHValue.textContent = manhattanDistance(initialState);
+      renderPath();
+      renderStep(0, false);
+      return result;
+    }
+
+    solveButton.addEventListener("click", solveCurrentConfiguration);
+    customButton.addEventListener("click", () => {
+      if (isSearching) {
+        searchVersion += 1; isSearching = false; solution = null; currentStep = 0; solveButton.textContent = "Solve"; clearResults(); showConfiguration(false); updateControls();
+      }
+      pausePlayback();
+      inputNote.textContent = "Enter a new starting position, then select Solve.";
+      configurationGrid.classList.remove("attention");
+      void configurationGrid.offsetWidth;
+      configurationGrid.classList.add("attention");
+      configurationSection.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+      inputs[0].focus({ preventScroll: true });
+      setTimeout(() => configurationGrid.classList.remove("attention"), 750);
+    });
+    playButton.addEventListener("click", () => { if (isPlaying) { pausePlayback(); statusBadge.textContent = "Paused"; } else startPlayback(); });
+    previousButton.addEventListener("click", () => { pausePlayback(); renderStep(currentStep - 1); });
+    nextButton.addEventListener("click", () => { pausePlayback(); renderStep(currentStep + 1); });
+    resetButton.addEventListener("click", () => {
+      searchVersion += 1; isSearching = false; solveButton.textContent = "Solve"; pausePlayback();
+      if (solution) renderStep(0, false); else { clearResults(); showConfiguration(true); }
+      updateControls();
+    });
+    speedSlider.addEventListener("input", () => {
+      speedValue.textContent = `${Number(speedSlider.value).toLocaleString()}×`;
+      if (isPlaying) { clearTimeout(playbackTimer); playbackTimer = null; schedulePlayback(); }
+    });
+    inputs.forEach(input => {
+      input.addEventListener("focus", event => event.target.select());
+      input.addEventListener("input", () => {
+        searchVersion += 1; isSearching = false; solveButton.textContent = "Solve"; pausePlayback(); solution = null; currentStep = 0; clearResults(); showConfiguration(false); updateControls();
+      });
+    });
+    document.addEventListener("keydown", event => {
+      if (event.target instanceof HTMLInputElement || !solution || isSearching) return;
+      if (event.key === "ArrowLeft") { event.preventDefault(); pausePlayback(); renderStep(currentStep - 1); }
+      else if (event.key === "ArrowRight") { event.preventDefault(); pausePlayback(); renderStep(currentStep + 1); }
+      else if (event.key === " ") { event.preventDefault(); isPlaying ? pausePlayback() : startPlayback(); }
+    });
+
+    function registerBrowserTool() {
+      const context = document.modelContext;
+      if (!context?.registerTool) return;
+
+      const registration = context.registerTool({
+        name: "solve_eight_puzzle_with_astar",
+        title: "Solve 8-puzzle with A*",
+        description: "Set a valid 8-puzzle configuration, calculate its optimal A* solution, and display its priorities in the visualizer.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            tiles: {
+              type: "array",
+              description: "Nine integers in row-major order. Use 0 for the empty tile.",
+              minItems: 9,
+              maxItems: 9,
+              items: { type: "integer", minimum: 0, maximum: 8 }
+            }
+          },
+          required: ["tiles"],
+          additionalProperties: false
+        },
+        annotations: { readOnlyHint: false, untrustedContentHint: false },
+        async execute(input) {
+          const tiles = input?.tiles;
+          if (!Array.isArray(tiles) || tiles.length !== 9 || new Set(tiles).size !== 9 ||
+              !tiles.every(tile => Number.isInteger(tile) && tile >= 0 && tile <= 8)) {
+            throw new Error("Tiles must contain every integer from 0 through 8 exactly once.");
+          }
+          const state = tiles.join("");
+          if (inversionCount(state) % 2 !== inversionCount(GOAL_STATE) % 2) {
+            throw new Error("This configuration cannot reach the goal state.");
+          }
+          inputs.forEach((inputElement, index) => { inputElement.value = String(tiles[index]); });
+          const result = await solveCurrentConfiguration();
+          if (!result) throw new Error("The puzzle could not be solved.");
+          return {
+            totalMoves: result.path.length - 1,
+            statesExpanded: result.expanded,
+            statesDiscovered: result.discovered,
+            initialManhattanDistance: manhattanDistance(state)
+          };
+        }
+      });
+
+      Promise.resolve(registration).catch(error => {
+        console.warn("The browser tool could not be registered.", error);
+      });
+    }
+
+    renderBoard(DEFAULT_STATE);
+    initialHValue.textContent = manhattanDistance(DEFAULT_STATE);
+    updateControls();
+    registerBrowserTool();
+  </script>
+</body>
+</html>
