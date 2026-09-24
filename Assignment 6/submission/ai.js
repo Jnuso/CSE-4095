@@ -120,6 +120,35 @@
     });
   }
 
+  /**
+   * Select a legal move for a human-facing opponent. At 100% this is exactly
+   * bestMove(); lower strengths sometimes deviate. The rolls are supplied by
+   * the interface, keeping the rule/DP module deterministic and easy to test.
+   */
+  function moveAtStrength(state, table, strength, decisionRoll, choiceRoll) {
+    if (!Number.isSafeInteger(strength) || strength < 0 || strength > 100) {
+      throw new RangeError('AI strength must be an integer from 0 through 100.');
+    }
+    for (const roll of [decisionRoll, choiceRoll]) {
+      if (typeof roll !== 'number' || !Number.isFinite(roll) || roll < 0 || roll >= 1) {
+        throw new RangeError('Random rolls must be numbers from 0 (inclusive) to 1 (exclusive).');
+      }
+    }
+    const optimal = bestMove(state, table);
+    if (optimal === null || strength === 100 || decisionRoll < strength / 100) return optimal;
+
+    const moves = evaluateMoves(state, table);
+    const maximizing = state[2] % 2 === 0;
+    const worse = moves.filter((move) => maximizing ?
+      move.score < optimal.score : move.score > optimal.score);
+    // If all continuations have the same score, vary the tie-break instead of
+    // pretending that an objectively worse move exists at this horizon.
+    const alternatives = worse.length > 0 ? worse : moves.filter((move) => !move.selected);
+    if (alternatives.length === 0) return optimal;
+    const { selected, ...choice } = alternatives[Math.floor(choiceRoll * alternatives.length)];
+    return choice;
+  }
+
   function outcomeLabel(score, depth = DEFAULT_DEPTH) {
     assertDepth(depth);
     if (score === 1) return 'WIN for Player A';
@@ -162,6 +191,7 @@
   const api = {
     bestMoveDP,
     bestMove,
+    moveAtStrength,
     evaluateMoves,
     outcomeLabel,
     compareSearch,

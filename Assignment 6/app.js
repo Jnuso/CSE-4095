@@ -15,6 +15,7 @@ const {
   bestMoveDP,
   compareSearch,
   evaluateMoves,
+  moveAtStrength,
   outcomeLabel,
 } = window.ChopsticksAI;
 
@@ -33,6 +34,9 @@ const ui = {
   playerA: byId('player-a'),
   playerB: byId('player-b'),
   playerControls: byId('player-controls'),
+  strengthControls: byId('ai-strength-controls'),
+  strength: byId('ai-strength'),
+  strengthValue: byId('ai-strength-value'),
   restart: byId('restart-button'),
   split: byId('split-button'),
   title: byId('status-title'),
@@ -69,6 +73,7 @@ const ui = {
   aiRawScore: byId('ai-raw-score'),
   aiReason: byId('ai-reason'),
   aiSelected: byId('ai-selected'),
+  aiStrengthAnalysisNote: byId('ai-strength-analysis-note'),
   advancedIntro: byId('advanced-intro'),
   tieKeyDescription: byId('tie-key-description'),
   dpStatsIntro: byId('dp-stats-intro'),
@@ -98,6 +103,7 @@ const tableCache = new Map([[DEFAULT_DEPTH, { table: minimaxTable, duration: tab
 let state = structuredClone(INITIAL_STATE);
 let mode = 'human';
 let humanPlayer = 'A';
+let aiStrength = 100;
 let selectedSource = null;
 let showingSplits = false;
 let history = [];
@@ -156,6 +162,13 @@ function beginnerOutcome(score) {
   if (score === 1) return 'Player A is expected to win';
   if (score === -1) return 'Player B is expected to win';
   return `A tie is expected by move ${searchDepth}`;
+}
+
+function strengthDescription(value) {
+  if (value === 100) return 'Perfect';
+  if (value >= 70) return 'Strong';
+  if (value >= 40) return 'Casual';
+  return 'Beginner';
 }
 
 function compactState(position) {
@@ -294,6 +307,8 @@ function renderControls() {
   ui.playerA.classList.toggle('is-active', humanPlayer === 'A');
   ui.playerB.classList.toggle('is-active', humanPlayer === 'B');
   ui.playerControls.hidden = mode !== 'human';
+  ui.strengthControls.hidden = mode !== 'human';
+  ui.strengthValue.textContent = `${aiStrength}% · ${strengthDescription(aiStrength)}`;
   ui.autoControls.hidden = mode !== 'auto';
   ui.autoPlay.textContent = autoRunning ? 'Pause AI vs AI' : 'Start AI vs AI';
   ui.autoPlay.disabled = mode !== 'auto' || getResult(state, searchDepth) !== null ||
@@ -368,6 +383,11 @@ function renderAI() {
   ui.aiScore.textContent = beginnerOutcome(entry.score);
   ui.aiRawScore.textContent = `${entry.score > 0 ? '+' : entry.score < 0 ? '−' : ''}${Math.abs(entry.score)} · ${outcomeLabel(entry.score, searchDepth)}`;
   ui.aiReason.textContent = lastExplanation || scoreDetail(entry.score);
+  ui.aiStrengthAnalysisNote.textContent = mode === 'local' ?
+    'Both players are human-controlled; this recommendation is a perfect-play reference only.' :
+    mode === 'human' && aiStrength < 100 ?
+      `Your opponent is set to ${aiStrength}% strength, so its actual move may differ from the perfect-play choice shown here.` :
+      'At 100% strength, the computer follows this perfect-play recommendation.';
   ui.advancedIntro.textContent = `These are the technical details behind the summary above. The AI built ${minimaxTable.size.toLocaleString()} table rows from move ${searchDepth} backward to the opening.`;
   ui.tieKeyDescription.textContent = `Neither player can force a win before move ${searchDepth}.`;
 
@@ -520,9 +540,9 @@ function createTreeBranch(position, move, options) {
 
   const kicker = document.createElement('span');
   kicker.className = 'tree-node-kicker';
-  kicker.textContent = move.played && move.selected ? 'Played · AI choice' :
+  kicker.textContent = move.played && move.selected ? 'Played · perfect-play choice' :
     move.played ? 'Move actually played' :
-      move.selected ? 'AI choice' : interactive ? 'Alternative move' : 'Possible reply';
+      move.selected ? 'Perfect-play choice' : interactive ? 'Alternative move' : 'Possible reply';
   const title = document.createElement('strong');
   title.textContent = moveLabel(position, move);
   const nextState = document.createElement('span');
@@ -835,6 +855,7 @@ async function commitMove(move, sourceOverride = null, computer = false) {
   const actor = currentPlayer();
   const label = moveLabel(state, chosen, sourceOverride);
   const score = minimaxTable.get(stateKey(chosen.nextState)).score;
+  const strengthUsed = computer && mode === 'human' ? move.strengthUsed ?? 100 : 100;
   isAnimating = true;
   ui.title.textContent = chosen.kind === 'split' ? `${actor} is redistributing…` : `${actor} is tapping…`;
   ui.detail.textContent = label;
@@ -850,7 +871,11 @@ async function commitMove(move, sourceOverride = null, computer = false) {
   reviewedMoveIndex = getResult(state, searchDepth) === null ? null : history.length;
   selectedSource = null;
   showingSplits = false;
-  lastExplanation = `${computer ? 'The computer chose' : mode === 'local' ? `Player ${actor} chose` : 'You chose'}: ${label}. ${scoreDetail(score)}`;
+  const optimalScore = minimaxTable.get(stateKey(positionBeforeMove)).score;
+  const strengthExplanation = computer && mode === 'human' && strengthUsed < 100 ?
+    score === optimalScore ? 'This move has the same minimax value as the best choice. ' :
+      `This is a lower-rated legal choice at ${strengthUsed}% strength. ` : '';
+  lastExplanation = `${computer ? 'The computer chose' : mode === 'local' ? `Player ${actor} chose` : 'You chose'}: ${label}. ${strengthExplanation}${scoreDetail(score)}`;
   const result = getResult(state, searchDepth);
   if (result !== null) autoRunning = false;
   playSound(result === 'tie' ? 'tie' : result ? 'win' : chosen.kind);
@@ -860,7 +885,10 @@ async function commitMove(move, sourceOverride = null, computer = false) {
 }
 
 function selectComputerMove() {
-  return bestMove(state, minimaxTable);
+  if (mode !== 'human') return bestMove(state, minimaxTable);
+  const strengthUsed = aiStrength;
+  const move = moveAtStrength(state, minimaxTable, strengthUsed, Math.random(), Math.random());
+  return move ? { ...move, strengthUsed } : null;
 }
 
 function scheduleComputerIfNeeded() {
@@ -933,6 +961,16 @@ ui.searchDepth.addEventListener('change', () => {
   minimaxTable = cached.table;
   tableBuildDuration = cached.duration;
   resetGame();
+});
+ui.strength.addEventListener('input', () => {
+  const requested = Number(ui.strength.value);
+  if (!Number.isSafeInteger(requested) || requested < 0 || requested > 100) {
+    ui.strength.value = String(aiStrength);
+    return;
+  }
+  aiStrength = requested;
+  renderControls();
+  renderAI();
 });
 ui.aiToggle.addEventListener('click', () => {
   const expanded = ui.aiToggle.getAttribute('aria-expanded') === 'true';

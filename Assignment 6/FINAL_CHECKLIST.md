@@ -40,6 +40,7 @@ Use this checklist immediately before uploading the `submission` folder.
 ## Optional Extensions
 
 - [ ] Two players can alternate on the same device, including attacks and splits.
+- [ ] You vs AI starts at 100% strength; lower settings can choose a lower-rated legal move, while AI vs AI remains perfect-play.
 - [ ] The Sound button starts muted, toggles on/off, and the game still works when audio is unavailable.
 - [ ] Attack and redistribution moves each show their own animation; reduced-motion settings remain respected.
 - [ ] Changing the depth restarts the game, updates the displayed limit/table, and 20 remains the default when the page reloads.

@@ -28,7 +28,7 @@ const {
   overflowSum,
   stateKey,
 } = require('./game.js');
-const { bestMove, bestMoveDP, compareSearch, evaluateMoves, outcomeLabel } = require('./ai.js');
+const { bestMove, bestMoveDP, compareSearch, evaluateMoves, moveAtStrength, outcomeLabel } = require('./ai.js');
 
 const WEB_HTML = readFileSync(new URL('./index.html', import.meta.url), 'utf8');
 const WEB_APP = readFileSync(new URL('./app.js', import.meta.url), 'utf8');
@@ -509,6 +509,38 @@ test('computer selection is legal for both A and B and stops at the horizon', ()
   }
   assert.equal(bestMove([[1, 1], [1, 1], DEFAULT_DEPTH], DP_TABLE), null);
   assert.deepEqual(evaluateMoves([[1, 1], [1, 1], DEFAULT_DEPTH], DP_TABLE), []);
+});
+
+test('strength 100 preserves exact minimax; lower strength may make legal mistakes', () => {
+  for (const position of [
+    [[0, 1], [1, 3], 18],
+    [[0, 1], [0, 4], 19],
+  ]) {
+    const perfect = bestMove(position, DP_TABLE);
+    assert.deepEqual(moveAtStrength(position, DP_TABLE, 100, 0.99, 0.99), perfect);
+    assert.deepEqual(moveAtStrength(position, DP_TABLE, 50, 0.1, 0.99), perfect);
+    const mistake = moveAtStrength(position, DP_TABLE, 0, 0.99, 0.5);
+    assert(legalMoves(position).some((move) => stateKey(move.nextState) === stateKey(mistake.nextState)));
+    assert.notEqual(mistake.score, perfect.score);
+  }
+  const opening = moveAtStrength(INITIAL_STATE, DP_TABLE, 0, 0.99, 0.5);
+  assert.equal(opening.kind, 'split');
+  assert.equal(opening.score, -1);
+  assert.equal(moveAtStrength([[1, 1], [1, 1], 20], DP_TABLE, 0, 0.5, 0.5), null);
+  assert.throws(() => moveAtStrength(INITIAL_STATE, DP_TABLE, -1, 0, 0), RangeError);
+  assert.throws(() => moveAtStrength(INITIAL_STATE, DP_TABLE, 101, 0, 0), RangeError);
+  assert.throws(() => moveAtStrength(INITIAL_STATE, DP_TABLE, 50, Number.NaN, 0), RangeError);
+  assert.throws(() => moveAtStrength(INITIAL_STATE, DP_TABLE, 50, 0, 1), RangeError);
+});
+
+test('the strength slider is only for You vs AI and analysis identifies perfect play', () => {
+  assert.match(WEB_HTML, /id="ai-strength"[^>]*min="0"[^>]*max="100"[^>]*value="100"/);
+  assert.match(WEB_HTML, /id="ai-strength-value"/);
+  assert.match(WEB_HTML, /id="ai-strength-analysis-note"/);
+  assert.match(functionSource('renderControls'), /strengthControls\.hidden = mode !== 'human'/);
+  assert.match(functionSource('selectComputerMove'), /mode !== 'human'\) return bestMove\(state, minimaxTable\)/);
+  assert.match(functionSource('selectComputerMove'), /moveAtStrength\(state, minimaxTable, strengthUsed/);
+  assert.match(functionSource('renderAI'), /perfect-play choice shown here/);
 });
 
 test('autonomous optimal play terminates no later than level 20', () => {

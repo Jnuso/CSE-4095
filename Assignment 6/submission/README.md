@@ -4,7 +4,7 @@
 
 This is a web version of the Chopsticks game from the Python starter code. You can play against the computer as Player A or Player B, play with a second person on the same device, or watch the computer play against itself. It's just HTML, CSS, and JavaScript, so there's no server or database.
 
-The computer doesn't pick random moves. It uses minimax with a dynamic programming (DP) table that gets built when the page loads. Player A tries to get the highest score and Player B tries to get the lowest score. There's also an AI Analysis panel that shows why the computer picked a move.
+At the default 100% strength, the computer does not pick random moves. It uses minimax with a dynamic programming (DP) table that gets built when the page loads. Player A tries to get the highest score and Player B tries to get the lowest score. The optional strength slider can make the opponent deviate from this best move. There's also an AI Analysis panel showing the perfect-play recommendation and the actual choice.
 
 ## Running the Web Game
 
@@ -63,7 +63,7 @@ Every state gets a score from Player A's point of view:
 2. 0 means neither player can force a win within the 20 turns
 3. -1 means B can force a win
 
-On A's turn the computer picks the move with the highest score, so A is MAX. On B's turn it picks the move with the lowest score, so B is MIN. The score of a state is what you get if both players always pick their best move from there. At a different selected move limit, 0 means no forced winner by that limit.
+At 100% strength, on A's turn the computer picks the move with the highest score, so A is MAX. On B's turn it picks the move with the lowest score, so B is MIN. The score of a state is what you get if both players always pick their best move from there. At a different selected move limit, 0 means no forced winner by that limit. A lower strength does not change the table or the rules; it changes which legal move the human-facing opponent actually chooses.
 
 ## Bottom-Up Dynamic Programming
 
@@ -75,7 +75,7 @@ It's built from the bottom up:
 2. Then it goes backwards from level 19 down to level 0. For each state it gets all the legal moves and looks up their scores, which are already in the table. On A's levels it keeps the highest one and on B's levels it keeps the lowest one.
 3. It saves the score and the move that got that score.
 
-Each hand can be 0 to 4, so there are 5 x 5 x 5 x 5 = 625 hand combos. There are 21 levels (0 through 20), so the table has 625 x 21 = 13,125 rows. When the game is running, the computer just looks up its move in the table.
+Each hand can be 0 to 4, so there are 5 x 5 x 5 x 5 = 625 hand combos. There are 21 levels (0 through 20), so the table has 625 x 21 = 13,125 rows. At full strength the computer uses the table's best move. At reduced strength it reads the same table to identify lower-rated legal alternatives.
 
 Dynamic programming helps because lots of different move orders end up in the same state at the same level. The table saves each one so it only gets figured out once. A full tree would repeat the same work a lot.
 
@@ -93,6 +93,7 @@ At the start the default score is 0, so neither player can force a win in 20 tur
 8. DP Statistics shows the table size, how long it took to build, the current level, turns left, and how many legal moves there are.
 9. The Sound button starts off. Turn it on for local synthesized tap, split, and game-end sounds; no audio files or network access are needed.
 10. The AI experiments show how the opening score changes at different move limits and compare bottom-up DP against uncached recursion at depth 6. They never change the current game. DP fills all possible state-level rows while recursion follows only reachable branches, so the displayed times are not an apples-to-apples speed benchmark.
+11. In You vs AI, the Opponent AI strength slider starts at 100% (the original perfect-play opponent). Below 100%, it sometimes picks a lower-scored legal move if one exists; when all moves share a score it may vary the tie-break instead. You can change it during a game, and the next computer decision uses the new setting. AI vs AI remains perfect-play so its analysis is reproducible.
 
 ## Software Organization
 
@@ -126,13 +127,13 @@ The game does not accept free-form commands, connect to a server, or send inform
 ## Known Limitations
 
 1. A score of 0 only means nobody can force a win before the selected move limit. It doesn't mean the game is a draw forever. When we tried a version with no turn limit, Player B could force a win. If the limit is raised to 26 turns the opening score changes from 0 to -1 (24 turns is still 0). I kept 20 as the default because the assignment says to.
-2. When two moves have the same score, the computer picks the first one in the list. It doesn't try to win faster.
+2. At 100% strength, when two moves have the same score, the computer picks the first one in the list. It doesn't try to win faster. At reduced strength, an equally rated alternative may be chosen.
 3. The game isn't saved if you close or refresh the page.
 4. It only works on one computer. There's no online multiplayer.
 
 ## Implemented Extensions
 
-After the required game was working, I added AI vs AI mode, same-device two-player mode, move history, tap and redistribution animations, optional sound, adjustable depth, DP Statistics, first-player opening analysis, a small DP-vs-recursion comparison, and the interactive decision map. After a completed game, the decision map can also move backward and forward through the route that was played without changing the final board or move history.
+After the required game was working, I added AI vs AI mode, same-device two-player mode, move history, tap and redistribution animations, optional sound, adjustable depth, an opponent-strength slider, DP Statistics, first-player opening analysis, a small DP-vs-recursion comparison, and the interactive decision map. After a completed game, the decision map can also move backward and forward through the route that was played without changing the final board or move history.
 
 ## Possible Extensions
 

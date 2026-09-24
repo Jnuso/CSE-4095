@@ -61,6 +61,12 @@
                   </div>
                 </div>
               </div>
+              <div id="ai-strength-controls" class="ai-strength-control">
+                <label for="ai-strength"><strong>Opponent AI strength</strong><output id="ai-strength-value" for="ai-strength">100% · Perfect</output></label>
+                <input type="range" id="ai-strength" min="0" max="100" step="10" value="100" aria-describedby="ai-strength-help">
+                <div class="strength-scale" aria-hidden="true"><span>More mistakes</span><span>Perfect play</span></div>
+                <p id="ai-strength-help">100% uses the original best-move AI. Lower settings sometimes pick a lower-rated legal move; when all moves rate equally, they may simply play a different one. Changes apply to the computer’s next turn.</p>
+              </div>
               <div class="depth-control"><label for="search-depth"><strong>Move limit / AI depth</strong><span>20 is the assignment setting. Changing this starts a new game.</span></label><select id="search-depth" aria-label="Move limit and AI search depth"><option value="10">10 moves</option><option value="20" selected>20 moves · assignment default</option><option value="26">26 moves</option><option value="30">30 moves</option><option value="40">40 moves</option><option value="50">50 moves</option></select></div>
               <div id="auto-controls" class="auto-controls setup-auto-controls" hidden>
                 <div class="auto-control-copy">
@@ -177,9 +183,9 @@
                   </div>
                   <div class="analysis-next-grid">
                     <div class="analysis-next-item"><span>Whose decision?</span><strong id="ai-turn-simple">Player A is choosing now</strong></div>
-                    <div class="analysis-next-item"><span>Best next move</span><strong id="ai-selected">Calculating…</strong></div>
+                    <div class="analysis-next-item"><span>Best move with perfect play</span><strong id="ai-selected">Calculating…</strong></div>
                   </div>
-                  <p class="analysis-tip"><strong>In plain language:</strong> Player A tries to find the best result for A. Player B tries to prevent it. The explanation below uses that same rule.</p>
+                  <p class="analysis-tip"><strong>In plain language:</strong> Player A tries to find the best result for A. Player B tries to prevent it. The explanation below uses that same rule. <span id="ai-strength-analysis-note">At 100% strength, the computer follows this perfect-play recommendation.</span></p>
                 </div>
 
                 <details id="ai-advanced-details" class="analysis-advanced">
@@ -203,7 +209,7 @@
                     <div class="analysis-graph" aria-labelledby="graph-title">
                       <div class="panel-heading"><div><p class="section-kicker">Interactive decision map</p><h3 id="graph-title">Move tree</h3></div><span class="graph-icon" aria-hidden="true"><span></span><span></span><span></span></span></div>
                       <p class="graph-intro">The route shows how the game reached its current node. Under it, every legal next move creates a branch. Select a branch to preview the changed hands and the opponent’s possible replies; previewing never plays the move.</p>
-                      <div class="tree-legend" aria-label="Move tree legend"><span><i class="tree-swatch swatch-played" aria-hidden="true"></i>Played route</span><span><i class="tree-swatch swatch-current" aria-hidden="true"></i>Final game position</span><span><i class="tree-swatch swatch-reviewed" aria-hidden="true"></i>Position being reviewed</span><span><i class="tree-swatch swatch-best" aria-hidden="true"></i>AI choice</span></div>
+                      <div class="tree-legend" aria-label="Move tree legend"><span><i class="tree-swatch swatch-played" aria-hidden="true"></i>Played route</span><span><i class="tree-swatch swatch-current" aria-hidden="true"></i>Final game position</span><span><i class="tree-swatch swatch-reviewed" aria-hidden="true"></i>Position being reviewed</span><span><i class="tree-swatch swatch-best" aria-hidden="true"></i>Perfect-play choice</span></div>
 
                       <section class="tree-route" aria-labelledby="tree-route-title">
                         <h4 id="tree-route-title">Route played so far</h4>

@@ -126,3 +126,22 @@ def test_optional_depth_sound_and_ai_experiments_do_not_change_game(page) -> Non
     assert "Bottom-up DP" in page.locator("#comparison-results").inner_text()
     assert level(page) == "0 / 10"
     assert page.problems == []
+
+
+def test_opponent_strength_can_deviate_while_perfect_mode_stays_optimal(page) -> None:
+    page.evaluate("Math.random = () => 0.99")
+    page.locator("#ai-strength").evaluate(
+        "element => { element.value = '0'; element.dispatchEvent(new Event('input', { bubbles: true })); }"
+    )
+    assert "0%" in page.locator("#ai-strength-value").inner_text()
+    page.locator("#player-b").click()
+    page.wait_for_function("document.getElementById('dp-current-level').textContent === '1 / 20'")
+    assert "splits" in page.locator("#history-list").inner_text()
+
+    page.locator("#ai-strength").evaluate(
+        "element => { element.value = '100'; element.dispatchEvent(new Event('input', { bubbles: true })); }"
+    )
+    page.locator("#restart-button").click()
+    page.wait_for_function("document.getElementById('dp-current-level').textContent === '1 / 20'")
+    assert "taps" in page.locator("#history-list").inner_text()
+    assert page.problems == []
