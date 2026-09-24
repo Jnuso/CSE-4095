@@ -13,6 +13,7 @@ const {
 const {
   bestMove,
   bestMoveDP,
+  compareSearch,
   evaluateMoves,
   outcomeLabel,
 } = window.ChopsticksAI;
@@ -25,7 +26,10 @@ const byId = (id) => {
 
 const ui = {
   modeHuman: byId('mode-human'),
+  modeLocal: byId('mode-local'),
   modeAuto: byId('mode-auto'),
+  soundToggle: byId('sound-toggle'),
+  searchDepth: byId('search-depth'),
   playerA: byId('player-a'),
   playerB: byId('player-b'),
   playerControls: byId('player-controls'),
@@ -35,6 +39,8 @@ const ui = {
   detail: byId('status-detail'),
   turn: byId('turn-count'),
   remaining: byId('remaining-moves'),
+  gameLimitDescription: byId('game-limit-description'),
+  actionTurnLabel: byId('action-turn-label'),
   moveOptions: byId('move-options'),
   autoControls: byId('auto-controls'),
   autoPlay: byId('auto-play'),
@@ -63,6 +69,11 @@ const ui = {
   aiRawScore: byId('ai-raw-score'),
   aiReason: byId('ai-reason'),
   aiSelected: byId('ai-selected'),
+  advancedIntro: byId('advanced-intro'),
+  tieKeyDescription: byId('tie-key-description'),
+  dpStatsIntro: byId('dp-stats-intro'),
+  dpStatsHelpText: byId('dp-stats-help-text'),
+  rulesReminder: byId('rules-reminder'),
   dpTableRows: byId('dp-table-rows'),
   dpBuildTime: byId('dp-build-time'),
   dpCurrentLevel: byId('dp-current-level'),
@@ -72,12 +83,18 @@ const ui = {
   dpDepthProgress: byId('dp-depth-progress'),
   dpProgressLabel: byId('dp-progress-label'),
   dpProgressBar: byId('dp-progress-bar'),
+  advantageRun: byId('advantage-run'),
+  advantageResults: byId('advantage-results'),
+  comparisonRun: byId('comparison-run'),
+  comparisonResults: byId('comparison-results'),
 };
 
 const HAND_NAMES = ['left', 'right'];
 const tableBuildStarted = clockNow();
-const minimaxTable = bestMoveDP(DEFAULT_DEPTH);
-const tableBuildDuration = clockNow() - tableBuildStarted;
+let searchDepth = DEFAULT_DEPTH;
+let minimaxTable = bestMoveDP(searchDepth);
+let tableBuildDuration = clockNow() - tableBuildStarted;
+const tableCache = new Map([[DEFAULT_DEPTH, { table: minimaxTable, duration: tableBuildDuration }]]);
 let state = structuredClone(INITIAL_STATE);
 let mode = 'human';
 let humanPlayer = 'A';
@@ -92,9 +109,23 @@ let gameRevision = 0;
 let isAnimating = false;
 let previewedMoveKey = null;
 let reviewedMoveIndex = null;
+let soundEnabled = false;
+let audioContext = null;
+let animationSequence = 0;
 
 function clockNow() {
   return globalThis.performance?.now?.() ?? Date.now();
+}
+
+function getTableAtDepth(depth) {
+  let cached = tableCache.get(depth);
+  if (!cached) {
+    const started = clockNow();
+    const table = bestMoveDP(depth);
+    cached = { table, duration: clockNow() - started };
+    tableCache.set(depth, cached);
+  }
+  return cached;
 }
 
 function currentPlayer(position = state) {
@@ -112,19 +143,19 @@ function handsFor(position, player) {
 function scoreShort(score) {
   if (score === 1) return '+1 · WIN for A';
   if (score === -1) return '−1 · LOSS for A';
-  return '0 · TIE within 20 moves';
+  return `0 · TIE within ${searchDepth} moves`;
 }
 
 function scoreDetail(score) {
-  if (score === 1) return 'Player A can force a knockout before the 20-move limit.';
-  if (score === -1) return 'Player B can force a knockout before the 20-move limit.';
-  return 'Neither player can force a knockout before the 20-move limit, so optimal play is scored as a tie.';
+  if (score === 1) return `Player A can force a knockout before the ${searchDepth}-move limit.`;
+  if (score === -1) return `Player B can force a knockout before the ${searchDepth}-move limit.`;
+  return `Neither player can force a knockout before the ${searchDepth}-move limit, so optimal play is scored as a tie.`;
 }
 
 function beginnerOutcome(score) {
   if (score === 1) return 'Player A is expected to win';
   if (score === -1) return 'Player B is expected to win';
-  return 'A tie is expected by move 20';
+  return `A tie is expected by move ${searchDepth}`;
 }
 
 function compactState(position) {
@@ -187,7 +218,8 @@ function handSvg(count) {
 }
 
 function humanMayMove() {
-  return !isAnimating && mode === 'human' && currentPlayer() === humanPlayer && getResult(state) === null;
+  return !isAnimating && (mode === 'local' || (mode === 'human' && currentPlayer() === humanPlayer)) &&
+    getResult(state, searchDepth) === null;
 }
 
 function renderHands() {
@@ -195,7 +227,7 @@ function renderHands() {
     for (let index = 0; index < 2; index += 1) {
       const button = byId(`hand-${player.toLowerCase()}-${HAND_NAMES[index]}`);
       const count = handsFor(state, player)[index];
-      const ownHand = player === humanPlayer;
+      const ownHand = player === (mode === 'local' ? currentPlayer() : humanPlayer);
       const available = humanMayMove() && count > 0 &&
         ((ownHand && !showingSplits) || (!ownHand && selectedSource !== null && !showingSplits));
       button.disabled = !available;
@@ -212,27 +244,33 @@ function renderHands() {
           `${count} ${count === 1 ? 'finger' : 'fingers'}`}`);
     }
     const card = byId(`player-${player.toLowerCase()}-card`);
-    card.classList.toggle('is-active', currentPlayer() === player && getResult(state) === null);
+    card.classList.toggle('is-active', currentPlayer() === player && getResult(state, searchDepth) === null);
   }
 }
 
 function renderStatus() {
-  const result = getResult(state);
+  const result = getResult(state, searchDepth);
   ui.turn.textContent = `${state[2]} ${state[2] === 1 ? 'move' : 'moves'} played`;
-  const remaining = Math.max(0, DEFAULT_DEPTH - state[2]);
+  const remaining = Math.max(0, searchDepth - state[2]);
   ui.remaining.textContent = `${remaining} ${remaining === 1 ? 'move' : 'moves'} remaining`;
+  ui.gameLimitDescription.textContent = `${searchDepth === DEFAULT_DEPTH ? 'Assignment mode' : 'Custom mode'} ends at a knockout or after ${searchDepth} moves.`;
 
   if (result === 'A' || result === 'B') {
     ui.title.textContent = `Player ${result} wins`;
     ui.detail.textContent = `Player ${opposite(result)} has no active hands remaining.`;
   } else if (result === 'tie') {
     ui.title.textContent = 'Maximum depth reached · Tie';
-    ui.detail.textContent = `Both players still have an active hand after ${DEFAULT_DEPTH} moves.`;
+    ui.detail.textContent = `Both players still have an active hand after ${searchDepth} moves.`;
   } else if (mode === 'auto') {
     ui.title.textContent = autoRunning ? 'Autonomous game in motion' : 'Autonomous game paused';
     ui.detail.textContent = autoRunning ?
-      `Player ${currentPlayer()} is moving. Both sides follow the depth-${DEFAULT_DEPTH} minimax table.` :
+      `Player ${currentPlayer()} is moving. Both sides follow the depth-${searchDepth} minimax table.` :
       `Player ${currentPlayer()} moves next. Use Start AI vs AI in Game Setup, or play one AI move.`;
+  } else if (mode === 'local') {
+    ui.title.textContent = `Player ${currentPlayer()}'s move`;
+    ui.detail.textContent = showingSplits ? 'Choose a legal split below. A split uses this turn.' :
+      selectedSource === null ? `Player ${currentPlayer()}: choose one of your active hands.` :
+        `Player ${currentPlayer()}: tap an active opponent hand with your ${HAND_NAMES[selectedSource]} hand.`;
   } else if (humanMayMove()) {
     ui.title.textContent = `Your move · Player ${humanPlayer}`;
     ui.detail.textContent = showingSplits ? 'Choose a legal split below. A split uses your turn.' :
@@ -240,30 +278,37 @@ function renderStatus() {
         `Your ${HAND_NAMES[selectedSource]} hand is selected. Now choose an active opponent hand.`;
   } else {
     ui.title.textContent = `Computer's move · Player ${currentPlayer()}`;
-    ui.detail.textContent = `The computer is reading the bottom-up depth-${DEFAULT_DEPTH} minimax table.`;
+    ui.detail.textContent = `The computer is reading the bottom-up depth-${searchDepth} minimax table.`;
   }
 }
 
 function renderControls() {
   ui.modeHuman.setAttribute('aria-pressed', String(mode === 'human'));
+  ui.modeLocal.setAttribute('aria-pressed', String(mode === 'local'));
   ui.modeAuto.setAttribute('aria-pressed', String(mode === 'auto'));
   ui.playerA.setAttribute('aria-pressed', String(humanPlayer === 'A'));
   ui.playerB.setAttribute('aria-pressed', String(humanPlayer === 'B'));
   ui.modeHuman.classList.toggle('is-active', mode === 'human');
+  ui.modeLocal.classList.toggle('is-active', mode === 'local');
   ui.modeAuto.classList.toggle('is-active', mode === 'auto');
   ui.playerA.classList.toggle('is-active', humanPlayer === 'A');
   ui.playerB.classList.toggle('is-active', humanPlayer === 'B');
   ui.playerControls.hidden = mode !== 'human';
   ui.autoControls.hidden = mode !== 'auto';
   ui.autoPlay.textContent = autoRunning ? 'Pause AI vs AI' : 'Start AI vs AI';
-  ui.autoPlay.disabled = mode !== 'auto' || getResult(state) !== null ||
+  ui.autoPlay.disabled = mode !== 'auto' || getResult(state, searchDepth) !== null ||
     (isAnimating && !autoRunning);
-  ui.autoStep.disabled = mode !== 'auto' || getResult(state) !== null || isAnimating;
+  ui.autoStep.disabled = mode !== 'auto' || getResult(state, searchDepth) !== null || isAnimating;
   ui.autoSpeedLabel.textContent = `${(Number(ui.autoSpeed.value) / 1000).toFixed(1)} s / move`;
-  const splitAvailable = humanMayMove() && legalMoves(state).some((move) => move.kind === 'split');
+  const splitAvailable = humanMayMove() && legalMoves(state, searchDepth).some((move) => move.kind === 'split');
   ui.split.disabled = !splitAvailable;
   ui.split.setAttribute('aria-pressed', String(showingSplits && splitAvailable));
   ui.split.textContent = showingSplits && splitAvailable ? 'Back to taps' : 'Split fingers';
+  ui.actionTurnLabel.textContent = mode === 'local' ? `Player ${currentPlayer()}'s turn` :
+    mode === 'auto' ? 'Computer turn' : 'Your turn';
+  ui.soundToggle.textContent = soundEnabled ? 'Sound on' : 'Sound off';
+  ui.soundToggle.setAttribute('aria-pressed', String(soundEnabled));
+  ui.soundToggle.setAttribute('aria-label', soundEnabled ? 'Turn game sounds off' : 'Turn game sounds on');
 }
 
 function renderMoveOptions() {
@@ -272,7 +317,7 @@ function renderMoveOptions() {
     const note = document.createElement('p');
     note.className = 'quiet-note';
     note.textContent = mode === 'auto' ? 'Use the AI vs AI controls in Game Setup to start or step through the game.' :
-      getResult(state) ? 'Start a new game to play again.' : 'The computer is choosing a move.';
+      getResult(state, searchDepth) ? 'Start a new game to play again.' : 'The computer is choosing a move.';
     ui.moveOptions.append(note);
     return;
   }
@@ -296,7 +341,7 @@ function renderMoveOptions() {
   heading.textContent = 'Choose a new finger distribution';
   ui.moveOptions.append(heading);
 
-  const choices = legalMoves(state).filter((move) => move.kind === 'split');
+  const choices = legalMoves(state, searchDepth).filter((move) => move.kind === 'split');
   for (const move of choices) {
     const button = document.createElement('button');
     button.type = 'button';
@@ -313,7 +358,7 @@ function renderMoveOptions() {
 function renderAI() {
   const entry = minimaxTable.get(stateKey(state));
   if (!entry) throw new Error('The current state is missing from the minimax table.');
-  const result = getResult(state);
+  const result = getResult(state, searchDepth);
   const role = currentPlayer() === 'A' ? 'MAX · chooses the highest value' :
     'MIN · chooses the lowest value';
   ui.aiRole.textContent = `Player ${currentPlayer()} · ${role}`;
@@ -321,14 +366,16 @@ function renderAI() {
   ui.aiTurnSimple.textContent = result ? 'The game is complete' :
     `Player ${currentPlayer()} is choosing now`;
   ui.aiScore.textContent = beginnerOutcome(entry.score);
-  ui.aiRawScore.textContent = `${entry.score > 0 ? '+' : entry.score < 0 ? '−' : ''}${Math.abs(entry.score)} · ${outcomeLabel(entry.score)}`;
+  ui.aiRawScore.textContent = `${entry.score > 0 ? '+' : entry.score < 0 ? '−' : ''}${Math.abs(entry.score)} · ${outcomeLabel(entry.score, searchDepth)}`;
   ui.aiReason.textContent = lastExplanation || scoreDetail(entry.score);
+  ui.advancedIntro.textContent = `These are the technical details behind the summary above. The AI built ${minimaxTable.size.toLocaleString()} table rows from move ${searchDepth} backward to the opening.`;
+  ui.tieKeyDescription.textContent = `Neither player can force a win before move ${searchDepth}.`;
 
   const selected = evaluateMoves(state, minimaxTable).find((move) => move.selected);
   if (selected) {
     ui.aiSelected.textContent = moveLabel(state, selected);
   } else if (result === 'tie') {
-    ui.aiSelected.textContent = `No move selected: the ${DEFAULT_DEPTH}-move horizon has been reached.`;
+    ui.aiSelected.textContent = `No move selected: the ${searchDepth}-move horizon has been reached.`;
   } else if (result === 'A' || result === 'B') {
     ui.aiSelected.textContent = `No move selected: Player ${result} has already won.`;
   } else {
@@ -337,22 +384,26 @@ function renderAI() {
 }
 
 function renderDPStats() {
-  const result = getResult(state);
-  const branches = legalMoves(state).length;
-  const remaining = Math.max(0, DEFAULT_DEPTH - state[2]);
+  const result = getResult(state, searchDepth);
+  const branches = legalMoves(state, searchDepth).length;
+  const remaining = Math.max(0, searchDepth - state[2]);
   const role = currentPlayer() === 'A' ? 'A · MAX' : 'B · MIN';
-  const depthPercent = Math.min(100, (state[2] / DEFAULT_DEPTH) * 100);
+  const depthPercent = Math.min(100, (state[2] / searchDepth) * 100);
 
   ui.dpTableRows.textContent = minimaxTable.size.toLocaleString();
   ui.dpBuildTime.textContent = tableBuildDuration < 1 ? '< 1 ms' :
     `${tableBuildDuration.toFixed(1)} ms`;
-  ui.dpCurrentLevel.textContent = `${state[2]} / ${DEFAULT_DEPTH}`;
+  ui.dpCurrentLevel.textContent = `${state[2]} / ${searchDepth}`;
   ui.dpMovesRemaining.textContent = String(remaining);
   ui.dpLegalBranches.textContent = String(branches);
   ui.dpActiveRole.textContent = result ? 'Game complete' : role;
   ui.dpDepthProgress.setAttribute('aria-valuenow', String(state[2]));
-  ui.dpProgressLabel.textContent = `${state[2]} of ${DEFAULT_DEPTH} moves`;
+  ui.dpDepthProgress.setAttribute('aria-valuemax', String(searchDepth));
+  ui.dpProgressLabel.textContent = `${state[2]} of ${searchDepth} moves`;
   ui.dpProgressBar.style.width = `${depthPercent}%`;
+  ui.dpStatsIntro.textContent = `These numbers show the size and current workload of the bottom-up minimax system. They update as the game moves through its ${searchDepth}-level table.`;
+  ui.dpStatsHelpText.textContent = `The table contains 625 possible four-hand combinations at each level and ${searchDepth + 1} levels from 0 through ${searchDepth}. It is built when you select a depth. “Legal branches” is the number of attacks and redistributions available from the current node; A chooses the maximum score and B chooses the minimum.`;
+  ui.rulesReminder.textContent = `A tap adds fingers to the target hand. Five or more knocks it out. Lose both hands and you lose; if both players survive ${searchDepth} moves, the score is a tie.`;
 }
 
 function renderHistory() {
@@ -379,7 +430,7 @@ function renderHistory() {
 function renderPlayedPath() {
   ui.treePath.replaceChildren();
   const positions = [structuredClone(INITIAL_STATE), ...history.map((record) => record.stateAfter)];
-  const reviewAvailable = getResult(state) !== null && history.length > 0;
+  const reviewAvailable = getResult(state, searchDepth) !== null && history.length > 0;
   if (reviewAvailable && (!Number.isSafeInteger(reviewedMoveIndex) ||
       reviewedMoveIndex < 0 || reviewedMoveIndex >= positions.length)) {
     reviewedMoveIndex = positions.length - 1;
@@ -426,7 +477,7 @@ function scrollTreeRouteToReviewed() {
 }
 
 function renderTreeReviewControls(positions) {
-  const reviewAvailable = getResult(state) !== null && history.length > 0;
+  const reviewAvailable = getResult(state, searchDepth) !== null && history.length > 0;
   ui.treeReviewControls.hidden = !reviewAvailable;
   ui.treeReviewNote.hidden = !reviewAvailable;
   if (!reviewAvailable) return;
@@ -443,7 +494,7 @@ function renderTreeReviewControls(positions) {
 }
 
 function setReviewedMove(index) {
-  if (getResult(state) === null || history.length === 0) return;
+  if (getResult(state, searchDepth) === null || history.length === 0) return;
   reviewedMoveIndex = Math.max(0, Math.min(history.length, index));
   previewedMoveKey = null;
   renderGraph();
@@ -516,10 +567,12 @@ function describeMoveImpact(position, move) {
 
   const nextPlayer = currentPlayer(move.nextState);
   const nextRole = nextPlayer === 'A' ? 'MAX' : 'MIN';
-  const remaining = Math.max(0, DEFAULT_DEPTH - move.nextState[2]);
+  const remaining = Math.max(0, searchDepth - move.nextState[2]);
+  const result = getResult(move.nextState, searchDepth);
   return {
     change,
-    consequence: `The branch moves to level ${move.nextState[2]}. Player ${nextPlayer} responds as ${nextRole}, with ${remaining} ${remaining === 1 ? 'move' : 'moves'} remaining.`,
+    consequence: result ? `The branch ends here: ${result === 'tie' ? 'the move limit is a tie' : `Player ${result} wins`}.` :
+      `The branch moves to level ${move.nextState[2]}. Player ${nextPlayer} responds as ${nextRole}, with ${remaining} ${remaining === 1 ? 'move' : 'moves'} remaining.`,
     prediction: scoreDetail(move.score),
   };
 }
@@ -546,12 +599,12 @@ function renderImpact(position, move) {
 
 function renderReplies(move) {
   ui.treeReplies.replaceChildren();
-  const result = getResult(move.nextState);
+  const result = getResult(move.nextState, searchDepth);
   if (result) {
     const text = document.createElement('p');
     text.className = 'quiet-note';
     text.textContent = result === 'tie' ?
-      `This branch reaches the move-${DEFAULT_DEPTH} tie boundary.` :
+      `This branch reaches the move-${searchDepth} tie boundary.` :
       `This branch ends with Player ${result} winning.`;
     ui.treeReplies.append(text);
     return;
@@ -566,10 +619,10 @@ function renderReplies(move) {
 function renderGraph() {
   const positions = renderPlayedPath();
   renderTreeReviewControls(positions);
-  const reviewAvailable = getResult(state) !== null && history.length > 0;
+  const reviewAvailable = getResult(state, searchDepth) !== null && history.length > 0;
   const reviewIndex = reviewAvailable ? reviewedMoveIndex ?? positions.length - 1 : positions.length - 1;
   const position = reviewAvailable ? positions[reviewIndex] : state;
-  const result = getResult(position);
+  const result = getResult(position, searchDepth);
   const nextPlayedKey = reviewAvailable && reviewIndex < positions.length - 1 ?
     stateKey(positions[reviewIndex + 1]) : null;
   const options = evaluateMoves(position, minimaxTable).map((move) => ({
@@ -636,8 +689,8 @@ function clearPending() {
 }
 
 function clearAttackAnimation() {
-  document.querySelectorAll('.hand.is-tapping, .hand.is-receiving-tap').forEach((hand) => {
-    hand.classList.remove('is-tapping', 'is-receiving-tap');
+  document.querySelectorAll('.hand.is-tapping, .hand.is-receiving-tap, .hand.is-splitting-left, .hand.is-splitting-right').forEach((hand) => {
+    hand.classList.remove('is-tapping', 'is-receiving-tap', 'is-splitting-left', 'is-splitting-right');
     hand.style.removeProperty('--tap-x');
     hand.style.removeProperty('--tap-y');
   });
@@ -649,6 +702,33 @@ function clearAttackAnimation() {
   stage?.removeAttribute('aria-busy');
 }
 
+function playSound(kind) {
+  if (!soundEnabled) return;
+  try {
+    const Context = window.AudioContext || window.webkitAudioContext;
+    if (!Context) return;
+    audioContext ??= new Context();
+    if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+    const notes = kind === 'win' ? [523, 659, 784] :
+      kind === 'tie' ? [392, 392] : kind === 'split' ? [440, 554] : [330, 440];
+    notes.forEach((frequency, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const start = audioContext.currentTime + index * 0.085;
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.075, start + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.13);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(start);
+      oscillator.stop(start + 0.14);
+    });
+  } catch (_) {
+    // Audio is optional; browsers without Web Audio still play the game normally.
+  }
+}
+
 function animateAttack(position, move, sourceOverride = null) {
   if (move.kind !== 'attack' ||
       window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -656,6 +736,7 @@ function animateAttack(position, move, sourceOverride = null) {
   }
 
   const actor = currentPlayer(position);
+  const animationId = ++animationSequence;
   const targetPlayer = opposite(actor);
   const sourceIndex = sourceOverride ?? move.source;
   const source = byId(`hand-${actor.toLowerCase()}-${HAND_NAMES[sourceIndex]}`);
@@ -684,7 +765,7 @@ function animateAttack(position, move, sourceOverride = null) {
       finished = true;
       clearTimeout(fallback);
       source.removeEventListener('animationend', handleAnimationEnd);
-      clearAttackAnimation();
+      if (animationId === animationSequence) clearAttackAnimation();
       resolve();
     };
     const handleAnimationEnd = (event) => {
@@ -695,9 +776,41 @@ function animateAttack(position, move, sourceOverride = null) {
   });
 }
 
+function animateSplit(position) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return Promise.resolve();
+  const animationId = ++animationSequence;
+  const actor = currentPlayer(position).toLowerCase();
+  const left = byId(`hand-${actor}-left`);
+  const right = byId(`hand-${actor}-right`);
+  const stage = document.querySelector('.game-stage');
+  stage?.classList.add('is-animating');
+  stage?.setAttribute('aria-busy', 'true');
+  left.closest('.player-row')?.classList.add('is-attacking');
+  left.classList.add('is-splitting-left');
+  right.classList.add('is-splitting-right');
+  return new Promise((resolve) => {
+    let finished = false;
+    let fallback;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(fallback);
+      left.removeEventListener('animationend', handleAnimationEnd);
+      if (animationId === animationSequence) clearAttackAnimation();
+      resolve();
+    };
+    const handleAnimationEnd = (event) => {
+      if (event.target === left && event.animationName === 'hand-redistribute-left') finish();
+    };
+    fallback = window.setTimeout(finish, 690);
+    left.addEventListener('animationend', handleAnimationEnd);
+  });
+}
+
 function resetGame() {
   clearPending();
   gameRevision += 1;
+  animationSequence += 1;
   isAnimating = false;
   clearAttackAnimation();
   state = structuredClone(INITIAL_STATE);
@@ -713,8 +826,8 @@ function resetGame() {
 }
 
 async function commitMove(move, sourceOverride = null, computer = false) {
-  if (isAnimating || getResult(state) !== null) return;
-  const legal = legalMoves(state);
+  if (isAnimating || getResult(state, searchDepth) !== null) return;
+  const legal = legalMoves(state, searchDepth);
   const chosen = legal.find((candidate) => stateKey(candidate.nextState) === stateKey(move.nextState));
   if (!chosen) throw new Error('The chosen move is no longer legal.');
   const positionBeforeMove = structuredClone(state);
@@ -723,21 +836,24 @@ async function commitMove(move, sourceOverride = null, computer = false) {
   const label = moveLabel(state, chosen, sourceOverride);
   const score = minimaxTable.get(stateKey(chosen.nextState)).score;
   isAnimating = true;
-  ui.title.textContent = `${actor} is tapping…`;
+  ui.title.textContent = chosen.kind === 'split' ? `${actor} is redistributing…` : `${actor} is tapping…`;
   ui.detail.textContent = label;
   renderControls();
   for (const hand of document.querySelectorAll('.hand')) hand.disabled = true;
-  await animateAttack(positionBeforeMove, chosen, sourceOverride);
+  await (chosen.kind === 'split' ? animateSplit(positionBeforeMove) :
+    animateAttack(positionBeforeMove, chosen, sourceOverride));
   if (revisionBeforeMove !== gameRevision) return;
   isAnimating = false;
   state = structuredClone(chosen.nextState);
   history.push({ turn: state[2], label, stateAfter: structuredClone(state) });
   previewedMoveKey = null;
-  reviewedMoveIndex = getResult(state) === null ? null : history.length;
+  reviewedMoveIndex = getResult(state, searchDepth) === null ? null : history.length;
   selectedSource = null;
   showingSplits = false;
-  lastExplanation = `${computer ? 'The computer chose' : 'You chose'}: ${label}. ${scoreDetail(score)}`;
-  if (getResult(state) !== null) autoRunning = false;
+  lastExplanation = `${computer ? 'The computer chose' : mode === 'local' ? `Player ${actor} chose` : 'You chose'}: ${label}. ${scoreDetail(score)}`;
+  const result = getResult(state, searchDepth);
+  if (result !== null) autoRunning = false;
+  playSound(result === 'tie' ? 'tie' : result ? 'win' : chosen.kind);
   render();
   if (mode === 'auto' && autoRunning) scheduleAutoTick();
   if (mode === 'human') scheduleComputerIfNeeded();
@@ -749,7 +865,7 @@ function selectComputerMove() {
 
 function scheduleComputerIfNeeded() {
   if (pendingTimer !== null || isAnimating || mode !== 'human' ||
-      currentPlayer() === humanPlayer || getResult(state) !== null) return;
+      currentPlayer() === humanPlayer || getResult(state, searchDepth) !== null) return;
   const ticket = generation;
   pendingTimer = setTimeout(() => {
     pendingTimer = null;
@@ -762,7 +878,7 @@ function scheduleComputerIfNeeded() {
 
 function scheduleAutoTick() {
   if (pendingTimer !== null || isAnimating || mode !== 'auto' ||
-      !autoRunning || getResult(state) !== null) return;
+      !autoRunning || getResult(state, searchDepth) !== null) return;
   const ticket = generation;
   const delay = Math.max(150, Math.min(2000, Number(ui.autoSpeed.value) || 700));
   pendingTimer = setTimeout(() => {
@@ -778,26 +894,46 @@ function handleHandClick(player, index) {
   if (!humanMayMove() || showingSplits) return;
   const count = handsFor(state, player)[index];
   if (count === 0) return;
-  if (player === humanPlayer) {
+  const actor = mode === 'local' ? currentPlayer() : humanPlayer;
+  if (player === actor) {
     selectedSource = selectedSource === index ? null : index;
     render();
     return;
   }
   if (selectedSource === null) return;
-  const selectedCount = handsFor(state, humanPlayer)[selectedSource];
+  const selectedCount = handsFor(state, actor)[selectedSource];
   // Duplicate resulting states are deduplicated in the rule engine. A click on
   // either same-valued source hand must still perform the identical legal tap.
-  const move = legalMoves(state).find((candidate) =>
+  const move = legalMoves(state, searchDepth).find((candidate) =>
     candidate.kind === 'attack' && candidate.target === index &&
-    handsFor(state, humanPlayer)[candidate.source] === selectedCount);
+    handsFor(state, actor)[candidate.source] === selectedCount);
   if (move) commitMove(move, selectedSource);
 }
 
 ui.modeHuman.addEventListener('click', () => { mode = 'human'; resetGame(); });
+ui.modeLocal.addEventListener('click', () => { mode = 'local'; resetGame(); });
 ui.modeAuto.addEventListener('click', () => { mode = 'auto'; resetGame(); });
 ui.playerA.addEventListener('click', () => { humanPlayer = 'A'; resetGame(); });
 ui.playerB.addEventListener('click', () => { humanPlayer = 'B'; resetGame(); });
 ui.restart.addEventListener('click', resetGame);
+ui.soundToggle.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  renderControls();
+  if (soundEnabled) playSound('split');
+});
+ui.searchDepth.addEventListener('change', () => {
+  const depth = Number(ui.searchDepth.value);
+  // The select only exposes supported even horizons. Reject scripted invalid values too.
+  if (!Number.isSafeInteger(depth) || depth < 2 || depth > 50 || depth % 2 !== 0) {
+    ui.searchDepth.value = String(searchDepth);
+    return;
+  }
+  const cached = getTableAtDepth(depth);
+  searchDepth = depth;
+  minimaxTable = cached.table;
+  tableBuildDuration = cached.duration;
+  resetGame();
+});
 ui.aiToggle.addEventListener('click', () => {
   const expanded = ui.aiToggle.getAttribute('aria-expanded') === 'true';
   ui.aiToggle.setAttribute('aria-expanded', String(!expanded));
@@ -827,14 +963,14 @@ for (const player of ['A', 'B']) {
 }
 
 ui.autoPlay.addEventListener('click', () => {
-  if (mode !== 'auto' || getResult(state) !== null) return;
+  if (mode !== 'auto' || getResult(state, searchDepth) !== null) return;
   autoRunning = !autoRunning;
   if (!autoRunning) clearPending();
   render();
   if (autoRunning) scheduleAutoTick();
 });
 ui.autoStep.addEventListener('click', () => {
-  if (mode !== 'auto' || getResult(state) !== null) return;
+  if (mode !== 'auto' || getResult(state, searchDepth) !== null) return;
   clearPending();
   autoRunning = false;
   const move = selectComputerMove();
@@ -847,6 +983,62 @@ ui.autoSpeed.addEventListener('input', () => {
     clearPending();
     scheduleAutoTick();
   }
+});
+
+ui.advantageRun.addEventListener('click', () => {
+  ui.advantageResults.replaceChildren();
+  const table = document.createElement('table');
+  table.className = 'experiment-table';
+  const header = document.createElement('tr');
+  for (const title of ['Move limit', 'Opening score', 'Meaning']) {
+    const cell = document.createElement('th');
+    cell.textContent = title;
+    header.append(cell);
+  }
+  table.append(header);
+  const depths = [...new Set([10, 20, 26, searchDepth])].sort((a, b) => a - b);
+  for (const depth of depths) {
+    const row = document.createElement('tr');
+    const score = getTableAtDepth(depth).table.get(stateKey(INITIAL_STATE)).score;
+    const cells = [String(depth), score > 0 ? '+1' : String(score),
+      score === 1 ? 'A can force a win' : score === -1 ? 'B can force a win' : 'No forced win by this limit'];
+    for (const value of cells) {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.append(cell);
+    }
+    if (depth === searchDepth) row.classList.add('is-current-depth');
+    table.append(row);
+  }
+  const note = document.createElement('p');
+  note.className = 'experiment-note';
+  note.textContent = 'Highlighted row = current game limit. These are optimal-play predictions from A’s perspective, not win percentages or proof about unlimited play.';
+  ui.advantageResults.append(table, note);
+});
+
+ui.comparisonRun.addEventListener('click', () => {
+  ui.comparisonResults.replaceChildren();
+  const result = compareSearch(6);
+  const table = document.createElement('table');
+  table.className = 'experiment-table';
+  const rows = [
+    ['Method', 'Positions evaluated', 'Time on this device'],
+    ['Bottom-up DP', `${result.dpRows.toLocaleString()} stored rows`, `${result.dpMs.toFixed(1)} ms`],
+    ['Plain recursion', `${result.recursiveVisits.toLocaleString()} visits`, `${result.recursiveMs.toFixed(1)} ms`],
+  ];
+  rows.forEach((values, index) => {
+    const row = document.createElement('tr');
+    for (const value of values) {
+      const cell = document.createElement(index === 0 ? 'th' : 'td');
+      cell.textContent = value;
+      row.append(cell);
+    }
+    table.append(row);
+  });
+  const note = document.createElement('p');
+  note.className = 'experiment-note';
+  note.textContent = `Both returned ${result.score > 0 ? '+1' : result.score}. Recursion visited ${result.distinctReachable.toLocaleString()} distinct reachable state-level pairs, often revisiting them; DP fills every possible row, including unreachable ones. So these timings compare different workloads and may not favor DP at this small depth.`;
+  ui.comparisonResults.append(table, note);
 });
 
 render();

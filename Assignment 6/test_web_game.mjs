@@ -28,15 +28,15 @@ const {
   overflowSum,
   stateKey,
 } = require('./game.js');
-const { bestMove, bestMoveDP, evaluateMoves, outcomeLabel } = require('./ai.js');
+const { bestMove, bestMoveDP, compareSearch, evaluateMoves, outcomeLabel } = require('./ai.js');
 
 const WEB_HTML = readFileSync(new URL('./index.html', import.meta.url), 'utf8');
 const WEB_APP = readFileSync(new URL('./app.js', import.meta.url), 'utf8');
 const WEB_CSS = readFileSync(new URL('./style.css', import.meta.url), 'utf8');
 const WEB_GAME = readFileSync(new URL('./game.js', import.meta.url), 'utf8');
 const WEB_AI = readFileSync(new URL('./ai.js', import.meta.url), 'utf8');
-const README = readFileSync(new URL('./README.md', import.meta.url), 'utf8');
-const VIBE_LOG = readFileSync(new URL('./VIBE_LOG.md', import.meta.url), 'utf8');
+const README = readFileSync(new URL('./submission/README.md', import.meta.url), 'utf8');
+const VIBE_LOG = readFileSync(new URL('./submission/VIBE_LOG.md', import.meta.url), 'utf8');
 const DP_TABLE = bestMoveDP(DEFAULT_DEPTH);
 
 function cssDeclarations(selector) {
@@ -134,7 +134,7 @@ test('submission contains the assignment web-file structure', () => {
   for (const name of [
     'index.html', 'style.css', 'game.js', 'ai.js', 'app.js', 'README.md', 'VIBE_LOG.md',
   ]) {
-    assert(existsSync(new URL(`./${name}`, import.meta.url)), `Missing ${name}`);
+    assert(existsSync(new URL(`./submission/${name}`, import.meta.url)), `Missing ${name}`);
   }
   assert.match(WEB_HTML, /<link\b[^>]*href=["']\.\/style\.css["']/i);
   // Classic deferred scripts (no type="module") so the page works from file://,
@@ -615,7 +615,7 @@ test('restart resets state and illegal UI actions are validated before mutation'
   assert.match(WEB_APP, /restart[^\n]*addEventListener\(['"]click['"],\s*resetGame\)/);
 
   const commit = functionSource('commitMove');
-  const validation = commit.search(/legalMoves\(state\)/);
+  const validation = commit.search(/legalMoves\(state(?:,\s*searchDepth)?\)/);
   const mutation = commit.search(/state\s*=\s*structuredClone\([^)]*nextState\)/);
   assert(validation >= 0);
   assert(mutation >= 0);
@@ -691,7 +691,7 @@ test('interactive move tree connects the played route, current node, choices, im
 
 test('completed-game move-tree review can navigate every saved position without changing the game', () => {
   const path = functionSource('renderPlayedPath');
-  assert.match(path, /getResult\(state\)/,
+  assert.match(path, /getResult\(state, searchDepth\)/,
     'The played route should only become a replay control after the game is complete');
   assert.match(path, /document\.createElement\([^)]*["']button["']/,
     'Completed route positions should be keyboard-accessible buttons');
@@ -777,8 +777,8 @@ test('DP Statistics panel exposes live table, depth, branch, timing, and role me
   const render = functionSource('renderDPStats');
   assert.match(render, /minimaxTable\.size/);
   assert.match(render, /tableBuildDuration/);
-  assert.match(render, /legalMoves\(state\)\.length/);
-  assert.match(render, /DEFAULT_DEPTH\s*-\s*state\[2\]/);
+  assert.match(render, /legalMoves\(state, searchDepth\)\.length/);
+  assert.match(render, /searchDepth\s*-\s*state\[2\]/);
   assert.match(render, /A · MAX/);
   assert.match(render, /B · MIN/);
   assert.match(render, /aria-valuenow/);
@@ -788,8 +788,8 @@ test('DP Statistics panel exposes live table, depth, branch, timing, and role me
 
 test('DP Statistics panel is responsive and records the one-time table build', () => {
   const start = WEB_APP.indexOf('const tableBuildStarted = clockNow()');
-  const build = WEB_APP.indexOf('const minimaxTable = bestMoveDP(DEFAULT_DEPTH)');
-  const finish = WEB_APP.indexOf('const tableBuildDuration = clockNow() - tableBuildStarted');
+  const build = WEB_APP.indexOf('let minimaxTable = bestMoveDP(searchDepth)');
+  const finish = WEB_APP.indexOf('let tableBuildDuration = clockNow() - tableBuildStarted');
   assert(start >= 0 && build > start && finish > build,
     'Build timing must wrap the actual bestMoveDP call');
   assert.match(cssDeclarations('.dp-stats-grid'), /grid-template-columns:\s*repeat\(3,/);
@@ -818,7 +818,7 @@ test('attacks animate the exact source and target before state mutation', () => 
   assert.match(animation, /\.classList\.add\(['"]is-tapping['"]\)/);
   assert.match(animation, /\.classList\.add\(['"]is-receiving-tap['"]\)/);
   const commit = functionSource('commitMove');
-  const animationCall = commit.search(/await\s+animateAttack\(/);
+  const animationCall = commit.search(/await[\s\S]*?animateAttack\(/);
   const stateMutation = commit.search(/state\s*=\s*structuredClone\([^)]*nextState\)/);
   assert(animationCall >= 0);
   assert(stateMutation >= 0);
@@ -956,4 +956,52 @@ test('submission documentation retains required sections and five structured AI 
         `Interaction ${index + 1} is missing ${field}`);
     }
   }
+});
+
+test('optional local multiplayer keeps the current player as the hand actor', () => {
+  assert.match(WEB_HTML, /id="mode-local"/);
+  assert.match(WEB_APP, /modeLocal\.addEventListener\('click',\s*\(\)\s*=>\s*\{ mode = 'local'; resetGame\(\); \}\)/);
+  assert.match(functionSource('humanMayMove'), /mode === 'local'/);
+  assert.match(functionSource('handleHandClick'), /mode === 'local' \? currentPlayer\(\) : humanPlayer/);
+  assert.match(functionSource('renderHands'), /mode === 'local' \? currentPlayer\(\) : humanPlayer/);
+});
+
+test('depth selection preserves the assignment default and changes every live horizon', () => {
+  assert.match(WEB_HTML, /id="search-depth"/);
+  assert.match(WEB_HTML, /<option value="20" selected>20 moves · assignment default<\/option>/);
+  assert.match(WEB_APP, /let searchDepth = DEFAULT_DEPTH/);
+  assert.match(WEB_APP, /minimaxTable = cached\.table/);
+  assert.match(WEB_APP, /searchDepth = depth;[\s\S]*?resetGame\(\)/);
+  for (const name of ['renderStatus', 'renderDPStats', 'commitMove', 'renderGraph']) {
+    assert.match(functionSource(name), /searchDepth/, `${name} must use the selected horizon`);
+  }
+  assert.equal(outcomeLabel(0, 26), 'TIE within 26 moves');
+  assert.equal(bestMoveDP(26).get(stateKey(INITIAL_STATE)).score, -1);
+});
+
+test('sound is optional and splits have their own animation before state mutation', () => {
+  assert.match(WEB_HTML, /id="sound-toggle"[^>]*aria-pressed="false"/);
+  assert.match(functionSource('playSound'), /if \(!soundEnabled\) return/);
+  assert.match(functionSource('animateSplit'), /prefers-reduced-motion/);
+  assert.match(functionSource('animateSplit'), /is-splitting-left/);
+  assert.match(functionSource('animateSplit'), /is-splitting-right/);
+  assert.match(WEB_CSS, /@keyframes hand-redistribute-left/);
+  assert.match(WEB_CSS, /@keyframes hand-redistribute-right/);
+  const commit = functionSource('commitMove');
+  assert(commit.indexOf('animateSplit(positionBeforeMove)') < commit.indexOf('state = structuredClone(chosen.nextState)'));
+});
+
+test('opening advantage and recursive comparison are calculated, not hardcoded', () => {
+  for (const id of ['advantage-run', 'advantage-results', 'comparison-run', 'comparison-results']) {
+    assert.match(WEB_HTML, new RegExp(`id="${id}"`));
+  }
+  assert.match(WEB_APP, /getTableAtDepth\(depth\)\.table\.get\(stateKey\(INITIAL_STATE\)\)/);
+  assert.match(WEB_APP, /compareSearch\(6\)/);
+  for (const depth of [2, 4, 6]) {
+    const comparison = compareSearch(depth);
+    assert.equal(comparison.score, bestMoveDP(depth).get(stateKey(INITIAL_STATE)).score);
+    assert.equal(comparison.dpRows, 625 * (depth + 1));
+    assert(comparison.recursiveVisits >= comparison.distinctReachable);
+  }
+  assert.throws(() => compareSearch(10), RangeError);
 });

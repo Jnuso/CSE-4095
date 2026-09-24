@@ -37,6 +37,15 @@ Use this checklist immediately before uploading the `submission` folder.
 - [ ] After a completed game, the decision map can review earlier and later moves without changing the final hands, winner, or history.
 - [ ] The page remains usable at a narrow phone-sized width and a normal desktop width.
 
+## Optional Extensions
+
+- [ ] Two players can alternate on the same device, including attacks and splits.
+- [ ] The Sound button starts muted, toggles on/off, and the game still works when audio is unavailable.
+- [ ] Attack and redistribution moves each show their own animation; reduced-motion settings remain respected.
+- [ ] Changing the depth restarts the game, updates the displayed limit/table, and 20 remains the default when the page reloads.
+- [ ] Opening analysis and running the opening-advantage and DP-vs-recursion experiments does not change the board or move history.
+- [ ] The site is prepared for upload as static files; no public hosting has been configured or claimed.
+
 ## Documentation and Upload
 
 - [ ] `README.md` explains the rules, state, `nextMoves()`, minimax, bottom-up DP, organization, testing, limitations, extensions, and reflection questions.

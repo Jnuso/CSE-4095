@@ -22,10 +22,10 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; background: var(--page); color: var(--text); }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
-button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
 [hidden] { display: none !important; }
 
 .site-shell { width: min(1460px, calc(100% - 76px)); margin: 0 auto; }
@@ -312,6 +312,11 @@ button.tree-node:hover { transform: translateY(-2px); border-color: #aeb9d4; box
 .setup-panel { padding: 20px 24px 22px; }
 .setup-heading { align-items: flex-end; }
 .setup-grid { margin-top: 18px; }
+.setup-top-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.depth-control { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 17px; padding-top: 16px; border-top: 1px solid var(--line); }
+.depth-control label { display: grid; gap: 3px; color: var(--text); font-size: 12px; }
+.depth-control label span { color: var(--muted); font-size: 11px; line-height: 1.4; }
+#search-depth { min-width: 205px; min-height: 39px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-solid); color: var(--text); cursor: pointer; }
 .arena-panel { padding: 22px 24px 25px; }
 .game-stage { min-height: 700px; padding: 30px 28px; }
 .player-row {
@@ -351,6 +356,14 @@ button.tree-node:hover { transform: translateY(-2px); border-color: #aeb9d4; box
 .guide-step.is-complete { border-color: #9dd8d0; background: var(--teal-pale); color: #08796f; }
 .insight-column { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 16px; margin-top: 16px; }
 .rules-note { grid-column: 1 / -1; padding: 12px 4px; }
+.extension-lab { grid-column: 1 / -1; padding: 24px 25px; }
+.experiment-body { display: grid; justify-items: start; gap: 12px; padding-top: 12px; }
+.experiment-body > p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.experiment-table { width: 100%; margin-top: 14px; border-collapse: collapse; font-size: 12px; text-align: left; }
+.experiment-table th, .experiment-table td { padding: 10px; border-bottom: 1px solid var(--line); }
+.experiment-table th { color: var(--muted); font-size: 10px; letter-spacing: .05em; text-transform: uppercase; }
+.experiment-table .is-current-depth { background: var(--accent-pale); font-weight: 750; }
+.experiment-note { margin: 9px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
 
 /* The source hand travels toward the target before the state changes. */
 .game-stage.is-animating .hand { pointer-events: none; }
@@ -363,6 +376,16 @@ button.tree-node:hover { transform: translateY(-2px); border-color: #aeb9d4; box
 .hand.is-receiving-tap {
   z-index: 10;
   animation: hand-receive-tap 680ms ease-out both;
+}
+.hand.is-splitting-left { z-index: 20; animation: hand-redistribute-left 580ms ease-in-out both; }
+.hand.is-splitting-right { z-index: 20; animation: hand-redistribute-right 580ms ease-in-out both; }
+@keyframes hand-redistribute-left {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  48% { transform: translate3d(20px, 0, 0) scale(1.04); border-color: var(--teal); box-shadow: 0 0 0 8px rgba(11, 155, 145, .13); }
+}
+@keyframes hand-redistribute-right {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  48% { transform: translate3d(-20px, 0, 0) scale(1.04); border-color: var(--teal); box-shadow: 0 0 0 8px rgba(11, 155, 145, .13); }
 }
 @keyframes hand-tap {
   0% { transform: translate3d(0, 0, 0) scale(1); }
@@ -404,6 +427,10 @@ button.tree-node:hover { transform: translateY(-2px); border-color: #aeb9d4; box
   .panel { border-radius: 17px; }
   .setup-panel, .arena-panel, .history-panel, .insight-panel, .graph-panel { padding: 20px 17px; }
   .setup-grid { grid-template-columns: 1fr; gap: 15px; margin-top: 18px; }
+  .setup-top-actions .button { font-size: 11px; }
+  .segmented-control .segment { font-size: 11px; padding: 0 4px; }
+  .depth-control { align-items: stretch; flex-direction: column; }
+  #search-depth { width: 100%; }
   .auto-control-actions { grid-template-columns: 1fr; }
   .auto-control-buttons .button { flex: 1; }
   .game-stage { min-height: 0; padding: 22px 10px; }
@@ -427,6 +454,7 @@ button.tree-node:hover { transform: translateY(-2px); border-color: #aeb9d4; box
   .tree-review-actions .button { flex: 1; }
   .dp-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dp-stats-panel { padding: 20px 17px; }
+  .extension-lab { padding: 20px 17px; }
   .rules-note { grid-column: auto; }
   .action-heading { align-items: flex-start; }
   .action-heading h3 { font-size: 15px; }
@@ -436,7 +464,7 @@ button.tree-node:hover { transform: translateY(-2px); border-color: #aeb9d4; box
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
-  .hand.is-tapping, .hand.is-receiving-tap { animation: none !important; }
+  .hand.is-tapping, .hand.is-receiving-tap, .hand.is-splitting-left, .hand.is-splitting-right { animation: none !important; }
 }
 
 @media (prefers-color-scheme: dark) {

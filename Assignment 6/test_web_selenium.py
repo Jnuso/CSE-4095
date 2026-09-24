@@ -32,7 +32,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-PROJECT_DIRECTORY = Path(__file__).resolve().parent
+PROJECT_DIRECTORY = Path(__file__).resolve().parent / "submission"
 
 
 class QuietStaticHandler(SimpleHTTPRequestHandler):

@@ -22,7 +22,7 @@ pytest.importorskip("playwright", reason="Playwright is optional for browser tes
 from playwright.sync_api import Error as PlaywrightError
 from playwright.sync_api import sync_playwright
 
-INDEX_URL = (Path(__file__).resolve().parent / "index.html").as_uri()
+INDEX_URL = (Path(__file__).resolve().parent / "submission" / "index.html").as_uri()
 assert INDEX_URL.startswith("file://")
 
 
@@ -96,4 +96,33 @@ def test_ai_vs_ai_runs_to_the_depth_20_result_and_restart_works(page) -> None:
     assert "tie" in page.locator("#status-title").inner_text().lower()
     page.locator("#restart-button").click()
     page.wait_for_function("document.getElementById('dp-current-level').textContent === '0 / 20'")
+    assert page.problems == []
+
+
+def test_two_local_players_can_attack_and_redistribute(page) -> None:
+    page.locator("#mode-local").click()
+    page.locator("#split-button").click()
+    page.locator("#move-options button.move-option").first.click()
+    page.wait_for_function("document.getElementById('dp-current-level').textContent === '1 / 20'")
+    assert page.locator("#status-title").inner_text() == "Player B's move"
+    page.locator("#hand-b-left").click()
+    page.locator("#hand-a-right").click()
+    page.wait_for_function("document.getElementById('dp-current-level').textContent === '2 / 20'")
+    assert page.locator("#history-list > li").count() == 2
+    assert page.problems == []
+
+
+def test_optional_depth_sound_and_ai_experiments_do_not_change_game(page) -> None:
+    page.locator("#sound-toggle").click()
+    assert page.locator("#sound-toggle").get_attribute("aria-pressed") == "true"
+    page.locator("#search-depth").select_option("10")
+    assert level(page) == "0 / 10"
+    assert page.locator("#dp-table-rows").inner_text() == "6,875"
+    page.locator("#advantage-details > summary").click()
+    page.locator("#advantage-run").click()
+    assert "B can force a win" in page.locator("#advantage-results").inner_text()
+    page.locator("#comparison-details > summary").click()
+    page.locator("#comparison-run").click()
+    assert "Bottom-up DP" in page.locator("#comparison-results").inner_text()
+    assert level(page) == "0 / 10"
     assert page.problems == []

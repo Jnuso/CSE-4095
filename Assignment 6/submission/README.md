@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a web version of the Chopsticks game from the Python starter code. You can play against the computer as Player A or Player B, or you can watch the computer play against itself. It's just HTML, CSS, and JavaScript, so there's no server or database.
+This is a web version of the Chopsticks game from the Python starter code. You can play against the computer as Player A or Player B, play with a second person on the same device, or watch the computer play against itself. It's just HTML, CSS, and JavaScript, so there's no server or database.
 
 The computer doesn't pick random moves. It uses minimax with a dynamic programming (DP) table that gets built when the page loads. Player A tries to get the highest score and Player B tries to get the lowest score. There's also an AI Analysis panel that shows why the computer picked a move.
 
@@ -11,6 +11,8 @@ The computer doesn't pick random moves. It uses minimax with a dynamic programmi
 Open the project folder and double-click index.html. It opens in your browser and works right away. You don't need a server.
 
 I didn't use JavaScript modules (import/export) because browsers block those when you open a file directly. Instead index.html loads game.js, ai.js, and app.js in that order.
+
+The default is the assignment's 20-move limit. The Move limit / AI depth menu offers optional alternatives and starts a fresh game when changed. To upload the site later, keep these eight files together in one folder and upload the folder's contents to a static web host. The relative script, stylesheet, and icon links work without a build step. This project has not been published to a hosting service yet.
 
 ## Game Rules
 
@@ -23,7 +25,7 @@ I followed the starter code for the rules.
 5. A hand with 0 can't attack and can't be attacked.
 6. To split, you move fingers between your own two hands. The total stays the same, neither hand can go over 4, and just swapping left and right doesn't count as a move. A split can bring a 0 hand back to life, and it can also leave one hand at 0.
 7. You lose when both of your hands are 0.
-8. The game is limited to 20 turns total, which is 10 for each player. If it reaches turn 20 and both players still have a hand, it's a tie. If someone gets knocked out on turn 20 they still lose, so it's not a tie in that case.
+8. In the assignment-default setting, the game is limited to 20 turns total, which is 10 for each player. If it reaches turn 20 and both players still have a hand, it's a tie. If someone gets knocked out on turn 20 they still lose, so it's not a tie in that case. Optional depth choices use the same tie rule at their selected limit.
 
 The 20 turn limit is from the assignment (the starter code sets moves = 10 and then uses depth = 2 * moves).
 
@@ -61,11 +63,11 @@ Every state gets a score from Player A's point of view:
 2. 0 means neither player can force a win within the 20 turns
 3. -1 means B can force a win
 
-On A's turn the computer picks the move with the highest score, so A is MAX. On B's turn it picks the move with the lowest score, so B is MIN. The score of a state is what you get if both players always pick their best move from there.
+On A's turn the computer picks the move with the highest score, so A is MAX. On B's turn it picks the move with the lowest score, so B is MIN. The score of a state is what you get if both players always pick their best move from there. At a different selected move limit, 0 means no forced winner by that limit.
 
 ## Bottom-Up Dynamic Programming
 
-bestMoveDP() in ai.js builds the whole table one time when the page loads. Each row has the state, its score, and the best next state.
+bestMoveDP() in ai.js builds the whole depth-20 table when the page loads. Each row has the state, its score, and the best next state. Selecting a different depth builds or reuses a separate table for that depth.
 
 It's built from the bottom up:
 
@@ -77,22 +79,24 @@ Each hand can be 0 to 4, so there are 5 x 5 x 5 x 5 = 625 hand combos. There are
 
 Dynamic programming helps because lots of different move orders end up in the same state at the same level. The table saves each one so it only gets figured out once. A full tree would repeat the same work a lot.
 
-At the start the score is 0, so neither player can force a win in 20 turns if both play perfectly.
+At the start the default score is 0, so neither player can force a win in 20 turns if both play perfectly. The optional first-player analysis computes the opening score at several limits; it shows that this conclusion can change when the limit changes.
 
 ## Interface
 
 1. Click one of your hands, then click one of the other player's hands to attack. The hand does a little tap animation.
-2. The Split button shows the legal splits you can pick from.
-3. You can pick "You vs AI" (as A or B) or "Watch AI vs AI" with start, pause, one step, and a speed slider.
+2. The Split button shows the legal splits you can pick from. Both hands move together when fingers are redistributed.
+3. You can pick "You vs AI" (as A or B), "Two players" on one device, or "Watch AI vs AI" with start, pause, one step, and a speed slider.
 4. Restart button.
 5. Move History shows every move and it scrolls.
 6. AI Analysis can be hidden. It says the expected result, whose turn it is, and the best next move. The "Explore the move tree" part lets you click a possible move to see what would happen without actually playing it.
 7. After the game is over you can go back through the moves in the move tree.
 8. DP Statistics shows the table size, how long it took to build, the current level, turns left, and how many legal moves there are.
+9. The Sound button starts off. Turn it on for local synthesized tap, split, and game-end sounds; no audio files or network access are needed.
+10. The AI experiments show how the opening score changes at different move limits and compare bottom-up DP against uncached recursion at depth 6. They never change the current game. DP fills all possible state-level rows while recursion follows only reachable branches, so the displayed times are not an apples-to-apples speed benchmark.
 
 ## Software Organization
 
-The project folder is called chopsticks and has these files:
+The submission folder has these files:
 
 1. index.html - the page layout
 2. style.css - the styling and animations
@@ -111,7 +115,7 @@ I tested it a few different ways. The test files are in my Git repo but not in t
 
 1. JavaScript tests (Node): These check the rules and the DP table. They compare my move generator against a separate check on every hand combo for both players. They check that every row of the DP table is right, that knockouts score correctly, that the level 20 tie works, and that A picks the max and B picks the min. They also play thousands of computer vs computer games and check the buttons and page IDs.
 2. Python tests: These test the Python version, which follows the starter code. I also compared my JavaScript moves with the starter code's next_moves on the same states.
-3. Selenium tests (7): These open the real page in Chrome. They check the first screen, the setup buttons, the tap animation, restart, the analysis panel and move tree, a full computer vs computer game to level 20, and a phone-sized window (390px wide). They all passed.
+3. Selenium tests (7): These open the real page in Chrome. They check the first screen, the setup buttons, the tap animation, restart, the analysis panel and move tree, a full computer vs computer game to level 20, and a phone-sized window (390px wide). The original suite passed before these optional extensions; the updated build still needs a manual browser check where Chrome is available.
 4. Illegal moves: The tests check that clicking something illegal doesn't change the game.
 5. Opening the file directly: I also checked that the page works when you double-click index.html, with no console errors.
 
@@ -121,22 +125,19 @@ The game does not accept free-form commands, connect to a server, or send inform
 
 ## Known Limitations
 
-1. A score of 0 only means nobody can force a win in 20 turns. It doesn't mean the game is a draw forever. When we tried a version with no turn limit, Player B could force a win. If the limit is raised to 26 turns the opening score changes from 0 to -1 (24 turns is still 0). I kept the limit at 20 because the assignment says to.
+1. A score of 0 only means nobody can force a win before the selected move limit. It doesn't mean the game is a draw forever. When we tried a version with no turn limit, Player B could force a win. If the limit is raised to 26 turns the opening score changes from 0 to -1 (24 turns is still 0). I kept 20 as the default because the assignment says to.
 2. When two moves have the same score, the computer picks the first one in the list. It doesn't try to win faster.
 3. The game isn't saved if you close or refresh the page.
 4. It only works on one computer. There's no online multiplayer.
 
 ## Implemented Extensions
 
-After the required game was working, I added the AI vs AI mode, move history, tap animation, DP Statistics, and the interactive decision map. After a completed game, the decision map can also move backward and forward through the route that was played without changing the final board or move history.
+After the required game was working, I added AI vs AI mode, same-device two-player mode, move history, tap and redistribution animations, optional sound, adjustable depth, DP Statistics, first-player opening analysis, a small DP-vs-recursion comparison, and the interactive decision map. After a completed game, the decision map can also move backward and forward through the route that was played without changing the final board or move history.
 
 ## Possible Extensions
 
-1. Let the user pick a different search depth (20 would stay as the default).
-2. Compare the DP way with a plain recursive search and see how much faster DP is.
-3. Add a Human vs Human mode.
-4. Add sound effects with an on/off button.
-5. Put it online with a free hosting service.
+1. Upload the prepared static files to a chosen hosting service if a public link is needed. The site has not been published yet.
+2. Add game save/resume or online multiplayer in a later version; neither is needed for this assignment.
 
 ## Reflection
 

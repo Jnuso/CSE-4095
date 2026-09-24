@@ -13,8 +13,10 @@
   if (!game) throw new Error('game.js must be loaded before ai.js.');
   const {
     DEFAULT_DEPTH,
+    INITIAL_STATE,
     assertDepth,
     assertState,
+    getResult,
     legalMoves,
     stateKey,
   } = game;
@@ -118,11 +120,43 @@
     });
   }
 
-  function outcomeLabel(score) {
+  function outcomeLabel(score, depth = DEFAULT_DEPTH) {
+    assertDepth(depth);
     if (score === 1) return 'WIN for Player A';
     if (score === -1) return 'LOSS for Player A';
-    if (score === 0) return 'TIE within 20 moves';
+    if (score === 0) return `TIE within ${depth} moves`;
     throw new RangeError('A minimax score must be -1, 0, or +1.');
+  }
+
+  /** Compare a complete bottom-up table with uncached recursion from the same opening. */
+  function compareSearch(depth = 6) {
+    assertDepth(depth);
+    if (depth > 8) throw new RangeError('The uncached comparison is limited to depth 8.');
+    const now = () => globalThis.performance?.now?.() ?? 0;
+    const dpStarted = now();
+    const table = bestMoveDP(depth);
+    const dpMs = now() - dpStarted;
+    const visited = new Set();
+    let recursiveVisits = 0;
+
+    function recurse(position) {
+      recursiveVisits += 1;
+      visited.add(stateKey(position));
+      const result = getResult(position, depth);
+      if (result !== null) return result === 'A' ? 1 : result === 'B' ? -1 : 0;
+      const values = legalMoves(position, depth).map((move) => recurse(move.nextState));
+      return position[2] % 2 === 0 ? Math.max(...values) : Math.min(...values);
+    }
+
+    const recursiveStarted = now();
+    const recursiveScore = recurse(INITIAL_STATE);
+    const recursiveMs = now() - recursiveStarted;
+    const dpScore = table.get(stateKey(INITIAL_STATE)).score;
+    if (dpScore !== recursiveScore) throw new Error('DP and recursion disagree on the opening score.');
+    return {
+      depth, score: dpScore, dpRows: table.size, dpMs,
+      recursiveVisits, distinctReachable: visited.size, recursiveMs,
+    };
   }
 
   const api = {
@@ -130,6 +164,7 @@
     bestMove,
     evaluateMoves,
     outcomeLabel,
+    compareSearch,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.ChopsticksAI = api;
