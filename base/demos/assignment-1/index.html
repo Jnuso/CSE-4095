@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="An interactive visualization of the recursive checker-swap problem."
+  >
+  <title>Recursive Checker Swap</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../../assets/demo-return.css">
+</head>
+<body>
+  <nav class="cse4095-return-bar" aria-label="Archive navigation"><a href="../../index.html">&#8592; Back to main page</a></nav>
+  <header class="control-ribbon">
+    <div class="brand" aria-label="Recursive Checker Swap">
+      <div class="brand-mark" aria-hidden="true">
+        <span class="mini-checker mini-red"></span>
+        <span class="mini-checker mini-black"></span>
+      </div>
+      <div>
+        <p class="eyebrow">CSE 4095 · Assignment 1</p>
+        <h1>Recursive Checker Swap</h1>
+      </div>
+    </div>
+
+    <div class="controls" aria-label="Animation controls">
+      <label class="input-control" for="checker-count">
+        <span>Checkers per color</span>
+        <input id="checker-count" type="number" min="1" max="20" value="4" inputmode="numeric">
+      </label>
+
+      <div class="button-group primary-actions">
+        <button id="start-button" class="button button-primary" type="button">Play</button>
+        <button id="pause-button" class="button" type="button" disabled>Pause</button>
+      </div>
+
+      <div class="button-group step-actions" aria-label="Manual step controls">
+        <button id="previous-button" class="button" type="button" disabled>
+          <span aria-hidden="true">←</span> Previous
+        </button>
+        <button id="next-button" class="button" type="button">
+          Next <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+      <button id="reset-button" class="button button-reset" type="button">Reset</button>
+
+      <label class="speed-control" for="speed-slider">
+        <span class="speed-heading">
+          <span>Animation speed</span>
+          <output id="speed-output" for="speed-slider">1×</output>
+        </span>
+        <input
+          id="speed-slider"
+          type="range"
+          min="0.5"
+          max="2"
+          value="1"
+          step="0.25"
+        >
+      </label>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel animation-panel" aria-labelledby="animation-heading">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Live visualization</p>
+          <h2 id="animation-heading">Adjacent-swap animation</h2>
+        </div>
+        <div class="step-counter" aria-live="polite">
+          <span id="step-number">Step 0</span>
+          <span class="counter-divider">/</span>
+          <span id="step-total">0 swaps</span>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-glow" aria-hidden="true"></div>
+        <div id="checker-board" class="checker-board" role="img" aria-label="Checker arrangement"></div>
+        <p id="state-array" class="state-array">[]</p>
+      </div>
+
+      <div class="animation-details">
+        <div>
+          <span class="detail-label">Status</span>
+          <p id="status-message" class="status-message" aria-live="polite">Ready to begin</p>
+        </div>
+        <div id="recursion-detail" class="recursion-detail" hidden>
+          <span class="detail-label">Recursive call</span>
+          <p>Level <strong id="recursion-level">1</strong></p>
+        </div>
+        <div>
+          <span class="detail-label">Goal</span>
+          <p id="target-state">[0, 1, 0, 1, 0, 1, 0, 1]</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel history-panel" aria-labelledby="history-heading">
+      <div class="section-heading history-heading-row">
+        <div>
+          <p class="section-kicker">Execution trace</p>
+          <h2 id="history-heading">Swap history</h2>
+        </div>
+        <p class="history-note">Positions are numbered starting at 1</p>
+      </div>
+
+      <div id="swap-log" class="swap-log" tabindex="0" aria-live="polite">
+        <div class="empty-log">
+          <span class="empty-log-icon" aria-hidden="true">↔</span>
+          <p>Press Play or Next to reveal the recursive swap sequence.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

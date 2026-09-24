@@ -1,0 +1,1626 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050506">
+  <meta name="description" content="An interactive breadth-first search visualizer for the classic 8-puzzle.">
+  <title>8-Puzzle BFS Visualizer</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #050506;
+      --surface: rgba(25, 25, 28, 0.74);
+      --surface-solid: #171719;
+      --surface-raised: #222225;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-strong: rgba(255, 255, 255, 0.17);
+      --text: #f5f5f7;
+      --secondary: #a1a1a8;
+      --tertiary: #73737b;
+      --accent: #0a84ff;
+      --accent-light: #64b5ff;
+      --success: #30d158;
+      --error: #ff453a;
+      --radius-large: 28px;
+      --radius-medium: 18px;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
+      font-synthesis: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--background);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% -20%, rgba(10, 132, 255, 0.19), transparent 36rem),
+        radial-gradient(circle at 110% 85%, rgba(94, 92, 230, 0.12), transparent 32rem),
+        var(--background);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .topbar {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      width: 100%;
+      min-height: 82px;
+      padding: 14px max(24px, calc((100vw - 1240px) / 2));
+      border-bottom: 1px solid var(--border);
+      background: rgba(5, 5, 6, 0.78);
+      backdrop-filter: saturate(180%) blur(24px);
+      -webkit-backdrop-filter: saturate(180%) blur(24px);
+    }
+
+    .brand {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 12px;
+      min-width: max-content;
+    }
+
+    .brand-mark {
+      display: grid;
+      grid-template-columns: repeat(2, 8px);
+      gap: 3px;
+      width: 31px;
+      height: 31px;
+      place-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 9px;
+      background: linear-gradient(145deg, #2e2e32, #171719);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-mark span {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: #c8c8ce;
+    }
+
+    .brand-mark span:last-child {
+      background: var(--accent);
+    }
+
+    .brand-name {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-method {
+      margin: 2px 0 0;
+      color: var(--tertiary);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .toolbar {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .control-button {
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 0.875rem;
+      font-weight: 590;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, opacity 160ms ease;
+    }
+
+    .control-button:hover:not(:disabled) {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .control-button:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .control-button:focus-visible,
+    .configuration-input:focus-visible,
+    .speed-slider:focus-visible {
+      outline: 3px solid rgba(10, 132, 255, 0.42);
+      outline-offset: 2px;
+    }
+
+    .control-button.primary {
+      min-width: 78px;
+      border-color: transparent;
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 8px 24px rgba(10, 132, 255, 0.23);
+    }
+
+    .control-button.primary:hover:not(:disabled) {
+      border-color: transparent;
+      background: #2997ff;
+    }
+
+    .control-button:disabled {
+      opacity: 0.36;
+      cursor: not-allowed;
+    }
+
+    .toolbar-separator {
+      width: 1px;
+      height: 28px;
+      margin: 0 6px;
+      background: var(--border);
+    }
+
+    .speed-control {
+      display: grid;
+      grid-template-columns: auto 116px;
+      grid-template-areas:
+        "label value"
+        "slider slider";
+      gap: 3px 12px;
+      width: 166px;
+      margin-left: 4px;
+    }
+
+    .speed-label,
+    .speed-value {
+      color: var(--secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .speed-label {
+      grid-area: label;
+    }
+
+    .speed-value {
+      grid-area: value;
+      justify-self: end;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .speed-slider {
+      grid-area: slider;
+      width: 100%;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 56px 0 72px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.82fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-large);
+      background: var(--surface);
+      box-shadow: var(--shadow), inset 0 1px rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+    }
+
+    .visualizer-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 650px;
+      padding: clamp(26px, 4vw, 48px);
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent-light);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: clamp(1.7rem, 3vw, 2.5rem);
+      font-weight: 650;
+      letter-spacing: -0.045em;
+      line-height: 1.08;
+    }
+
+    .status-badge {
+      flex: 0 0 auto;
+      padding: 7px 11px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--secondary);
+      background: rgba(255, 255, 255, 0.045);
+      font-size: 0.75rem;
+      font-weight: 620;
+    }
+
+    .status-badge.ready {
+      border-color: rgba(48, 209, 88, 0.22);
+      color: #73e58d;
+      background: rgba(48, 209, 88, 0.08);
+    }
+
+    .board-stage {
+      display: grid;
+      flex: 1;
+      place-items: center;
+      padding: 42px 0 38px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: min(100%, 430px);
+      aspect-ratio: 1;
+      padding: 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: 32px;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+        0 24px 70px rgba(0, 0, 0, 0.34);
+    }
+
+    .tile {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 22px;
+      color: #f9f9fb;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+        var(--surface-raised);
+      box-shadow:
+        inset 0 1px rgba(255, 255, 255, 0.11),
+        0 10px 24px rgba(0, 0, 0, 0.26);
+      font-size: clamp(2rem, 6vw, 3.65rem);
+      font-weight: 620;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.05em;
+      will-change: transform;
+    }
+
+    .tile.empty {
+      border-color: rgba(255, 255, 255, 0.045);
+      background: rgba(255, 255, 255, 0.018);
+      box-shadow: inset 0 1px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    .solution-progress {
+      display: grid;
+      grid-template-columns: auto minmax(100px, 1fr) auto;
+      align-items: center;
+      gap: 16px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .step-label,
+    .step-count {
+      color: var(--secondary);
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .step-count {
+      min-width: 50px;
+      color: var(--text);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .progress-track {
+      overflow: hidden;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #5e5ce6);
+      transition: width 260ms cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-section {
+      padding: 28px;
+    }
+
+    .side-section + .side-section {
+      border-top: 1px solid var(--border);
+    }
+
+    .side-title {
+      margin-bottom: 7px;
+      font-size: 1.12rem;
+      font-weight: 640;
+      letter-spacing: -0.025em;
+    }
+
+    .side-copy {
+      margin-bottom: 22px;
+      color: var(--secondary);
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .configuration-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 54px);
+      gap: 8px;
+      width: max-content;
+      border-radius: 17px;
+    }
+
+    .configuration-grid.attention {
+      animation: configuration-pulse 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .configuration-input {
+      width: 54px;
+      height: 54px;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 1.1rem;
+      font-weight: 620;
+      text-align: center;
+      appearance: textfield;
+      transition: border-color 160ms ease, background 160ms ease;
+    }
+
+    .configuration-input::-webkit-inner-spin-button,
+    .configuration-input::-webkit-outer-spin-button {
+      margin: 0;
+      appearance: none;
+    }
+
+    .configuration-input:hover:not(:disabled) {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .configuration-input.invalid {
+      border-color: rgba(255, 69, 58, 0.75);
+      background: rgba(255, 69, 58, 0.09);
+    }
+
+    .configuration-input:disabled {
+      opacity: 0.55;
+    }
+
+    .input-note {
+      min-height: 38px;
+      margin: 15px 0 0;
+      color: var(--tertiary);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .input-note.error {
+      color: #ff817a;
+    }
+
+    .goal-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--secondary);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .goal-sequence {
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.08em;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat-card {
+      min-height: 98px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-medium);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .stat-label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--secondary);
+      font-size: 0.72rem;
+      font-weight: 620;
+      line-height: 1.25;
+    }
+
+    .stat-value {
+      display: block;
+      overflow: hidden;
+      color: var(--text);
+      font-size: clamp(1.05rem, 2.3vw, 1.42rem);
+      font-weight: 640;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.035em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .status-message {
+      min-height: 21px;
+      margin: 18px 0 0;
+      color: var(--secondary);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .status-message.error {
+      color: #ff817a;
+    }
+
+    .path-panel {
+      margin-top: 22px;
+      padding: 30px;
+    }
+
+    .path-panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .path-panel-header .side-title {
+      margin-bottom: 6px;
+    }
+
+    .path-panel-header .side-copy {
+      margin-bottom: 0;
+    }
+
+    .path-count {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--secondary);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.78rem;
+      font-weight: 620;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .state-strip {
+      display: flex;
+      gap: 14px;
+      min-height: 216px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 2px 2px 15px;
+      scroll-behavior: smooth;
+      scroll-snap-type: x proximity;
+      scrollbar-color: rgba(255, 255, 255, 0.19) transparent;
+      scrollbar-width: thin;
+    }
+
+    .state-strip::-webkit-scrollbar {
+      height: 7px;
+    }
+
+    .state-strip::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .state-strip::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .state-card {
+      flex: 0 0 174px;
+      align-self: flex-start;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.032);
+      text-align: left;
+      scroll-snap-align: start;
+      cursor: pointer;
+      transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    }
+
+    .state-card:hover {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.065);
+      transform: translateY(-2px);
+    }
+
+    .state-card:focus-visible {
+      outline: 3px solid rgba(10, 132, 255, 0.42);
+      outline-offset: 2px;
+    }
+
+    .state-card.active {
+      border-color: rgba(10, 132, 255, 0.75);
+      background: rgba(10, 132, 255, 0.1);
+      box-shadow: 0 10px 32px rgba(10, 132, 255, 0.12);
+    }
+
+    .state-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 11px;
+    }
+
+    .state-step {
+      font-size: 0.8rem;
+      font-weight: 650;
+    }
+
+    .state-move {
+      overflow: hidden;
+      color: var(--tertiary);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mini-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      padding: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 13px;
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .mini-tile {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.085);
+      font-size: 0.78rem;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mini-tile.empty {
+      border-color: rgba(255, 255, 255, 0.025);
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .path-empty {
+      display: grid;
+      width: 100%;
+      min-height: 190px;
+      place-items: center;
+      border: 1px dashed var(--border-strong);
+      border-radius: 20px;
+      color: var(--tertiary);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    @keyframes configuration-pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(10, 132, 255, 0);
+      }
+      35% {
+        box-shadow: 0 0 0 7px rgba(10, 132, 255, 0.2);
+      }
+    }
+
+    @media (max-width: 1040px) {
+      .topbar {
+        position: relative;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding: 16px 24px 18px;
+      }
+
+      .toolbar {
+        flex-basis: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .workspace {
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 0.7fr);
+      }
+    }
+
+    @media (max-width: 780px) {
+      main {
+        width: min(100% - 24px, 580px);
+        padding-top: 24px;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .visualizer-panel {
+        min-height: 580px;
+      }
+
+      .side-panel {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .path-panel {
+        padding: 24px 20px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        padding-inline: 14px;
+      }
+
+      .toolbar {
+        gap: 6px;
+      }
+
+      .control-button {
+        min-height: 40px;
+        padding-inline: 13px;
+        font-size: 0.82rem;
+      }
+
+      .toolbar-separator {
+        display: none;
+      }
+
+      .speed-control {
+        flex: 0 0 154px;
+        width: 154px;
+        margin-left: 6px;
+      }
+
+      .visualizer-panel {
+        min-height: 520px;
+        padding: 24px 18px;
+        border-radius: 22px;
+      }
+
+      .status-badge {
+        display: none;
+      }
+
+      .board-stage {
+        padding-block: 32px;
+      }
+
+      .board {
+        gap: 8px;
+        padding: 10px;
+        border-radius: 24px;
+      }
+
+      .tile {
+        border-radius: 16px;
+      }
+
+      .solution-progress {
+        gap: 10px;
+      }
+
+      .side-section {
+        padding: 24px 20px;
+      }
+
+      .path-panel-header {
+        align-items: flex-start;
+      }
+
+      .state-card {
+        flex-basis: 158px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="../../assets/demo-return.css">
+</head>
+<body>
+  <nav class="cse4095-return-bar" aria-label="Archive navigation"><a href="../../index.html">&#8592; Back to main page</a></nav>
+  <header class="topbar">
+    <div class="brand" aria-label="8-Puzzle BFS Visualizer">
+      <div class="brand-mark" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div>
+        <p class="brand-name">8-Puzzle</p>
+        <p class="brand-method">Breadth-first search</p>
+      </div>
+    </div>
+
+    <nav class="toolbar" aria-label="Visualizer controls">
+      <button class="control-button primary" id="solve-button" type="button">Solve</button>
+      <button class="control-button" id="custom-start-button" type="button">Custom Start</button>
+      <button class="control-button" id="play-button" type="button" disabled>Play</button>
+      <button class="control-button" id="previous-button" type="button" disabled>Previous</button>
+      <button class="control-button" id="next-button" type="button" disabled>Next</button>
+      <button class="control-button" id="reset-button" type="button">Reset</button>
+      <span class="toolbar-separator" aria-hidden="true"></span>
+      <label class="speed-control" for="speed-slider">
+        <span class="speed-label">Playback speed</span>
+        <output class="speed-value" id="speed-value" for="speed-slider">1×</output>
+        <input class="speed-slider" id="speed-slider" type="range" min="0.25" max="2" step="0.25" value="1">
+      </label>
+    </nav>
+  </header>
+
+  <main>
+    <div class="workspace">
+      <section class="panel visualizer-panel" aria-labelledby="visualizer-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Solution path</p>
+            <h1 id="visualizer-title">Ready to solve</h1>
+          </div>
+          <span class="status-badge" id="status-badge">Initial state</span>
+        </div>
+
+        <div class="board-stage">
+          <div class="board" id="puzzle-board" role="grid" aria-label="Current 8-puzzle state"></div>
+        </div>
+
+        <div class="solution-progress">
+          <span class="step-label">Current solution step</span>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <span class="step-count" id="step-count">0 / —</span>
+        </div>
+      </section>
+
+      <aside class="panel side-panel" aria-label="Puzzle configuration and search statistics">
+        <section class="side-section" id="configuration-section" aria-labelledby="configuration-title">
+          <h2 class="side-title" id="configuration-title">Initial configuration</h2>
+          <p class="side-copy">Enter every number from 0 through 8 once. Zero represents the empty tile.</p>
+
+          <div class="configuration-grid" id="configuration-grid">
+            <input class="configuration-input" type="number" min="0" max="8" step="1" value="8" aria-label="Row 1 column 1">
+            <input class="configuration-input" type="number" min="0" max="8" step="1" value="7" aria-label="Row 1 column 2">
+            <input class="configuration-input" type="number" min="0" max="8" step="1" value="6" aria-label="Row 1 column 3">
+            <input class="configuration-input" type="number" min="0" max="8" step="1" value="5" aria-label="Row 2 column 1">
+            <input class="configuration-input" type="number" min="0" max="8" step="1" value="4" aria-label="Row 2 column 2">
+            <input class="configuration-input" type="number" min="0" max="8" step="1" value="3" aria-label="Row 2 column 3">
+            <input class="configuration-input" type="number" min="0" max="8" step="1" value="2" aria-label="Row 3 column 1">
+            <input class="configuration-input" type="number" min="0" max="8" step="1" value="1" aria-label="Row 3 column 2">
+            <input class="configuration-input" type="number" min="0" max="8" step="1" value="0" aria-label="Row 3 column 3">
+          </div>
+
+          <p class="input-note" id="input-note">Select Solve to calculate the shortest path.</p>
+
+          <div class="goal-row">
+            <span>Goal state</span>
+            <span class="goal-sequence">1 2 3 · 4 5 6 · 7 8 □</span>
+          </div>
+        </section>
+
+        <section class="side-section" aria-labelledby="statistics-title">
+          <h2 class="side-title" id="statistics-title">Search statistics</h2>
+          <p class="side-copy">Results from the most recent breadth-first search.</p>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Tile being moved</span>
+              <strong class="stat-value" id="moved-tile">—</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Total moves</span>
+              <strong class="stat-value" id="total-moves">—</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">States expanded</span>
+              <strong class="stat-value" id="states-expanded">—</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">States discovered</span>
+              <strong class="stat-value" id="states-discovered">—</strong>
+            </div>
+          </div>
+
+          <p class="status-message" id="status-message" aria-live="polite">The initial board is ready.</p>
+        </section>
+      </aside>
+    </div>
+
+    <section class="panel path-panel" aria-labelledby="complete-path-title">
+      <div class="path-panel-header">
+        <div>
+          <h2 class="side-title" id="complete-path-title">Complete solution path</h2>
+          <p class="side-copy">Scroll through every state or select one to inspect it on the main board.</p>
+        </div>
+        <span class="path-count" id="path-count">No path yet</span>
+      </div>
+
+      <div class="state-strip" id="state-strip" aria-label="All states in the solution path">
+        <div class="path-empty">Solve the puzzle to display every state in the optimal path.</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    const DEFAULT_STATE = "876543210";
+    const GOAL_STATE = "123456780";
+    const BOARD_SIZE = 3;
+    const MOVE_ORDER = [
+      [-1, 0], // Blank moves up
+      [1, 0],  // Blank moves down
+      [0, -1], // Blank moves left
+      [0, 1]   // Blank moves right
+    ];
+
+    const board = document.getElementById("puzzle-board");
+    const solveButton = document.getElementById("solve-button");
+    const customStartButton = document.getElementById("custom-start-button");
+    const playButton = document.getElementById("play-button");
+    const previousButton = document.getElementById("previous-button");
+    const nextButton = document.getElementById("next-button");
+    const resetButton = document.getElementById("reset-button");
+    const speedSlider = document.getElementById("speed-slider");
+    const speedValue = document.getElementById("speed-value");
+    const configurationInputs = [...document.querySelectorAll(".configuration-input")];
+    const inputNote = document.getElementById("input-note");
+    const visualizerTitle = document.getElementById("visualizer-title");
+    const statusBadge = document.getElementById("status-badge");
+    const statusMessage = document.getElementById("status-message");
+    const progressFill = document.getElementById("progress-fill");
+    const stepCount = document.getElementById("step-count");
+    const movedTile = document.getElementById("moved-tile");
+    const totalMoves = document.getElementById("total-moves");
+    const statesExpanded = document.getElementById("states-expanded");
+    const statesDiscovered = document.getElementById("states-discovered");
+    const configurationSection = document.getElementById("configuration-section");
+    const configurationGrid = document.getElementById("configuration-grid");
+    const stateStrip = document.getElementById("state-strip");
+    const pathCount = document.getElementById("path-count");
+
+    let solution = null;
+    let currentStep = 0;
+    let playbackTimer = null;
+    let isPlaying = false;
+    let isSearching = false;
+    let searchVersion = 0;
+
+    function getNeighborStates(state) {
+      const blankIndex = state.indexOf("0");
+      const blankRow = Math.floor(blankIndex / BOARD_SIZE);
+      const blankColumn = blankIndex % BOARD_SIZE;
+      const neighbors = [];
+
+      for (const [rowChange, columnChange] of MOVE_ORDER) {
+        const newRow = blankRow + rowChange;
+        const newColumn = blankColumn + columnChange;
+
+        if (newRow < 0 || newRow >= BOARD_SIZE || newColumn < 0 || newColumn >= BOARD_SIZE) {
+          continue;
+        }
+
+        const swapIndex = newRow * BOARD_SIZE + newColumn;
+        const stateCharacters = [...state];
+        const tileMoved = stateCharacters[swapIndex];
+        [stateCharacters[blankIndex], stateCharacters[swapIndex]] = [
+          stateCharacters[swapIndex],
+          stateCharacters[blankIndex]
+        ];
+
+        neighbors.push({ state: stateCharacters.join(""), tileMoved });
+      }
+
+      return neighbors;
+    }
+
+    function reconstructPath(parent, moveToState, goalState) {
+      const path = [];
+      const movedTiles = [];
+      let currentState = goalState;
+
+      while (currentState !== null) {
+        path.push(currentState);
+        movedTiles.push(moveToState.get(currentState) ?? null);
+        currentState = parent.get(currentState);
+      }
+
+      path.reverse();
+      movedTiles.reverse();
+      return { path, movedTiles };
+    }
+
+    function waitForPaint() {
+      return new Promise(resolve => requestAnimationFrame(resolve));
+    }
+
+    async function breadthFirstSearch(initialState, version) {
+      const queue = [initialState];
+      let queueIndex = 0;
+      const discovered = new Set([initialState]);
+      const parent = new Map([[initialState, null]]);
+      const moveToState = new Map([[initialState, null]]);
+      let expanded = 0;
+
+      while (queueIndex < queue.length) {
+        if (version !== searchVersion) {
+          return null;
+        }
+
+        const currentState = queue[queueIndex];
+        queueIndex += 1;
+
+        if (currentState === GOAL_STATE) {
+          const reconstructed = reconstructPath(parent, moveToState, GOAL_STATE);
+          return {
+            ...reconstructed,
+            expanded,
+            discovered: discovered.size
+          };
+        }
+
+        expanded += 1;
+
+        for (const neighbor of getNeighborStates(currentState)) {
+          if (!discovered.has(neighbor.state)) {
+            discovered.add(neighbor.state);
+            parent.set(neighbor.state, currentState);
+            moveToState.set(neighbor.state, neighbor.tileMoved);
+            queue.push(neighbor.state);
+          }
+        }
+
+        if (expanded % 4096 === 0) {
+          statesExpanded.textContent = expanded.toLocaleString();
+          statesDiscovered.textContent = discovered.size.toLocaleString();
+          statusMessage.textContent = `Searching ${discovered.size.toLocaleString()} unique states…`;
+          await waitForPaint();
+        }
+      }
+
+      return {
+        path: null,
+        movedTiles: null,
+        expanded,
+        discovered: discovered.size
+      };
+    }
+
+    function countInversions(state) {
+      const values = [...state].filter(value => value !== "0").map(Number);
+      let inversions = 0;
+
+      for (let first = 0; first < values.length; first += 1) {
+        for (let second = first + 1; second < values.length; second += 1) {
+          if (values[first] > values[second]) {
+            inversions += 1;
+          }
+        }
+      }
+
+      return inversions;
+    }
+
+    function readConfiguration(showErrors = true) {
+      const rawValues = configurationInputs.map(input => input.value.trim());
+      const frequencies = new Map();
+      let hasOutOfRangeValue = false;
+
+      for (const value of rawValues) {
+        if (!/^[0-8]$/.test(value)) {
+          hasOutOfRangeValue = true;
+        } else {
+          frequencies.set(value, (frequencies.get(value) ?? 0) + 1);
+        }
+      }
+
+      configurationInputs.forEach((input, index) => {
+        const value = rawValues[index];
+        const isInvalid = !/^[0-8]$/.test(value) || (frequencies.get(value) ?? 0) > 1;
+        input.classList.toggle("invalid", showErrors && isInvalid);
+        input.setAttribute("aria-invalid", showErrors && isInvalid ? "true" : "false");
+      });
+
+      if (hasOutOfRangeValue) {
+        return { error: "Each position must contain one number from 0 through 8." };
+      }
+
+      if (frequencies.size !== 9) {
+        return { error: "Use each number from 0 through 8 exactly once." };
+      }
+
+      const state = rawValues.join("");
+
+      if (countInversions(state) % 2 !== countInversions(GOAL_STATE) % 2) {
+        return { error: "This configuration cannot reach the goal state." };
+      }
+
+      return { state };
+    }
+
+    function renderBoard(state, previousState = null) {
+      const stateValues = [...state];
+      board.replaceChildren();
+
+      for (let index = 0; index < stateValues.length; index += 1) {
+        const value = stateValues[index];
+        const tile = document.createElement("div");
+        tile.className = value === "0" ? "tile empty" : "tile";
+        tile.setAttribute("role", "gridcell");
+        tile.setAttribute("aria-label", value === "0" ? "Empty tile" : `Tile ${value}`);
+        tile.dataset.value = value;
+
+        if (value !== "0") {
+          tile.textContent = value;
+        }
+
+        board.appendChild(tile);
+      }
+
+      if (previousState && previousState !== state && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const oldBlankIndex = previousState.indexOf("0");
+        const movedValue = state[oldBlankIndex];
+        const oldTileIndex = previousState.indexOf(movedValue);
+        const newTileIndex = state.indexOf(movedValue);
+        const tileElement = board.querySelector(`[data-value="${movedValue}"]`);
+
+        if (tileElement && movedValue !== "0") {
+          const boardStyle = window.getComputedStyle(board);
+          const gap = Number.parseFloat(boardStyle.columnGap);
+          const horizontalPadding = Number.parseFloat(boardStyle.paddingLeft) + Number.parseFloat(boardStyle.paddingRight);
+          const cellSize = (board.clientWidth - horizontalPadding - gap * (BOARD_SIZE - 1)) / BOARD_SIZE;
+          const oldRow = Math.floor(oldTileIndex / BOARD_SIZE);
+          const oldColumn = oldTileIndex % BOARD_SIZE;
+          const newRow = Math.floor(newTileIndex / BOARD_SIZE);
+          const newColumn = newTileIndex % BOARD_SIZE;
+          const xOffset = (oldColumn - newColumn) * (cellSize + gap);
+          const yOffset = (oldRow - newRow) * (cellSize + gap);
+
+          tileElement.animate(
+            [
+              { transform: `translate(${xOffset}px, ${yOffset}px)`, filter: "brightness(1.25)" },
+              { transform: "translate(0, 0)", filter: "brightness(1)" }
+            ],
+            { duration: 320, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+          );
+        }
+      }
+    }
+
+    function updateActiveStateCard(animateScroll = true) {
+      const cards = [...stateStrip.querySelectorAll(".state-card")];
+      let activeCard = null;
+
+      for (const card of cards) {
+        const isActive = Number(card.dataset.step) === currentStep;
+        card.classList.toggle("active", isActive);
+
+        if (isActive) {
+          card.setAttribute("aria-current", "step");
+          activeCard = card;
+        } else {
+          card.removeAttribute("aria-current");
+        }
+      }
+
+      if (activeCard) {
+        const centeredPosition = activeCard.offsetLeft - (stateStrip.clientWidth - activeCard.offsetWidth) / 2;
+        stateStrip.scrollTo({
+          left: Math.max(0, centeredPosition),
+          behavior: animateScroll ? "smooth" : "auto"
+        });
+      }
+    }
+
+    function renderSolutionGallery() {
+      stateStrip.replaceChildren();
+
+      if (!solution) {
+        const emptyMessage = document.createElement("div");
+        emptyMessage.className = "path-empty";
+        emptyMessage.textContent = "Solve the puzzle to display every state in the optimal path.";
+        stateStrip.appendChild(emptyMessage);
+        pathCount.textContent = "No path yet";
+        return;
+      }
+
+      pathCount.textContent = `${solution.path.length.toLocaleString()} states`;
+
+      solution.path.forEach((state, step) => {
+        const card = document.createElement("button");
+        card.className = "state-card";
+        card.type = "button";
+        card.dataset.step = String(step);
+        card.setAttribute("aria-label", `View solution step ${step}`);
+
+        const cardHeader = document.createElement("span");
+        cardHeader.className = "state-card-header";
+
+        const stepLabel = document.createElement("span");
+        stepLabel.className = "state-step";
+        stepLabel.textContent = `Step ${step}`;
+
+        const moveLabel = document.createElement("span");
+        moveLabel.className = "state-move";
+        moveLabel.textContent = step === 0 ? "Start" : `Tile ${solution.movedTiles[step]}`;
+
+        cardHeader.append(stepLabel, moveLabel);
+
+        const miniBoard = document.createElement("span");
+        miniBoard.className = "mini-board";
+        miniBoard.setAttribute("aria-hidden", "true");
+
+        for (const value of state) {
+          const miniTile = document.createElement("span");
+          miniTile.className = value === "0" ? "mini-tile empty" : "mini-tile";
+          miniTile.textContent = value === "0" ? "" : value;
+          miniBoard.appendChild(miniTile);
+        }
+
+        card.append(cardHeader, miniBoard);
+        card.addEventListener("click", () => {
+          pausePlayback();
+          renderSolutionStep(step);
+        });
+        stateStrip.appendChild(card);
+      });
+
+      updateActiveStateCard(false);
+    }
+
+    function renderSolutionStep(newStep, animate = true) {
+      if (!solution) {
+        return;
+      }
+
+      const previousState = solution.path[currentStep];
+      currentStep = Math.max(0, Math.min(newStep, solution.path.length - 1));
+      const currentState = solution.path[currentStep];
+      renderBoard(currentState, animate ? previousState : null);
+
+      const moveCount = solution.path.length - 1;
+      const percentage = moveCount === 0 ? 100 : (currentStep / moveCount) * 100;
+      stepCount.textContent = `${currentStep} / ${moveCount}`;
+      progressFill.style.width = `${percentage}%`;
+      movedTile.textContent = currentStep === 0 ? "—" : `Tile ${solution.movedTiles[currentStep]}`;
+
+      if (currentStep === moveCount) {
+        visualizerTitle.textContent = "Goal reached";
+        statusBadge.textContent = "Complete";
+        statusBadge.classList.add("ready");
+        statusMessage.textContent = `The optimal solution is complete in ${moveCount} moves.`;
+        pausePlayback();
+      } else {
+        visualizerTitle.textContent = currentStep === 0 ? "Optimal path ready" : `Step ${currentStep} of ${moveCount}`;
+        statusBadge.textContent = currentStep === 0 ? "Solution ready" : "Playing solution";
+        statusBadge.classList.add("ready");
+        statusMessage.textContent = currentStep === 0
+          ? "Use Play or the step controls to inspect the solution."
+          : `Tile ${solution.movedTiles[currentStep]} moved into the empty position.`;
+      }
+
+      updateActiveStateCard(animate);
+      updateControls();
+    }
+
+    function updateControls() {
+      const hasSolution = Boolean(solution);
+      const lastStep = hasSolution ? solution.path.length - 1 : 0;
+      solveButton.disabled = isSearching;
+      playButton.disabled = isSearching || !hasSolution || lastStep === 0;
+      previousButton.disabled = isSearching || !hasSolution || currentStep === 0;
+      nextButton.disabled = isSearching || !hasSolution || currentStep === lastStep;
+      playButton.textContent = isPlaying ? "Pause" : "Play";
+      configurationInputs.forEach(input => {
+        input.disabled = isSearching;
+      });
+    }
+
+    function pausePlayback() {
+      if (playbackTimer !== null) {
+        window.clearTimeout(playbackTimer);
+        playbackTimer = null;
+      }
+
+      isPlaying = false;
+      updateControls();
+    }
+
+    function scheduleNextStep() {
+      if (!isPlaying || !solution) {
+        return;
+      }
+
+      const finalStep = solution.path.length - 1;
+      if (currentStep >= finalStep) {
+        pausePlayback();
+        return;
+      }
+
+      const playbackRate = Number(speedSlider.value);
+      playbackTimer = window.setTimeout(() => {
+        playbackTimer = null;
+        renderSolutionStep(currentStep + 1);
+        scheduleNextStep();
+      }, 900 / playbackRate);
+    }
+
+    function startPlayback() {
+      if (!solution) {
+        return;
+      }
+
+      if (currentStep >= solution.path.length - 1) {
+        renderSolutionStep(0, false);
+      }
+
+      isPlaying = true;
+      updateControls();
+      scheduleNextStep();
+    }
+
+    function clearSolutionStatistics() {
+      movedTile.textContent = "—";
+      totalMoves.textContent = "—";
+      statesExpanded.textContent = "—";
+      statesDiscovered.textContent = "—";
+      stepCount.textContent = "0 / —";
+      progressFill.style.width = "0%";
+      renderSolutionGallery();
+    }
+
+    function showConfigurationState(showErrors = true) {
+      const configuration = readConfiguration(showErrors);
+
+      if (configuration.error) {
+        inputNote.textContent = configuration.error;
+        inputNote.classList.toggle("error", showErrors);
+        statusMessage.textContent = configuration.error;
+        statusMessage.classList.toggle("error", showErrors);
+        visualizerTitle.textContent = "Check configuration";
+        statusBadge.textContent = "Needs attention";
+        statusBadge.classList.remove("ready");
+        return null;
+      }
+
+      inputNote.textContent = "Select Solve to calculate the shortest path.";
+      inputNote.classList.remove("error");
+      statusMessage.textContent = "The board is ready to solve.";
+      statusMessage.classList.remove("error");
+      visualizerTitle.textContent = "Ready to solve";
+      statusBadge.textContent = "Initial state";
+      statusBadge.classList.remove("ready");
+      renderBoard(configuration.state);
+      return configuration.state;
+    }
+
+    async function solveCurrentConfiguration() {
+      pausePlayback();
+      const initialState = showConfigurationState(true);
+
+      if (!initialState) {
+        return;
+      }
+
+      const version = searchVersion + 1;
+      searchVersion = version;
+      solution = null;
+      currentStep = 0;
+      isSearching = true;
+      solveButton.textContent = "Solving…";
+      visualizerTitle.textContent = "Searching for the goal";
+      statusBadge.textContent = "BFS running";
+      inputNote.textContent = "Exploring states in breadth-first order…";
+      statusMessage.textContent = "The initial state has been added to the queue.";
+      clearSolutionStatistics();
+      statesExpanded.textContent = "0";
+      statesDiscovered.textContent = "1";
+      updateControls();
+      await waitForPaint();
+
+      const result = await breadthFirstSearch(initialState, version);
+
+      if (version !== searchVersion || result === null) {
+        return;
+      }
+
+      isSearching = false;
+      solveButton.textContent = "Solve";
+      inputNote.textContent = "Change the configuration and select Solve to run again.";
+
+      if (!result.path) {
+        visualizerTitle.textContent = "No solution found";
+        statusBadge.textContent = "Search complete";
+        statusMessage.textContent = "The queue was exhausted without reaching the goal.";
+        statesExpanded.textContent = result.expanded.toLocaleString();
+        statesDiscovered.textContent = result.discovered.toLocaleString();
+        updateControls();
+        return;
+      }
+
+      solution = result;
+      totalMoves.textContent = (result.path.length - 1).toLocaleString();
+      statesExpanded.textContent = result.expanded.toLocaleString();
+      statesDiscovered.textContent = result.discovered.toLocaleString();
+      renderSolutionGallery();
+      renderSolutionStep(0, false);
+    }
+
+    solveButton.addEventListener("click", solveCurrentConfiguration);
+
+    customStartButton.addEventListener("click", () => {
+      if (isSearching) {
+        searchVersion += 1;
+        isSearching = false;
+        solution = null;
+        currentStep = 0;
+        solveButton.textContent = "Solve";
+        clearSolutionStatistics();
+        showConfigurationState(false);
+        updateControls();
+      }
+
+      pausePlayback();
+      inputNote.textContent = "Enter a new starting position, then select Solve.";
+      inputNote.classList.remove("error");
+      configurationGrid.classList.remove("attention");
+      void configurationGrid.offsetWidth;
+      configurationGrid.classList.add("attention");
+      configurationSection.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "center"
+      });
+      configurationInputs[0].focus({ preventScroll: true });
+      window.setTimeout(() => configurationGrid.classList.remove("attention"), 750);
+    });
+
+    playButton.addEventListener("click", () => {
+      if (isPlaying) {
+        pausePlayback();
+        statusBadge.textContent = "Paused";
+        statusMessage.textContent = `Paused at step ${currentStep}.`;
+      } else {
+        startPlayback();
+      }
+    });
+
+    previousButton.addEventListener("click", () => {
+      pausePlayback();
+      renderSolutionStep(currentStep - 1);
+    });
+
+    nextButton.addEventListener("click", () => {
+      pausePlayback();
+      renderSolutionStep(currentStep + 1);
+    });
+
+    resetButton.addEventListener("click", () => {
+      searchVersion += 1;
+      isSearching = false;
+      solveButton.textContent = "Solve";
+      pausePlayback();
+
+      if (solution) {
+        renderSolutionStep(0, false);
+      } else {
+        clearSolutionStatistics();
+        showConfigurationState(true);
+      }
+
+      updateControls();
+    });
+
+    speedSlider.addEventListener("input", () => {
+      speedValue.textContent = `${Number(speedSlider.value).toLocaleString()}×`;
+
+      if (isPlaying) {
+        window.clearTimeout(playbackTimer);
+        playbackTimer = null;
+        scheduleNextStep();
+      }
+    });
+
+    configurationInputs.forEach(input => {
+      input.addEventListener("focus", event => event.target.select());
+      input.addEventListener("input", () => {
+        searchVersion += 1;
+        isSearching = false;
+        solveButton.textContent = "Solve";
+        pausePlayback();
+        solution = null;
+        currentStep = 0;
+        clearSolutionStatistics();
+        showConfigurationState(false);
+        updateControls();
+      });
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.target instanceof HTMLInputElement || !solution || isSearching) {
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        pausePlayback();
+        renderSolutionStep(currentStep - 1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        pausePlayback();
+        renderSolutionStep(currentStep + 1);
+      } else if (event.key === " ") {
+        event.preventDefault();
+        isPlaying ? pausePlayback() : startPlayback();
+      }
+    });
+
+    function registerBrowserTool() {
+      const context = document.modelContext;
+
+      if (!context?.registerTool) {
+        return;
+      }
+
+      const registration = context.registerTool({
+        name: "solve_eight_puzzle",
+        title: "Solve 8-puzzle",
+        description: "Set a valid 8-puzzle configuration, calculate its optimal BFS solution, and show it in the visualizer.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            tiles: {
+              type: "array",
+              description: "Nine integers in row-major order. Use 0 for the empty tile.",
+              minItems: 9,
+              maxItems: 9,
+              items: { type: "integer", minimum: 0, maximum: 8 }
+            }
+          },
+          required: ["tiles"],
+          additionalProperties: false
+        },
+        annotations: {
+          readOnlyHint: false,
+          untrustedContentHint: false
+        },
+        async execute(input) {
+          const tiles = input?.tiles;
+
+          if (!Array.isArray(tiles) || tiles.length !== 9 || new Set(tiles).size !== 9 ||
+              !tiles.every(tile => Number.isInteger(tile) && tile >= 0 && tile <= 8)) {
+            throw new Error("Tiles must contain every integer from 0 through 8 exactly once.");
+          }
+
+          const state = tiles.join("");
+          if (countInversions(state) % 2 !== countInversions(GOAL_STATE) % 2) {
+            throw new Error("This configuration cannot reach the goal state.");
+          }
+
+          configurationInputs.forEach((configurationInput, index) => {
+            configurationInput.value = String(tiles[index]);
+          });
+          await solveCurrentConfiguration();
+
+          if (!solution) {
+            throw new Error("The puzzle could not be solved.");
+          }
+
+          return {
+            totalMoves: solution.path.length - 1,
+            statesExpanded: solution.expanded,
+            statesDiscovered: solution.discovered
+          };
+        }
+      });
+
+      Promise.resolve(registration).catch(error => {
+        console.warn("The browser tool could not be registered.", error);
+      });
+    }
+
+    renderBoard(DEFAULT_STATE);
+    updateControls();
+    registerBrowserTool();
+  </script>
+</body>
+</html>

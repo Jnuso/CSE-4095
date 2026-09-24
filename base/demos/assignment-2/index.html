@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Watch arithmetic expressions evaluated step by step using separate numbers and operators stacks.">
+  <title>Two-Stack Expression Evaluator</title>
+  <style>
+    :root { color-scheme: light; --ink:#182b49; --muted:#52627a; --line:#d5dfea; --blue:#244dc9; --green:#087350; --orange:#98420d; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#edf2f8; color:var(--ink); font:1rem/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    main { max-width:1200px; margin:32px auto; padding:0 24px 24px; }
+    h1 { margin:0 0 6px; font-size:clamp(1.65rem,4vw,2.25rem); line-height:1.2; letter-spacing:-.035em; }
+    h2 { margin:0 0 12px; font-size:1rem; }
+    header p { margin:0 0 24px; color:var(--muted); }
+    .controls,.panel { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; }
+    .controls { margin-bottom:20px; border-top:4px solid var(--blue); }
+    label { display:block; margin-bottom:8px; font-weight:600; }
+    input { width:100%; min-width:0; padding:12px 14px; color:var(--ink); font:1.25rem/1.5 ui-monospace,Consolas,monospace; border:1px solid #a9b9cc; border-radius:8px; background:#fbfcfe; }
+    input[aria-invalid="true"] { border-color:#b6272f; }
+    .buttons { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+    button { min-height:44px; padding:10px 15px; border:1px solid transparent; border-radius:8px; background:var(--blue); color:#fff; font:600 .9375rem/1.4 system-ui,sans-serif; cursor:pointer; }
+    button.secondary { background:#eef2fa; border-color:#d7dfed; color:var(--ink); }
+    button:hover:not(:disabled) { filter:brightness(.94); }
+    button:disabled { opacity:.48; cursor:not-allowed; }
+    :focus-visible { outline:3px solid #2860e4; outline-offset:3px; }
+    .grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:20px; align-items:start; }
+    .grid>* { min-width:0; }
+    .side { display:grid; gap:20px; }
+    .section-heading { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+    .step-count { color:var(--muted); font-size:.875rem; font-variant-numeric:tabular-nums; }
+    .expression { display:flex; gap:4px; flex-wrap:wrap; padding:12px; min-height:62px; background:#f3f6fb; border:1px solid var(--line); border-radius:8px; font:1.375rem/1.5 ui-monospace,Consolas,monospace; overflow-wrap:anywhere; }
+    .token { padding:3px 7px; border-radius:5px; max-width:100%; transition:background-color .18s,color .18s; }
+    .token.current { background:var(--blue); color:#fff; }
+    .token.done { color:#64748b; }
+    .status { margin-top:14px; padding:14px; min-height:76px; background:#eaf0ff; border-left:3px solid var(--blue); border-radius:0 8px 8px 0; overflow-wrap:anywhere; }
+    .status.error { background:#fff0f0; border-color:#b6272f; color:#982029; }
+    .stacks { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; margin-top:24px; }
+    .stack-heading { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:6px; margin-bottom:12px; }
+    .stack-heading h2 { margin:0; }
+    .stack-heading span,.stack-bottom { color:var(--muted); font-size:.8125rem; }
+    .stack { min-height:244px; position:relative; border:2px solid #b6c5d6; border-top:0; border-radius:0 0 8px 8px; padding:10px; display:flex; flex-direction:column-reverse; gap:8px; }
+    .stack:empty::before { content:"Empty"; color:#63758a; align-self:center; padding:10px; }
+    .item { padding:10px; border-radius:6px; text-align:center; font:600 1rem/1.5 ui-monospace,Consolas,monospace; overflow-wrap:anywhere; }
+    .num { background:#def5ea; color:var(--green); }
+    .op { background:#ffead9; color:var(--orange); }
+    .stack-bottom { margin-top:7px; text-align:center; }
+    .operation { background:#182b49; color:#f5f8ff; padding:16px; min-height:102px; border-radius:8px; font:1.0625rem/1.6 ui-monospace,Consolas,monospace; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .result { font-size:clamp(1.5rem,3vw,2.5rem); font-weight:700; line-height:1.3; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+    .rules { margin:0; padding-left:22px; }
+    .rules li { padding-left:4px; margin-bottom:9px; }
+    .rules li:last-child { margin-bottom:0; }
+    code { font-family:ui-monospace,Consolas,monospace; }
+    @media(max-width:800px) { main { margin-top:22px; padding:0 16px 20px; } .grid { grid-template-columns:minmax(0,1fr); } }
+    @media(max-width:480px) { .controls,.panel { padding:16px; } .stacks { grid-template-columns:minmax(0,1fr); } .stack { min-height:150px; } button { flex:1 1 auto; } }
+    @media(prefers-reduced-motion:reduce) { .token { transition:none; } }
+  </style>
+  <link rel="stylesheet" href="../../assets/demo-return.css">
+</head>
+<body>
+  <nav class="cse4095-return-bar" aria-label="Archive navigation"><a href="../../index.html">&#8592; Back to main page</a></nav>
+<main>
+  <header>
+    <h1>Two-Stack Expression Evaluator</h1>
+    <p>Supports +, -, *, /, parentheses, and unary + / -.</p>
+  </header>
+  <div class="controls">
+    <label for="expr">Arithmetic expression</label>
+    <input id="expr" value="-2 - 1" autocomplete="off" spellcheck="false" aria-describedby="status">
+    <div class="buttons">
+      <button id="load" type="button">Load Expression</button>
+      <button id="prev" type="button" class="secondary">← Previous</button>
+      <button id="next" type="button">Next Step →</button>
+      <button id="play" type="button" class="secondary" aria-pressed="false">▶ Play</button>
+      <button id="reset" type="button" class="secondary">Reset</button>
+    </div>
+  </div>
+  <div class="grid">
+    <section class="panel" aria-labelledby="expression-heading">
+      <div class="section-heading">
+        <h2 id="expression-heading">Expression</h2>
+        <span id="stepCount" class="step-count">Ready</span>
+      </div>
+      <div id="exprView" class="expression" aria-label="Expression tokens"></div>
+      <div id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></div>
+      <div class="stacks">
+        <section aria-labelledby="numbers-heading">
+          <div class="stack-heading"><h2 id="numbers-heading">Numbers Stack</h2><span>Top ↑</span></div>
+          <div id="numbers" class="stack" role="list" aria-label="Numbers stack, bottom to top"></div>
+          <div class="stack-bottom">Bottom</div>
+        </section>
+        <section aria-labelledby="operators-heading">
+          <div class="stack-heading"><h2 id="operators-heading">Operators Stack</h2><span>Top ↑</span></div>
+          <div id="operators" class="stack" role="list" aria-label="Operators stack, bottom to top"></div>
+          <div class="stack-bottom">Bottom</div>
+        </section>
+      </div>
+    </section>
+    <div class="side">
+      <section class="panel" aria-labelledby="operation-heading">
+        <h2 id="operation-heading">Current Operation</h2>
+        <div id="operation" class="operation">No operation yet.</div>
+      </section>
+      <section class="panel" aria-labelledby="result-heading">
+        <h2 id="result-heading">Result</h2>
+        <div id="result" class="result">Not finished</div>
+      </section>
+      <section class="panel" aria-labelledby="rules-heading">
+        <h2 id="rules-heading">Rules</h2>
+        <ol class="rules">
+          <li>Push numbers onto the numbers stack.</li>
+          <li>Push <code>(</code> onto the operators stack.</li>
+          <li>If <code>+</code> or <code>-</code> appears where an operand is expected, treat it as a unary operator.</li>
+          <li>Unary <code>+</code> and unary <code>-</code> have higher precedence than <code>*</code> and <code>/</code>.</li>
+          <li>Before pushing a binary operator, apply operators of higher or equal precedence.</li>
+          <li>For <code>)</code>, apply operators until the matching <code>(</code> is reached.</li>
+          <li>At the end, apply all remaining operators.</li>
+        </ol>
+      </section>
+    </div>
+  </div>
+</main>
+<script>
+"use strict";
+// Standalone companion to expression_evaluator.py. No server or libraries needed.
+const $ = id => document.getElementById(id);
+let tokens = [], states = [], index = 0, timer = null, playing = false;
+const playbackDelay = 700;
+
+function precedence(op) {
+  if (op === "u+" || op === "u-") return 3;
+  if (op === "*" || op === "/") return 2;
+  if (op === "+" || op === "-") return 1;
+  return 0;
+}
+function isUnary(op) { return op === "u+" || op === "u-"; }
+function shown(op) { return op === "u-" ? "unary −" : op === "u+" ? "unary +" : op; }
+function finite(value) {
+  if (!Number.isFinite(value)) throw new Error("Number or result is too large to represent.");
+  return value;
+}
+function format(value) {
+  if (Number.isInteger(value)) return String(value);
+  // Significant digits keep tiny, nonzero values visible while hiding float noise.
+  return String(Number(value.toPrecision(12)));
+}
+
+function tokenize(expression) {
+  const result = [];
+  let i = 0, expectOperand = true, depth = 0;
+  while (i < expression.length) {
+    const ch = expression[i];
+    if (/\s/.test(ch)) { i++; continue; }
+    if (/[0-9.]/.test(ch)) {
+      if (!expectOperand) throw new Error("Missing operator before the number at position " + (i + 1) + ".");
+      const start = i;
+      while (i < expression.length && /[0-9.]/.test(expression[i])) i++;
+      const literal = expression.slice(start, i);
+      if (!/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/.test(literal)) {
+        throw new Error("Invalid number: " + literal);
+      }
+      finite(Number(literal));
+      result.push({ type:"number", value:literal, display:literal });
+      expectOperand = false;
+    } else if (ch === "(") {
+      if (!expectOperand) throw new Error("Missing operator before '(' at position " + (i + 1) + ".");
+      result.push({ type:"paren", value:ch, display:ch });
+      depth++; i++;
+    } else if (ch === ")") {
+      if (depth === 0) throw new Error("Missing left parenthesis before ')' at position " + (i + 1) + ".");
+      if (expectOperand) throw new Error("Missing operand or empty parentheses before ')' at position " + (i + 1) + ".");
+      result.push({ type:"paren", value:ch, display:ch });
+      depth--; i++; expectOperand = false;
+    } else if ("+-*/".includes(ch)) {
+      if (expectOperand && (ch === "*" || ch === "/")) {
+        throw new Error("Missing operand before '" + ch + "' at position " + (i + 1) + ".");
+      }
+      // A sign is unary exactly where a number or parenthesized operand can start.
+      result.push({ type:"operator", value:expectOperand ? "u" + ch : ch, display:ch });
+      expectOperand = true; i++;
+    } else {
+      throw new Error("Unsupported character '" + ch + "' at position " + (i + 1) + ".");
+    }
+  }
+  if (!result.length) throw new Error("Please enter an expression.");
+  if (depth) throw new Error("Missing right parenthesis ')'.");
+  if (expectOperand) throw new Error("The expression ends with a missing operand.");
+  return result;
+}
+
+function binary(left, op, right) {
+  if (op === "+") return finite(left + right);
+  if (op === "-") return finite(left - right);
+  if (op === "*") return finite(left * right);
+  if (op === "/") {
+    if (right === 0) throw new Error("Division by zero.");
+    return finite(left / right);
+  }
+  throw new Error("Unknown operator: " + op);
+}
+
+function buildStates(inputTokens) {
+  const numbers = [], operators = [], snapshots = [];
+  function snap(tokenIndex, message, operation, finished = false) {
+    // Copies make Previous/Next reversible without recalculating or mutating history.
+    snapshots.push({ tokenIndex, numbers:[...numbers], operators:[...operators],
+      message, operation, finished, result:finished ? numbers[0] : null });
+  }
+  function applyTop(tokenIndex, reason) {
+    if (!operators.length) throw new Error("Missing operator.");
+    const op = operators.pop();
+    const required = isUnary(op) ? 1 : 2;
+    if (numbers.length < required) throw new Error("Missing operand for " + shown(op) + ".");
+    snap(tokenIndex, reason + " Pop " + shown(op) + " from the operators stack.", "pop " + shown(op));
+    // The right operand is on top. Reversing these pops breaks subtraction/division.
+    const right = numbers.pop();
+    if (isUnary(op)) {
+      snap(tokenIndex, "Pop one value for " + shown(op) + ".", "operand = " + format(right));
+      const value = op === "u-" ? -right : right;
+      numbers.push(value);
+      snap(tokenIndex, "Apply " + shown(op) + " to " + format(right) + "; push the result.",
+        (op === "u-" ? "-" : "+") + "(" + format(right) + ") = " + format(value));
+      return;
+    }
+    snap(tokenIndex, "Pop the right operand first.", "right = " + format(right));
+    const left = numbers.pop();
+    snap(tokenIndex, "Pop the left operand next.", "left = " + format(left) + "\nright = " + format(right));
+    const value = binary(left, op, right);
+    numbers.push(value);
+    snap(tokenIndex, "Apply " + format(left) + " " + op + " " + format(right) + "; push the result.",
+      format(left) + " " + op + " " + format(right) + " = " + format(value));
+  }
+  snap(-1, "Ready to scan from left to right.", "No operation yet.");
+  for (let i = 0; i < inputTokens.length; i++) {
+    const token = inputTokens[i];
+    if (token.type === "number") {
+      numbers.push(Number(token.value));
+      snap(i, "Read " + token.display + ": push it onto the numbers stack.", "push " + token.display);
+    } else if (token.value === "(") {
+      operators.push("(");
+      snap(i, "Read '(': push it onto the operators stack.", "push (");
+    } else if (token.value === ")") {
+      snap(i, "Read ')': apply operators until '('.", "process )");
+      while (operators.length && operators[operators.length - 1] !== "(") applyTop(i, "Closing parenthesis:");
+      if (!operators.length) throw new Error("Missing left parenthesis.");
+      operators.pop();
+      snap(i, "Pop the matching '('.", "pop (");
+      while (operators.length && isUnary(operators[operators.length - 1])) {
+        applyTop(i, "The parenthesized value is complete.");
+      }
+    } else if (isUnary(token.value)) {
+      // Do not reduce a preceding unary sign yet: chains apply right to left.
+      operators.push(token.value);
+      snap(i, "Read " + token.display + " as a unary operator because an operand is expected.", "push " + shown(token.value));
+    } else {
+      snap(i, "Read binary operator " + token.display + ": compare precedence.", "consider " + token.display);
+      while (operators.length && operators[operators.length - 1] !== "(" &&
+        precedence(operators[operators.length - 1]) >= precedence(token.value)) {
+        applyTop(i, shown(operators[operators.length - 1]) + " has higher or equal precedence.");
+      }
+      operators.push(token.value);
+      snap(i, "Push " + token.display + " onto the operators stack.", "push " + token.display);
+    }
+  }
+  snap(inputTokens.length, "End of input: apply all remaining operators.", "end of input");
+  while (operators.length) {
+    if (operators[operators.length - 1] === "(") throw new Error("Missing right parenthesis.");
+    applyTop(inputTokens.length, "End of input:");
+  }
+  if (numbers.length !== 1) throw new Error("Invalid expression.");
+  snap(inputTokens.length, "Evaluation complete.", "result = " + format(numbers[0]), true);
+  return snapshots;
+}
+
+function renderTokens() {
+  $("exprView").replaceChildren();
+  tokens.forEach((token, i) => {
+    const span = document.createElement("span");
+    span.className = "token";
+    span.dataset.index = i;
+    span.textContent = token.display;
+    $("exprView").appendChild(span);
+  });
+}
+
+function renderStack(element, values, kind, animate) {
+  const motion = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  element.querySelectorAll(".stack-ghost").forEach(node => node.remove());
+  const oldNodes = Array.from(element.children);
+  const positions = new Map(oldNodes.map(node => [node, node.getBoundingClientRect().top]));
+  const labels = values.map(value => kind === "num" ? format(value) : shown(value));
+  let common = 0;
+  while (common < oldNodes.length && common < labels.length && oldNodes[common].textContent === labels[common]) common++;
+  // Keep unchanged entries in place; animate only values that enter, leave, or move.
+  oldNodes.slice(common).forEach(node => {
+    if (motion && typeof node.animate === "function") {
+      const rect = node.getBoundingClientRect(), box = element.getBoundingClientRect();
+      const ghost = node.cloneNode(true);
+      ghost.classList.add("stack-ghost");
+      ghost.setAttribute("aria-hidden", "true");
+      Object.assign(ghost.style, { position:"absolute", top:(rect.top - box.top - element.clientTop) + "px",
+        left:(rect.left - box.left - element.clientLeft) + "px", width:rect.width + "px", pointerEvents:"none", zIndex:"1" });
+      element.appendChild(ghost);
+      const effect = ghost.animate([{ transform:"translateY(0)", opacity:1 }, { transform:"translateY(-18px)", opacity:0 }], { duration:220, easing:"ease-out" });
+      effect.onfinish = () => ghost.remove();
+    }
+    node.remove();
+  });
+  for (let i = common; i < labels.length; i++) {
+    const node = document.createElement("div");
+    node.className = "item " + kind;
+    node.setAttribute("role", "listitem");
+    node.textContent = labels[i];
+    element.appendChild(node);
+    if (motion && typeof node.animate === "function") {
+      node.animate([{ transform:"translateY(-18px)", opacity:0 }, { transform:"translateY(0)", opacity:1 }], { duration:260, easing:"ease-out" });
+    }
+  }
+  oldNodes.slice(0, common).forEach(node => {
+    const delta = positions.get(node) - node.getBoundingClientRect().top;
+    if (motion && delta && typeof node.animate === "function") {
+      node.animate([{ transform:"translateY(" + delta + "px)" }, { transform:"translateY(0)" }], { duration:260, easing:"ease-out" });
+    }
+  });
+}
+
+function updateControls() {
+  const available = states.length > 0;
+  $("prev").disabled = !available || index === 0;
+  $("next").disabled = !available || index === states.length - 1;
+  $("reset").disabled = !available;
+  $("play").disabled = !available || index === states.length - 1;
+  $("play").textContent = playing ? "⏸ Pause" : "▶ Play";
+  $("play").setAttribute("aria-pressed", String(playing));
+}
+function render(animate = true) {
+  const state = states[index];
+  if (!state) return;
+  renderStack($("numbers"), state.numbers, "num", animate);
+  renderStack($("operators"), state.operators, "op", animate);
+  $("exprView").querySelectorAll(".token").forEach(node => {
+    const position = Number(node.dataset.index);
+    const current = position === state.tokenIndex;
+    node.classList.toggle("current", current);
+    node.classList.toggle("done", position < state.tokenIndex);
+    if (current) node.setAttribute("aria-current", "step");
+    else node.removeAttribute("aria-current");
+  });
+  $("status").textContent = state.message;
+  $("operation").textContent = state.operation;
+  $("result").textContent = state.finished ? format(state.result) : "Not finished";
+  $("stepCount").textContent = "Step " + index + " of " + (states.length - 1);
+  updateControls();
+}
+function stop() {
+  if (timer !== null) clearTimeout(timer);
+  timer = null; playing = false;
+  updateControls();
+}
+function load() {
+  stop();
+  // Clear previous history first so an invalid load cannot revive stale states.
+  tokens = []; states = []; index = 0;
+  $("numbers").replaceChildren();
+  $("operators").replaceChildren();
+  $("status").classList.remove("error");
+  $("expr").removeAttribute("aria-invalid");
+  try {
+    const nextTokens = tokenize($("expr").value);
+    const nextStates = buildStates(nextTokens);
+    tokens = nextTokens; states = nextStates;
+    renderTokens(); render(false);
+  } catch (error) {
+    $("exprView").textContent = $("expr").value;
+    $("status").classList.add("error");
+    $("status").textContent = "Error: " + error.message;
+    $("expr").setAttribute("aria-invalid", "true");
+    $("operation").textContent = "Cannot evaluate expression.";
+    $("result").textContent = "Invalid expression";
+    $("stepCount").textContent = "No steps";
+    updateControls();
+  }
+}
+function advance() {
+  timer = null;
+  if (!playing || index >= states.length - 1) { stop(); return; }
+  index++;
+  if (index === states.length - 1) playing = false;
+  render();
+  if (playing) timer = setTimeout(advance, playbackDelay);
+}
+$("load").addEventListener("click", load);
+$("prev").addEventListener("click", () => { stop(); if (index > 0) { index--; render(); } });
+$("next").addEventListener("click", () => { stop(); if (index < states.length - 1) { index++; render(); } });
+$("reset").addEventListener("click", () => { stop(); index = 0; render(false); });
+$("play").addEventListener("click", () => {
+  if (playing) { stop(); return; }
+  if (!states.length || index >= states.length - 1) return;
+  playing = true; advance();
+});
+$("expr").addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); load(); } });
+load();
+</script>
+</body>
+</html>
