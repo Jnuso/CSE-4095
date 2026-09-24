@@ -1,18 +1,18 @@
-Chopsticks AI Web Game
+# Chopsticks AI Web Game
 
-Overview
+## Overview
 
 This is a web version of the Chopsticks game from the Python starter code. You can play against the computer as Player A or Player B, or you can watch the computer play against itself. It's just HTML, CSS, and JavaScript, so there's no server or database.
 
 The computer doesn't pick random moves. It uses minimax with a dynamic programming (DP) table that gets built when the page loads. Player A tries to get the highest score and Player B tries to get the lowest score. There's also an AI Analysis panel that shows why the computer picked a move.
 
-How to Run
+## Running the Web Game
 
 Open the project folder and double-click index.html. It opens in your browser and works right away. You don't need a server.
 
 I didn't use JavaScript modules (import/export) because browsers block those when you open a file directly. Instead index.html loads game.js, ai.js, and app.js in that order.
 
-Game Rules
+## Game Rules
 
 I followed the starter code for the rules.
 
@@ -27,7 +27,7 @@ I followed the starter code for the rules.
 
 The 20 turn limit is from the assignment (the starter code sets moves = 10 and then uses depth = 2 * moves).
 
-State Representation
+## State Representation
 
 A state looks like this:
 
@@ -37,7 +37,7 @@ For example the starting state is ((1, 1), (1, 1), 0).
 
 The level is how many turns have been played. If the level is even it's A's turn and if it's odd it's B's turn. The level has to be part of the state because the same hands mean something different depending on how many turns are left. For example, a position with 18 turns left is different from the same position with 1 turn left.
 
-overflowSum() and nextMoves()
+## overflowSum() and nextMoves()
 
 overflowSum(a, b) adds two numbers, but returns 0 if the total is 5 or more.
 
@@ -53,7 +53,7 @@ At the start there are 4 legal moves: 2 attacks and 2 splits.
 
 The website uses legalMoves() for everything. It's used for which hands you can click, for the list of splits, and for the computer's moves. The UI never figures out the rules by itself, so the AI and the UI can't disagree.
 
-Minimax
+## Minimax Values
 
 Every state gets a score from Player A's point of view:
 
@@ -63,7 +63,7 @@ Every state gets a score from Player A's point of view:
 
 On A's turn the computer picks the move with the highest score, so A is MAX. On B's turn it picks the move with the lowest score, so B is MIN. The score of a state is what you get if both players always pick their best move from there.
 
-The Dynamic Programming Table
+## Bottom-Up Dynamic Programming
 
 bestMoveDP() in ai.js builds the whole table one time when the page loads. Each row has the state, its score, and the best next state.
 
@@ -79,7 +79,7 @@ Dynamic programming helps because lots of different move orders end up in the sa
 
 At the start the score is 0, so neither player can force a win in 20 turns if both play perfectly.
 
-Interface
+## Interface
 
 1. Click one of your hands, then click one of the other player's hands to attack. The hand does a little tap animation.
 2. The Split button shows the legal splits you can pick from.
@@ -90,7 +90,7 @@ Interface
 7. After the game is over you can go back through the moves in the move tree.
 8. DP Statistics shows the table size, how long it took to build, the current level, turns left, and how many legal moves there are.
 
-Software Organization
+## Software Organization
 
 The project folder is called chopsticks and has these files:
 
@@ -105,7 +105,7 @@ The project folder is called chopsticks and has these files:
 
 I kept the rules and the AI in different files so the display code can't change them by accident. game.js sets up ChopsticksGame, ai.js sets up ChopsticksAI, and app.js uses both.
 
-Testing
+## Testing
 
 I tested it a few different ways. The test files are in my Git repo but not in this submission folder.
 
@@ -115,14 +115,22 @@ I tested it a few different ways. The test files are in my Git repo but not in t
 4. Illegal moves: The tests check that clicking something illegal doesn't change the game.
 5. Opening the file directly: I also checked that the page works when you double-click index.html, with no console errors.
 
-Known Limitations
+## Security and Input Handling
+
+The game does not accept free-form commands, connect to a server, or send information over the internet. Human moves are checked against legalMoves() before the state changes. Disabled and illegal hand selections do nothing, malformed states and unsupported search depths are rejected, and text shown in the page is added as text instead of executable HTML.
+
+## Known Limitations
 
 1. A score of 0 only means nobody can force a win in 20 turns. It doesn't mean the game is a draw forever. When we tried a version with no turn limit, Player B could force a win. If the limit is raised to 26 turns the opening score changes from 0 to -1 (24 turns is still 0). I kept the limit at 20 because the assignment says to.
 2. When two moves have the same score, the computer picks the first one in the list. It doesn't try to win faster.
 3. The game isn't saved if you close or refresh the page.
 4. It only works on one computer. There's no online multiplayer.
 
-Possible Extensions
+## Implemented Extensions
+
+After the required game was working, I added the AI vs AI mode, move history, tap animation, DP Statistics, and the interactive decision map. After a completed game, the decision map can also move backward and forward through the route that was played without changing the final board or move history.
+
+## Possible Extensions
 
 1. Let the user pick a different search depth (20 would stay as the default).
 2. Compare the DP way with a plain recursive search and see how much faster DP is.
@@ -130,7 +138,7 @@ Possible Extensions
 4. Add sound effects with an on/off button.
 5. Put it online with a free hosting service.
 
-Reflection Questions
+## Reflection
 
 Question 1: Why does Player A maximize while Player B minimizes?
 
