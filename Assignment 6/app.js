@@ -1,16 +1,21 @@
-import {
+'use strict';
+
+// game.js and ai.js are classic scripts loaded before this file (see index.html).
+// They publish ChopsticksGame and ChopsticksAI, so no ES-module imports are
+// needed and the page also works when index.html is opened directly (file://).
+const {
   DEFAULT_DEPTH,
   INITIAL_STATE,
   getResult,
   legalMoves,
   stateKey,
-} from './game.js';
-import {
+} = window.ChopsticksGame;
+const {
   bestMove,
   bestMoveDP,
   evaluateMoves,
   outcomeLabel,
-} from './ai.js';
+} = window.ChopsticksAI;
 
 const byId = (id) => {
   const element = document.getElementById(id);

@@ -18,18 +18,23 @@ tests remain in the project as a reference implementation and parity check.
 
 ## Running the Web Game
 
-From the `Assignment 6` directory, start a static web server:
+Open the project folder and double-click `index.html` (or right-click it and
+choose *Open with* your browser). No server, installation, database, backend,
+account, or internet connection is needed.
+
+This works because `game.js`, `ai.js`, and `app.js` are ordinary (non-module)
+scripts that `index.html` loads in dependency order. Browsers refuse to load
+ES modules from a `file:` URL, so the project deliberately avoids `import` and
+`export` in the files the page loads.
+
+If you prefer to serve the folder anyway, this also works:
 
 ```powershell
 python -m http.server 8000
 ```
 
-Then open [http://localhost:8000/](http://localhost:8000/) in a modern browser.
-Stop the server with `Ctrl+C` when finished.
-
-Opening `index.html` directly with a `file:` URL may prevent JavaScript modules
-from loading. The local server avoids that browser restriction. The project
-does not require a database, backend, account, or internet service.
+Then open [http://localhost:8000/](http://localhost:8000/). Stop the server with
+`Ctrl+C` when finished.
 
 The supplemental Python command-line version can be run with:
 
@@ -55,7 +60,10 @@ The starter program is authoritative for this project. Its rules are:
    right values. Redistribution may revive a `0` hand or leave a hand at `0`.
 7. A player loses immediately when both of their hands are `0`.
 8. The assignment game has a 20-move search horizon. If level 20 is reached
-   and neither player has been eliminated, the game ends in a tie.
+   and neither player has been eliminated, the game ends in a tie. Here a
+   "move" is one player's turn, so 20 moves means 10 turns each. This is the
+   same limit as the starter program, which sets `moves = 10` per player and
+   uses `depth = 2 * moves = 20`.
 
 The knockout check takes priority at level 20. Therefore, a player who loses
 their second hand on move 20 loses; the result is not a tie.
@@ -207,17 +215,18 @@ Statistics continue to describe the completed game.
 ## Software Organization
 
 ```text
-Assignment 6/
+chopsticks/
 |-- index.html                 # Single-page interface and semantic structure
 |-- favicon.svg                # Crossed-chopsticks browser-tab icon
 |-- style.css                  # Responsive design and animations
-|-- game.js                    # State validation, rules, and move generation
-|-- ai.js                      # Depth-20 DP, minimax, and analysis helpers
+|-- game.js                    # State validation, rules, and move generation (classic script)
+|-- ai.js                      # Depth-20 DP, minimax, and analysis helpers (classic script)
 |-- app.js                     # Rendering, controls, and turn coordination
 |-- README.md                  # Setup, design, testing, and reflections
 |-- VIBE_LOG.md                # Record of meaningful AI-assisted work
 |-- chopsticks.py              # Supplemental Python reference and CLI
 |-- test_web_game.mjs          # JavaScript engine and interface regressions
+|-- test_file_protocol.py      # Opens index.html via file:// and plays real games
 |-- test_chopsticks.py         # Dependency-free Python tests
 |-- test_chopsticks_pytest.py  # Extended Python and safety tests
 |-- pytest.ini                 # Pytest discovery configuration
@@ -227,13 +236,15 @@ Assignment 6/
 ```
 
 Keeping `game.js` and `ai.js` separate prevents presentation code from
-silently changing the rules or algorithm. `app.js` consumes those modules and
-does not calculate its own legal moves. The additional Python and Markdown
+silently changing the rules or algorithm. `game.js` publishes a `ChopsticksGame`
+object, `ai.js` builds on it and publishes `ChopsticksAI`, and `app.js` consumes
+both without calculating its own legal moves. The same files also load under
+Node with `require()`, which is how the JavaScript tests import them. The additional Python and Markdown
 files are supporting material; the required web application remains static.
 
 ## Testing
 
-Run all Python tests from `Assignment 6` with:
+Run all Python tests from the project folder with:
 
 ```powershell
 python -m pytest -q
@@ -248,7 +259,18 @@ python -m unittest -v test_chopsticks.py
 Run the JavaScript tests with a current Node.js installation:
 
 ```powershell
-node --test-isolation=none --test test_web_game.mjs
+node --test test_web_game.mjs
+```
+
+Run the file-URL smoke test, which opens `index.html` straight from disk in
+headless Chromium (as a double-click would), plays as Player A and Player B,
+runs a complete AI-vs-AI game to the level-20 tie, restarts, and fails on any
+console error:
+
+```powershell
+python -m pip install pytest playwright
+python -m playwright install chromium
+python -m pytest -q test_file_protocol.py
 ```
 
 Run the optional real-browser Selenium tests with Chrome and Selenium 4:

@@ -2,7 +2,7 @@
  * Assignment-compliance tests for the browser implementation.
  *
  * Run from this folder with:
- *   node --test-isolation=none --test test_web_game.mjs
+ *   node --test test_web_game.mjs
  *
  * Golden positions were generated from chopsticks.py, the completed supplied
  * Python reference. An independent move oracle checks every ordered position.
@@ -12,7 +12,12 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
-import {
+import { createRequire } from 'node:module';
+
+// game.js and ai.js are classic scripts (not ES modules) so index.html works
+// when double-clicked; in Node they are loaded through CommonJS require().
+const require = createRequire(import.meta.url);
+const {
   DEFAULT_DEPTH,
   INITIAL_STATE,
   assertDepth,
@@ -22,8 +27,8 @@ import {
   nextMoves,
   overflowSum,
   stateKey,
-} from './game.js';
-import { bestMove, bestMoveDP, evaluateMoves, outcomeLabel } from './ai.js';
+} = require('./game.js');
+const { bestMove, bestMoveDP, evaluateMoves, outcomeLabel } = require('./ai.js');
 
 const WEB_HTML = readFileSync(new URL('./index.html', import.meta.url), 'utf8');
 const WEB_APP = readFileSync(new URL('./app.js', import.meta.url), 'utf8');
@@ -132,9 +137,21 @@ test('submission contains the assignment web-file structure', () => {
     assert(existsSync(new URL(`./${name}`, import.meta.url)), `Missing ${name}`);
   }
   assert.match(WEB_HTML, /<link\b[^>]*href=["']\.\/style\.css["']/i);
-  assert.match(WEB_HTML, /<script\b[^>]*type=["']module["'][^>]*src=["']\.\/app\.js["']/i);
-  assert.match(WEB_APP, /from\s+["']\.\/game\.js["']/);
-  assert.match(WEB_APP, /from\s+["']\.\/ai\.js["']/);
+  // Classic deferred scripts (no type="module") so the page works from file://,
+  // loaded in dependency order: game.js -> ai.js -> app.js.
+  assert.doesNotMatch(WEB_HTML, /<script\b[^>]*type=["']module["']/i,
+    'ES-module scripts are blocked when index.html is opened from file://');
+  const scriptSrcs = [...WEB_HTML.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)]
+    .map((match) => match[1]);
+  assert.deepEqual(scriptSrcs, ['./game.js', './ai.js', './app.js']);
+  for (const tag of WEB_HTML.matchAll(/<script\b[^>]*\bsrc=[^>]*>/gi)) {
+    assert.match(tag[0], /\bdefer\b/, 'app.js reads the DOM at load time, so scripts must be deferred');
+  }
+  assert.match(WEB_APP, /window\.ChopsticksGame/);
+  assert.match(WEB_APP, /window\.ChopsticksAI/);
+  assert.doesNotMatch(WEB_APP, /^\s*(?:import|export)\s/m, 'app.js must be a classic script');
+  assert.doesNotMatch(WEB_GAME, /^\s*export\s/m, 'game.js must be a classic script');
+  assert.doesNotMatch(WEB_AI, /^\s*(?:import|export)\s/m, 'ai.js must be a classic script');
 });
 
 test('the page uses the local Chopsticks artwork as its browser icon', () => {
@@ -836,9 +853,10 @@ test('rule and AI modules stay deterministic, local, and independent of the DOM'
   }
   assert.doesNotMatch(WEB_GAME, /^\s*import\s/m,
     'The foundational rule engine should not depend on higher-level modules');
-  assert.match(WEB_AI, /from\s+["']\.\/game\.js["']/);
-  assert.match(WEB_APP, /from\s+["']\.\/game\.js["']/);
-  assert.match(WEB_APP, /from\s+["']\.\/ai\.js["']/);
+  assert.match(WEB_AI, /require\(['"]\.\/game\.js['"]\)/);
+  assert.match(WEB_AI, /root\.ChopsticksGame/);
+  assert.match(WEB_APP, /window\.ChopsticksGame/);
+  assert.match(WEB_APP, /window\.ChopsticksAI/);
   assert.doesNotMatch(WEB_HTML, /<(?:script|link)\b[^>]*(?:src|href)=["']https?:/i,
     'The submitted app should not require third-party runtime resources');
 });
