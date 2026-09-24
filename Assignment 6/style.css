@@ -222,13 +222,26 @@ h1 em { font-style: normal; background: linear-gradient(110deg, #4c65d4 10%, #69
 .tree-swatch { width: 8px; height: 8px; border-radius: 3px; }
 .swatch-played { background: var(--teal); }
 .swatch-current { background: var(--accent); box-shadow: 0 0 0 2px rgba(82,103,219,.15); }
+.swatch-reviewed { background: var(--panel-solid); border: 2px solid var(--teal); box-shadow: 0 0 0 2px rgba(11,155,145,.12); }
 .swatch-best { background: var(--panel-solid); border: 2px solid var(--accent); }
 .tree-route { min-width: 0; margin-bottom: 17px; }
 .tree-route h4 { margin: 0 0 8px; color: var(--soft); font-size: 10px; font-weight: 740; letter-spacing: .08em; text-transform: uppercase; }
+.tree-review-controls { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px; padding: 10px 11px; border: 1px solid #b8e1dc; border-radius: 11px; background: var(--teal-pale); }
+.tree-review-controls[hidden], .tree-review-note[hidden] { display: none; }
+.tree-review-copy { display: grid; gap: 2px; min-width: 0; }
+.tree-review-copy span { color: #08796f; font-size: 9px; font-weight: 760; letter-spacing: .08em; text-transform: uppercase; }
+.tree-review-copy strong { font-size: 11px; line-height: 1.4; }
+.tree-review-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.tree-review-actions .button { min-height: 31px; padding: 0 9px; border-color: rgba(8,121,111,.25); font-size: 10px; }
+.tree-review-note { margin: 0 0 8px; color: var(--muted); font-size: 10px; font-weight: 650; line-height: 1.5; }
 .tree-played-path { display: flex; align-items: center; gap: 7px; min-height: 48px; padding: 8px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-gutter: stable; border: 1px solid var(--line); border-radius: 11px; background: rgba(245,247,251,.68); }
-.tree-route-node { flex: 0 0 auto; max-width: 190px; padding: 7px 9px; border-radius: 8px; background: var(--panel-solid); color: var(--muted); font-size: 10px; font-weight: 650; line-height: 1.4; }
+.tree-route-node { flex: 0 0 auto; max-width: 190px; padding: 7px 9px; border: 0; border-radius: 8px; background: var(--panel-solid); color: var(--muted); font-family: inherit; font-size: 10px; font-weight: 650; line-height: 1.4; text-align: left; }
+button.tree-route-node { cursor: pointer; transition: transform .16s, box-shadow .16s; }
+button.tree-route-node:hover { transform: translateY(-1px); }
+button.tree-route-node:focus-visible { outline: 3px solid rgba(11,155,145,.28); outline-offset: 2px; }
 .tree-route-node.is-played { background: var(--teal-pale); color: #08796f; }
 .tree-route-node.is-current { background: var(--accent); color: #fff; }
+.tree-route-node.is-reviewed { box-shadow: 0 0 0 3px var(--panel-solid), 0 0 0 6px var(--teal); }
 .tree-route-arrow { flex: 0 0 auto; color: var(--soft); font-size: 13px; }
 .move-tree { min-width: 0; overflow: hidden; padding: 17px; border: 1px solid var(--line); border-radius: 14px; background: rgba(249,251,254,.7); }
 .tree-level-label { margin: 0 0 8px; color: var(--soft); font-size: 10px; font-weight: 740; letter-spacing: .08em; text-align: center; text-transform: uppercase; }
@@ -244,9 +257,11 @@ h1 em { font-style: normal; background: linear-gradient(110deg, #4c65d4 10%, #69
 .tree-node { display: grid; align-content: start; gap: 6px; width: 100%; min-height: 154px; padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel-solid); color: var(--text); text-align: left; transition: transform .16s, border-color .16s, box-shadow .16s, background .16s; }
 button.tree-node:hover { transform: translateY(-2px); border-color: #aeb9d4; box-shadow: 0 7px 16px rgba(38,58,104,.08); }
 .tree-node.is-best { border-color: #9ba9ef; background: #f6f7ff; }
+.tree-node.is-played-choice { border-color: var(--teal); background: var(--teal-pale); }
 .tree-node.is-previewed { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(11,155,145,.14); }
 .tree-node-kicker { color: var(--soft); font-size: 9px; font-weight: 760; letter-spacing: .09em; text-transform: uppercase; }
 .tree-node.is-best .tree-node-kicker { color: var(--accent-dark); }
+.tree-node.is-played-choice .tree-node-kicker { color: #08796f; }
 .tree-node strong { font-size: 11px; line-height: 1.45; }
 .tree-node-state { color: var(--muted); font-size: 10px; line-height: 1.45; }
 .tree-node-value { align-self: end; margin-top: auto; padding-top: 7px; border-top: 1px solid var(--line); color: var(--accent-dark); font-size: 10px; font-weight: 730; line-height: 1.4; }
@@ -407,6 +422,9 @@ button.tree-node:hover { transform: translateY(-2px); border-color: #aeb9d4; box
   .move-tree { padding: 13px 10px; }
   .tree-branch { flex-basis: min(76vw, 205px); }
   .tree-route-node { max-width: 165px; }
+  .tree-review-controls { align-items: stretch; flex-direction: column; }
+  .tree-review-actions { justify-content: stretch; }
+  .tree-review-actions .button { flex: 1; }
   .dp-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dp-stats-panel { padding: 20px 17px; }
   .rules-note { grid-column: auto; }
@@ -466,9 +484,12 @@ button.tree-node:hover { transform: translateY(-2px); border-color: #aeb9d4; box
   .tree-played-path, .move-tree { background: #192538; }
   .tree-route-node { background: #202e43; }
   .tree-route-node.is-played { background: #204745; color: #a1e8df; }
+  .tree-review-controls { border-color: #366663; background: #203c3e; }
+  .tree-review-copy span, .tree-node.is-played-choice .tree-node-kicker { color: #9de7de; }
   .tree-current-node { border-color: #6979c7; background: #2b3455; }
   .tree-node { background: #202e43; }
   .tree-node.is-best { border-color: #6979c7; background: #2b3455; }
+  .tree-node.is-played-choice { border-color: #48c9bc; background: #203c3e; }
   .tree-impact { border-color: #366663; background: #203c3e; }
   .tree-impact > strong { color: #9de7de; }
   .extension-pill { border-color: #366663; background: #203c3e; color: #9de7de; }

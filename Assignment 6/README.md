@@ -181,6 +181,8 @@ The interface provides:
   calculation details
 - An interactive move tree showing the route already played, the current node,
   every legal next branch, its effect on the hands, and the opponent's replies
+- Completed-game review controls for moving backward and forward through the
+  played route without changing the final hands, winner, or history
 - A live DP Statistics panel showing table size, build time, current level,
   remaining moves, legal branches, and the active MAX/MIN role
 
@@ -196,6 +198,11 @@ the current state, every immediate legal move, and one reply layer for the
 selected branch. Selecting a branch is a preview only and does not change the
 game. This makes alternatives visible without attempting to render the
 exponentially larger collection of every path through all 20 levels at once.
+After a game ends, each node in the played route becomes selectable and
+Previous, Next, and Return to final controls appear. The map then evaluates the
+selected historical position and marks the branch that was actually played.
+This is a review cursor only: the main board, final result, history, and DP
+Statistics continue to describe the completed game.
 
 ## Software Organization
 

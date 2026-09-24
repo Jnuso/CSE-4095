@@ -199,10 +199,19 @@
                     <div class="analysis-graph" aria-labelledby="graph-title">
                       <div class="panel-heading"><div><p class="section-kicker">Interactive decision map</p><h3 id="graph-title">Move tree</h3></div><span class="graph-icon" aria-hidden="true"><span></span><span></span><span></span></span></div>
                       <p class="graph-intro">The route shows how the game reached its current node. Under it, every legal next move creates a branch. Select a branch to preview the changed hands and the opponent’s possible replies; previewing never plays the move.</p>
-                      <div class="tree-legend" aria-label="Move tree legend"><span><i class="tree-swatch swatch-played" aria-hidden="true"></i>Played route</span><span><i class="tree-swatch swatch-current" aria-hidden="true"></i>Current node</span><span><i class="tree-swatch swatch-best" aria-hidden="true"></i>AI choice</span></div>
+                      <div class="tree-legend" aria-label="Move tree legend"><span><i class="tree-swatch swatch-played" aria-hidden="true"></i>Played route</span><span><i class="tree-swatch swatch-current" aria-hidden="true"></i>Final game position</span><span><i class="tree-swatch swatch-reviewed" aria-hidden="true"></i>Position being reviewed</span><span><i class="tree-swatch swatch-best" aria-hidden="true"></i>AI choice</span></div>
 
                       <section class="tree-route" aria-labelledby="tree-route-title">
                         <h4 id="tree-route-title">Route played so far</h4>
+                        <div id="tree-review-controls" class="tree-review-controls" role="group" aria-label="Completed game review controls" hidden>
+                          <div class="tree-review-copy"><span>Completed game review</span><strong id="tree-review-label" aria-live="polite">Final position</strong></div>
+                          <div class="tree-review-actions">
+                            <button type="button" id="tree-review-previous" class="button button-quiet">← Previous</button>
+                            <button type="button" id="tree-review-next" class="button button-quiet">Next →</button>
+                            <button type="button" id="tree-review-final" class="button button-quiet">Return to final</button>
+                          </div>
+                        </div>
+                        <p id="tree-review-note" class="tree-review-note" hidden>Review only — these controls change the decision map below, not the completed game, winner, hands, or move history.</p>
                         <div id="tree-played-path" class="tree-played-path" aria-live="polite"><span class="tree-route-node is-current">Start</span></div>
                       </section>
 

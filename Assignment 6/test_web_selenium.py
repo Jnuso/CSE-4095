@@ -282,6 +282,89 @@ def test_ai_vs_ai_can_pause_then_step_until_the_depth_20_result(page) -> None:
     assert page.find_element(By.ID, "dp-active-role").text == "Game complete"
     assert len(page.find_elements(By.CSS_SELECTOR, "#history-list > li")) == 20
     assert not step_button.is_enabled()
+
+    # A completed game remains frozen while its saved decision-map positions
+    # can be reviewed independently. Open the technical panel only now so the
+    # gameplay loop above remains focused on the game controls.
+    final_snapshot = {
+        "hands": tuple(
+            page.find_element(By.ID, element_id).get_attribute("data-count")
+            for element_id in (
+                "hand-a-left",
+                "hand-a-right",
+                "hand-b-left",
+                "hand-b-right",
+            )
+        ),
+        "status": page.find_element(By.ID, "status-title").text,
+        "turn_count": page.find_element(By.ID, "turn-count").text,
+        "history": page.find_element(By.ID, "history-list").text,
+    }
+
+    advanced = page.find_element(By.ID, "ai-advanced-details")
+    if advanced.get_attribute("open") is None:
+        page.find_element(By.CSS_SELECTOR, "#ai-advanced-details > summary").click()
+        WebDriverWait(page, 2).until(
+            lambda driver: driver.find_element(
+                By.ID, "ai-advanced-details"
+            ).get_attribute("open") is not None
+        )
+
+    controls = page.find_element(By.ID, "tree-review-controls")
+    assert controls.is_displayed()
+    assert page.find_element(By.ID, "tree-review-note").is_displayed()
+    route_nodes = page.find_elements(
+        By.CSS_SELECTOR, "#tree-played-path button.tree-route-node"
+    )
+    assert len(route_nodes) == 21
+
+    current = page.find_element(By.ID, "graph-current")
+    final_key = current.get_attribute("data-tree-node-key")
+    assert final_key.endswith("|20")
+    previous_button = page.find_element(By.ID, "tree-review-previous")
+    next_button = page.find_element(By.ID, "tree-review-next")
+    final_button = page.find_element(By.ID, "tree-review-final")
+
+    previous_button.click()
+    WebDriverWait(page, 2).until(
+        lambda _driver: current.get_attribute("data-tree-node-key").endswith("|19")
+    )
+    review_label = page.find_element(By.ID, "tree-review-label").text
+    assert "19" in review_label and "20" in review_label
+
+    next_button.click()
+    WebDriverWait(page, 2).until(
+        lambda _driver: current.get_attribute("data-tree-node-key") == final_key
+    )
+
+    # renderGraph rebuilds the route after each review selection, so fetch a
+    # fresh node instead of retaining an element that has left the DOM.
+    page.find_elements(
+        By.CSS_SELECTOR, "#tree-played-path button.tree-route-node"
+    )[0].click()
+    WebDriverWait(page, 2).until(
+        lambda _driver: current.get_attribute("data-tree-node-key").endswith("|0")
+    )
+    assert not previous_button.is_enabled()
+
+    final_button.click()
+    WebDriverWait(page, 2).until(
+        lambda _driver: current.get_attribute("data-tree-node-key") == final_key
+    )
+
+    assert tuple(
+        page.find_element(By.ID, element_id).get_attribute("data-count")
+        for element_id in (
+            "hand-a-left",
+            "hand-a-right",
+            "hand-b-left",
+            "hand-b-right",
+        )
+    ) == final_snapshot["hands"]
+    assert page.find_element(By.ID, "status-title").text == final_snapshot["status"]
+    assert page.find_element(By.ID, "turn-count").text == final_snapshot["turn_count"]
+    assert page.find_element(By.ID, "history-list").text == final_snapshot["history"]
+    assert page.find_element(By.ID, "dp-current-level").text == "20 / 20"
     assert_no_severe_console_errors(page)
 
 

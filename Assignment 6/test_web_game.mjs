@@ -649,7 +649,8 @@ test('AI analysis has a beginner summary plus optional advanced minimax details'
 test('interactive move tree connects the played route, current node, choices, impact, and replies', () => {
   for (const id of [
     'move-tree', 'tree-played-path', 'graph-current', 'graph-choices',
-    'tree-impact', 'tree-replies',
+    'tree-impact', 'tree-replies', 'tree-review-controls', 'tree-review-label',
+    'tree-review-previous', 'tree-review-next', 'tree-review-final', 'tree-review-note',
   ]) assert.match(WEB_HTML, new RegExp(`\\bid=["']${id}["']`, 'i'), `Missing #${id}`);
 
   const path = functionSource('renderPlayedPath');
@@ -660,14 +661,63 @@ test('interactive move tree connects the played route, current node, choices, im
   assert.match(path, /is-played/);
 
   const graph = functionSource('renderGraph');
-  assert.match(graph, /evaluateMoves\(state,\s*minimaxTable\)/);
+  assert.match(graph, /evaluateMoves\(position,\s*minimaxTable\)/);
+  assert.match(graph, /reviewedMoveIndex/);
   assert.match(graph, /previewedMoveKey/);
-  assert.match(graph, /renderImpact\(state,\s*previewed\)/);
+  assert.match(graph, /renderImpact\(position,\s*previewed\)/);
   assert.match(graph, /renderReplies\(previewed\)/);
 
   const commit = functionSource('commitMove');
   assert.match(commit, /stateAfter:\s*structuredClone\(state\)/,
     'Committed moves should save their resulting node for the played route');
+});
+
+test('completed-game move-tree review can navigate every saved position without changing the game', () => {
+  const path = functionSource('renderPlayedPath');
+  assert.match(path, /getResult\(state\)/,
+    'The played route should only become a replay control after the game is complete');
+  assert.match(path, /document\.createElement\([^)]*["']button["']/,
+    'Completed route positions should be keyboard-accessible buttons');
+  assert.match(path, /setReviewedMove/,
+    'Clicking a completed route position should select that position for review');
+  assert.match(path, /aria-(?:current|pressed)/,
+    'The selected route position should be exposed to assistive technology');
+
+  const review = functionSource('setReviewedMove');
+  assert.match(review, /reviewedMoveIndex\s*=/);
+  assert.match(review, /renderGraph\(\)/);
+  assert.doesNotMatch(review, /\bstate\s*=/,
+    'Review navigation must not replace the completed game state');
+  assert.doesNotMatch(review, /\bhistory\s*=/,
+    'Review navigation must not replace move history');
+  assert.doesNotMatch(review, /commitMove\s*\(/,
+    'Review navigation must never play another move');
+
+  const controls = functionSource('renderTreeReviewControls');
+  assert.match(controls, /treeReviewPrevious|tree-review-previous|ui\.treeReviewPrevious/);
+  assert.match(controls, /treeReviewNext|tree-review-next|ui\.treeReviewNext/);
+  assert.match(controls, /treeReviewFinal|tree-review-final|ui\.treeReviewFinal/);
+  assert.match(controls, /\.disabled\s*=/,
+    'Previous and Next must become unavailable at the ends of the route');
+  assert.match(controls, /\.hidden\s*=/,
+    'Replay controls should be shown only for a completed game');
+
+  assert.match(WEB_APP,
+    /treeReviewPrevious[\s\S]*?addEventListener\(["']click["'][\s\S]*?setReviewedMove/,
+    'Previous must navigate through saved route positions');
+  assert.match(WEB_APP,
+    /treeReviewNext[\s\S]*?addEventListener\(["']click["'][\s\S]*?setReviewedMove/,
+    'Next must navigate through saved route positions');
+  assert.match(WEB_APP,
+    /treeReviewFinal[\s\S]*?addEventListener\(["']click["'][\s\S]*?setReviewedMove/,
+    'Final must return directly to the completed position');
+
+  assert.match(functionSource('resetGame'), /reviewedMoveIndex\s*=\s*null/,
+    'Restarting should leave replay mode');
+  assert.match(functionSource('commitMove'), /reviewedMoveIndex/,
+    'Finishing a game should select its final route position');
+  assert.match(WEB_CSS, /\.tree-route-node\.is-reviewed\b/,
+    'The route needs a visible reviewed-position state');
 });
 
 test('tree branch previews are accessible, explanatory, bounded, and never play a move', () => {

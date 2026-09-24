@@ -38,6 +38,12 @@ const ui = {
   autoSpeedLabel: byId('auto-speed-label'),
   history: byId('history-list'),
   treePath: byId('tree-played-path'),
+  treeReviewControls: byId('tree-review-controls'),
+  treeReviewLabel: byId('tree-review-label'),
+  treeReviewPrevious: byId('tree-review-previous'),
+  treeReviewNext: byId('tree-review-next'),
+  treeReviewFinal: byId('tree-review-final'),
+  treeReviewNote: byId('tree-review-note'),
   graphCurrent: byId('graph-current'),
   graphChoices: byId('graph-choices'),
   treeImpact: byId('tree-impact'),
@@ -80,6 +86,7 @@ let generation = 0;
 let gameRevision = 0;
 let isAnimating = false;
 let previewedMoveKey = null;
+let reviewedMoveIndex = null;
 
 function clockNow() {
   return globalThis.performance?.now?.() ?? Date.now();
@@ -367,6 +374,13 @@ function renderHistory() {
 function renderPlayedPath() {
   ui.treePath.replaceChildren();
   const positions = [structuredClone(INITIAL_STATE), ...history.map((record) => record.stateAfter)];
+  const reviewAvailable = getResult(state) !== null && history.length > 0;
+  if (reviewAvailable && (!Number.isSafeInteger(reviewedMoveIndex) ||
+      reviewedMoveIndex < 0 || reviewedMoveIndex >= positions.length)) {
+    reviewedMoveIndex = positions.length - 1;
+  } else if (!reviewAvailable) {
+    reviewedMoveIndex = null;
+  }
 
   positions.forEach((position, index) => {
     if (index > 0) {
@@ -377,16 +391,57 @@ function renderPlayedPath() {
       ui.treePath.append(arrow);
     }
 
-    const node = document.createElement('span');
+    const node = document.createElement(reviewAvailable ? 'button' : 'span');
+    if (reviewAvailable) node.type = 'button';
     const isCurrent = index === positions.length - 1;
-    node.className = `tree-route-node${isCurrent ? ' is-current' : ' is-played'}`;
+    const isReviewed = reviewAvailable && index === reviewedMoveIndex;
+    node.className = `tree-route-node${isCurrent ? ' is-current' : ' is-played'}${isReviewed ? ' is-reviewed' : ''}`;
     node.dataset.treeNodeKey = stateKey(position);
     node.textContent = index === 0 ? 'Start · A 1 · 1 / B 1 · 1' :
       `Move ${position[2]} · A ${position[0][0]} · ${position[0][1]} / B ${position[1][0]} · ${position[1][1]}`;
+    if (reviewAvailable) {
+      node.setAttribute('aria-pressed', String(isReviewed));
+      if (isReviewed) node.setAttribute('aria-current', 'step');
+      node.setAttribute('aria-label', `${index === 0 ? 'Review the starting position' : `Review move ${index}`}${isCurrent ? ', the final game position' : ''}`);
+      node.addEventListener('click', () => setReviewedMove(index));
+    }
     ui.treePath.append(node);
   });
 
-  ui.treePath.scrollLeft = ui.treePath.scrollWidth;
+  window.requestAnimationFrame(scrollTreeRouteToReviewed);
+  return positions;
+}
+
+function scrollTreeRouteToReviewed() {
+  const selected = ui.treePath.querySelector('.tree-route-node.is-reviewed') ??
+    ui.treePath.querySelector('.tree-route-node.is-current');
+  if (!selected) return;
+  const centered = selected.offsetLeft - ((ui.treePath.clientWidth - selected.offsetWidth) / 2);
+  ui.treePath.scrollLeft = Math.max(0, centered);
+}
+
+function renderTreeReviewControls(positions) {
+  const reviewAvailable = getResult(state) !== null && history.length > 0;
+  ui.treeReviewControls.hidden = !reviewAvailable;
+  ui.treeReviewNote.hidden = !reviewAvailable;
+  if (!reviewAvailable) return;
+
+  const lastIndex = positions.length - 1;
+  const index = reviewedMoveIndex ?? lastIndex;
+  ui.treeReviewLabel.textContent = index === 0 ?
+    `Start · before move 1 of ${lastIndex}` : index === lastIndex ?
+      `Final position · move ${index} of ${lastIndex}` :
+      `Move ${index} of ${lastIndex}`;
+  ui.treeReviewPrevious.disabled = index <= 0;
+  ui.treeReviewNext.disabled = index >= lastIndex;
+  ui.treeReviewFinal.disabled = index >= lastIndex;
+}
+
+function setReviewedMove(index) {
+  if (getResult(state) === null || history.length === 0) return;
+  reviewedMoveIndex = Math.max(0, Math.min(history.length, index));
+  previewedMoveKey = null;
+  renderGraph();
 }
 
 function createTreeBranch(position, move, options) {
@@ -399,7 +454,7 @@ function createTreeBranch(position, move, options) {
   if (interactive) node.type = 'button';
   const childKey = stateKey(move.nextState);
   const isPreviewed = childKey === previewedMoveKey;
-  node.className = `tree-node${move.selected ? ' is-best' : ''}${isPreviewed ? ' is-previewed' : ''}`;
+  node.className = `tree-node${move.selected ? ' is-best' : ''}${move.played ? ' is-played-choice' : ''}${isPreviewed ? ' is-previewed' : ''}`;
   node.dataset.treeNodeKey = childKey;
   node.dataset.previewState = childKey;
   if (interactive) {
@@ -409,7 +464,9 @@ function createTreeBranch(position, move, options) {
 
   const kicker = document.createElement('span');
   kicker.className = 'tree-node-kicker';
-  kicker.textContent = move.selected ? 'AI choice' : interactive ? 'Alternative move' : 'Possible reply';
+  kicker.textContent = move.played && move.selected ? 'Played · AI choice' :
+    move.played ? 'Move actually played' :
+      move.selected ? 'AI choice' : interactive ? 'Alternative move' : 'Possible reply';
   const title = document.createElement('strong');
   title.textContent = moveLabel(position, move);
   const nextState = document.createElement('span');
@@ -502,19 +559,31 @@ function renderReplies(move) {
 }
 
 function renderGraph() {
-  renderPlayedPath();
-  const options = evaluateMoves(state, minimaxTable);
-  const result = getResult(state);
+  const positions = renderPlayedPath();
+  renderTreeReviewControls(positions);
+  const reviewAvailable = getResult(state) !== null && history.length > 0;
+  const reviewIndex = reviewAvailable ? reviewedMoveIndex ?? positions.length - 1 : positions.length - 1;
+  const position = reviewAvailable ? positions[reviewIndex] : state;
+  const result = getResult(position);
+  const nextPlayedKey = reviewAvailable && reviewIndex < positions.length - 1 ?
+    stateKey(positions[reviewIndex + 1]) : null;
+  const options = evaluateMoves(position, minimaxTable).map((move) => ({
+    ...move,
+    played: stateKey(move.nextState) === nextPlayedKey,
+  }));
 
   ui.graphCurrent.replaceChildren();
-  ui.graphCurrent.dataset.treeNodeKey = stateKey(state);
+  ui.graphCurrent.dataset.treeNodeKey = stateKey(position);
   const currentLabel = document.createElement('span');
-  currentLabel.textContent = 'You are here';
+  currentLabel.textContent = reviewAvailable ?
+    reviewIndex === 0 ? 'Reviewing game start' :
+      reviewIndex === positions.length - 1 ? 'Final position' : `Reviewing move ${reviewIndex}` :
+    'You are here';
   const currentState = document.createElement('strong');
-  currentState.textContent = compactState(state);
+  currentState.textContent = compactState(position);
   const currentMeta = document.createElement('span');
-  currentMeta.textContent = result ? 'Game complete' :
-    `Player ${currentPlayer()} · ${currentPlayer() === 'A' ? 'MAX' : 'MIN'} · ${options.length} legal moves`;
+  currentMeta.textContent = result ? 'Game complete · review only' :
+    `Player ${currentPlayer(position)} · ${currentPlayer(position) === 'A' ? 'MAX' : 'MIN'} · ${options.length} legal moves${reviewAvailable ? ' · review only' : ''}`;
   ui.graphCurrent.append(currentLabel, currentState, currentMeta);
 
   ui.graphChoices.replaceChildren();
@@ -530,14 +599,15 @@ function renderGraph() {
   }
 
   if (!options.some((move) => stateKey(move.nextState) === previewedMoveKey)) {
-    const defaultMove = options.find((move) => move.selected) ?? options[0];
+    const defaultMove = options.find((move) => move.played) ??
+      options.find((move) => move.selected) ?? options[0];
     previewedMoveKey = stateKey(defaultMove.nextState);
   }
 
-  for (const move of options) ui.graphChoices.append(createTreeBranch(state, move));
+  for (const move of options) ui.graphChoices.append(createTreeBranch(position, move));
   const previewed = options.find((move) => stateKey(move.nextState) === previewedMoveKey);
   if (!previewed) throw new Error('The previewed move is no longer legal.');
-  renderImpact(state, previewed);
+  renderImpact(position, previewed);
   renderReplies(previewed);
 }
 
@@ -632,6 +702,7 @@ function resetGame() {
   lastExplanation = '';
   autoRunning = false;
   previewedMoveKey = null;
+  reviewedMoveIndex = null;
   render();
   scheduleComputerIfNeeded();
 }
@@ -657,6 +728,7 @@ async function commitMove(move, sourceOverride = null, computer = false) {
   state = structuredClone(chosen.nextState);
   history.push({ turn: state[2], label, stateAfter: structuredClone(state) });
   previewedMoveKey = null;
+  reviewedMoveIndex = getResult(state) === null ? null : history.length;
   selectedSource = null;
   showingSplits = false;
   lastExplanation = `${computer ? 'The computer chose' : 'You chose'}: ${label}. ${scoreDetail(score)}`;
@@ -729,10 +801,13 @@ ui.aiToggle.addEventListener('click', () => {
 });
 ui.aiAdvanced.addEventListener('toggle', () => {
   if (!ui.aiAdvanced.open) return;
-  window.requestAnimationFrame(() => {
-    ui.treePath.scrollLeft = ui.treePath.scrollWidth;
-  });
+  window.requestAnimationFrame(scrollTreeRouteToReviewed);
 });
+ui.treeReviewPrevious.addEventListener('click', () =>
+  setReviewedMove((reviewedMoveIndex ?? history.length) - 1));
+ui.treeReviewNext.addEventListener('click', () =>
+  setReviewedMove((reviewedMoveIndex ?? history.length) + 1));
+ui.treeReviewFinal.addEventListener('click', () => setReviewedMove(history.length));
 ui.split.addEventListener('click', () => {
   if (!humanMayMove()) return;
   showingSplits = !showingSplits;
