@@ -12,7 +12,23 @@ If an original assignment demo changes, refresh its published copy from the repo
 node base/build.mjs
 ```
 
-The sync script uses only Node.js standard library modules. It also adds a return-to-main-page button to each demo. Commit the updated files in `base/demos/` along with the source change. Running it is only needed when refreshing a demo, not when opening the archive.
+The sync script uses only Node.js standard library modules. It adds the return-to-main-page button and the shared archive theme to each published demo. The charcoal-and-purple archive styles live in `base/assets/site.css`; the matching demo overrides live in `base/assets/demo-theme.css`, with the demo navigation in `base/assets/demo-return.css`. The original assignment files stay untouched. Commit the updated files in `base/demos/` along with the source change. Running the script is only needed when refreshing a demo, not when opening the archive.
+
+## Run the tests
+
+Install Node.js, then run these commands from the repository root:
+
+```sh
+python -m pip install -r base/requirements-dev.txt
+python -m pylint --rcfile=base/.pylintrc base/tests
+python -m pytest -q base
+```
+
+The pytest suite checks published HTML links, assets, navigation, and demo copy synchronization. It also runs the demos' JavaScript algorithms through Node.js, following the pattern used by the Assignment 5 tests. Pylint checks the Python tests.
+
+Selenium opens every published page directly from its local HTML file in headless Chrome. It clicks through archive links and demo controls without a Python server. Install Chrome to run these browser tests locally. If Chrome cannot start, they skip locally; set `SELENIUM_REQUIRED=1` to make that a failure. GitHub Actions sets this flag, so a missing or broken browser fails the push or pull request check.
+
+Opening the site still needs neither a server nor these test tools. The tests do not change the original assignment files.
 
 ## Cloudflare Pages Git settings
 

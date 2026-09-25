@@ -1,0 +1,7 @@
+[MAIN]
+persistent=no
+
+[MESSAGES CONTROL]
+# Tests are named by behavior, subprocess calls assert the return code, and
+# repeated JavaScript harness fragments are embedded in independent tests.
+disable=missing-function-docstring,too-many-instance-attributes,arguments-renamed,subprocess-run-check,duplicate-code

@@ -1,0 +1,777 @@
+/* Shared dark-violet theme for the published browser demos. The original
+   Assignment N files are not edited; build.mjs adds this stylesheet to copies. */
+html[data-cse4095-demo] {
+  color-scheme: dark;
+  --archive-bg: #0d0d0f;
+  --archive-panel: #181126;
+  --archive-text: #f5f0ff;
+  --archive-muted: #bcb2d1;
+  --archive-line: #3c3153;
+  --archive-purple: #a984ff;
+  --archive-purple-deep: #8e64e6;
+  --archive-lavender: #d8c5ff;
+  --archive-subtle: #2a1c42;
+  --archive-shadow: 0 22px 60px rgba(0, 0, 0, .32), inset 0 1px 0 rgba(216, 197, 255, .035);
+}
+
+html[data-cse4095-demo] body {
+  color: var(--archive-text);
+  background: var(--archive-bg);
+  font-family: Inter, "Segoe UI", Arial, system-ui, sans-serif;
+}
+
+html[data-cse4095-demo] :is(h1, h2, h3) {
+  font-family: Inter, "Segoe UI", Arial, system-ui, sans-serif;
+}
+
+html[data-cse4095-demo] :is(button, input, select):focus-visible {
+  outline: 3px solid var(--archive-lavender);
+  outline-offset: 3px;
+}
+
+html[data-cse4095-demo] :is(input[type="range"], select) {
+  accent-color: var(--archive-purple);
+}
+
+html[data-cse4095-demo] ::selection {
+  color: var(--archive-bg);
+  background: var(--archive-lavender);
+}
+
+/* Assignment 1 — Recursive Checker Swap */
+html[data-cse4095-demo="assignment-1"] {
+  --background: #0d0d0f;
+  --surface: #181126;
+  --surface-raised: #211831;
+  --surface-soft: #181126;
+  --border: #3c3153;
+  --border-bright: #55426f;
+  --text: #f5f0ff;
+  --muted: #bcb2d1;
+  --blue: #a984ff;
+  --blue-dark: #8e64e6;
+  --green: #79d8b0;
+  --shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-1"] .control-ribbon {
+  background: rgba(24, 17, 38, .94);
+  border-color: var(--archive-line);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, .22);
+}
+
+html[data-cse4095-demo="assignment-1"] :is(.eyebrow, .section-kicker, .log-step) {
+  color: var(--archive-purple);
+}
+
+html[data-cse4095-demo="assignment-1"] .input-control input {
+  color: var(--archive-text);
+  background: var(--archive-panel);
+}
+
+html[data-cse4095-demo="assignment-1"] .button {
+  color: var(--archive-text);
+  border-color: #55426f;
+  border-radius: 9px;
+  background: var(--archive-panel);
+}
+
+html[data-cse4095-demo="assignment-1"] .button:hover:not(:disabled) {
+  border-color: #a984ff;
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-1"] .button-primary,
+html[data-cse4095-demo="assignment-1"] .button-primary:hover:not(:disabled) {
+  color: #0d0d0f;
+  border-color: var(--archive-purple-deep);
+  background: var(--archive-purple);
+  box-shadow: 0 7px 18px rgba(109, 74, 179, .26);
+}
+
+html[data-cse4095-demo="assignment-1"] .button-primary:hover:not(:disabled) {
+  background: var(--archive-purple-deep);
+}
+
+html[data-cse4095-demo="assignment-1"] .panel {
+  border-color: var(--archive-line);
+  border-radius: 16px;
+  background: var(--archive-panel);
+  box-shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-1"] .stage {
+  border-color: #3c3153;
+  background:
+    linear-gradient(rgba(169, 132, 255, .07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(169, 132, 255, .07) 1px, transparent 1px),
+    #211831;
+  background-size: 28px 28px;
+}
+
+html[data-cse4095-demo="assignment-1"] .step-counter {
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-1"] :is(.state-array, .animation-details p, .log-swap strong) {
+  color: var(--archive-text);
+}
+
+html[data-cse4095-demo="assignment-1"] :is(.detail-label, .empty-log, .empty-log-icon) {
+  color: var(--archive-muted);
+}
+
+html[data-cse4095-demo="assignment-1"] .swap-log {
+  background: var(--archive-panel);
+  scrollbar-color: #55426f #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-1"] .log-entry {
+  color: var(--archive-muted);
+  border-color: #3c3153;
+}
+
+html[data-cse4095-demo="assignment-1"] .log-entry-current {
+  color: var(--archive-text);
+  background: #2a1c42;
+  box-shadow: inset 3px 0 var(--archive-purple);
+}
+
+html[data-cse4095-demo="assignment-1"] .status-message {
+  color: #79d8b0 !important;
+}
+
+html[data-cse4095-demo="assignment-1"] input[type="range"] {
+  accent-color: var(--archive-purple);
+}
+
+/* Assignment 2 — Two-Stack Expression Evaluator */
+html[data-cse4095-demo="assignment-2"] {
+  --ink: #f5f0ff;
+  --muted: #bcb2d1;
+  --line: #3c3153;
+  --blue: #a984ff;
+  --green: #79d8b0;
+  --orange: #f0c586;
+}
+
+html[data-cse4095-demo="assignment-2"] :is(.controls, .panel) {
+  border-color: var(--archive-line);
+  border-radius: 16px;
+  background: var(--archive-panel);
+  box-shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-2"] .controls {
+  border-top: 4px solid var(--archive-purple);
+}
+
+html[data-cse4095-demo="assignment-2"] input {
+  border-color: #55426f;
+  background: #211831;
+}
+
+html[data-cse4095-demo="assignment-2"] button {
+  border-radius: 9px;
+  background: var(--archive-purple);
+  color: #0d0d0f;
+}
+
+html[data-cse4095-demo="assignment-2"] button.secondary {
+  border-color: #55426f;
+  background: var(--archive-panel);
+  color: var(--archive-text);
+}
+
+html[data-cse4095-demo="assignment-2"] :is(.expression, .status) {
+  border-color: var(--archive-line);
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-2"] .status {
+  border-left-color: var(--archive-purple);
+}
+
+html[data-cse4095-demo="assignment-2"] .stack {
+  border-color: #55426f;
+}
+
+html[data-cse4095-demo="assignment-2"] .num {
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-2"] .op {
+  background: #2a1d35;
+}
+
+html[data-cse4095-demo="assignment-2"] .operation {
+  border: 1px solid var(--archive-line);
+  border-left: 3px solid var(--archive-purple);
+  background: #211831;
+  color: var(--archive-text);
+}
+
+html[data-cse4095-demo="assignment-2"] .status.error {
+  background: #3b202a;
+  border-left-color: #ff979e;
+  color: #ffb0b7;
+}
+
+html[data-cse4095-demo="assignment-2"] input[aria-invalid="true"] {
+  border-color: #ff979e;
+}
+
+html[data-cse4095-demo="assignment-2"] .stack:empty::before,
+html[data-cse4095-demo="assignment-2"] .token.done {
+  color: var(--archive-muted);
+}
+
+html[data-cse4095-demo="assignment-2"] .token.current {
+  color: var(--archive-bg);
+}
+
+/* Assignment 4 — Card Game 24 */
+html[data-cse4095-demo="assignment-4"] {
+  --background: #0d0d0f;
+  --surface: #181126;
+  --surface-raised: #2a1c42;
+  --surface-soft: #211831;
+  --border: #3c3153;
+  --border-strong: #55426f;
+  --text: #f5f0ff;
+  --text-muted: #bcb2d1;
+  --accent: #d8c5ff;
+  --accent-strong: #c9a7ff;
+  --accent-ink: #0d0d0f;
+  --violet: #a984ff;
+  --success: #79d8b0;
+  --success-surface: #153126;
+  --warning: #f0c586;
+  --warning-surface: #332719;
+  --danger: #ff979e;
+  --danger-surface: #3b202a;
+  --idle-surface: #211831;
+  --shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-4"] .brand-mark {
+  border-color: #55426f;
+  color: var(--archive-purple);
+  background: var(--archive-subtle);
+  box-shadow: none;
+}
+
+html[data-cse4095-demo="assignment-4"] .target-badge {
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-4"] .game-surface {
+  border-color: var(--archive-line);
+  border-radius: 16px;
+  background: var(--archive-panel);
+  box-shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-4"] .game-surface::before {
+  background-image:
+    linear-gradient(rgba(169, 132, 255, .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(169, 132, 255, .05) 1px, transparent 1px);
+}
+
+html[data-cse4095-demo="assignment-4"] :is(.primary-button, .secondary-button) {
+  border-radius: 9px;
+}
+
+html[data-cse4095-demo="assignment-4"] .secondary-button {
+  border-color: #55426f;
+  background: var(--archive-panel);
+}
+
+html[data-cse4095-demo="assignment-4"] .secondary-button:hover {
+  border-color: #a984ff;
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-4"] .mode-button[aria-pressed="true"] {
+  border-color: #a984ff;
+  color: var(--archive-purple);
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-4"] .mode-state {
+  color: var(--archive-muted);
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-4"] .playing-card {
+  border-color: #55426f;
+  color: var(--archive-text);
+  background: linear-gradient(160deg, #181126, #211831 80%);
+  box-shadow: 0 13px 26px rgba(0, 0, 0, .34);
+}
+
+html[data-cse4095-demo="assignment-4"] .playing-card::after {
+  border-color: rgba(169, 132, 255, .22);
+}
+
+html[data-cse4095-demo="assignment-4"] .corner-rank {
+  color: var(--archive-purple);
+}
+
+html[data-cse4095-demo="assignment-4"] .card-rank {
+  text-shadow: none;
+}
+
+html[data-cse4095-demo="assignment-4"] .expression-input {
+  border-color: #55426f;
+  color: var(--archive-text);
+  background: #211831;
+  box-shadow: none;
+}
+
+html[data-cse4095-demo="assignment-4"] .expression-input::placeholder {
+  color: #a99cbd;
+}
+
+html[data-cse4095-demo="assignment-4"] .assist-row {
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-4"] .solution-panel {
+  border-color: #6d4ab3;
+  background: linear-gradient(120deg, #2a1c42, #211831);
+}
+
+html[data-cse4095-demo="assignment-4"] .result[data-state="notice"] {
+  border-color: #6d4ab3;
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-4"] .page-note {
+  color: var(--archive-muted);
+}
+
+/* Assignment 5 — A* and BFS 8-Puzzle visualizers */
+html[data-cse4095-demo="assignment-5"][data-cse4095-view="astar"] {
+  --bg: #0d0d0f;
+  --panel: #181126;
+  --panel-solid: #181126;
+  --raised: #2a1c42;
+  --line: #3c3153;
+  --line-strong: #55426f;
+  --text: #f5f0ff;
+  --muted: #bcb2d1;
+  --dim: #9f92b6;
+  --blue: #a984ff;
+  --cyan: #d8c5ff;
+  --green: #79d8b0;
+  --orange: #f0c586;
+  --red: #ff979e;
+  --shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-5"][data-cse4095-view="bfs"] {
+  --background: #0d0d0f;
+  --surface: #181126;
+  --surface-solid: #181126;
+  --surface-raised: #2a1c42;
+  --border: #3c3153;
+  --border-strong: #55426f;
+  --text: #f5f0ff;
+  --secondary: #bcb2d1;
+  --tertiary: #9f92b6;
+  --accent: #a984ff;
+  --accent-light: #d8c5ff;
+  --success: #79d8b0;
+  --error: #ff979e;
+  --shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-5"] .topbar {
+  border-color: var(--archive-line);
+  background: rgba(24, 17, 38, .94);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, .22);
+}
+
+html[data-cse4095-demo="assignment-5"] .brand-mark {
+  border-color: #7355ab;
+  color: var(--archive-lavender);
+  background: var(--archive-subtle);
+  box-shadow: none;
+}
+
+html[data-cse4095-demo="assignment-5"] .brand-mark span {
+  background: var(--archive-lavender);
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.control, .control-button) {
+  border-color: #55426f;
+  border-radius: 9px;
+  color: var(--archive-text);
+  background: var(--archive-panel);
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.control, .control-button):hover:not(:disabled) {
+  border-color: #a984ff;
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.control.primary, .control-button.primary) {
+  border-color: var(--archive-purple);
+  color: #0d0d0f;
+  background: var(--archive-purple);
+  box-shadow: 0 8px 20px rgba(109, 74, 179, .24);
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.control.primary, .control-button.primary):hover:not(:disabled) {
+  border-color: var(--archive-purple-deep);
+  background: var(--archive-purple-deep);
+}
+
+html[data-cse4095-demo="assignment-5"] .panel {
+  border-color: var(--archive-line);
+  border-radius: 16px;
+  background: var(--archive-panel);
+  box-shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-5"] .board {
+  border-color: #55426f;
+  background: #2a1c42;
+  box-shadow: inset 0 0 0 1px rgba(169, 132, 255, .09), 0 20px 40px rgba(0, 0, 0, .3);
+}
+
+html[data-cse4095-demo="assignment-5"] .tile {
+  border-color: #55426f;
+  color: var(--archive-text);
+  background: var(--archive-panel);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .3);
+}
+
+html[data-cse4095-demo="assignment-5"] .tile.empty {
+  border-color: #3c3153;
+  background: #2a1c42;
+  box-shadow: inset 0 1px 6px rgba(0, 0, 0, .22);
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.config-input, .configuration-input) {
+  border-color: #55426f;
+  background: var(--archive-panel);
+  color: var(--archive-text);
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.badge.ready, .status-badge.ready) {
+  border-color: #a984ff;
+  color: #d8c5ff;
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.progress-track, .mini-board) {
+  border-color: #55426f;
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-5"] .progress-fill {
+  background: linear-gradient(90deg, var(--archive-purple), var(--archive-lavender));
+}
+
+html[data-cse4095-demo="assignment-5"] .mini-tile {
+  border-color: #3c3153;
+  color: var(--archive-text);
+  background: var(--archive-panel);
+}
+
+html[data-cse4095-demo="assignment-5"] .mini-tile.empty {
+  border-color: #3c3153;
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.score-card, .stat, .stat-card, .candidate, .state-card) {
+  border-color: var(--archive-line);
+  background: #211831;
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.score-card.primary-score, .candidate.lowest, .state-card.active) {
+  border-color: #a984ff;
+  background: #2a1c42;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+}
+
+html[data-cse4095-demo="assignment-5"] .state-card:hover {
+  border-color: #a984ff;
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-5"] .state-card.active:hover {
+  border-color: #a984ff;
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.input-note.error, .status-message.error) {
+  color: #ff979e;
+}
+
+html[data-cse4095-demo="assignment-5"] :is(.control, .control-button, .state-card, .config-input, .configuration-input):focus-visible {
+  outline: 3px solid var(--archive-lavender);
+  outline-offset: 3px;
+}
+
+/* Assignment 6 — Chopsticks AI */
+html[data-cse4095-demo="assignment-6"] {
+  --page: #0d0d0f;
+  --panel: #181126;
+  --panel-solid: #181126;
+  --text: #f5f0ff;
+  --muted: #bcb2d1;
+  --soft: #9f92b6;
+  --line: #3c3153;
+  --accent: #a984ff;
+  --accent-dark: #d8c5ff;
+  --accent-pale: #2a1c42;
+  --teal: #d8c5ff;
+  --teal-pale: #2a1c42;
+  --shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-6"] .site-header {
+  border-color: var(--archive-line);
+}
+
+html[data-cse4095-demo="assignment-6"] h1 em {
+  background: linear-gradient(105deg, #d8c5ff, #a984ff 55%, #e9dfff);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+html[data-cse4095-demo="assignment-6"] .brand-mark {
+  border: 1px solid #7355ab;
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-6"] .brand-mark span {
+  background: var(--archive-lavender);
+}
+
+html[data-cse4095-demo="assignment-6"] .intro-side {
+  border-color: var(--archive-line);
+  background: var(--archive-panel);
+  box-shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-6"] .panel {
+  border-color: var(--archive-line);
+  border-radius: 16px;
+  background: var(--archive-panel);
+  box-shadow: var(--archive-shadow);
+}
+
+html[data-cse4095-demo="assignment-6"] .segmented-control {
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.segment.is-active, .segment[aria-pressed="true"]) {
+  background: var(--archive-panel);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .28);
+}
+
+html[data-cse4095-demo="assignment-6"] .button {
+  border-color: #55426f;
+  border-radius: 9px;
+  color: var(--archive-text);
+  background: var(--archive-panel);
+}
+
+html[data-cse4095-demo="assignment-6"] .button-quiet {
+  background: transparent;
+}
+
+html[data-cse4095-demo="assignment-6"] .button-split {
+  border-color: #a984ff;
+  color: var(--archive-purple);
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-6"] .button-primary,
+html[data-cse4095-demo="assignment-6"] .button-primary:hover:not(:disabled) {
+  border-color: var(--archive-purple);
+  color: #0d0d0f;
+  background: var(--archive-purple);
+}
+
+html[data-cse4095-demo="assignment-6"] .button-primary:hover:not(:disabled) {
+  border-color: var(--archive-purple-deep);
+  background: var(--archive-purple-deep);
+}
+
+html[data-cse4095-demo="assignment-6"] .live-pill {
+  border-color: #6d4ab3;
+  color: #d8c5ff;
+  background: var(--teal-pale);
+}
+
+html[data-cse4095-demo="assignment-6"] .game-stage {
+  border-color: #55426f;
+  background:
+    radial-gradient(circle at 4% 0%, rgba(169, 132, 255, .16), transparent 34%),
+    radial-gradient(circle at 96% 96%, rgba(216, 197, 255, .08), transparent 34%),
+    #211831;
+}
+
+html[data-cse4095-demo="assignment-6"] .game-stage::before {
+  opacity: .1;
+}
+
+html[data-cse4095-demo="assignment-6"] .avatar-a {
+  color: var(--archive-lavender);
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-6"] .avatar-b {
+  color: #d8c5ff;
+  background: #30203e;
+}
+
+html[data-cse4095-demo="assignment-6"] .hand {
+  border-color: #55426f;
+  color: var(--archive-text);
+  background: var(--archive-panel);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+}
+
+html[data-cse4095-demo="assignment-6"] .hand:hover:not(:disabled) {
+  border-color: #a984ff;
+  box-shadow: 0 9px 21px rgba(0, 0, 0, .3);
+}
+
+html[data-cse4095-demo="assignment-6"] .hand.is-selected {
+  border-color: var(--archive-purple);
+  background: #2a1c42;
+  box-shadow: 0 0 0 3px rgba(169, 132, 255, .26);
+}
+
+html[data-cse4095-demo="assignment-6"] .hand.is-available {
+  border-color: var(--teal);
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.hand.is-knocked-out, .hand[data-count="0"]) {
+  background: #211831;
+}
+
+html[data-cse4095-demo="assignment-6"] .hand-count {
+  color: var(--archive-lavender);
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-6"] .hand-b .hand-count {
+  color: #d8c5ff;
+  background: #30203e;
+}
+
+html[data-cse4095-demo="assignment-6"] .turn-orb {
+  border-color: #55426f;
+  color: var(--archive-purple);
+  background: var(--archive-panel);
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.turn-summary, .auto-controls, .ai-strength-control, .analysis-next-item, .dp-stats-grid > div) {
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.analysis-outcome, .score-card) {
+  border-color: #55426f;
+  background: linear-gradient(135deg, #2a1c42, #211831);
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.tree-played-path, .move-tree) {
+  background: #211831;
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.tree-route-node, .tree-node) {
+  border-color: var(--archive-line);
+  color: var(--archive-text);
+  background: var(--archive-panel);
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.tree-route-node.is-played, .tree-node.is-played-choice) {
+  border-color: #a984ff;
+  color: #d8c5ff;
+  background: #30203e;
+}
+
+html[data-cse4095-demo="assignment-6"] .tree-route-node.is-current {
+  border-color: var(--archive-purple);
+  color: #0d0d0f;
+  background: var(--archive-purple);
+}
+
+html[data-cse4095-demo="assignment-6"] .tree-node.is-previewed {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(216, 197, 255, .22);
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.tree-current-node, .tree-node.is-best, .graph-branch.is-best) {
+  border-color: #a984ff;
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.tree-review-controls, .tree-impact, .extension-pill) {
+  border-color: #a984ff;
+  color: #d8c5ff;
+  background: #30203e;
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.tree-review-copy span, .tree-node.is-played-choice .tree-node-kicker, .tree-impact > strong) {
+  color: #d8c5ff;
+}
+
+html[data-cse4095-demo="assignment-6"] .graph-current {
+  border-color: #a984ff;
+}
+
+html[data-cse4095-demo="assignment-6"] .graph-icon {
+  background: #2a1c42;
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.move-option, .guide-step),
+html[data-cse4095-demo="assignment-6"] #search-depth {
+  border-color: var(--archive-line);
+  color: var(--archive-text);
+  background: var(--archive-panel);
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.move-option, .guide-step):hover:not(:disabled) {
+  border-color: var(--archive-purple);
+  background: #211831;
+}
+
+html[data-cse4095-demo="assignment-6"] .guide-step.is-current {
+  border-color: var(--archive-purple);
+  color: var(--archive-lavender);
+  background: var(--archive-subtle);
+  box-shadow: 0 0 0 3px rgba(169, 132, 255, .13);
+}
+
+html[data-cse4095-demo="assignment-6"] .guide-step.is-complete {
+  border-color: #7a5cae;
+  color: var(--archive-lavender);
+  background: #30203e;
+}
+
+html[data-cse4095-demo="assignment-6"] .experiment-table .is-current-depth {
+  background: var(--archive-subtle);
+}
+
+html[data-cse4095-demo="assignment-6"] :is(.stage-rule, .tree-connector),
+html[data-cse4095-demo="assignment-6"] .tree-children::before,
+html[data-cse4095-demo="assignment-6"] .tree-branch::before {
+  background: var(--archive-line);
+}
+
+html[data-cse4095-demo="assignment-6"] .graph-icon::before,
+html[data-cse4095-demo="assignment-6"] .graph-icon::after {
+  background: var(--archive-purple);
+}
+
+html[data-cse4095-demo="assignment-6"] .rules-note-icon {
+  border-color: var(--archive-line);
+}

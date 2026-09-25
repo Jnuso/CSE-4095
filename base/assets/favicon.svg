@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">CSE 4095 project archive</title>
+  <defs>
+    <linearGradient id="surface" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#33204f"/>
+      <stop offset="1" stop-color="#160e28"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#surface)"/>
+  <rect x="1" y="1" width="62" height="62" rx="14" fill="none" stroke="#7355ab" stroke-width="2"/>
+  <text x="32" y="41" text-anchor="middle" fill="#e7d9ff" font-family="Arial, sans-serif" font-size="22" font-weight="800" letter-spacing="-2">C/9</text>
+</svg>

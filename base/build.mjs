@@ -5,7 +5,10 @@ import { fileURLToPath } from 'node:url';
 const siteDirectory = dirname(fileURLToPath(import.meta.url));
 const repositoryDirectory = resolve(siteDirectory, '..');
 const archiveStylesheet = '<link rel="stylesheet" href="../../assets/demo-return.css">';
-const archiveReturn = '<nav class="cse4095-return-bar" aria-label="Archive navigation"><a href="../../index.html">&#8592; Back to main page</a></nav>';
+const themeStylesheet = '<link rel="stylesheet" href="../../assets/demo-theme.css">';
+const faviconLink = '<link rel="icon" type="image/svg+xml" sizes="any" href="../../assets/favicon.svg">';
+const themeColor = '#0d0d0f';
+const archiveReturn = '<nav class="cse4095-return-bar" aria-label="Archive navigation"><span class="cse4095-return-mark" aria-hidden="true">C/9</span><a href="../../index.html">&#8592; Back to main page</a><span class="cse4095-return-label">CSE 4095 / PROJECT DEMO</span></nav>';
 
 // Only copy files that a browser needs to run each demo. The original
 // assignment folders remain the source of truth.
@@ -61,15 +64,40 @@ for (const demo of demos) {
       destinationPath,
     );
 
-    // Give each published demo a path back to the archive without changing
-    // the original assignment files. Rebuilding starts with a fresh copy.
+    // Style each published demo and give it a path back to the archive without
+    // changing the original assignment files. Rebuilding starts with a fresh copy.
     if (destination.endsWith('.html')) {
       const html = await readFile(destinationPath, 'utf8');
-      if (!/<\/head>/i.test(html) || !/<body\b[^>]*>/i.test(html)) {
-        throw new Error(`Cannot add archive navigation to ${source}`);
+      if (!/<html\b[^>]*>/i.test(html) || !/<\/head>/i.test(html) || !/<body\b[^>]*>/i.test(html)) {
+        throw new Error(`Cannot add archive theme and navigation to ${source}`);
       }
       const lineBreak = html.includes('\r\n') ? '\r\n' : '\n';
-      const withStylesheet = html.replace(/<\/head>/i, `  ${archiveStylesheet}${lineBreak}</head>`);
+      const view = destination.slice(0, -'.html'.length);
+      const withMarker = html.replace(
+        /<html\b[^>]*>/i,
+        (htmlTag) => `${htmlTag.slice(0, -1)} data-cse4095-demo="${demo.directory}" data-cse4095-view="${view}">`,
+      );
+      let withThemeColor;
+      if (/<meta\s+name="theme-color"\s+content="[^"]+"\s*\/?>/i.test(withMarker)) {
+        withThemeColor = withMarker.replace(
+          /(<meta\s+name="theme-color"\s+content=")[^"]+("\s*\/?>)/i,
+          (_match, start, end) => `${start}${themeColor}${end}`,
+        );
+      } else if (/<meta\s+charset="[^"]+"\s*\/?>/i.test(withMarker)) {
+        withThemeColor = withMarker.replace(
+          /<meta\s+charset="[^"]+"\s*\/?>/i,
+          (charsetTag) => `${charsetTag}${lineBreak}  <meta name="theme-color" content="${themeColor}">`,
+        );
+      } else {
+        withThemeColor = withMarker.replace(
+          /<head\b[^>]*>/i,
+          (headTag) => `${headTag}${lineBreak}  <meta name="theme-color" content="${themeColor}">`,
+        );
+      }
+      const withStylesheet = withThemeColor.replace(
+        /<\/head>/i,
+        `  ${archiveStylesheet}${lineBreak}  ${themeStylesheet}${lineBreak}  ${faviconLink}${lineBreak}</head>`,
+      );
       const withReturn = withStylesheet.replace(
         /<body\b[^>]*>/i,
         (bodyTag) => `${bodyTag}${lineBreak}  ${archiveReturn}`,
