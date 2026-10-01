@@ -1,0 +1,2182 @@
+CLEANED CODING AGENT TRANSCRIPT
+===============================
+
+Only user prompts and coding-agent responses are included.
+Tool calls, command logs, search traces, edit traces, and expandable history blocks were removed.
+
+YOU:
+Create a new folder for assignment 8 like the others
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Created Assignment 8 alongside the other assignment folders.
+
+------------------------------------------------------------------------
+
+YOU:
+ok this assignment is going to be similar to 7 create another blank note book like the last one and we will be using the same data file so copy that over
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Assignment 8 now has a blank notebook with the same Python setup as Assignment 7, plus an identical copy of the data file.
+
+------------------------------------------------------------------------
+
+YOU:
+ok here is the assignment over view
+
+read over this and give me your explination of what we are going to be doing
+
+Class 2 Assignment: Classification with Scikit-Learn and AI
+
+Overview
+
+In Class 1, you used Google Colab, Pandas, NumPy, and Matplotlib to explore a dataset.
+
+In this assignment, you will use the same dataset to build your first machine-learning classification model with scikit-learn.
+
+You are not expected to already know scikit-learn. You should use an AI coding assistant to help you understand the machine-learning workflow and generate appropriate Python code.
+
+Your goal is not simply to obtain a high accuracy score.
+
+Your goal is to understand the complete workflow:
+
+Define the problem → choose features → split the data → preprocess → establish a baseline → train → predict → evaluate → inspect errors → experiment
+
+Dataset
+
+Use:
+
+class1_student_habits.csv
+
+Each row represents one student.
+
+The dataset includes variables such as:
+
+- study hours per week;
+- sleep hours per night;
+- attendance rate;
+- practice problems per week;
+- prior programming experience;
+- study-group participation;
+- commute time;
+- quiz average;
+- exam score.
+
+Some values may be missing.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+We’re going to use the same student habits data to predict a category for each student. Unlike Assignment 7, where we explored and graphed the data, this assignment asks us to build and evaluate a classification model.
+
+The notebook will follow this sequence:
+
+1. Define what we’re predicting. Classification needs a category, such as pass/fail. The overview mentions exam score but does not yet say how to turn it into a category, so we’ll need that rule before building the model.
+2. Choose input columns. We’ll decide which habits and background variables the model can use, while keeping the answer we’re predicting out of the inputs.
+3. Split the rows into training and test sets. The model learns from one set; the other checks how it performs on students it has not seen.
+4. Handle missing values and other preprocessing. We’ll prepare the columns so scikit-learn can use them.
+5. Set a simple baseline, then train a model. The baseline gives us something meaningful to compare the model against.
+6. Evaluate and inspect mistakes. We’ll look beyond accuracy to see which students the model classifies incorrectly, then try a reasonable change and compare results.
+
+The main deliverable is a notebook that shows why we made each choice and what we learned, not just a model with a high score.
+
+------------------------------------------------------------------------
+
+YOU:
+Ok now we are going to do part 1
+
+in the last assignment exam_score was a numerical value
+
+now we are going to create a new categorical target value called high_exam_score
+
+defined as yes if exam_score >= 80
+and
+no if exam_score < 80
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 1 is in the Assignment 8 notebook. It loads the CSV and creates high_exam_score: yes for scores ≥ 80 and no for scores < 80.
+
+I checked the result: 99 students are “yes” and 151 are “no.” The original CSV is unchanged.
+
+------------------------------------------------------------------------
+
+YOU:
+ok walk me through how to answer these questions do not add them right away answer them in this chat first so i can review them
+
+Questions
+
+Explain:
+
+1. Why is predicting exam_score a regression problem?
+2. Why is predicting high_exam_score a classification problem?
+3. How many students belong to each class?
+4. What percentage of students belong to each class?
+
+Create a simple visualization showing the class distribution.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here’s how I’d answer them. I haven’t added anything to the notebook.
+
+1. Why is predicting exam_score regression?
+   exam_score is a numerical value. The model would predict a score, such as 76.5, rather than choose a category.
+
+2. Why is predicting high_exam_score classification?
+   This target has two categories: yes for a score of 80 or higher and no for a score below 80. The model would predict which category a student belongs to.
+
+3. How many students are in each class?
+   Of the 250 students, 151 are “no” and 99 are “yes.” We can get those counts with df["high_exam_score"].value_counts().
+
+4. What percentage is in each class?
+   Divide each count by 250 and multiply by 100:
+
+   | Class | Calculation | Percentage |
+   |---|---:|---:|
+   | No | 151 ÷ 250 × 100 | 60.4% |
+   | Yes | 99 ÷ 250 × 100 | 39.6% |
+
+Class distribution
+
+No   ██████████████████  151 (60.4%)
+Yes  ████████████         99 (39.6%)
+
+For the notebook, a simple bar chart would show no and yes on the horizontal axis and the number of students on the vertical axis. The main observation is that the classes are somewhat uneven: there are 52 more students in the “no” class.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that all looks good lets add this now
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added the four reviewed answers and a labeled bar chart to the Assignment 8 notebook.
+
+The notebook is valid, and I verified the counts: 151 no (60.4%) and 99 yes (39.6%). I couldn’t render the chart locally because Matplotlib is not installed in this environment; its code is ready to run in Colab.
+
+------------------------------------------------------------------------
+
+YOU:
+ok this is part 2 explain to me what we are doing here and why
+
+Part 2 — Choose the Features
+
+For the primary model, use:
+
+- study_hours_per_week
+- sleep_hours_per_night
+- attendance_rate
+- practice_problems_per_week
+- prior_programming_experience
+- study_group
+- commute_minutes
+
+Do not use:
+
+- student_id
+- exam_score
+- quiz_average
+
+We will return to some of these variables later.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 2 is where we decide what information the model can use to predict high_exam_score. The seven listed columns become the *features*, or inputs. They describe each student’s study habits, attendance, experience, study group participation, and commute.
+
+We leave out three columns for different reasons:
+
+- student_id identifies a row; it doesn’t describe a student’s learning habits.
+- exam_score directly determines high_exam_score. Giving it to the model would reveal the answer.
+- quiz_average is being held back for now, as the assignment specifies. We may compare what happens when we include it later.
+
+The model’s target is high_exam_score; the seven features are the information it will use to make that prediction. Some features are numbers and some are categories, so a later step will prepare them for scikit-learn.
+
+------------------------------------------------------------------------
+
+YOU:
+ok now we are answering these questions answer them first in this chat for me to review also give me any additional information that i may need to know so that i can fully understand the question
+
+Questions
+
+Explain why student_id should normally not be used as a predictor.
+
+More importantly, explain why using exam_score to predict high_exam_score would be a serious problem.
+
+Remember:
+
+high_exam_score was created directly from exam_score.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here’s how I’d answer the two questions. I haven’t added them to the notebook.
+
+Why should student_id normally be left out?
+It is a label used to identify a student’s row, not a measure of their habits or preparation. A model might find a pattern in the ID numbers that happens to fit this dataset, but that pattern may not hold for new students. We should use the seven assigned features that describe the student instead.
+
+Why is using exam_score a serious problem?
+We created high_exam_score *directly* from exam_score: a score of 80 or more means “yes,” and anything below 80 means “no.” If we give the model exam_score, we give it the answer in numerical form. For example, a score of 85 already tells us the label is “yes.”
+
+This is called target leakage. The model could appear to perform extremely well, even on a held-out test set, because every test row would also contain the value needed to calculate its answer. That result would tell us little about whether study habits can predict a high score. We use exam_score to create the target, then exclude it from the model’s inputs.
+
+One useful way to check our feature choices is to ask: *Would we know this value at the time we want to make the prediction?* The exam score would only be known after the exam, when the prediction is no longer needed.
+
+------------------------------------------------------------------------
+
+YOU:
+ok this looks good lets add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added the reviewed Part 2 explanations and feature selection to the Assignment 8 notebook.
+
+I verified that X contains exactly the seven assigned features for all 250 students, while y contains high_exam_score. student_id, exam_score, and quiz_average are excluded from the model inputs.
+
+------------------------------------------------------------------------
+
+YOU:
+now we are doing part 3 explain to code to me how we are going to do this
+
+Part 3 — Split the Data
+
+Use scikit-learn to divide the dataset into:
+
+- 80% training data
+- 20% test data
+
+Use:
+
+random_state=42
+
+Because this is a classification problem, investigate whether you should use stratification when creating the split.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 3 sets aside some students so we can later check how the model performs on data it did not learn from. We’ll train on 80% of the 250 students (200 rows) and reserve 20% (50 rows) for testing.
+
+Here is the code I would add, using the X and y we created in Part 2:
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42,
+    stratify=y,
+)
+
+print(f"Training students: {len(y_train)}")
+print(f"Test students: {len(y_test)}")
+
+print("\nTraining class percentages:")
+print(y_train.value_counts(normalize=True).mul(100).round(1))
+
+print("\nTest class percentages:")
+print(y_test.value_counts(normalize=True).mul(100).round(1))
+
+- X and y go into the same split call so each student’s features stay paired with their correct label.
+- test_size=0.20 reserves 20% for the test set; the remaining 80% is training data.
+- random_state=42 makes the random split repeatable. The number 42 is simply the seed the assignment requests.
+- stratify=y keeps the “yes” and “no” proportions approximately the same in both sets. That makes sense here because the full dataset is 39.6% “yes” and 60.4% “no.” Without stratification, a random split could leave one set with a noticeably different balance. Scikit-learn documents these options in train_test_split.
+
+The printed percentages let us confirm that stratification worked. In later parts, we should learn any preprocessing settings from training data only, then apply them to the test data. That keeps information from the test set out of training.
+
+------------------------------------------------------------------------
+
+YOU:
+ok lets add it
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 3 is in the Assignment 8 notebook, including the explanation and the stratified split with random_state=42.
+
+I ran the split to verify it: the training set has 200 students (121 no, 79 yes), and the test set has 50 students (30 no, 20 yes).
+
+------------------------------------------------------------------------
+
+YOU:
+ok now we have to answer these questions answer them in the chat first so i can review
+
+Questions
+
+Explain:
+
+1. What is the purpose of the training set?
+2. What is the purpose of the test set?
+3. What does stratification do?
+4. Why shouldn't we train the model using the test data?
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here’s how I’d answer them. I haven’t added these answers to the notebook.
+
+1. What is the purpose of the training set?
+   The training set contains 200 students. The model uses these examples to learn relationships between the seven features and high_exam_score. Any preprocessing that needs to learn from data, such as finding values to fill missing entries, should also be fitted using the training set.
+
+2. What is the purpose of the test set?
+   The test set contains 50 students kept aside during training. After the model is trained, we use it to see how well the model predicts labels for students it has not learned from.
+
+3. What does stratification do?
+   Stratification keeps the class balance approximately the same in both sets. In our split, the training set has 121 “no” and 79 “yes” students; the test set has 30 “no” and 20 “yes.” This helps make both sets representative of the full dataset’s roughly 60% “no” and 40% “yes” balance.
+
+4. Why shouldn’t we train using the test data?
+   If the model learns from the test students, those students are no longer an independent check. The resulting test score could look better than the model’s performance on genuinely new students. The same principle applies to preprocessing: we should fit it on the training data, then apply it to the test data.
+
+One nuance for the later “experiment” step: repeatedly changing the model based on test results can also make us overfit our choices to the test set. We’ll keep that in mind when comparing results.
+
+------------------------------------------------------------------------
+
+YOU:
+ok these look good lets add them to the note book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added the four reviewed Part 3 answers to the Assignment 8 notebook. The notebook is valid, and the existing split code and output are preserved.
+
+------------------------------------------------------------------------
+
+YOU:
+next up is part 4 show the code in the chat and explain it to me with any background information i may need to know before we proceede
+
+Part 4 — Establish a Baseline
+
+Before building a machine-learning model, establish a simple baseline.
+
+Determine which class is most common in the training data.
+
+Imagine a very simple classifier that predicts this majority class for every test student.
+
+Calculate its accuracy.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+For Part 4, we create a reference score before training a model. The baseline predicts the most common *training* label for every test student, without looking at any of their features. A later model should offer something useful beyond that simple rule.
+
+Here’s the code I’d add after the split:
+
+from sklearn.metrics import accuracy_score
+
+Learn the most common class from the training labels only.
+majority_class = y_train.value_counts().idxmax()
+
+Give every test student that same prediction.
+baseline_predictions = [majority_class] * len(y_test)
+
+Compare those predictions with the actual test labels.
+baseline_accuracy = accuracy_score(y_test, baseline_predictions)
+
+print(f"Training majority class: {majority_class}")
+print(f"Baseline test accuracy: {baseline_accuracy:.1%}")
+
+In our training set, “no” is the majority class: 121 “no” versus 79 “yes.” The baseline therefore predicts “no” for all 50 test students. It gets the 30 actual “no” students right, so its accuracy is 30 ÷ 50 = 60%. accuracy_score computes the fraction of correct predictions. Scikit-learn accuracy documentation
+
+The distinction between the sets matters: we choose the rule using training data, then measure its accuracy using test data. The training set is 60.5% “no,” but the baseline’s *test* accuracy is 60% because 30 of the 50 test students are “no.”
+
+A 60% score sounds better than chance, but this baseline never identifies a “yes” student. That’s one reason we’ll later inspect more than accuracy alone.
+
+------------------------------------------------------------------------
+
+YOU:
+ok this looks good lets add it
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added Part 4’s explanation and baseline code to the Assignment 8 notebook.
+
+I ran the code to verify the result: the training majority class is no, and predicting no for every test student gives 60.0% test accuracy.
+
+------------------------------------------------------------------------
+
+YOU:
+ok next we have to answer these questions answer them in this chat before add them
+
+Questions
+
+Explain:
+
+1. What is the majority class?
+2. What accuracy does the majority-class baseline achieve?
+3. Why is this baseline useful?
+
+Do not assume that a machine-learning model is good simply because its accuracy appears high.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here are the answers for review. I haven’t added them to the notebook.
+
+1. What is the majority class?
+   “No” is the majority class in the training set: 121 students are “no” and 79 are “yes.” We choose the baseline’s prediction from the *training* labels.
+
+2. What accuracy does the majority-class baseline achieve?
+   It predicts “no” for every test student. Since 30 of the 50 test students are actually “no,” it gets 30 ÷ 50 = 60% accuracy.
+
+3. Why is this baseline useful?
+   It gives us a simple reference. A model could get 60% accuracy without using any student habits at all, so a score around 60% would not show that it learned something useful from the features.
+
+We also shouldn’t judge a model by accuracy alone. This baseline gets every “yes” student wrong, despite its 60% accuracy. When we evaluate a trained model, we’ll check whether it improves on the baseline *and* how it handles both classes. With only 50 test students, each correct or incorrect prediction changes accuracy by 2 percentage points.
+
+------------------------------------------------------------------------
+
+YOU:
+ok lets add this
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added the three reviewed Part 4 answers to the Assignment 8 notebook. The notebook is valid, and the baseline code remains intact.
+
+------------------------------------------------------------------------
+
+YOU:
+i am not seeing it come up in vscode can you look at what is currently saved and where we should be
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I checked the file on disk. The notebook we should be using is Assignment 8/student_habits_analysis.ipynb, not the notebook with the same name in Assignment 7.
+
+The saved file now has 12 cells and ends with “Part 4 questions” beneath the baseline code. That section was missing when I first checked, so I restored it and verified it is saved. The baseline’s saved output still says 60.0%.
+
+In VS Code, check that the open tab is under Assignment 8. If it is, close and reopen that notebook from the Explorer to refresh it. If VS Code shows unsaved changes before closing, don’t discard them—let me know so we can preserve them.
+
+------------------------------------------------------------------------
+
+YOU:
+ok looks good here is what the next question is about tell me more about this and give me some background
+
+Part 5 — Preprocess the Data
+
+Your features contain both:
+
+- numerical variables; and
+- categorical variables.
+
+They also contain some missing values.
+
+Build a scikit-learn preprocessing workflow.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 5 prepares the seven input features so a scikit-learn model can use them. We’ve already separated the target (y) and split the students into training and test sets; now we need to handle blanks and turn text categories into numbers.
+
+In our CSV, the missing values among the chosen features are:
+
+| Feature | Missing values |
+|---|---:|
+| study_hours_per_week | 9 |
+| sleep_hours_per_night | 12 |
+| prior_programming_experience | 7 |
+
+The other four features have no missing values. One important detail from Assignment 7: the text "None" in prior_programming_experience means *no prior experience*. It is a real category, distinct from a blank value.
+
+I’d build two preparation paths:
+
+- Numerical features: fill missing values with the training column’s median. We may also scale the numbers so measurements such as hours, percentages, and minutes are on comparable scales, depending on the model we choose.
+- Categorical features: fill missing values with the most common training category, then one-hot encode them. One-hot encoding turns a category into indicator columns that a model can read as numbers; it avoids treating category names as arbitrary numeric scores. Scikit-learn’s OneHotEncoder can also handle a category that appears in the test set but was absent from training. OneHotEncoder documentation
+
+Scikit-learn’s Pipeline can put the steps in order for each type of feature, while ColumnTransformer applies the appropriate path to each set of columns and combines the results. Scikit-learn’s mixed-type example
+
+The key rule is to learn preprocessing values from X_train only. For example, calculate the fill-in median from training students, then use that same median on test students. Calculating it from the entire dataset would let test data influence training. Later, we can put preprocessing and the classifier in one pipeline so this sequence happens consistently.
+
+------------------------------------------------------------------------
+
+YOU:
+ok dont add anything yet but yes we will be focusing on numerical features first
+
+Numerical Features
+
+For numerical variables:
+
+1. handle missing values appropriately;
+2. use StandardScaler to standardize the numerical features.
+
+explain what we have to do to do this and then show me the code in this chat to look over before you add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+We have five numerical features: study hours, sleep hours, attendance rate, practice problems, and commute minutes. The first two contain blanks. We’ll process them in this order:
+
+1. Fill missing numbers. Use each column’s *training-set median*. In our split, the training medians are 7.4 study hours and 7.1 sleep hours. The median gives us a simple value without letting unusually high or low observations move it as much as they could move an average. SimpleImputer documentation
+2. Standardize each column. StandardScaler subtracts that column’s training mean and divides by its training standard deviation. This puts features measured in hours, percentages, counts, and minutes on comparable scales. A standardized value of 0 is near the training mean; +1 is about one standard deviation above it. StandardScaler documentation
+
+Here’s the code for your review. I haven’t added it to the notebook.
+
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+numeric_features = [
+    "study_hours_per_week",
+    "sleep_hours_per_night",
+    "attendance_rate",
+    "practice_problems_per_week",
+    "commute_minutes",
+]
+
+numeric_pipeline = Pipeline(steps=[
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler()),
+])
+
+Learn the medians, means, and standard deviations from training data.
+X_train_numeric = numeric_pipeline.fit_transform(X_train[numeric_features])
+
+Apply those same learned values to the test data.
+X_test_numeric = numeric_pipeline.transform(X_test[numeric_features])
+
+print("Training numeric shape:", X_train_numeric.shape)  # (200, 5)
+print("Test numeric shape:", X_test_numeric.shape)        # (50, 5)
+
+The distinction between fit_transform on training data and transform on test data is crucial. fit learns the medians and scaling values; transform applies them. We must not fit again on the test set, because that would let test data influence the preparation. The resulting arrays are only the numerical portion; we’ll combine them with the categorical features later.
+
+------------------------------------------------------------------------
+
+YOU:
+explain this a bit more Standardize each column
+
+is this just when you get all values between 0 and 1 so that it is easier to work with and one varible wont over power the others
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+You have the reason right: scaling helps prevent a feature from having extra influence merely because its numbers use a larger unit, such as attendance percentages versus sleep hours.
+
+The correction is that StandardScaler does not put values between 0 and 1. It changes each numerical column so its *training values* have a mean near 0 and a standard deviation near 1:
+
+standardized value = (original value − training mean) ÷ training standard deviation
+
+For example, if average study time were 7 hours with a standard deviation of 2 hours:
+
+- 7 hours → 0 (at the average)
+- 9 hours → +1 (one standard deviation above)
+- 5 hours → −1 (one standard deviation below)
+
+Values can be negative or greater than 1. Putting values into a 0-to-1 range is a different method, usually called min-max scaling. Standardization makes the *units* more comparable; it does not guarantee that every feature will have equal importance to the model. Scikit-learn’s StandardScaler documentation
+
+------------------------------------------------------------------------
+
+YOU:
+will we be doing this for all the columns?
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+We’ll use StandardScaler on all five selected numerical features: study hours, sleep hours, attendance rate, practice problems, and commute minutes. Even columns without missing values will be scaled.
+
+We won’t standardize the two categorical features (prior_programming_experience and study_group); we’ll encode those separately. We also won’t scale high_exam_score, because it’s the answer we’re predicting. student_id, exam_score, and quiz_average remain outside this primary model.
+
+------------------------------------------------------------------------
+
+YOU:
+ok this all looks good lets add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added Part 5’s numerical preprocessing explanation and code to the Assignment 8 notebook.
+
+I ran the new code: it fills missing values using training data, then scales all five numerical features. The results have the expected shapes—200 × 5 for training and 50 × 5 for testing—with no missing values remaining. If the new cells don’t appear in VS Code, reopen the Assignment 8 notebook to refresh it.
+
+------------------------------------------------------------------------
+
+YOU:
+ok this is the next step in part 5 before any code give me another explination of this
+
+Categorical Features
+
+For categorical variables:
+
+1. handle missing values appropriately;
+2. convert categories into numerical representations using one-hot encoding.
+
+Use scikit-learn tools such as:
+
+- SimpleImputer
+- StandardScaler
+- OneHotEncoder
+- ColumnTransformer
+- Pipeline
+
+You may ask your AI assistant to help you construct the pipeline.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+The categorical part handles the two text columns in our chosen features: prior_programming_experience and study_group. Many models need numerical inputs, so we must prepare these columns differently from the five numerical ones.
+
+First, we’ll fill missing categories using the most common value in the training set. There are seven blank prior_programming_experience entries in the full dataset. The word “None” is not a blank—it means the student has no prior programming experience, so we must preserve it as a real category. We’ll learn the fill value from training data and apply that same value to test data. SimpleImputer documentation
+
+Next, one-hot encoding makes a separate 0-or-1 indicator for each category. For example, study_group can become one indicator for “Yes” and one for “No.” This lets a model use the categories without pretending that labels such as “None,” “Some,” and “Strong” are numbers with fixed distances between them. These indicators really are 0 or 1; that differs from the standardized numerical features, which can be negative or greater than 1. OneHotEncoder documentation
+
+We’ll put the categorical steps—fill missing values, then encode—in a Pipeline. A ColumnTransformer will send the five numerical columns through the numerical pipeline we just built and the two categorical columns through this new pipeline, then combine their outputs. Both paths will learn their settings from training data only. Scikit-learn’s mixed-type pipeline example
+
+------------------------------------------------------------------------
+
+YOU:
+explain what we are going to do for blank entries in this also for hot encoding when there are more then 2 different states do you pick numbers between 0 and 1 is that what is ment by hot encoding to use more number in the interval between 0 and 1
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+For blank entries, we’ll use the most common category in the training set. In our split, prior_programming_experience has 5 blanks in training and 2 in testing. “Some” is the most common training category, so the imputer will replace those blanks with “Some” in both sets. It learns that choice from training data only. The written value “None” stays “None” because it means no prior experience; it is not a blank. study_group has no blanks, so nothing needs filling there.
+
+One-hot encoding uses only 0 and 1, even when there are more than two categories. It creates *one column per category*:
+
+| Experience | None column | Some column | Strong column |
+|---|---:|---:|---:|
+| None | 1 | 0 | 0 |
+| Some | 0 | 1 | 0 |
+| Strong | 0 | 0 | 1 |
+
+So we do not assign values such as 0, 0.5, and 1 to the three experience levels. That would suggest a numerical distance between the categories. One-hot encoding simply marks which category applies. After filling a blank with “Some,” its encoded row would be 0, 1, 0.
+
+------------------------------------------------------------------------
+
+YOU:
+i see ok show me what the code will look like for this step
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here’s the code I’d add after the numerical pipeline. It reuses the numeric_features and numeric_pipeline already in the notebook. I haven’t added this yet.
+
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+
+categorical_features = [
+    "prior_programming_experience",
+    "study_group",
+]
+
+categorical_pipeline = Pipeline(steps=[
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("onehot", OneHotEncoder(handle_unknown="ignore")),
+])
+
+preprocessor = ColumnTransformer(transformers=[
+    ("numeric", numeric_pipeline, numeric_features),
+    ("categorical", categorical_pipeline, categorical_features),
+])
+
+Learn fill values, scaling values, and categories from training data.
+X_train_prepared = preprocessor.fit_transform(X_train)
+
+Apply the same preparation to test data without learning from it.
+X_test_prepared = preprocessor.transform(X_test)
+
+print("Prepared training shape:", X_train_prepared.shape)
+print("Prepared test shape:", X_test_prepared.shape)
+
+The categorical pipeline first fills blanks, then creates indicator columns. handle_unknown="ignore" lets the test set be processed even if it contains a category that was not seen during training. ColumnTransformer sends each column to the appropriate pipeline and joins the results.
+
+I tested this with our split. It produces 200 × 10 training values and 50 × 10 test values: five scaled numerical columns, three experience indicators (None, Some, Strong), and two study-group indicators (No, Yes). The categorical fill values learned from training are “Some” for experience and “Yes” for study group, though study_group currently has no blanks.
+
+------------------------------------------------------------------------
+
+YOU:
+ok this looks good lets add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added the categorical pipeline and ColumnTransformer to the Assignment 8 notebook.
+
+I ran the new code. It preserves "None" as a real experience category, fills blanks from training data, and produces 200 × 10 prepared training data and 50 × 10 prepared test data, with no missing values remaining.
+
+------------------------------------------------------------------------
+
+YOU:
+ok now we have to answer these questions just answer them in the chat first for me to review
+
+Questions
+
+Explain in your own words:
+
+1. Why do categorical variables need to be converted before Logistic Regression can use them?
+2. What does one-hot encoding do?
+3. Why do we need to handle missing values?
+4. What does StandardScaler do?
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here are draft answers for review. I haven’t added them to the notebook.
+
+1. Why convert categorical variables before Logistic Regression?
+   Logistic Regression works with numerical inputs, so it cannot directly use text such as "Some" or "Yes". We need to represent those categories as numbers without inventing a ranking between them.
+
+2. What does one-hot encoding do?
+   It creates a separate 0-or-1 column for each category. For example, experience levels None, Some, and Strong become three indicator columns. A student with Some has a 1 in that column and 0 in the other two.
+
+3. Why handle missing values?
+   A blank gives the model no usable value for that feature. We fill blanks so we can keep those students and process their rows consistently. We learn the fill values from the training set only and apply them to the test set. The written experience category "None" remains a valid category; it is not a blank.
+
+4. What does StandardScaler do?
+   It subtracts each numerical feature’s training mean and divides by its training standard deviation. This makes features measured in different units more comparable. The results are not restricted to 0 through 1; they can be negative or greater than 1.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added the four reviewed Part 5 answers to the Assignment 8 notebook and verified they’re saved beneath the preprocessing code.
+
+------------------------------------------------------------------------
+
+YOU:
+ok here is the next step explain what we are doing here and what all of this means to me first. Then explain how we would need to change our pipeline if it is not correct.
+
+Part 6 — Understand Data Scaling
+
+Your numerical features have different units and ranges.
+
+For example:
+
+- study hours are measured in hours;
+- attendance is measured as a percentage;
+- commute time is measured in minutes.
+
+Use StandardScaler as part of your preprocessing pipeline.
+
+Standardization transforms a numerical value approximately according to:
+
+where:
+
+- ﻿﻿ is the original value;
+- ﻿﻿ is the training-data mean;
+- ﻿﻿ is the training-data standard deviation.
+
+After standardization, a numerical feature will have approximately:
+
+- mean = 0;
+- standard deviation = 1.
+
+Important
+
+The scaler should be fit using the training data, not the entire dataset.
+
+The fitted transformation can then be applied to the test data.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 6 explains why the scaling step we already added matters. Our numerical inputs use different units: study hours might be around 7, attendance around 85, and commute around 25 minutes. StandardScaler puts each numerical column on a comparable scale using:
+
+\[
+z=\frac{x-\mu_{\text{train}}}{\sigma_{\text{train}}}
+\]
+
+Here, \(x\) is a value, \(\mu_{\text{train}}\) is that column’s training-data mean, and \(\sigma_{\text{train}}\) is its training-data standard deviation. For a simple example, if training study hours averaged 7 with a standard deviation of 2, then 9 hours becomes \(+1\), 7 becomes 0, and 5 becomes \(-1\). The values are not confined to 0–1.
+
+The scaled training column has a mean near 0 and a standard deviation near 1. The test column may not: we apply the *training* mean and standard deviation to it rather than calculating new ones. This helps models such as Logistic Regression work with features in different units, but it does not force every feature to be equally useful.
+
+I checked our saved pipeline; no change is needed. It fills missing numerical values first, then runs StandardScaler. The combined preprocessor uses fit_transform(X_train) to learn the fill and scaling values, followed by transform(X_test) to apply those same values. Our earlier numerical-only cell does the same thing as a demonstration; it repeats some work when the combined pipeline runs, but it does not use test data to fit the scaler.
+
+------------------------------------------------------------------------
+
+YOU:
+ok if no change is needed help me answer these questions here in the chat so i can review before adding them to my work book
+
+Questions
+
+Explain:
+
+1. Why might scaling be useful for Logistic Regression?
+2. Does standardization mean that all original values become numbers between 0 and 1?
+3. Why should the test set not be used to calculate the mean and standard deviation used for scaling?
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here are draft answers for review. I haven’t added them to the notebook.
+
+1. Why might scaling be useful for Logistic Regression?
+   Our numerical features use different units and ranges. Scaling puts them on comparable scales, which helps Logistic Regression learn efficiently. It also means the model’s regularization does not treat a feature differently simply because it is measured in larger numbers, such as minutes rather than hours. Scaling does not make every feature equally important.
+
+2. Does standardization put all values between 0 and 1?
+   No. Standardization measures how far a value is from its training mean in standard deviations. Values below the mean can be negative, and values well above it can be greater than 1. A 0-to-1 range is a different scaling method.
+
+3. Why not calculate scaling values from the test set?
+   The test set is meant to represent students the model has not seen. Using it to calculate the mean or standard deviation would let information from those students influence preprocessing, making the evaluation less independent. We calculate those values from the training set and apply the same transformation to the test set.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added the three reviewed Part 6 answers to the Assignment 8 notebook and verified they’re saved. The preprocessing code did not need changes.
+
+------------------------------------------------------------------------
+
+YOU:
+ok here is the next question explain what all of this means to me like i know nothing
+
+Part 7 — Train a Logistic Regression Classifier
+
+Build a scikit-learn Pipeline that combines:
+
+Numerical features
+
+missing-value handling → StandardScaler
+
+Categorical features
+
+missing-value handling → one-hot encoding
+
+followed by:
+
+LogisticRegression
+
+Train the model using the training data.
+
+Do not add additional machine-learning algorithms yet.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 7 is where we train the first actual model. So far, we have prepared a way to turn each student’s seven features into numbers. Logistic Regression will use those prepared numbers to predict whether high_exam_score is “yes” or “no.” Despite its name, scikit-learn’s Logistic Regression is a *classifier*—it can estimate the probability of each class and choose a label. Scikit-learn LogisticRegression documentation
+
+Think of the full pipeline as one recipe:
+
+Student’s 7 features
+    ├─ 5 numerical columns → fill blanks → standardize
+    └─ 2 categorical columns → fill blanks → one-hot encode
+                         ↓
+              10 prepared numerical columns
+                         ↓
+                 Logistic Regression
+                         ↓
+                 predicted yes or no
+
+Training means showing that recipe the 200 training students *and* their correct high_exam_score labels. The preprocessing steps learn their fill values, scaling values, and categories from those students. Logistic Regression then learns how the prepared features relate to “yes” and “no.” A scikit-learn Pipeline runs those steps in order. Scikit-learn mixed-type pipeline example
+
+We already built the preprocessing portion. For Part 7, we’ll make it the first step of one complete pipeline and put LogisticRegression after it. We’ll train that full pipeline using the original X_train and y_train; it will prepare the features internally. We should not feed it X_train_prepared, because that would try to preprocess data that has already been prepared. The 50 test students remain aside for evaluation, and we won’t add another algorithm at this stage.
+
+------------------------------------------------------------------------
+
+YOU:
+ok show me what the code looks like and explain it so that i can review before we add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here’s the code for review. I haven’t added it to the notebook.
+
+from sklearn.linear_model import LogisticRegression
+
+log_reg_pipeline = Pipeline(steps=[
+    ("preprocessor", preprocessor),
+    ("classifier", LogisticRegression(max_iter=1000)),
+])
+
+log_reg_pipeline.fit(X_train, y_train)
+
+print("Model trained on", len(y_train), "students")
+print("Classes:", log_reg_pipeline.named_steps["classifier"].classes_)
+
+- preprocessor is the combined numerical and categorical preparation we built in Part 5.
+- LogisticRegression(...) is the classifier. max_iter=1000 is the maximum number of attempts it can use to finish learning; it does not mean it always takes 1,000 iterations.
+- Pipeline connects them. Calling fit first fits preprocessing on the training features, then trains Logistic Regression on the prepared features. Scikit-learn Pipeline documentation
+- X_train contains the original seven feature columns; y_train contains their correct “yes” or “no” labels. We pass X_train, not X_train_prepared, because the pipeline handles preparation itself.
+- The print statements confirm training used 200 students and learned the two classes, no and yes. They do not measure how good the model is; we’ll use the held-out test set for that later.
+
+I tested this code with the current notebook setup. It trained successfully and stopped after 14 iterations.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added the Part 7 Logistic Regression pipeline to the Assignment 8 notebook. I ran it successfully: it trained on 200 students and recognizes the no and yes classes. The test set remains reserved for evaluation.
+
+------------------------------------------------------------------------
+
+YOU:
+ok next we have to answer these questions show me in the chat before we add it to the workbook
+
+Questions
+
+Explain:
+
+1. What does .fit() do?
+2. What is learned from the training data?
+3. Why is it useful to put preprocessing and the classifier into one pipeline?
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here are draft answers for review. I haven’t added them to the notebook.
+
+1. What does .fit() do?
+   log_reg_pipeline.fit(X_train, y_train) teaches the whole pipeline using the 200 training students. It first fits the preprocessing steps, transforms the training features, and then fits Logistic Regression using those features and the correct “yes” or “no” labels. It does not evaluate the model on the test set.
+
+2. What is learned from the training data?
+   The preprocessor learns the values needed to fill blanks, the mean and standard deviation for each numerical feature, and which categories need one-hot columns. Logistic Regression then learns weights and an intercept that connect those prepared features to the two classes. The 80-point rule was set by us earlier; the model does not discover or change that rule.
+
+3. Why put preprocessing and the classifier in one pipeline?
+   One pipeline runs the same steps in the right order every time. We can give it the original seven feature columns for training and, later, for prediction. It also helps prevent mistakes such as using different preparation for test students or fitting preprocessing on the test set.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added the three reviewed Part 7 answers to the Assignment 8 notebook and verified they’re saved beneath the training code.
+
+------------------------------------------------------------------------
+
+YOU:
+try readding it the workbook was out of sync
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+The saved notebook had reverted to 20 cells, so the Part 7 answers were missing. I re-added them and verified that Assignment 8’s notebook now has 21 cells, ending with “Part 7 questions.”
+
+Reopen that file in VS Code to load the disk version. If VS Code shows unsaved changes, preserve those before saving so its older copy doesn’t overwrite the restored section.
+
+------------------------------------------------------------------------
+
+YOU:
+ok here is the next step explain what we are doing here first before we use any actual code
+
+Part 8 — Make Predictions
+
+Use your trained classifier to predict high_exam_score for students in the test set.
+
+Display some examples containing:
+
+- actual class;
+- predicted class.
+
+Then obtain the model's predicted probability for the Yes class.
+
+Display some examples containing:
+
+- actual class;
+- predicted class;
+- probability of Yes.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 8 is where we ask the trained model to predict labels for the 50 test students it did not learn from.
+
+We’ll give the pipeline each student’s seven features. It will fill blanks, scale numerical values, and encode categories using the settings learned during training. Logistic Regression will then predict “yes” or “no.”
+
+We’ll compare two things:
+
+- Actual class: the correct label from y_test, determined by whether the student’s exam score was at least 80.
+- Predicted class: the label the model chooses from the student’s features.
+
+Next, we’ll ask for the model’s estimated probability of “yes.” For example, 0.85 means the model assigns an 85% probability to the student belonging to the high-score class. It is an estimate, so even a confident prediction can be wrong.
+
+Here are illustrative examples, not our model’s results:
+
+| Actual class | Predicted class | Probability of yes |
+|---|---|---:|
+| yes | yes | 85% |
+| no | yes | 58% |
+| yes | no | 34% |
+
+The first prediction is correct. The second predicts a high score incorrectly. The third misses a student who actually scored at least 80. The model normally chooses whichever class has the higher estimated probability, so a “yes” probability close to 50% represents a less decisive prediction.
+
+This step gives us the predictions to inspect. We’ll make sure each prediction stays paired with the correct test student and actual label.
+
+------------------------------------------------------------------------
+
+YOU:
+ok before we add to the work book show me what the code would look like for me to review in this chat also explain it
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+This code fits our existing log_reg_pipeline. I haven’t added it to the notebook.
+
+Predict a class for each test student.
+y_pred = log_reg_pipeline.predict(X_test)
+
+prediction_results = pd.DataFrame({
+    "actual_class": y_test,
+    "predicted_class": y_pred,
+}, index=X_test.index)
+
+display(prediction_results.head(10))
+
+Find which probability column represents our "yes" class.
+classes = log_reg_pipeline.named_steps["classifier"].classes_
+yes_column = list(classes).index("yes")
+
+Obtain the estimated probability of "yes" for each test student.
+yes_probabilities = log_reg_pipeline.predict_proba(X_test)[:, yes_column]
+
+prediction_results["probability_of_yes"] = yes_probabilities
+
+display(
+    prediction_results.head(10).style.format({
+        "probability_of_yes": "{:.1%}"
+    })
+)
+
+Here’s what each part does:
+
+- .predict(X_test) runs the test features through the trained pipeline and returns one yes or no prediction per student.
+- prediction_results pairs each prediction with its actual label. Using X_test.index keeps the rows associated with their original students.
+- .head(10) displays the first ten test examples.
+- classes_ tells us the order of the probability columns. We locate "yes" explicitly so we select the correct column.
+- .predict_proba(X_test) returns both class probabilities for each student. [:, yes_column] selects the “yes” probability for every row.
+- .style.format(...) displays probabilities as percentages, such as 85.3%; the stored values remain numbers between 0 and 1.
+
+The first table shows actual and predicted labels. The second adds the probability of “yes.” These calls use the already learned preprocessing and classifier settings; they do not train anything on the test students.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add the code to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added Part 8 to the Assignment 8 notebook.
+
+Verified all 50 predictions and probabilities align with the actual test labels. Run the new cell to display the first ten examples.
+
+------------------------------------------------------------------------
+
+YOU:
+next we have to answer these questions answer them here for me to review in the chat before we add them to the work book
+
+Explain the difference between:
+predict()
+and
+predict_proba().
+What does a predicted probability near 0.5 suggest?
+What about a probability near 0.95?
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here are the answers for review:
+
+1. What is the difference between predict() and predict_proba()?
+   predict() returns the chosen class for each student: “yes” or “no.” predict_proba() returns the model’s estimated probability of each class. In our table, we display only the probability of “yes.”
+
+2. What does a probability near 0.5 suggest?
+   A “yes” probability near 50% means the model has little preference between the two classes. The prediction is close to its decision boundary, so a small change in the features could change the predicted label.
+
+3. What does a probability near 0.95 suggest?
+   A “yes” probability near 95% means the model strongly favors the “yes” class. It assigns about 5% probability to “no.” This is still an estimate and can be wrong; it does not mean the student will score 95 or that the model has 95% overall accuracy.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added the reviewed Part 8 answers to the Assignment 8 notebook and verified they’re saved beneath the prediction code.
+
+------------------------------------------------------------------------
+
+YOU:
+ok here is the next question explain it to me in the chat before we write any code
+
+Part 9 — Evaluate the Classifier
+
+Evaluate your model using at least:
+
+- accuracy;
+- confusion matrix;
+- precision for Yes;
+- recall for Yes.
+
+Compare the Logistic Regression accuracy with the majority-class baseline from Part 4.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 9 checks how well our model predicts the 50 test students. We’ll compare its predictions with the actual labels using four measures, because a single score can hide important mistakes.
+
+1. Accuracy is the proportion of *all* test students classified correctly. If 40 of 50 predictions were correct, accuracy would be 80%. That is an example, not our model’s result.
+
+2. The confusion matrix counts correct predictions and both kinds of mistakes:
+
+   | Actual class | Predicted no | Predicted yes |
+   |---|---|---|
+   | no | Correctly predicted no | Incorrectly predicted yes |
+   | yes | Missed a high-scoring student | Correctly predicted yes |
+
+   These cells are often called true negatives, false positives, false negatives, and true positives, respectively. Here, “positive” simply means the yes class.
+
+3. Precision for Yes asks: *Of the students we predicted would score at least 80, how many actually did?*
+
+   \[
+   \text{Precision}=\frac{\text{correct yes predictions}}{\text{all yes predictions}}
+   \]
+
+   High precision means relatively few students are incorrectly labeled “yes.”
+
+4. Recall for Yes asks: *Of all students who actually scored at least 80, how many did we identify?*
+
+   \[
+   \text{Recall}=\frac{\text{correct yes predictions}}{\text{all actual yes students}}
+   \]
+
+   High recall means we miss relatively few high-scoring students.
+
+Precision and recall use different denominators. Precision starts with the students the model *predicted* were yes; recall starts with the students who *actually* were yes.
+
+Finally, we’ll compare Logistic Regression’s accuracy with the 60% baseline from Part 4. That baseline predicted “no” for everyone and missed every actual “yes” student. We’ll check whether Logistic Regression improves accuracy and how successfully it identifies “yes” students. Since the test set contains 50 students, each correct prediction changes accuracy by 2 percentage points.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that all make sense show me the code to review here in this chat and explain it before we add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here’s the evaluation code for review. It uses y_pred from Part 8 and baseline_accuracy from Part 4.
+
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    precision_score,
+    recall_score,
+)
+
+model_accuracy = accuracy_score(y_test, y_pred)
+
+yes_precision = precision_score(
+    y_test, y_pred, pos_label="yes", zero_division=0
+)
+
+yes_recall = recall_score(
+    y_test, y_pred, pos_label="yes", zero_division=0
+)
+
+Rows are actual classes; columns are predicted classes.
+matrix = confusion_matrix(y_test, y_pred, labels=["no", "yes"])
+
+confusion_table = pd.DataFrame(
+    matrix,
+    index=["Actual no", "Actual yes"],
+    columns=["Predicted no", "Predicted yes"],
+)
+
+display(confusion_table)
+
+print(f"Logistic Regression accuracy: {model_accuracy:.1%}")
+print(f"Majority-class baseline accuracy: {baseline_accuracy:.1%}")
+
+accuracy_gain = (model_accuracy - baseline_accuracy) * 100
+print(f"Accuracy improvement: {accuracy_gain:+.1f} percentage points")
+
+print(f"Precision for yes: {yes_precision:.1%}")
+print(f"Recall for yes: {yes_recall:.1%}")
+
+- accuracy_score compares every prediction with its actual label.
+- pos_label="yes" tells precision and recall to focus on the “yes” class. zero_division=0 reports zero if a metric cannot be calculated because its denominator is zero. Precision documentation
+- labels=["no", "yes"] fixes the confusion matrix’s order. The DataFrame adds readable labels: actual classes run down the rows, and predictions run across the columns. Confusion matrix documentation
+- accuracy_gain compares the two accuracies in percentage points.
+
+I tested it with our current split. Logistic Regression achieves 84% accuracy, compared with the 60% baseline—an improvement of 24 percentage points. Precision for “yes” is 87.5%, and recall is 70%.
+
+The confusion matrix shows why those scores differ:
+
+| | Predicted no | Predicted yes |
+|---|---:|---:|
+| Actual no | 28 | 2 |
+| Actual yes | 6 | 14 |
+
+The model correctly identifies 14 of the 20 actual “yes” students, while missing six. Nothing has been added to the notebook yet.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added Part 9 to the Assignment 8 notebook and verified the code produces:
+
+- Accuracy: 84%, versus the 60% baseline
+- Yes precision: 87.5%
+- Yes recall: 70%
+- The confusion matrix we reviewed
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets answer these questions now in the chat for me to review before we add them to the work book
+
+Questions
+
+Explain each metric in ordinary language.
+
+Accuracy
+
+What fraction of all test predictions were correct?
+
+Precision
+
+Among students predicted to have a high exam score, what fraction actually did?
+
+Recall
+
+Among students who actually had a high exam score, what fraction did the model identify?
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+1. Accuracy: How often was the model right overall?
+   It correctly classified 42 of the 50 test students, giving 84% accuracy. Those correct predictions include 28 “no” students and 14 “yes” students.
+
+2. Precision: How reliable were its “yes” predictions?
+   The model predicted “yes” for 16 students. Of those, 14 actually had a high exam score, giving 14 ÷ 16 = 87.5% precision. The other two were incorrectly predicted as “yes.”
+
+3. Recall: How many high-scoring students did it find?
+   There were 20 actual “yes” students. The model identified 14 of them, giving 14 ÷ 20 = 70% recall. It missed the other six.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added the reviewed accuracy, precision, and recall answers to the Assignment 8 notebook and verified they’re saved beneath Part 9.
+
+------------------------------------------------------------------------
+
+YOU:
+ok here is question 10 explain what this is before we do any code
+
+Part 10 — Understand the Confusion Matrix
+
+Create and display a confusion matrix.
+
+Identify:
+
+- True Negative
+- False Positive
+- False Negative
+- True Positive
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 10 asks us to read and label the confusion matrix we created in Part 9. It shows which predictions were correct and what kinds of mistakes the model made.
+
+For this assignment, positive means “yes”—an exam score of at least 80—and negative means “no.” “True” means the prediction was correct; “false” means it was incorrect.
+
+Our matrix is:
+
+| Actual class | Predicted no | Predicted yes |
+|---|---:|---:|
+| no | 28 True Negatives | 2 False Positives |
+| yes | 6 False Negatives | 14 True Positives |
+
+- True Negative: The model predicted “no,” and the student actually scored below 80. There are 28.
+- False Positive: The model predicted “yes,” but the student actually scored below 80. There are 2.
+- False Negative: The model predicted “no,” but the student actually scored at least 80. There are 6.
+- True Positive: The model predicted “yes,” and the student actually scored at least 80. There are 14.
+
+The diagonal cells contain the 42 correct predictions. The other two cells contain the 8 mistakes. This shows that the model missed more high-scoring students than it incorrectly labeled as high-scoring—something the 84% accuracy score alone does not tell us.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that all makes sense show me the code here in the chat and explain it for me to review
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+We can display a version of the matrix that labels each result directly. This uses the predictions from Part 8.
+
+from sklearn.metrics import confusion_matrix
+
+Keep "no" first and "yes" second for both rows and columns.
+matrix = confusion_matrix(y_test, y_pred, labels=["no", "yes"])
+
+Read the four cells in order: top left, top right,
+bottom left, bottom right.
+tn, fp, fn, tp = matrix.ravel()
+
+labeled_matrix = pd.DataFrame(
+    [
+        [f"True Negative: {tn}", f"False Positive: {fp}"],
+        [f"False Negative: {fn}", f"True Positive: {tp}"],
+    ],
+    index=["Actual no", "Actual yes"],
+    columns=["Predicted no", "Predicted yes"],
+)
+
+display(labeled_matrix)
+
+- confusion_matrix(...) counts the combinations of actual and predicted labels.
+- labels=["no", "yes"] fixes their order. This makes the first row and column represent “no.”
+- .ravel() reads the four counts across the top row, then across the bottom row. We store them as tn, fp, fn, and tp.
+- labeled_matrix places those counts into a readable table.
+
+The resulting display should be:
+
+| | Predicted no | Predicted yes |
+|---|---|---|
+| Actual no | True Negative: 28 | False Positive: 2 |
+| Actual yes | False Negative: 6 | True Positive: 14 |
+
+I haven’t added this code to the notebook yet.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added Part 10 to the Assignment 8 notebook and verified the labeled matrix: 28 true negatives, 2 false positives, 6 false negatives, and 14 true positives.
+
+------------------------------------------------------------------------
+
+YOU:
+ok now we need to answer these questions answer them in the chat for me to review before we add to the workbook
+
+Questions
+
+How many false positives did your model produce?
+
+How many false negatives?
+
+Explain the difference between these two types of errors in the context of this problem.
+
+For example, what does a false positive mean when predicting whether a student will have a high exam score?
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+The model produced 2 false positives and 6 false negatives.
+
+A false positive means the model predicted that a student would score 80 or higher, but the student actually scored below 80. It incorrectly labeled them “yes.”
+
+A false negative means the model predicted that a student would score below 80, but the student actually scored 80 or higher. It incorrectly labeled them “no.”
+
+False positives overestimate a student’s outcome; false negatives miss students who achieve a high score. Our model made more false negatives than false positives.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add this to the workbook
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added the reviewed Part 10 answers to the Assignment 8 notebook and verified they’re saved beneath the labeled confusion matrix.
+
+------------------------------------------------------------------------
+
+YOU:
+ok here is question 11 explain what we will be doing in this question before we write any code
+
+Part 11 — Inspect Individual Errors
+
+Find the students that your classifier predicted incorrectly.
+
+Separate or identify:
+
+- false positives;
+- false negatives.
+
+Examine several of these students' feature values.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 11 takes the eight mistakes from the confusion matrix and examines the individual students behind them. We want to understand what their input data looked like when the model made the wrong prediction.
+
+We’ll do three things:
+
+1. Find incorrect predictions. Compare each test student’s actual label with their predicted label and keep the rows where they differ.
+2. Identify the error type. We should find 2 false positives—actual “no,” predicted “yes”—and 6 false negatives—actual “yes,” predicted “no.”
+3. Inspect their seven feature values. We’ll look at study hours, sleep, attendance, practice problems, programming experience, study group, and commute time.
+
+We’ll display the original values so hours and minutes remain easy to interpret. We can include the student ID to identify each row, along with the actual label, prediction, and probability of “yes.” Using an ID to label this inspection table is fine; it still stays outside the model’s inputs.
+
+For example, we might find a missed high-scoring student whose habits resemble those of lower-scoring students. We might also find that an incorrect prediction had a probability close to 50%, meaning the model was less decisive. These are possibilities to investigate, not conclusions we have reached yet.
+
+Inspecting errors can reveal patterns or limitations, but a few examples cannot prove why a student earned their score or which feature caused a mistake.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that all makes sense show me the code and explain it to me here in this chat
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here’s the code for review. It uses the prediction_results table from Part 8 and displays all eight errors.
+
+Find rows where the actual and predicted classes differ.
+error_mask = (
+    prediction_results["actual_class"]
+    != prediction_results["predicted_class"]
+)
+errors = prediction_results.loc[error_mask].copy()
+
+Attach each student's ID and original seven feature values.
+error_details = df.loc[
+    errors.index,
+    ["student_id"] + feature_columns
+].join(errors)
+
+Actual no, predicted yes.
+false_positives = error_details.loc[
+    (error_details["actual_class"] == "no")
+    & (error_details["predicted_class"] == "yes")
+]
+
+Actual yes, predicted no.
+false_negatives = error_details.loc[
+    (error_details["actual_class"] == "yes")
+    & (error_details["predicted_class"] == "no")
+]
+
+print(f"False positives: {len(false_positives)}")
+display(false_positives)
+
+print(f"False negatives: {len(false_negatives)}")
+display(false_negatives)
+
+- error_mask marks each incorrect prediction as True. .loc[error_mask] keeps those rows.
+- errors.index identifies the original rows belonging to those students. .join(errors) pairs their features with the actual label, predicted label, and probability of “yes.”
+- The two filters select the error types. & means both conditions must hold.
+- display() shows the feature values for each group so we can inspect them.
+
+The tables use the original feature values. If a blank appears as NaN, it shows that the original entry was missing; the model still received the value filled by its preprocessing pipeline. student_id helps us identify rows and remains outside the model’s inputs.
+
+I tested the selection: it finds 2 false positives and 6 false negatives, correctly aligned with their original data. I haven’t added it to the notebook yet.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added Part 11 to the Assignment 8 notebook. Verified it displays 2 false positives and 6 false negatives, paired with the correct original student data.
+
+------------------------------------------------------------------------
+
+YOU:
+next we have to answers these questions answer them here in this chat so that i can review them before we add to the workbook
+
+Questions
+
+Do you notice anything interesting about the mistakes?
+
+Can you form a hypothesis about why the model may have found some of these students difficult to classify?
+
+Be careful with your language.
+
+You may describe patterns or hypotheses, but do not claim that a particular feature caused a student's exam result.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I notice three patterns in the eight mistakes:
+
+- Many predictions were close to 50%. Five errors had a probability of “yes” between about 47% and 54%. Both false positives were close to that boundary, at 50.1% and 54.1%.
+- Study hours did not cleanly separate the outcomes. Three missed high-scoring students had 5.5–5.7 recorded study hours per week, while both false positives had more than nine hours.
+- Two students had missing inputs. One was missing study hours, and another was missing programming experience. The pipeline substituted typical training values for those entries.
+
+My hypothesis is that some students were difficult to classify because high and low scorers can have overlapping or mixed patterns in their recorded habits. Filling missing entries with typical values may also hide differences between individual students. These seven features may not capture everything relevant to an exam result.
+
+These observations describe a small set of errors. They do not establish that study hours, missing values, or any other feature caused a student’s score or the model’s mistake.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add these to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added the reviewed Part 11 observations and hypothesis to the Assignment 8 notebook and verified they’re saved beneath the error-inspection code.
+
+------------------------------------------------------------------------
+
+YOU:
+this is question 12 explain what this asking in the chat here so that i can ask any questions i may have before we start with the code
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Please paste the Part 12 instructions, and I’ll explain what they’re asking before we write any code.
+
+------------------------------------------------------------------------
+
+YOU:
+i have a question on what exactly machine learning is is this linear alegabra how does this relate to matrix is and also can you explain how large language models work as a whole and how say random forests work and if there is any overlap in these technologies
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Machine learning is broader than linear algebra, but linear algebra is one of its main tools. Logistic Regression, random forests, and large language models are all forms of machine learning. They differ in what they learn and how they make predictions.
+
+Machine learning means using examples to learn a prediction rule. In our assignment, we chose the features and the model type, but we did not manually decide how much weight to give attendance or study hours. Training finds those details from the 200 students. The test set checks whether the learned rule works on students it did not train on.
+
+Matrices connect directly to our assignment. A matrix is a rectangular arrangement of numbers. After preprocessing, our training data is a 200 × 10 matrix:
+
+- Each row represents one student.
+- Each column represents a prepared feature.
+- The seven original features became ten numerical columns because one-hot encoding added category indicators.
+
+For Logistic Regression, each feature has a learned weight. For one student, the model calculates:
+
+\[
+\text{score}=b+w_1x_1+w_2x_2+\cdots+w_{10}x_{10}
+\]
+
+Here, the \(x\) values describe the student, the \(w\) values are learned weights, and \(b\) is a starting offset called the intercept. Matrix multiplication calculates these weighted sums for many students at once. The model then passes each score through a function that converts it into a probability between 0 and 1.
+
+Linear algebra handles those calculations. Probability and statistics help define and evaluate predictions. Calculus and optimization help find weights that reduce prediction error. That is why machine learning draws on several areas of mathematics.
+
+A random forest learns a different kind of rule. It builds many decision trees. A tree is a sequence of questions, with branches depending on the answers. An illustrative tree might ask:
+
+Study hours above 8?
+    ├─ Yes → Attendance above 90%?
+    └─ No  → Practice problems above 25?
+
+The questions and thresholds are learned from data. In a typical random forest, each tree gets a randomly resampled set of training rows and considers a random selection of features at each split. The forest combines the trees’ predictions; scikit-learn averages their class probabilities. This often produces more stable predictions than one tree. The randomness helps create varied trees—it does not mean the forest guesses randomly. Scikit-learn’s random forest explanation
+
+A forest still receives a data matrix, but its central operation is following branches, whereas Logistic Regression relies on weighted sums.
+
+A large language model is a much larger neural network trained to work with language. Most modern conversational LLMs use a structure called a transformer. At a broad level:
+
+1. Text is divided into tokens—pieces such as words, word fragments, or punctuation.
+2. Tokens become vectors, which are lists of numbers.
+3. Transformer layers repeatedly transform those vectors. An attention mechanism lets each position draw information from relevant positions in the available context.
+4. The network produces probabilities for possible next tokens.
+
+Those layers use substantial matrix arithmetic together with nonlinear functions, allowing much more complex relationships than a single weighted sum. The original transformer paper
+
+During a common form of LLM training, the model sees some text and tries to predict the next token. Its prediction is compared with the token that actually follows, and its weights are adjusted to reduce the error. Repeating this across extensive text helps it learn patterns involving language, facts, code, and tasks. During generation, it selects a next token, adds it to the context, and repeats. Language Models Are Few-Shot Learners
+
+Conversational models often receive further training using examples of helpful responses and feedback about response quality. That helps turn a language model into an assistant that follows instructions. Training language models to follow instructions with human feedback
+
+The overlap looks like this:
+
+| Model | What training learns | How it produces an answer |
+|---|---|---|
+| Logistic Regression | Feature weights and an intercept | Weighted sum converted to class probabilities |
+| Random forest | Branch questions, thresholds, and outcomes in many trees | Combines predictions from the trees |
+| LLM | Weights throughout a large neural network | Processes context and generates tokens |
+
+All three learn patterns from examples, can make mistakes, and need evaluation on data outside their training examples. Training and using a model are separate activities: our predictions do not retrain Logistic Regression, and a typical LLM conversation changes the context it reads without updating its underlying weights.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that all makes sense here is question 12 that is where my questions came from so relate you previous answer to what question 12 actually is
+
+Part 12 — Target Leakage Experiment
+
+Now deliberately perform a bad machine-learning experiment.
+
+Add:
+
+exam_score
+
+to the input features.
+
+Train and evaluate Logistic Regression again.
+
+Compare its accuracy with your legitimate model.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 12 demonstrates that a model can learn the relationship we give it—even when that relationship makes the experiment misleading.
+
+Our legitimate model uses student habits to predict whether an exam score will be at least 80. It achieved 84% test accuracy. The new experiment adds exam_score itself to the inputs, even though we created the target directly from that score:
+
+- exam_score = 79 means high_exam_score = "no".
+- exam_score = 81 means high_exam_score = "yes".
+
+This connects directly to the matrix and weights explanation. Our legitimate model receives 10 prepared numerical columns. Adding exam score as another numerical feature gives it 11 columns. Logistic Regression can learn a weight for exam score that helps separate the two classes around the 80-point boundary.
+
+Its accuracy will probably rise substantially, although we should calculate the result rather than assume it will be exactly 100%. That improvement would come from supplying information that directly reveals the target.
+
+A proper train/test split does not fix this problem. Every test student would also have their actual exam score included in the inputs. Fitting StandardScaler on training data only is still correct, but scaling does not remove the relationship between exam score and the target.
+
+The same problem could affect a random forest: a tree could learn a question resembling “Is exam score at least 80?” The choice of algorithm does not make those inputs appropriate for predicting an outcome before it is known.
+
+For this experiment, we’ll build a separate Logistic Regression pipeline, add exam score to its numerical features, and evaluate it on the same test students. Comparing it with the legitimate model will show why high accuracy needs to be interpreted alongside what information the model received.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that all makes sense please add the code to this chat and explain it so that i can review
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Here’s the code for review. It builds a separate experiment using the same training and test students.
+
+from sklearn.base import clone
+
+Deliberately add the column that directly determines the target.
+leaky_features = feature_columns + ["exam_score"]
+leaky_numeric_features = numeric_features + ["exam_score"]
+
+X_train_leaky = df.loc[X_train.index, leaky_features].copy()
+X_test_leaky = df.loc[X_test.index, leaky_features].copy()
+
+Create fresh preprocessing steps for this experiment.
+leaky_preprocessor = ColumnTransformer(transformers=[
+    ("numeric", clone(numeric_pipeline), leaky_numeric_features),
+    ("categorical", clone(categorical_pipeline), categorical_features),
+])
+
+leaky_pipeline = Pipeline(steps=[
+    ("preprocessor", leaky_preprocessor),
+    ("classifier", LogisticRegression(max_iter=1000)),
+])
+
+leaky_pipeline.fit(X_train_leaky, y_train)
+
+leaky_predictions = leaky_pipeline.predict(X_test_leaky)
+leaky_accuracy = accuracy_score(y_test, leaky_predictions)
+
+print(f"Legitimate model accuracy: {model_accuracy:.1%}")
+print(f"Model including exam_score: {leaky_accuracy:.1%}")
+
+accuracy_increase = (leaky_accuracy - model_accuracy) * 100
+print(f"Accuracy increase: {accuracy_increase:.1f} percentage points")
+
+- The two feature lists add exam_score both to the input data and to the numerical preprocessing path. Without adding it to that path, our ColumnTransformer would leave it out.
+- .loc[X_train.index] and .loc[X_test.index] select exactly the students from our existing split, keeping their features paired with their labels.
+- clone() creates fresh preprocessing objects with the same settings, ready to learn from training data. Scikit-learn clone documentation
+- The separate pipeline fits the preprocessing and Logistic Regression again, then evaluates its predictions against y_test.
+
+I tested this code. On our current split, the results are:
+
+| Model | Test accuracy |
+|---|---:|
+| Legitimate model | 84% |
+| Model including exam_score | 100% |
+
+That is a 16 percentage point increase, but it is misleading: the new model receives the score that directly determines the answer. It does not demonstrate better prediction from student habits.
+
+I haven’t added this code to the notebook yet.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that all looks good lets add it to the workbook
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added Part 12 to the Assignment 8 notebook and verified 84% legitimate accuracy versus 100% with target leakage—a 16 percentage point increase. Both use the same split, and the legitimate model remains intact.
+
+------------------------------------------------------------------------
+
+YOU:
+next we have to answer these questions answer them here in the chat so that i can review them
+
+Questions
+
+1. What happened to the accuracy?
+2. Why did this happen?
+3. Why is this model invalid even if its accuracy is extremely high?
+
+Remember that:
+
+high_exam_score
+
+was defined using:
+
+exam_score >= 80
+
+Therefore, exam_score essentially contains the answer you are trying to predict.
+
+This is an example of target leakage.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+1. What happened to the accuracy?
+   Accuracy increased from 84% to 100%, a gain of 16 percentage points. The model including exam_score correctly classified all 50 test students, compared with 42 for the legitimate model.
+
+2. Why did this happen?
+   high_exam_score was created directly from exam_score: scores of at least 80 become “yes,” and lower scores become “no.” Adding that score gave the model the information needed to determine the answer. This is target leakage.
+
+3. Why is this model invalid despite its high accuracy?
+   Our goal is to predict a high exam score using information available before the result is known. This model requires the actual exam score, which already tells us the class. Its high accuracy therefore does not demonstrate useful prediction from student habits. A separate test set cannot fix this because the test inputs also contain the leaked answer.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added the reviewed Part 12 answers to the Assignment 8 notebook and verified they’re saved beneath the leakage experiment.
+
+------------------------------------------------------------------------
+
+YOU:
+ok here is question 13 explain what we will be doing in this question before we write any code
+
+###
+
+Part 13 — A Legitimate Feature Experiment
+
+Now remove exam_score again.
+
+Investigate whether adding:
+
+quiz_average
+
+is useful.
+
+Before running the experiment, write a prediction.
+
+For example:
+
+I expect adding quiz average to  because .
+
+Then add quiz_average, train the model again, and compare the results with your original model.
+
+Use the same train/test split so that the comparison is meaningful.
+
+Compare at least:
+
+- accuracy;
+- precision;
+- recall.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Part 13 tests whether quiz performance provides useful information beyond the seven student-habit features.
+
+We’ll first write a prediction before looking at the results. A reasonable draft is:
+
+I expect adding quiz average to improve the model’s predictions because earlier quiz performance may reflect a student’s understanding of the material, giving the model information beyond study habits alone.
+
+Then we’ll:
+
+1. Build a separate model using the original seven features plus quiz_average. exam_score will be excluded.
+2. Preprocess quiz average as a numerical feature, using missing-value handling and StandardScaler.
+3. Train and test on exactly the same students as before: 200 training students and 50 test students.
+4. Compare accuracy, precision for “yes,” and recall for “yes” with the original model.
+
+Our reference results are:
+
+| Metric | Original model |
+|---|---:|
+| Accuracy | 84% |
+| Precision for yes | 87.5% |
+| Recall for yes | 70% |
+
+Using the same split lets us compare both models on the same cases. We might find that all three metrics improve, or that one improves while another gets worse.
+
+Quiz average can be a legitimate predictor if it is available before the exam we want to predict. Unlike exam_score, it does not directly define high_exam_score. It may provide useful related information, but we must run the experiment to find out whether it helps on this test set.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that all makes sense show me the code and explain it here in the chat for me to review
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+We’ll place this prediction in a Markdown cell before running the experiment:
+
+I expect adding quiz average to improve the model’s predictions because earlier quiz performance may reflect a student’s understanding of the material, giving the model information beyond study habits alone.
+
+Here’s the code for review:
+
+from sklearn.base import clone
+
+Add quiz_average to the original features.
+quiz_features = feature_columns + ["quiz_average"]
+quiz_numeric_features = numeric_features + ["quiz_average"]
+
+Use exactly the same training and test students.
+X_train_quiz = df.loc[X_train.index, quiz_features].copy()
+X_test_quiz = df.loc[X_test.index, quiz_features].copy()
+
+quiz_preprocessor = ColumnTransformer(transformers=[
+    ("numeric", clone(numeric_pipeline), quiz_numeric_features),
+    ("categorical", clone(categorical_pipeline), categorical_features),
+])
+
+quiz_pipeline = Pipeline(steps=[
+    ("preprocessor", quiz_preprocessor),
+    ("classifier", LogisticRegression(max_iter=1000)),
+])
+
+quiz_pipeline.fit(X_train_quiz, y_train)
+quiz_predictions = quiz_pipeline.predict(X_test_quiz)
+
+quiz_accuracy = accuracy_score(y_test, quiz_predictions)
+
+quiz_precision = precision_score(
+    y_test, quiz_predictions, pos_label="yes", zero_division=0
+)
+
+quiz_recall = recall_score(
+    y_test, quiz_predictions, pos_label="yes", zero_division=0
+)
+
+quiz_comparison = pd.DataFrame(
+    {
+        "Original model": [
+            model_accuracy,
+            yes_precision,
+            yes_recall,
+        ],
+        "With quiz_average": [
+            quiz_accuracy,
+            quiz_precision,
+            quiz_recall,
+        ],
+    },
+    index=["Accuracy", "Precision for yes", "Recall for yes"],
+)
+
+display(quiz_comparison.style.format("{:.1%}"))
+
+- The feature lists start with our original inputs and add quiz average. They exclude exam_score.
+- The row indexes preserve the existing training/test split.
+- clone() creates fresh preprocessing objects. Quiz average gets missing-value handling and scaling alongside the other numerical features.
+- The new pipeline trains another Logistic Regression model using those inputs.
+- The three metric calculations evaluate its test predictions.
+- The comparison table displays the original and new scores side by side as percentages.
+
+I haven’t run or added this experiment yet, so the prediction is recorded before we see its results.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that all looks good lets add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added Part 13 to the Assignment 8 notebook, with the prediction saved before running the experiment.
+
+Verified results using the same split:
+
+| Metric | Original | With quiz average |
+|---|---:|---:|
+| Accuracy | 84% | 86% |
+| Yes precision | 87.5% | 88.2% |
+| Yes recall | 70% | 75% |
+
+exam_score is excluded from this experiment.
+
+------------------------------------------------------------------------
+
+YOU:
+ok next we have to answer these questions answer them here in the work book for me to review
+
+Questions
+
+1. Did quiz_average improve the model?
+2. Which metrics changed?
+3. Was your original prediction correct?
+
+Most importantly:
+
+Is quiz_average actually available at the time when the prediction is supposed to be made?
+
+Explain why a feature can be statistically useful but inappropriate if it would not be available when the real prediction must occur.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+I added draft answers to the Assignment 8 notebook for review:
+
+1. Did quiz average improve the model?
+   Yes, modestly on this split: it correctly classified 43 students instead of 42.
+
+2. Which metrics changed?
+   Accuracy rose from 84% to 86%, yes precision from 87.5% to 88.2%, and yes recall from 70% to 75%.
+
+3. Was the prediction correct?
+   It was supported on this test split because all three metrics improved.
+
+4. Was quiz average available at prediction time?
+   We haven’t established that. It is appropriate only if it includes quizzes already completed and graded when the prediction is made. Earlier quizzes may be available before an upcoming exam; a final quiz average would not be available at the semester’s start.
+
+A feature can predict the target statistically yet be inappropriate because its value would be unavailable in real use. Our experiment assumes quiz average was available beforehand; using later quiz results could introduce future-information leakage.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Confirmed the approved Part 13 answers are saved in the Assignment 8 notebook, directly beneath the quiz-average experiment.
+
+------------------------------------------------------------------------
+
+YOU:
+ok here is question 14 explain what we are doing here and what you think the best way to do this step is first before we do any code or answer any questions what i think would make the most sense would be create hypothesis first then create the code and then create the response but if you think we should do it in a different order let me know
+
+Part 14 — Ask Your Own Classification Question
+
+Perform one additional experiment of your own.
+
+You might investigate:
+
+- removing one feature;
+- using a different reasonable classification threshold;
+- investigating the effect of scaling;
+- changing how missing values are handled;
+- examining predicted probabilities more closely.
+
+Do not add many different machine-learning algorithms yet. Model comparison will be addressed in a later class.
+
+Before modifying the code, write:
+
+Hypothesis
+
+I think  will happen because .
+
+Then perform your experiment.
+
+Report what happened and whether the evidence supported your hypothesis.
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Your order matches the assignment: write the hypothesis, run the experiment, then explain the results. Before the hypothesis, we should choose exactly what to change and what we’ll compare.
+
+I recommend investigating whether commute time adds useful information to the original model. We would remove commute_minutes from the original seven features and train Logistic Regression again using the remaining six.
+
+This is a manageable experiment because it changes one thing. Commute time might provide useful information, or its relationship with exam performance might already be partly reflected in attendance and study habits. We don’t know which explanation fits our results yet.
+
+The process would be:
+
+1. Write a hypothesis. Predict whether removing commute time will improve performance, reduce it, or leave it roughly unchanged, and explain your reasoning.
+2. Define the comparison beforehand. For example, we could define “roughly unchanged accuracy” as within two percentage points of the original model—equivalent to one student in our 50-student test set.
+3. Run the experiment. Keep the same students, preprocessing methods, and Logistic Regression settings while removing commute time.
+4. Compare the results and write the response. Check accuracy, precision, and recall against the original model’s 84%, 87.5%, and 70%. Equal accuracy could still hide a change in which students were misclassified.
+
+The response should say whether the evidence supported the hypothesis on this test split. It should not claim that commute time never matters or that it causes exam results. An unexpected result is still a valid experiment—the goal is to test the prediction honestly.
+
+------------------------------------------------------------------------
+
+YOU:
+ok help me write the hypothesis
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Hypothesis: I think removing commute_minutes will leave the model’s accuracy roughly unchanged because study hours and attendance may already capture some of the information associated with commute time.
+
+We can define “roughly unchanged” as within 2 percentage points of the original 84% accuracy—so between 82% and 86%.
+
+We will also compare precision and recall, since similar accuracy can still hide changes in how well the model identifies students with high exam scores.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add this to the work book and show me what the code should look like in this chat also explain it to me before we add it to the work book
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added the approved hypothesis under Part 14 in your Assignment 8 notebook.
+
+Here is the proposed code for your review:
+
+from sklearn.base import clone
+
+Remove commute time from the original training and test features.
+X_train_no_commute = X_train.drop(columns=["commute_minutes"]).copy()
+X_test_no_commute = X_test.drop(columns=["commute_minutes"]).copy()
+
+Update the list of numerical columns used by preprocessing.
+no_commute_numeric_features = [
+    column
+    for column in numeric_features
+    if column != "commute_minutes"
+]
+
+Create fresh preprocessing steps with the same settings.
+no_commute_preprocessor = ColumnTransformer(transformers=[
+    ("numeric", clone(numeric_pipeline), no_commute_numeric_features),
+    ("categorical", clone(categorical_pipeline), categorical_features),
+])
+
+Keep the same classifier and settings as the original model.
+no_commute_pipeline = Pipeline(steps=[
+    ("preprocessor", no_commute_preprocessor),
+    ("classifier", LogisticRegression(max_iter=1000)),
+])
+
+Train using the same training students.
+no_commute_pipeline.fit(X_train_no_commute, y_train)
+
+Predict for the same test students.
+no_commute_predictions = no_commute_pipeline.predict(X_test_no_commute)
+
+Calculate the three evaluation metrics.
+no_commute_accuracy = accuracy_score(y_test, no_commute_predictions)
+
+no_commute_precision = precision_score(
+    y_test, no_commute_predictions, pos_label="yes", zero_division=0
+)
+
+no_commute_recall = recall_score(
+    y_test, no_commute_predictions, pos_label="yes", zero_division=0
+)
+
+Compare the experiment with the original model.
+no_commute_comparison = pd.DataFrame(
+    {
+        "Original model": [
+            model_accuracy,
+            yes_precision,
+            yes_recall,
+        ],
+        "Without commute_minutes": [
+            no_commute_accuracy,
+            no_commute_precision,
+            no_commute_recall,
+        ],
+    },
+    index=["Accuracy", "Precision for yes", "Recall for yes"],
+)
+
+display(no_commute_comparison.style.format("{:.1%}"))
+
+accuracy_change = (no_commute_accuracy - model_accuracy) * 100
+print(f"Accuracy change: {accuracy_change:+.1f} percentage points")
+
+Here is what each step does:
+
+1. Remove commute time.
+   .drop(columns=["commute_minutes"]) removes that column from our original seven features. We still use the same 200 training students and 50 test students, so the comparison is fair.
+
+2. Update the numerical column list.
+   The list comprehension means “keep every numerical column except commute_minutes.” We must update this list because the preprocessor needs to know which columns are available.
+
+3. Create fresh preprocessing steps.
+   clone() copies the settings of our existing pipelines without copying their learned values. When we train this experiment, it calculates its own training medians, scaling values, and categories.
+
+4. Train another Logistic Regression model.
+   .fit() learns from the six remaining features. The classifier settings are the same as before, so removing commute time is the only experimental change.
+
+5. Evaluate and compare.
+   We calculate accuracy, precision, and recall and display them beside the original model’s results: 84%, 87.5%, and 70%, respectively.
+
+6. Check our hypothesis.
+   Accuracy between 82% and 86% would meet our definition of “roughly unchanged.” We will also inspect precision and recall before writing our conclusion. The final printout shows the accuracy change, with a positive sign for an increase and a negative sign for a decrease.
+
+------------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add this code to the workbook
+
+it got messed up can you try adding it again
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Yes—confirmed in the saved Assignment 8 notebook:
+
+- The Part 14 hypothesis is present.
+- The complete experiment code is directly below it, with one copy.
+
+I also verified that it runs successfully: accuracy remains 84%, precision 87.5%, and recall 70%.
+
+------------------------------------------------------------------------
+
+YOU:
+So our result is that this didnt have any effect correct?
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Correct—removing commute_minutes had no effect on the three metrics we measured on this test set:
+
+- Accuracy: stayed at 84%.
+- Precision for yes: stayed at 87.5%.
+- Recall for yes: stayed at 70%.
+
+This supports our hypothesis that accuracy would remain roughly unchanged.
+
+Our conclusion is limited to this experiment: removing commute time did not change these results. It doesn’t prove commute time would never be useful with other students or datasets.
+
+------------------------------------------------------------------------
+
+YOU:
+ok help me write the conclusion to add to this work book in the chat so i can review
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Conclusion
+
+I removed commute_minutes from the original model and trained Logistic Regression again using the same training and test students and the same preprocessing settings.
+
+Accuracy remained 84%, precision for yes remained 87.5%, and recall for yes remained 70%. The accuracy change was 0 percentage points.
+
+These results supported my hypothesis that removing commute time would leave accuracy roughly unchanged. The remaining six features achieved the same evaluation scores on this test set. However, this experiment does not prove that commute time is always unhelpful; its usefulness could differ with other students or a different data split.
+
+------------------------------------------------------------------------
+
+YOU:
+ok add it to the workbook
+
+------------------------------------------------------------------------
+
+CODING AGENT:
+Added the approved conclusion directly below the Part 14 code in your Assignment 8 notebook. Confirmed it is saved with one copy.
+
+------------------------------------------------------------------------
