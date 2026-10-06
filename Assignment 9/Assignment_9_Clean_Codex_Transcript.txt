@@ -1,0 +1,3540 @@
+CLEANED CODEX CONVERSATION
+======================================================================
+
+Only user prompts and Codex responses are included.
+Tool calls, commands run, execution logs, and embedded binary image data are omitted.
+
+YOU:
+Ok create a new folder for assignment 9
+
+----------------------------------------------------------------------
+
+CODEX:
+Created Assignment 9.
+
+----------------------------------------------------------------------
+
+YOU:
+ok this assignment is going to be similar to the last to create a copy of the data set from one 7 or 8 doesnt matter they are the same set and paste it into the assignment 9 folder also create another work book like the other two
+
+----------------------------------------------------------------------
+
+CODEX:
+Added both files to Assignment 9:
+
+- Dataset — identical copy from Assignment 8.
+- Jupyter notebook — fresh notebook with a dataset-loading cell and space for new work.
+
+----------------------------------------------------------------------
+
+YOU:
+In class two we use Classification to predict if a student would have a high exam score. In this lesson we will be using regression to perdict the actual exam score
+
+the work flow we are supposed to use is
+
+Define the target → choose features → split the data → preprocess → establish a baseline → train a regression model → evaluate errors → visualize residuals → inspect mistakes → experiment
+
+i am going to explain each componet and then i want you to correct me and help me understand if i am wrong.
+
+define the target this means we pick the columns that we are going to try and perdict using the model
+
+choose features these are the columns that we pick that we will be using to try and perdict our target
+
+split the data:
+in this step we will seperate our perdictors and targets we will also split our data into groups for train validate and test where training data is used to train the actual model tests is used to test the accuracy and validate is used to compair different models
+
+preprosses im not really sure
+
+establish a baseline i would assume would be calculating what the actual values are
+
+tain the regression model means we are traning the model
+
+Evaluate errors would be checking to see if there are errors in the model
+
+visulise results would be making the graphs
+
+inspect mistakes make sure everything look good and correct
+
+----------------------------------------------------------------------
+
+CODEX:
+Your definitions of target and features are correct. The main things to clarify are preprocessing, the baseline, and what “errors” mean in regression.
+
+1. Define the target
+   Pick what you want the model to predict. For this assignment, there is one target: exam_score. Regression predicts a number, such as 82.4.
+
+2. Choose features
+   Correct: these are the columns the model uses to predict the target, such as study hours, attendance, and practice problems. exam_score belongs in the target, so exclude it from the features.
+
+3. Split the data
+   You described two useful operations:
+   - Separate the feature columns into X and the target into y.
+   - Split the students’ rows into training, validation, and test sets, keeping each student’s features paired with their actual score.
+
+   Training data teaches the model. Validation data helps you compare models and choose settings. Test data gives a final evaluation after those choices. Some assignments use cross-validation instead of a separate validation set.
+
+4. Preprocess
+   Prepare the features so the model can use them. For this dataset, that could include:
+   - Filling missing numerical values with the training-set median.
+   - Filling missing categories with the most common training-set category.
+   - Encoding categories such as study-group participation as numbers.
+   - Scaling numerical features when the chosen model benefits from it.
+
+   Learn these preprocessing rules from the training data, then apply the same rules to validation and test data. Also, the literal None in programming experience means “no experience”; it is a real category.
+
+5. Establish a baseline
+   A baseline is a simple reference prediction that your model should improve on. For example, calculate the average training exam score and predict that number for every student. If that average is 77, the baseline predicts 77 for everyone. You then measure its errors.
+
+6. Train a regression model
+   Correct. More specifically, the model learns a relationship between training features and training exam scores so it can predict scores for other students.
+
+7. Evaluate errors
+   Here, “errors” means the differences between predicted and actual scores. If the actual score is 80 and the prediction is 72, the prediction is off by 8 points.
+
+   Common measures include MAE, the average absolute error, and RMSE, which gives larger mistakes more weight. Compare these with the baseline’s errors.
+
+8. Visualize residuals
+   This step asks for a particular kind of graph. A residual is:
+
+   residual = actual score − predicted score
+
+   A positive residual means the model predicted too low; a negative one means it predicted too high. Plotting residuals against predicted scores helps reveal patterns the model missed. Ideally, they scatter around zero without a clear pattern.
+
+9. Inspect mistakes
+   Look closely at students with large prediction errors. Examine their feature values, missing data, and actual versus predicted scores. This helps you understand where the model struggles. A large error can reflect limited information or individual variation, even when the code works correctly.
+
+10. Experiment
+    Change something—such as the features, model, or model settings—and compare the results using validation data or cross-validation. Once you choose your final approach, evaluate it on the held-out test set.
+
+The key shift from classification is that you now ask “How many exam-score points were the predictions off by?”
+
+----------------------------------------------------------------------
+
+YOU:
+ok our goal for this particular assignment will be to guess exam score
+
+----------------------------------------------------------------------
+
+CODEX:
+Our target will be exam_score (y). We’ll use regression to predict a numerical exam score for each student.
+
+Next, we’ll choose the features (X) used to make that prediction.
+
+----------------------------------------------------------------------
+
+YOU:
+ok before we doing anything I will need to answer these questions
+
+1. Why is this a regression problem
+2. How is this different from the Class 2 classification problem
+3. what information is lost when we convert exam score into only yes or no
+4. what kind of output should a regession model produce
+
+Here are my answers let me know if these look correct or if I should change some things
+
+1. This a regression problem because because we are perdicting a value and not a state
+2. this is different from the class 2 classification problem because we are looking to perdict an exact score not just if it will be low or high
+3. The information that is lossed is actual score it is replaced with just a range
+4. A regression model should produce a calculated score based on the students input information
+
+----------------------------------------------------------------------
+
+CODEX:
+All four have the right idea. The main changes are to say numerical value instead of “value,” and estimated score instead of “exact score,” because predictions can be wrong.
+
+You could write:
+
+1. Why is this a regression problem?
+   This is a regression problem because we are predicting a numerical exam score rather than a category.
+
+2. How is this different from the Class 2 classification problem?
+   In Class 2, we predicted whether a student’s exam score would be high using a yes-or-no label. Here, we predict the student’s numerical exam score.
+
+3. What information is lost when we convert exam score into only yes or no?
+   We lose the actual score, how much students’ scores differ, and how far each score is from the cutoff. For example, scores of 80 and 100 both receive “yes,” even though they differ by 20 points.
+
+4. What kind of output should a regression model produce?
+   A regression model should produce a numerical prediction for each student, such as an estimated exam score of 82.4, based on the student’s input features.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that sounds good add this under question 1 in my work book
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all four answers under “Question 1: Define the target” in your Assignment 9 notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+Ok that looks good lets actually rename it from question 1 to part 1 though
+
+----------------------------------------------------------------------
+
+CODEX:
+Renamed the heading to “Part 1: Define the target.”
+
+----------------------------------------------------------------------
+
+YOU:
+ok now we are moving on to part 2:
+
+before build the model step 2 we want to examine exam_score
+
+we want to calculate useful descriptive stats and create a historgram.
+
+at a minimum we need to report:
+count, mean, median, standard deviation, minimum, and maximum
+
+give me some more information on how this will be useful before we work on the code
+
+----------------------------------------------------------------------
+
+CODEX:
+This step helps us understand what the model is trying to predict and gives us context for judging its predictions later.
+
+| Statistic | What it tells us | Why it is useful |
+
+| Count | Number of students with a recorded exam score | Shows how many usable target values we have. Comparing it with the total row count reveals missing scores. |
+| Mean | Average exam score | Gives a reference for a typical score and supports the simple average-score baseline we discussed. |
+| Median | Middle score when scores are ordered | Helps describe the center without being strongly affected by unusually high or low scores. |
+| Standard deviation | How spread out scores are around the mean | Helps us understand how much students’ scores vary and puts prediction errors into context. |
+| Minimum | Lowest recorded score | Shows the bottom of the observed range and helps identify values worth checking. |
+| Maximum | Highest recorded score | Shows the top of the observed range and helps identify values worth checking. |
+
+Comparing the mean and median can also be useful. If they differ considerably, unusually high or low scores may be pulling the mean in one direction. The histogram helps us investigate that.
+
+A histogram groups scores into intervals—for example, 60–69, 70–79, and 80–89—and shows how many students fall into each interval. It helps answer questions such as:
+
+- Where do most scores fall?
+- Are scores tightly clustered or widely spread?
+- Is there a long tail toward lower or higher scores?
+- Are there unusual gaps, multiple clusters, or many scores at the maximum?
+
+These details matter because a model might perform well for common scores while making larger mistakes on the few students at either extreme. An overall average error can hide that pattern.
+
+One distinction to keep in mind: these statistics describe the target; they do not tell us which features predict it well. Also, when we later build the baseline, we’ll calculate its mean using only the training scores.
+
+----------------------------------------------------------------------
+
+YOU:
+ok lets work on the code now put in the chat first for me to review and explain how it is all working
+
+----------------------------------------------------------------------
+
+CODEX:
+Run these two cells after the existing cell that loads the CSV into df.
+
+The first cell calculates the six required statistics:
+
+[Code: python]
+exam_scores = df["exam_score"]
+
+summary_stats = pd.DataFrame({
+    "Count": [exam_scores.count()],
+    "Mean": [exam_scores.mean()],
+    "Median": [exam_scores.median()],
+    "Standard deviation": [exam_scores.std()],
+    "Minimum": [exam_scores.min()],
+    "Maximum": [exam_scores.max()],
+})
+
+display(summary_stats.round(2))
+
+Here’s how it works:
+
+- df["exam_score"] selects the exam-score column. We store it in exam_scores so we can reuse it.
+- .count() counts recorded scores, excluding missing values.
+- .mean() calculates the average.
+- .median() finds the middle score after sorting.
+- .std() calculates the sample standard deviation, which measures how spread out the scores are.
+- .min() and .max() find the lowest and highest scores.
+
+pd.DataFrame({...}) puts the results into a one-row table. The dictionary keys, such as "Mean", become column headings. Each result is enclosed in brackets because we are supplying a list containing one value for that column.
+
+.round(2) rounds the displayed results to two decimal places. It preserves the original scores in df. Pandas automatically skips missing scores when calculating these statistics.
+
+The second cell creates the histogram:
+
+[Code: python]
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(8, 5))
+
+ax.hist(
+    exam_scores.dropna(),
+    bins=10,
+    color="#4C78A8",
+    edgecolor="black",
+)
+
+ax.set_title("Distribution of Exam Scores")
+ax.set_xlabel("Exam score")
+ax.set_ylabel("Number of students")
+
+fig.tight_layout()
+plt.show()
+
+Here’s how that works:
+
+- import matplotlib.pyplot as plt gives us the plotting tools.
+- plt.subplots(figsize=(8, 5)) creates an 8-by-5-inch figure. fig represents the whole figure, while ax is the plotting area where we draw the histogram.
+- exam_scores.dropna() supplies only recorded scores to the plot.
+- bins=10 divides the observed score range into 10 equal-width intervals. Each bar’s height shows how many scores fall into that interval.
+- color and edgecolor give the bars blue fills and black outlines.
+- The three set_...() calls label the chart.
+- tight_layout() adjusts spacing so the labels fit, and plt.show() displays the graph.
+
+Each bar represents a group of scores. For example, a bar with height 30 means that 30 students scored within that bar’s interval.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all looks good lets add it to the work book
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the statistics and histogram code under “Part 2: Examine exam scores” in your notebook.
+
+Verified that the code runs successfully and includes all 250 exam scores.
+
+----------------------------------------------------------------------
+
+YOU:
+next i have to answer these questions review my answers:
+
+Describe the distribution of exam scores.
+
+Are there unusually low or high values?
+
+Why is it useful to understand the target before trying to predict it?
+
+1. The exam score are clusterd in the middle and there are fewer at either end of the range
+2. The highest value receved was 100 and the lowest was 51.4
+3. It is useful to understand a the target before trying to perdict it as it easier to understand what we are looking for and catch any potential problems
+
+----------------------------------------------------------------------
+
+CODEX:
+Your first and third answers are correct. For the second, listing the minimum and maximum tells us the range; also explain whether those values appear unusual.
+
+You could write:
+
+1. Describe the distribution of exam scores.
+   Exam scores cluster around the middle, especially in the 70s and 80s, with fewer scores at either end. The distribution is roughly symmetric, with a mean of 77.16 and a median of 76.95.
+
+2. Are there unusually low or high values?
+   The lowest score is 51.4 and the highest is 100. These scores are less common than scores near the middle, but there are no clear extreme outliers.
+
+   I checked the common statistical outlier rule based on the interquartile range, and it flagged no scores.
+
+3. Why is it useful to understand the target before trying to predict it?
+   Understanding the target helps us recognize typical scores, how much scores vary, and possible data problems. It also gives us context for judging whether the model’s prediction errors are large or small.
+
+----------------------------------------------------------------------
+
+YOU:
+what does this mean did you run additional code to determine this or is more of a general math rule
+
+I checked the common statistical outlier rule based on the interquartile range, and it flagged no scores.
+
+----------------------------------------------------------------------
+
+CODEX:
+Yes—I ran additional code to apply a general mathematical rule to your dataset. That check wasn’t added to your notebook. I should have made that clearer.
+
+The interquartile range (IQR) measures the spread of the middle 50% of scores:
+
+- Q1: the 25th percentile = 69.5
+- Q3: the 75th percentile = 84.975
+- IQR: Q3 − Q1 = 15.475
+
+A common rule flags a value as a potential outlier if it is:
+
+- Below Q1 − 1.5 × IQR, which is approximately 46.29.
+- Above Q3 + 1.5 × IQR, which is approximately 108.19.
+
+Your scores range from 51.4 to 100, so none cross those boundaries.
+
+This is a guideline for identifying potential outliers. It doesn’t prove that every score is correct or that unusual values cannot exist.
+
+Since your assignment currently asks for descriptive statistics and a histogram, you can keep your answer tied to those results: “The lowest score is 51.4 and the highest is 100. Scores near either end are less common than scores around the middle.”
+
+----------------------------------------------------------------------
+
+YOU:
+Ok show me what my responses would look like with that added in
+
+----------------------------------------------------------------------
+
+CODEX:
+1. Describe the distribution of exam scores.
+   Exam scores cluster around the middle, especially in the 70s and 80s, with fewer scores at either end. The distribution is roughly symmetric, with a mean of 77.16 and a median of 76.95.
+
+2. Are there unusually low or high values?
+   The lowest score is 51.4 and the highest is 100. Scores near these extremes are less common than scores around the middle. Using the common 1.5 × IQR rule, scores below approximately 46.29 or above 108.19 would be flagged as potential outliers. All recorded scores fall within these boundaries, so none are flagged by this rule. This does not guarantee that every value is correct.
+
+3. Why is it useful to understand the target before trying to predict it?
+   Understanding the target helps us recognize typical scores, how much scores vary, and possible data problems. It also gives us context for judging whether the model’s prediction errors are large or small.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all looks good lets add it to the notebook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all three answers, including the IQR explanation, under “Part 2 questions” in your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+ok now we will begin part 3 and we are going to explore relationships here is what the assignment says
+
+Before building a regression model, investigate:
+study_hours_per_week
+versus:
+exam_score
+Create a scatter plot and calculate the correlation.
+
+before we do any code explain to me why we are doing this how does this fit in with the whole project pipeline
+
+----------------------------------------------------------------------
+
+CODEX:
+We’re checking whether study hours contain useful information about exam scores. This fits into the exploration and feature-selection stage of the project.
+
+In Part 2, we examined exam scores by themselves: their typical value, spread, and distribution. Now we’re examining a relationship between a possible feature, study_hours_per_week, and our target, exam_score.
+
+The scatter plot and correlation give us two ways to understand that relationship:
+
+1. The scatter plot shows the pattern.
+   Each dot represents one student, with study hours on the horizontal axis and exam score on the vertical axis.
+
+   We can look for an upward or downward trend, a curved relationship, or unusual observations. We can also see how much scores vary among students who study similar amounts. If those students have very different scores, that suggests study hours alone will leave considerable uncertainty.
+
+2. The correlation summarizes the linear relationship.
+   Correlation ranges from −1 to +1:
+   - A positive value means higher study hours tend to go with higher scores.
+   - A negative value means higher study hours tend to go with lower scores.
+   - A value near zero means there is little straight-line relationship.
+
+   The closer the value is to either −1 or +1, the stronger the linear relationship. A curved pattern can still exist when correlation is near zero, which is why we also examine the plot.
+
+This connects to the later modeling steps. Our baseline will predict the same average score for everyone. A regression model uses features to adjust its predictions for individual students. This exploration helps us understand whether study hours might provide information that improves those predictions.
+
+It also gives us expectations for evaluating the model. A clear trend suggests something the model could learn; a wide spread suggests that prediction errors will remain and other features may help.
+
+Correlation describes association, not causation, and it does not guarantee good predictions. We’ll assess predictive performance later using held-out data.
+
+----------------------------------------------------------------------
+
+YOU:
+ok show me this code in the chat and explain how it works
+
+----------------------------------------------------------------------
+
+CODEX:
+Run this after the cell that loads the dataset into df:
+
+[Code: python]
+import matplotlib.pyplot as plt
+
+# Keep students who have both study hours and an exam score.
+study_exam = df[
+    ["study_hours_per_week", "exam_score"]
+].dropna()
+
+# Create the scatter plot.
+fig, ax = plt.subplots(figsize=(8, 5))
+
+ax.scatter(
+    study_exam["study_hours_per_week"],
+    study_exam["exam_score"],
+    color="#4C78A8",
+    alpha=0.7,
+)
+
+ax.set_title("Study Hours per Week vs. Exam Score")
+ax.set_xlabel("Study hours per week")
+ax.set_ylabel("Exam score")
+
+fig.tight_layout()
+plt.show()
+
+# Calculate the Pearson correlation.
+correlation = study_exam["study_hours_per_week"].corr(
+    study_exam["exam_score"],
+    method="pearson",
+)
+
+print(f"Students analyzed: {len(study_exam)}")
+print(f"Pearson correlation: {correlation:.3f}")
+
+Selecting the data
+
+[Code: python]
+study_exam = df[
+    ["study_hours_per_week", "exam_score"]
+].dropna()
+
+The double brackets select two columns and return a DataFrame. .dropna() removes students missing either of these two measurements, because we need both to compare them.
+
+The result is stored in study_exam. The original df stays intact, and both the plot and correlation use the same students.
+
+Drawing the scatter plot
+
+ax.scatter() receives two columns:
+
+- The first supplies each dot’s horizontal position: study hours.
+- The second supplies its vertical position: exam score.
+
+Each row produces one dot. alpha=0.7 makes the dots partially transparent so overlapping points are easier to see. The remaining plotting commands set the title, label the axes, adjust spacing, and display the figure.
+
+Calculating the correlation
+
+.corr() compares the two columns. method="pearson" explicitly asks for Pearson correlation, which measures the direction and strength of their linear relationship.
+
+The result is stored in correlation. It describes how the two measurements vary together; it does not establish that study hours caused the exam scores.
+
+Displaying the results
+
+len(study_exam) reports how many students had both measurements. That makes it clear how much data we used.
+
+In {correlation:.3f}, .3f formats the correlation to three decimal places. The stored value retains its full precision.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the code under “Part 3: Explore relationships” in your notebook.
+
+Verified it runs successfully: 241 students analyzed, with a correlation of 0.516.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that looks good here are the questions we have to answer for part 3
+
+1. Does there appear to be a relationship?
+2. Is the relationship positive or negative?
+3. Does it appear approximately linear?
+4. Are there students who do not follow the general pattern?
+
+1. Yes there appears to be a relationship between number of hours studied a week and exam score
+2. the relationship is positive
+3. it appears to be linear
+4. yes there are a few out liars
+
+----------------------------------------------------------------------
+
+CODEX:
+Your answers fit the plot. I’d say “approximately linear” for answer 3 and describe the students who differ from the pattern in answer 4. A point away from the trend isn’t automatically a statistical outlier.
+
+You could write:
+
+1. Does there appear to be a relationship?
+   Yes, there appears to be a relationship between weekly study hours and exam score, although there is considerable variation among students.
+
+2. Is the relationship positive or negative?
+   The relationship is positive: students who study more hours generally tend to have higher exam scores. The correlation of 0.516 indicates a moderate positive linear relationship.
+
+3. Does it appear approximately linear?
+   Yes, the overall pattern appears approximately linear because scores generally increase as study hours increase. However, the points are widely scattered around that trend.
+
+4. Are there students who do not follow the general pattern?
+   Yes. Some students study many hours but receive relatively low scores, while others study fewer hours and receive high scores. These examples show that study hours alone do not fully explain exam performance.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that looks good add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all four answers under “Part 3 questions” in your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+next we are doing part 4 where we will choose the features
+
+For the initial model, use:
+
+- study_hours_per_week
+- sleep_hours_per_night
+- attendance_rate
+- practice_problems_per_week
+- prior_programming_experience
+- study_group
+- commute_minutes
+
+Do not initially use:
+
+- student_id
+- exam_score
+- quiz_average
+
+exam_score is the target and therefore must not also be used as an input feature.
+
+We will investigate quiz_average later.
+
+Im pretty sure i understand all of these but give me a little background before we move into writing code
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 4 defines what information the model can use to predict exam scores. We’ll put the seven selected features into X and the numerical exam scores into y.
+
+These features give the model several kinds of information about each student. For example, two students might study the same number of hours but differ in attendance, practice, or prior experience. Using multiple features lets the model consider those differences together.
+
+The features fall into two groups:
+
+- Numerical: study hours, sleep hours, attendance rate, practice problems, and commute minutes. Their values represent measurable amounts.
+- Categorical: prior programming experience and study-group participation. Their values represent groups, such as None, Some, or Strong, and Yes or No. We’ll encode these categories during preprocessing.
+
+Including a feature gives the model a chance to learn from it; it does not guarantee that the feature will improve predictions. We’ll evaluate that through model performance and later experiments.
+
+The excluded columns have different roles:
+
+- student_id identifies the student. It’s useful when inspecting individual mistakes, but we’ll keep it outside the model’s inputs.
+- exam_score is the answer we’re trying to predict. Including it in X would create target leakage, giving the model access to the answer.
+- quiz_average is reserved for a later experiment. Starting without it gives us an initial model to compare against when we add it.
+
+This is the same initial feature set used for classification. The change is the target: we’re now predicting a numerical score rather than a yes-or-no label.
+
+At this step, we’re selecting columns. The later split and preprocessing steps will handle missing values and category encoding using rules learned from the training data.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all makes sense show me the code in this chat and explain it to me
+
+----------------------------------------------------------------------
+
+CODEX:
+Run this after the cell that loads the dataset into df:
+
+[Code: python]
+# Select the seven features for the initial model.
+feature_columns = [
+    "study_hours_per_week",
+    "sleep_hours_per_night",
+    "attendance_rate",
+    "practice_problems_per_week",
+    "prior_programming_experience",
+    "study_group",
+    "commute_minutes",
+]
+
+# Create the feature table and target.
+X = df[feature_columns].copy()
+y = df["exam_score"].copy()
+
+# Preview the features and target.
+display(X.head())
+display(y.head())
+
+# Check their dimensions.
+print(f"Feature table shape: {X.shape}")
+print(f"Target shape: {y.shape}")
+
+Here’s how it works:
+
+1. feature_columns lists the inputs.
+   Each string is a column name from the dataset. Using an explicit list makes it easy to see which information the model will receive.
+
+2. X = df[feature_columns].copy() creates the feature table.
+   df[feature_columns] selects those seven columns. The result is a DataFrame containing one row per student and one column per feature.
+
+   .copy() creates a separate copy so later changes to X won’t accidentally change the original df.
+
+3. y = df["exam_score"].copy() creates the target.
+   Selecting a single column this way produces a Pandas Series: one exam score per student.
+
+   X and y retain the same row indexes, so each student’s features remain paired with that student’s score. Uppercase X and lowercase y are common naming conventions in machine learning.
+
+4. .head() previews the first five rows.
+   This lets us check the selected columns and target. It only displays a preview; it keeps all the rows in X and y.
+
+5. .shape checks the dimensions.
+   For this dataset, we expect:
+   - X.shape: (250, 7) — 250 students and seven features.
+   - y.shape: (250,) — 250 target values in a one-dimensional Series.
+
+We use the original df, so students with missing feature values remain included. Those missing values and the categorical features will be handled during preprocessing after the split.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the code under “Part 4: Choose features” in your notebook.
+
+Verified that X contains 250 students and seven features, with matching exam scores in y.
+
+----------------------------------------------------------------------
+
+YOU:
+ok now we are doing step 5 where we create the training and test sets we will split the data into 80% raining data and 20% test data, we will also use random_state=42
+
+give me some background on traning vs test data and what random_state does before we move on to the code
+
+----------------------------------------------------------------------
+
+CODEX:
+The split lets us teach the model using one group of students and evaluate its predictions on another group.
+
+With your 250 students, an 80% / 20% split gives us:
+
+- Training set: 200 students. The model receives their features and actual exam scores, then learns relationships between them.
+- Test set: 50 students. After training, the model predicts their scores using their features. We compare those predictions with their actual scores to measure errors.
+
+Keeping the test students separate helps us assess generalization: how well the model predicts for students it did not learn from. A model can fit its training examples closely and still make poor predictions for new students.
+
+We must keep each student’s features paired with their exam score during the split. This will produce four objects: X_train, X_test, y_train, and y_test.
+
+random_state=42 makes the random split reproducible. The splitting function shuffles the rows before selecting the groups. The number 42 acts as a fixed starting point, called a seed, for that random process.
+
+With the same data in the same row order and the same seed, rerunning the code gives us the same training and test students. This makes debugging easier and lets us compare models using consistent groups.
+
+42 has no special statistical advantage. Another integer would produce a different, repeatable split. Also, this setting controls the randomness of the split; it does not automatically control every later model’s randomness.
+
+The split also prepares us for preprocessing: we’ll learn replacement values for missing data and any scaling rules from the training set, then apply those same rules to the test set.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all makes sense show me what the code will look like and explain it
+
+----------------------------------------------------------------------
+
+CODEX:
+Run this after Part 4, where we created X and y:
+
+[Code: python]
+from sklearn.model_selection import train_test_split
+
+# Split students into 80% training data and 20% test data.
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42,
+)
+
+# Check the dimensions of each set.
+print(f"Training features: {X_train.shape}")
+print(f"Test features: {X_test.shape}")
+print(f"Training targets: {y_train.shape}")
+print(f"Test targets: {y_test.shape}")
+
+The import gives us scikit-learn’s train_test_split function.
+
+We pass X and y together so the function splits their rows consistently. Each student’s features stay paired with that student’s exam score.
+
+The two settings control the split:
+
+- test_size=0.20 assigns 20% of the students to the test set. The remaining 80% become the training set.
+- random_state=42 makes the random selection repeatable when we use the same data and row order.
+
+The function shuffles the rows by default, then returns four objects in this order:
+
+| Object | What it contains |
+
+| X_train | Features for the training students |
+| X_test | Features for the test students |
+| y_train | Actual scores for the training students |
+| y_test | Actual scores for the test students |
+
+The final four lines check their dimensions. We expect:
+
+[Code: text]
+Training features: (200, 7)
+Test features: (50, 7)
+Training targets: (200,)
+Test targets: (50,)
+
+For the feature tables, the numbers mean rows and columns. For the target Series, they show the number of scores.
+
+This cell prepares the groups. Later, we’ll train using X_train and y_train, predict using X_test, and compare those predictions with y_test.
+
+----------------------------------------------------------------------
+
+YOU:
+ok looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the code under “Part 5: Create training and test sets” in your notebook.
+
+Verified the split gives 200 training students and 50 test students, with scores correctly paired and a reproducible split.
+
+----------------------------------------------------------------------
+
+YOU:
+ok now we have to answer these questions
+
+Questions
+
+Explain:
+
+1. What is the training set used for?
+2. What is the test set used for?
+3. Why should the model not be trained using the test set?
+4. Why should different experiments use the same split when we want to compare them fairly?
+
+the traning set is used to train the models so that they get an understanding of the data
+
+the test set is used to evaluate the the modles performance and see how well it works on other data not in the training set
+
+we dont want to be tranined on the test set because if the test set is used for training it will influnce how the model works and will seem that it is very effective when if it is run on outside data this may not be the case
+
+we should use the same split and test data when we are doing an experment so that both models get a unified understanding of the data and one does not get an easier one and then look like it is a better performing model
+
+----------------------------------------------------------------------
+
+CODEX:
+All four answers have the right idea. I’d describe training as learning relationships and replace “a unified understanding” with using the same students under the same conditions.
+
+You could write:
+
+1. What is the training set used for?
+   The training set is used to teach the model relationships between students’ input features and their actual exam scores, so it can predict scores for other students.
+
+2. What is the test set used for?
+   The test set evaluates how well the trained model predicts exam scores for students it did not encounter during training.
+
+3. Why should the model not be trained using the test set?
+   Training on the test set would allow those students’ scores to influence the model. Its test performance could then look better than its performance on new students because the evaluation data would no longer be independent of training.
+
+4. Why should different experiments use the same split when we want to compare them fairly?
+   Using the same split gives each model the same training students and evaluates it on the same test students. This makes it easier to attribute performance differences to changes in the model or features, rather than one experiment receiving an easier group of students.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all four answers under “Part 5 questions” in your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+ok now we are going on to step 6
+
+give me some background on this before we jump into the coding
+
+Part 6 — Preprocess the Features
+
+As in Class 2, your data contains:
+
+- numerical variables;
+- categorical variables;
+- missing values.
+
+Create a scikit-learn preprocessing workflow.
+
+Numerical Features
+
+For numerical features:
+
+missing-value handling → StandardScaler
+
+Categorical Features
+
+For categorical features:
+
+missing-value handling → one-hot encoding
+
+Use appropriate scikit-learn tools such as:
+
+- SimpleImputer
+- StandardScaler
+- OneHotEncoder
+- ColumnTransformer
+- Pipeline
+
+----------------------------------------------------------------------
+
+CODEX:
+Preprocessing turns our selected features into a numerical form the regression model can use. We’ll handle missing values, different measurement scales, and text categories.
+
+We need two separate paths because numerical and categorical features require different treatment.
+
+1. Numerical features: fill missing values → scale
+
+   SimpleImputer fills missing entries. A reasonable starting choice is the median of each training column. For example, a missing study-hours value would receive the training students’ median study hours. This replacement is an estimate, rather than the student’s known actual value. Imputation documentation
+
+   StandardScaler then standardizes each numerical column:
+
+   scaled value = (value − training mean) / training standard deviation
+
+   For example, if training study hours had a mean of 8 and a standard deviation of 2:
+
+   - 10 hours becomes 1.
+   - 8 hours becomes 0.
+   - 6 hours becomes −1.
+
+   This puts measurements such as hours, minutes, and attendance percentages on comparable scales. Values can be positive or negative; standardization does not restrict them to 0–1. Scaling documentation
+
+2. Categorical features: fill missing values → encode
+
+   We can use SimpleImputer to fill missing categories with the most common training-set category. The literal "None" in programming experience remains a valid category meaning no experience. Imputation documentation
+
+   OneHotEncoder creates numerical indicator columns for the categories. For example:
+
+   | Study group | Indicator for No | Indicator for Yes |
+
+   | No | 1 | 0 |
+   | Yes | 0 | 1 |
+
+   This represents category membership without assigning arbitrary numerical distances between categories. Encoding documentation
+
+3. Combine the paths into one workflow
+
+   - Pipeline chains steps in order, such as imputation followed by scaling.
+   - ColumnTransformer sends the five numerical columns through their pipeline and the two categorical columns through theirs, then combines the results.
+
+   Later, we can put that combined preprocessor and the regression model into one larger pipeline. Pipeline documentation
+
+Fitting preprocessing means learning its rules. It learns the replacement values, scaling statistics, and category mappings from X_train. We then transform X_test using those same learned rules. Calculating fresh rules from the test set would let test information influence the workflow. Training/test preprocessing guidance
+
+Our target, y, stays as the original numerical exam scores in this workflow.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that makes sense show me the code here in the chat and explain it
+
+----------------------------------------------------------------------
+
+CODEX:
+This goes after Part 5, where we created X_train and X_test:
+
+[Code: python]
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+# Separate the features by type.
+numeric_features = [
+    "study_hours_per_week",
+    "sleep_hours_per_night",
+    "attendance_rate",
+    "practice_problems_per_week",
+    "commute_minutes",
+]
+
+categorical_features = [
+    "prior_programming_experience",
+    "study_group",
+]
+
+# Numerical features: fill missing values, then scale.
+numeric_pipeline = Pipeline(steps=[
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler()),
+])
+
+# Categorical features: fill missing values, then encode.
+categorical_pipeline = Pipeline(steps=[
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("encoder", OneHotEncoder(
+        handle_unknown="ignore",
+        sparse_output=False,
+    )),
+])
+
+# Apply the appropriate pipeline to each group of columns.
+preprocessor = ColumnTransformer(transformers=[
+    ("numeric", numeric_pipeline, numeric_features),
+    ("categorical", categorical_pipeline, categorical_features),
+])
+
+# Learn preprocessing rules from training data and apply them.
+X_train_processed = preprocessor.fit_transform(X_train)
+
+# Apply the same learned rules to test data.
+X_test_processed = preprocessor.transform(X_test)
+
+print(f"Processed training features: {X_train_processed.shape}")
+print(f"Processed test features: {X_test_processed.shape}")
+
+Here’s how each part works:
+
+1. The feature lists identify which columns follow each path.
+   We have five numerical features and two categorical features. ColumnTransformer selects them by their column names.
+
+2. numeric_pipeline runs two steps in order.
+   SimpleImputer(strategy="median") learns each numerical column’s training median and uses it to fill missing values. Then StandardScaler learns the mean and standard deviation of the filled training columns and standardizes them.
+
+3. categorical_pipeline prepares the text categories.
+   The imputer fills missing entries with the most frequent training category. The encoder then creates numerical indicator columns.
+
+   Its two settings mean:
+
+   - handle_unknown="ignore": if a test student has a category absent from training, the encoder represents that category with all zeros for that feature’s indicator columns.
+   - sparse_output=False: returns a regular numerical array, which is convenient for this small dataset.
+
+4. ColumnTransformer combines both paths.
+   Each tuple contains a step name, the pipeline to use, and the columns it should process. It combines their outputs into one numerical feature array.
+
+   Names such as "numeric", "imputer", and "encoder" are labels we assign to identify the components.
+
+5. fit_transform(X_train) learns and applies the rules.
+   It learns replacement values, scaling statistics, and category mappings from the training students, then produces their processed features.
+
+6. transform(X_test) applies those existing rules.
+   It processes the test students using the rules already learned from training.
+
+The output should still have 200 training rows and 50 test rows. The number of columns will increase because one-hot encoding expands categorical features into indicator columns.
+
+These commands prepare the features. y_train and y_test continue to contain the actual numerical exam scores.
+
+----------------------------------------------------------------------
+
+YOU:
+ok looks good add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the code under “Part 6: Preprocess the features” in your notebook.
+
+Verified it runs successfully, producing 200 training rows and 50 test rows, each with 10 processed features and no missing values.
+
+----------------------------------------------------------------------
+
+YOU:
+next we have to answer these questions
+
+Questions
+
+Explain:
+
+1. Why do we handle numerical and categorical variables differently?
+2. What does StandardScaler do?
+3. What does one-hot encoding do?
+4. Why should preprocessing be learned from the training data rather than the entire dataset?
+
+1. we handle numerical data and categorical data differently because we can do math with numerical data and ranges are useful where categorical we need to assign a value to it if we want to be able to use it in math models as catigorical can not be worked with in a mathmatical formula
+2. standarcale standaridzes each numerical column so that one column with values that have a high magnitue do not overpower the rest of the data.
+3. One hot encoding allows us to work with catigorical data in our forumlas
+4. preprocessing should be learned just from the traning data so that the test data does not leek and have the model be influnced by the data it is being trained on or else it will look like it perfroms better then it maybe should have otherwise
+
+----------------------------------------------------------------------
+
+CODEX:
+Your answers have the right ideas. Answers 2 and 3 need more detail about what the tools actually do. For answer 4, the concern is test data influencing preprocessing—learning from training data is intended.
+
+You could write:
+
+1. Why do we handle numerical and categorical variables differently?
+   Numerical variables represent measurable quantities, so we can fill missing values and scale them. Categorical variables represent groups or labels, so we need to encode them numerically before our regression model can use them. The encoding should avoid introducing misleading numerical distances between categories.
+
+2. What does StandardScaler do?
+   StandardScaler subtracts each numerical column’s training mean and divides by its training standard deviation. This gives nonconstant training columns a mean of approximately zero and a standard deviation of one, putting features with different units on comparable scales. This helps models that are sensitive to feature scale.
+
+3. What does one-hot encoding do?
+   One-hot encoding creates a separate numerical indicator column for each category. A value of 1 means the student belongs to that category, and 0 means they do not. This lets the model use categorical information without assigning arbitrary numerical distances between categories.
+
+4. Why should preprocessing be learned from the training data rather than the entire dataset?
+   Learning preprocessing from the entire dataset would allow test information to influence replacement values, scaling statistics, and category mappings. This creates data leakage and can make performance appear better than it would on new data. We should learn the rules from the training set and apply those same rules to the test set.
+
+----------------------------------------------------------------------
+
+YOU:
+ok looks good lets add this to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all four answers under “Part 6 questions” in your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+next we will move on to part 7 give me some background on what we will be doing here and how it fits into the rest of this project
+
+Part 7 — Establish a Regression Baseline
+
+Before training a machine-learning model, establish a simple baseline.
+
+Calculate the mean exam score in the training data.
+
+Then imagine a model that predicts this same mean score for every student in the test set.
+
+For example, if the training mean were 78.4, the baseline would predict:
+
+78.4, 78.4, 78.4, ...
+
+for every test student.
+
+Evaluate this baseline.
+
+At minimum, calculate:
+
+- MAE;
+- MSE;
+- RMSE;
+- R squared.
+
+----------------------------------------------------------------------
+
+CODEX:
+The baseline gives us a benchmark for judging whether our regression model adds useful predictive information. We want to see how well we can predict using only the average score, then compare that with predictions using the seven features.
+
+For Part 7, we will:
+
+1. Calculate the mean of y_train—the exam scores of our 200 training students.
+2. Predict that same number for all 50 test students.
+3. Compare those predictions with the actual scores in y_test.
+
+The baseline uses no individual student features. For example, if the training mean were 78.4, every test student would receive a prediction of 78.4, regardless of their study hours or attendance. This is a standard mean-prediction baseline. Scikit-learn baseline documentation
+
+The four metrics describe its performance in different ways:
+
+| Metric | What it calculates | How to interpret it |
+
+| MAE — Mean Absolute Error | Average size of the errors, ignoring their signs | Measured in exam-score points. An MAE of 8 means predictions are off by 8 points on average. Lower is better. |
+| MSE — Mean Squared Error | Average of the squared errors | Gives large mistakes more weight. Its units are points squared. Lower is better. |
+| RMSE — Root Mean Squared Error | Square root of MSE | Returns the result to exam-score points while retaining sensitivity to large mistakes. Lower is better. |
+| R² — R squared | Compares squared prediction errors with the variation in actual test scores | Measures improvement relative to predicting the test-set mean. Higher is better. |
+
+These are standard regression evaluation measures. Regression metrics documentation
+
+For R²:
+
+- 1 means perfect predictions.
+- 0 means the same squared error as predicting the test-set mean for everyone.
+- A negative value means worse performance than that reference. R² documentation
+
+There is a small distinction here: our baseline predicts the training mean, while R²’s reference uses the test mean. Consequently, our baseline’s test R² can be slightly negative rather than exactly zero.
+
+Later, we’ll evaluate the regression model on the same test students with the same metrics. For example, if baseline MAE were 8 and model MAE were 5, the model would reduce average absolute error by 3 exam-score points. That gives us a concrete way to assess whether learning from student features helped.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all makes sense show me the code and explain how each part of it works
+
+----------------------------------------------------------------------
+
+CODEX:
+This code uses y_train and y_test from our split:
+
+[Code: python]
+import numpy as np
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+)
+
+# Calculate the mean using only the training scores.
+training_mean = y_train.mean()
+
+# Predict that same mean for every test student.
+baseline_predictions = np.full(len(y_test), training_mean)
+
+# Evaluate the predictions against the actual test scores.
+baseline_mae = mean_absolute_error(y_test, baseline_predictions)
+baseline_mse = mean_squared_error(y_test, baseline_predictions)
+baseline_rmse = np.sqrt(baseline_mse)
+baseline_r2 = r2_score(y_test, baseline_predictions)
+
+# Display the baseline prediction and evaluation results.
+print(f"Training mean exam score: {training_mean:.2f}")
+print(f"MAE: {baseline_mae:.2f}")
+print(f"MSE: {baseline_mse:.2f}")
+print(f"RMSE: {baseline_rmse:.2f}")
+print(f"R squared: {baseline_r2:.6f}")
+
+Here’s how each part works:
+
+1. Import the tools.
+   NumPy, named np, provides functions for creating numerical arrays and calculating square roots. The three scikit-learn functions calculate our evaluation metrics.
+
+2. Calculate the training mean.
+
+   ```python
+   training_mean = y_train.mean()
+   ```
+
+   This averages the actual exam scores of the 200 training students. That number becomes the baseline’s prediction for every test student.
+
+3. Create the predictions.
+
+   ```python
+   baseline_predictions = np.full(len(y_test), training_mean)
+   ```
+
+   np.full() creates an array filled with one repeated value:
+
+   - len(y_test) supplies its length: 50 predictions.
+   - training_mean supplies the value repeated in every position.
+
+   If the training mean were 78.4, the array would contain 78.4 fifty times.
+
+4. Calculate the four metrics.
+   Each metric compares actual test scores with baseline predictions. The actual scores go first in the function calls.
+
+   - mean_absolute_error() averages the absolute differences. Positive and negative errors cannot cancel each other.
+   - mean_squared_error() squares each difference and averages those squared errors, giving large mistakes more weight.
+   - np.sqrt(baseline_mse) takes the square root of MSE to obtain RMSE in exam-score points.
+   - r2_score() compares the baseline’s squared errors with the variation of test scores around their own mean.
+
+5. Display the results.
+   :.2f displays a number to two decimal places. We use :.6f for R² because the baseline’s value may be very close to zero, and extra decimal places help us see it.
+
+   These settings affect the displayed text; the variables retain their full precision for later comparisons.
+
+The baseline learns just one number from the training data. We’ll keep its metrics so we can compare them with the regression model’s results.
+
+----------------------------------------------------------------------
+
+YOU:
+ok i like that lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the code under “Part 7: Establish a regression baseline” in your notebook.
+
+Verified the training mean, all 50 baseline predictions, and the four evaluation metrics.
+
+----------------------------------------------------------------------
+
+YOU:
+next we have to answer this question
+Why is this useful?
+A regression model should demonstrate that it can do something more useful than simply predicting the average score for everyone.
+
+im not really sure how to answer this one but i think it would be this is useful as it gives a starting point of how effective the model is at perdicting what ever it is built to
+
+----------------------------------------------------------------------
+
+CODEX:
+Your idea is right: the baseline gives us a starting point for comparison. Make it clear that we’re checking whether using student features improves predictions.
+
+You could write:
+
+The baseline is useful because it shows how well we can predict exam scores by giving every student the training-set average. It provides a benchmark for evaluating the regression model. If the model produces smaller prediction errors than the baseline, that demonstrates that learning from students’ features adds useful predictive information.
+
+For example, our baseline’s MAE is 7.66 points. We can later check whether the regression model reduces that average error.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the answer under “Part 7 questions” in your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+next we have to do part 8 give me some background on what a linear regression modle actually is my understanding is that it is a formula where each varible gets a weight and how ever much of that varible will influence the line and it will be used to perdict the final score. so please explain this along with how the algorithm is actually determining these weights like what is actually happening behind the scenes
+
+next we have to do part 8 give me some background on what a linear regression modle actually is my understanding is that it is a formula where each varible gets a weight and how ever much of that varible will influence the line and it will
+
+----------------------------------------------------------------------
+
+CODEX:
+Your understanding is correct: linear regression predicts a score by multiplying each input by a learned weight, then adding those contributions together. It also learns a constant called the intercept:
+
+\[
+\text{predicted score}=b+w_1x_1+w_2x_2+\cdots+w_px_p
+\]
+
+Here, \(x\) represents feature values, \(w\) represents their weights, and \(b\) is the intercept. Linear-model documentation
+
+For a numerical feature, a positive weight means increasing that feature increases the prediction, holding the other inputs fixed. A negative weight means it decreases the prediction.
+
+With one feature, this equation describes a straight line. With two features, it describes a plane. Our model will combine 10 processed input columns, because one-hot encoding expanded the original seven features.
+
+How does it find the weights?
+
+It chooses weights and an intercept that make the total squared training error as small as possible. This is called ordinary least squares.
+
+For any proposed set of weights, we can:
+
+1. Calculate a prediction for each training student.
+2. Subtract that prediction from the student’s actual score.
+3. Square each difference.
+4. Add those squared differences together.
+
+For example, predicting 75 when the actual score is 80 contributes:
+
+\[
+(80-75)^2=25
+\]
+
+The model seeks the weights that minimize this total across all 200 training students. Minimizing that sum also minimizes training MSE, because MSE divides it by the fixed number of students. Least-squares documentation
+
+What actually happens inside scikit-learn?
+
+For the numerical array we prepared, LinearRegression uses a matrix least-squares solver. It treats the feature table as a matrix and finds a weighted combination of its columns that comes closest to the actual-score column.
+
+The solver uses a mathematical technique called singular value decomposition (SVD), which breaks the matrix problem into simpler parts. It solves for the coefficients jointly. It does not assign each weight independently from that feature’s correlation, and this implementation does not require repeatedly making small gradient-descent updates. Scikit-learn implementation details
+
+The weights describe relationships learned from the training data; they do not establish that a feature caused a score change. Also, because we scaled numerical inputs, a one-unit increase in a scaled feature represents one training standard deviation.
+
+This connects directly to our baseline: the baseline uses one constant prediction. Linear regression learns how feature contributions can adjust predictions for individual students. We’ll then check whether those adjustments reduce errors on the test set.
+
+In this illustrative example, changing the weight tilts the line, while changing the intercept moves it up or down. “Find least-squares fit” selects the combination with the smallest total squared error for these four example students.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that makes sense show me what the code will look like and explain it
+
+----------------------------------------------------------------------
+
+CODEX:
+This goes after Part 7 and uses the preprocessor we created in Part 6:
+
+[Code: python]
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+
+# Combine preprocessing and linear regression.
+regression_pipeline = Pipeline(steps=[
+    ("preprocessor", preprocessor),
+    ("regressor", LinearRegression()),
+])
+
+# Learn preprocessing rules and model weights from training data.
+regression_pipeline.fit(X_train, y_train)
+
+# Predict exam scores for the test students.
+test_predictions = regression_pipeline.predict(X_test)
+
+# Preview actual scores alongside predictions.
+prediction_preview = pd.DataFrame({
+    "Actual exam score": y_test,
+    "Predicted exam score": test_predictions,
+})
+
+display(prediction_preview.head().round(2))
+
+Here’s how each part works:
+
+1. Import the model and pipeline tools.
+   LinearRegression provides the ordinary least-squares model we discussed. Pipeline connects preprocessing and prediction into one workflow.
+
+2. Create regression_pipeline.
+   The pipeline has two steps, executed in order:
+
+   - "preprocessor": fills missing values, scales numerical features, and encodes categorical features.
+   - "regressor": uses the resulting numerical features to predict exam scores.
+
+   The strings are names we assign to identify the steps.
+
+3. Train using .fit(X_train, y_train).
+   This call first learns the preprocessing rules from the 200 training students and transforms their features. It then learns the regression weights and intercept using those processed features and their actual scores.
+
+   In Part 6, we examined preprocessing separately. Here, the full pipeline handles it automatically, so we pass the original X_train feature table.
+
+4. Predict using .predict(X_test).
+   The pipeline applies its learned preprocessing rules to the 50 test students, then uses its learned regression formula to produce one predicted score per student.
+
+   We supply their features. Their actual scores are not needed to make predictions.
+
+5. Create the preview table.
+   prediction_preview places the actual scores from y_test beside the predictions. Because the split preserved student pairing and prediction order, the two columns refer to the same students.
+
+   .head() displays the first five students, and .round(2) displays their scores to two decimal places.
+
+We’ll use test_predictions in the evaluation step to calculate the model’s errors and compare them with our baseline.
+
+----------------------------------------------------------------------
+
+YOU:
+ok looks good lets add it to the work book
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the code under “Part 8: Train a linear regression model” in your notebook.
+
+Verified that it runs successfully and produces 50 predictions correctly paired with the test students.
+
+----------------------------------------------------------------------
+
+YOU:
+next we have to answer these questions
+
+Questions
+
+Explain:
+
+1. What does .fit() do?
+2. What does .predict() do?
+3. Why can the predicted exam score contain decimals even if the original scores are whole numbers?
+
+the .fit() method is used to train a machine learning model. Training a model involves feeding it a data set so that it can learn the patterns from it
+
+the .predict() function is used to make perdictions based on the model we give it data and it used this data to perdict based on the model that is trained
+
+the predicted exam score can contain decimals because in linear regression each feature has a specific fractional / decimal componet that will effect the model in some way and that may not always be a whole number
+
+----------------------------------------------------------------------
+
+CODEX:
+Your first two answers are correct. For the third, the key point is that linear regression produces continuous numerical predictions. Each feature does not need to have a decimal component.
+
+You could write:
+
+1. What does .fit() do?
+   .fit() trains the model using the training features and their actual exam scores. In our pipeline, it first learns the preprocessing rules, then learns the regression weights and intercept that minimize the total squared training error.
+
+2. What does .predict() do?
+   .predict() uses the trained pipeline to process the supplied features and calculate a predicted exam score for each student. It applies the preprocessing rules and regression weights learned during training.
+
+3. Why can the predicted exam score contain decimals even if the original scores are whole numbers?
+   Linear regression estimates a continuous numerical value. Its learned weights and intercept can contain decimals, so their combination can produce a prediction such as 82.4 even when all training scores are whole numbers. The model does not automatically round predictions to integers.
+
+Your dataset already contains decimal exam scores, but the same explanation applies to the question’s hypothetical case with whole-number scores.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that makes sense lets add this to the work book
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all three answers under “Part 8 questions” in your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+ok this is step 9 break this down fore me since its a lot and also explain what we are doing here
+
+Part 9 — Evaluate Prediction Error
+
+Evaluate your Linear Regression model using:
+
+- MAE
+- MSE
+- RMSE
+- R squared
+
+Compare these results with your baseline.
+
+Mean Absolute Error — MAE
+
+MAE measures the average absolute prediction error.
+
+For example, if:
+
+MAE = 5.2
+
+you can roughly interpret this as:
+
+The predictions differ from the actual exam scores by about 5.2 points on average.
+
+Mean Squared Error — MSE
+
+MSE squares errors before averaging them.
+
+This means large errors receive a larger penalty.
+
+Root Mean Squared Error — RMSE
+
+RMSE is:
+
+R M S E equals square root of M S E end root
+
+Unlike MSE, RMSE is expressed in the original units of the target.
+
+R²
+
+R squared measures performance relative to predicting the mean.
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 9 checks how well the trained model predicts scores for our 50 test students. We’ll calculate the same four metrics used for the baseline, then compare the results.
+
+Every metric starts with the difference between an actual score and a prediction. For example, imagine these two students:
+
+| Actual score | Predicted score | Error: actual − predicted |
+
+| 80 | 78 | +2 |
+| 70 | 78 | −8 |
+
+The model predicted too low for the first student and too high for the second.
+
+1. MAE: How many points are predictions off by, on average?
+
+   Take the size of each error, ignoring its sign, then average:
+
+   \[
+   MAE=\frac{2+8}{2}=5
+   \]
+
+   Here, predictions are off by 5 exam-score points on average. Ignoring signs prevents errors in opposite directions from cancelling each other.
+
+   Lower MAE is better.
+
+2. MSE: How large are the errors when we give bigger mistakes more weight?
+
+   Square each error before averaging:
+
+   \[
+   MSE=\frac{2^2+(-8)^2}{2}
+       =\frac{4+64}{2}=34
+   \]
+
+   The 8-point mistake contributes 64, while the 2-point mistake contributes only 4. This makes large mistakes especially influential.
+
+   MSE’s units are points squared, which makes it less intuitive to interpret directly. Lower MSE is better.
+
+3. RMSE: Can we express that squared-error measure in exam-score points?
+
+   Take the square root of MSE:
+
+   \[
+   RMSE=\sqrt{34}\approx5.83
+   \]
+
+   RMSE is expressed in exam-score points, while retaining sensitivity to large mistakes. That is why it can be larger than MAE for the same predictions.
+
+   Lower RMSE is better.
+
+4. R²: How does squared-error performance compare with predicting the mean?
+
+   R² compares the model’s squared errors with the errors from predicting the test-set mean for everyone:
+
+   - 1: perfect predictions.
+   - 0: the same squared error as that mean prediction.
+   - Negative: worse than that mean prediction.
+
+   Higher R² is better. It is not the percentage of students whose scores were predicted correctly. R² documentation
+
+   Our assignment baseline uses the training mean, so its test R² can be negative because the training and test means differ.
+
+We already calculated these baseline results:
+
+| Metric | Baseline result | Desired model improvement |
+
+| MAE | 7.66 points | Lower |
+| MSE | 96.08 points² | Lower |
+| RMSE | 9.80 points | Lower |
+| R² | −0.091077 | Higher |
+
+We’ll evaluate the model using its existing test_predictions and the actual scores in y_test. This evaluation measures performance; it doesn’t change the learned weights.
+
+For example, if the model’s MAE were 5 points, it would reduce average absolute error by 2.66 points compared with our baseline. That would provide evidence that using student features improved predictions on this test set.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all makes sense show me what the code looks like
+
+----------------------------------------------------------------------
+
+CODEX:
+Run this after Part 8. It evaluates test_predictions and compares the results with the baseline from Part 7:
+
+[Code: python]
+# Evaluate the Linear Regression predictions.
+model_mae = mean_absolute_error(y_test, test_predictions)
+model_mse = mean_squared_error(y_test, test_predictions)
+model_rmse = np.sqrt(model_mse)
+model_r2 = r2_score(y_test, test_predictions)
+
+# Compare the baseline and model on the same test students.
+model_comparison = pd.DataFrame({
+    "Model": ["Mean baseline", "Linear Regression"],
+    "MAE": [baseline_mae, model_mae],
+    "MSE": [baseline_mse, model_mse],
+    "RMSE": [baseline_rmse, model_rmse],
+    "R squared": [baseline_r2, model_r2],
+})
+
+# Display the results with appropriate decimal precision.
+display(model_comparison.round({
+    "MAE": 2,
+    "MSE": 2,
+    "RMSE": 2,
+    "R squared": 6,
+}))
+
+The first four lines calculate the same metrics as before, using the regression model’s predictions.
+
+The DataFrame places the baseline and Linear Regression results in separate rows, making them easy to compare. The dictionary passed to .round() displays errors to two decimal places and R² to six.
+
+We’re looking for lower MAE, MSE, and RMSE, and higher R² than the baseline.
+
+----------------------------------------------------------------------
+
+YOU:
+ok looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the code under “Part 9: Evaluate prediction error” in your notebook.
+
+Verified all four metrics. The regression model improves on the baseline, reducing MAE from 7.66 to 5.77 points.
+
+----------------------------------------------------------------------
+
+YOU:
+next we have to answer these questions
+
+Questions
+
+1. Which metric is easiest to explain in terms of exam-score points?
+2. Why does MSE penalize large errors more heavily than MAE?
+3. Why might RMSE be easier to interpret than MSE?
+4. Did Linear Regression outperform the mean baseline?
+5. What does your R squared value tell you?
+
+Do not simply report the numbers. Explain what they mean.
+
+im not really sure where to go with these can you help me out with this i am still confused in addition to the answers give more background into these
+
+----------------------------------------------------------------------
+
+CODEX:
+These four metrics summarize the same 50 prediction errors in different ways. They help answer two questions: How far off are our predictions? and Do they improve on predicting an average score?
+
+For one student, an actual score of 80 and a prediction of 74 gives a 6-point error. MAE uses its absolute size, 6, while MSE uses its square, 36. We then average across all test students.
+
+Here are answers you could use, with the reasoning behind them:
+
+1. Which metric is easiest to explain in terms of exam-score points?
+
+   MAE is the easiest to explain because it directly reports the average absolute difference between predicted and actual scores. Our MAE of 5.77 means the model’s predictions differ from actual scores by about 5.77 exam-score points on average.
+
+   Individual errors can be smaller or larger. MAE does not mean every prediction is within 5.77 points.
+
+2. Why does MSE penalize large errors more heavily than MAE?
+
+   MSE squares each error before averaging, so large mistakes contribute disproportionately more to the result. MAE uses the absolute error without squaring it.
+
+   For example:
+
+   | Error size | Contribution to MAE’s calculation | Contribution to MSE’s calculation |
+
+   | 2 points | 2 | 4 |
+   | 10 points | 10 | 100 |
+
+   The 10-point error contributes 5 times as much as the 2-point error to MAE’s calculation, but 25 times as much to MSE’s calculation.
+
+3. Why might RMSE be easier to interpret than MSE?
+
+   RMSE takes the square root of MSE, returning the result to exam-score points. Our MSE is 69.70 points squared, while our RMSE is about 8.35 exam-score points. The original units make RMSE easier to connect to the scores we are predicting.
+
+   RMSE still gives large mistakes more influence. That explains why it can be higher than MAE: our 5.77 MAE measures average absolute error, while 8.35 RMSE is a summary that places greater emphasis on large errors.
+
+4. Did Linear Regression outperform the mean baseline?
+
+   Yes, Linear Regression performed better on this test set. MAE decreased from 7.66 to 5.77 points, reducing average absolute error by approximately 1.89 points. RMSE also decreased from 9.80 to 8.35 points. These improvements show that using student features provided more useful predictions than assigning everyone the training-set average.
+
+   MSE decreased and R² increased as well, so all four metrics support that conclusion. This is an improvement in overall performance; individual students can still have large prediction errors.
+
+5. What does your R² value tell you?
+
+   Our R² of approximately 0.209 means the model reduced total squared prediction error by about 20.9% compared with predicting the test-set mean for everyone. This shows useful but modest predictive performance, with substantial score variation still unaccounted for. R² documentation
+
+   You may also see this described as the model accounting for about 20.9% of the variation in test scores. R² measures performance relative to that mean reference.
+
+For R² specifically, the reference uses the test-set mean. Our assignment baseline predicts the training-set mean. The test mean is used only for evaluation; it does not train our model or determine its predictions.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all makes sense lets add these questions to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all five questions and answers under “Part 9 questions” in your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+next we have to do part 10 give me some background on this before we discuss code
+
+Part 10 — Actual vs. Predicted Plot
+
+Create a scatter plot with:
+
+- actual exam score on one axis;
+- predicted exam score on the other.
+
+Add a diagonal reference line representing:
+
+actual = predicted
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 10 lets us see how closely each test prediction matches its actual exam score. Part 9 summarized the errors with metrics; this plot shows the individual predictions behind those summaries.
+
+We’ll use:
+
+- Horizontal axis: actual exam score from y_test.
+- Vertical axis: predicted exam score from test_predictions.
+
+Each dot represents one of our 50 test students.
+
+The diagonal reference line represents perfect agreement:
+
+\[
+\text{predicted score}=\text{actual score}
+\]
+
+It passes through points such as (60, 60), (80, 80), and (100, 100). A student’s dot falls exactly on this line when their prediction is correct.
+
+For example:
+
+| Actual score | Predicted score | Position | Meaning |
+
+| 80 | 80 | On the line | Correct prediction |
+| 80 | 90 | Above the line | Model predicted 10 points too high |
+| 80 | 70 | Below the line | Model predicted 10 points too low |
+
+With this axis arrangement:
+
+- Above the line means overprediction.
+- Below the line means underprediction.
+- A larger vertical gap from the line means a larger prediction error.
+
+This helps us investigate questions that an average error alone cannot answer:
+
+- Are most predictions close to the actual scores?
+- Are there a few students with particularly large errors?
+- Does the model consistently overpredict or underpredict?
+- Does it struggle more with low scores or high scores?
+
+For example, if students with high actual scores mostly fall below the line, the model tends to underestimate high scores.
+
+The goal is agreement with the diagonal. An upward trend by itself can still contain substantial errors—for example, every prediction could be 10 points too high.
+
+We’ll plot the existing test predictions. The diagonal serves as a visual benchmark for judging those predictions.
+
+----------------------------------------------------------------------
+
+YOU:
+gotcha now lets see what the code will look like give me an explanation as well
+
+----------------------------------------------------------------------
+
+CODEX:
+Run this after Part 9. It uses the actual test scores and the predictions we already calculated:
+
+[Code: python]
+import matplotlib.pyplot as plt
+
+# Find a shared plotting range for actual and predicted scores.
+score_min = min(y_test.min(), test_predictions.min())
+score_max = max(y_test.max(), test_predictions.max())
+
+# Add some space around the smallest and largest values.
+padding = (score_max - score_min) * 0.05
+lower_limit = score_min - padding
+upper_limit = score_max + padding
+
+# Plot one point for each test student.
+fig, ax = plt.subplots(figsize=(7, 7))
+
+ax.scatter(
+    y_test,
+    test_predictions,
+    color="#4C78A8",
+    alpha=0.7,
+    label="Test students",
+)
+
+# Add the reference line for perfect predictions.
+ax.plot(
+    [lower_limit, upper_limit],
+    [lower_limit, upper_limit],
+    color="black",
+    linestyle="--",
+    label="Actual = predicted",
+)
+
+ax.set_title("Actual vs. Predicted Exam Scores")
+ax.set_xlabel("Actual exam score")
+ax.set_ylabel("Predicted exam score")
+
+ax.set_xlim(lower_limit, upper_limit)
+ax.set_ylim(lower_limit, upper_limit)
+ax.set_aspect("equal", adjustable="box")
+
+ax.legend()
+fig.tight_layout()
+plt.show()
+
+Here’s how it works:
+
+1. Find the plotting range.
+   score_min finds the smallest value across both actual scores and predictions. score_max finds the largest. Considering both ensures every point fits in the plot.
+
+   We add 5% padding so the outermost points have some space around them.
+
+2. Draw the students’ points.
+   ax.scatter(y_test, test_predictions) places actual scores horizontally and predicted scores vertically. Each student’s two values determine one dot.
+
+   alpha=0.7 makes the dots partially transparent so overlapping points are easier to see.
+
+3. Draw the diagonal reference line.
+   ax.plot() receives two horizontal endpoints and two vertical endpoints. Using the same values for both axes creates a line where actual and predicted scores are equal.
+
+   linestyle="--" makes this reference line dashed.
+
+4. Keep the axes comparable.
+   set_xlim() and set_ylim() give both axes the same range. set_aspect("equal") makes one score point occupy the same physical distance on either axis, so the reference line appears at 45 degrees.
+
+5. Label and display the plot.
+   The title and axis labels identify the measurements. legend() explains the dots and dashed line, tight_layout() adjusts spacing, and show() displays the figure.
+
+Dots close to the diagonal represent accurate predictions. With this arrangement, dots above it are overpredictions, and dots below it are underpredictions.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added Part 10: Actual vs. predicted plot to your notebook.
+
+Verified that it plots all 50 test students with the diagonal reference line correctly.
+
+----------------------------------------------------------------------
+
+YOU:
+now we have to answer these questions
+
+Questions
+
+1. What would a perfect model look like on this graph?
+2. Are most points close to the diagonal?
+3. Where does the model appear to make larger errors?
+
+the perfect model looks like a straigt line through all points
+
+I would say that most points a fairly close
+
+it appears to make the most errors around the edges
+
+----------------------------------------------------------------------
+
+CODEX:
+Your answers are mostly correct. I would make the first and third more precise:
+
+1. What would a perfect model look like on this graph?
+   Every point would lie exactly on the diagonal line where actual score = predicted score. For example, a student who scored 80 would also have a predicted score of 80. The points must follow this particular diagonal, rather than just any straight line.
+
+2. Are most points close to the diagonal?
+   Most points appear fairly close to the diagonal, showing that many predictions are reasonably close to the actual scores. However, there is noticeable scatter and a few large errors.
+
+3. Where does the model appear to make larger errors?
+   Some larger errors occur toward the lower and higher ends of the actual scores. For example, one student scored approximately 65, but the model predicted approximately 102. Another scored 100, but the model predicted approximately 82. These points are far from the diagonal, showing substantial overprediction and underprediction.
+
+The key for question 3 is distance from the diagonal: a point near the edge of the graph can still be accurate if it sits close to that line.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all makes sense lets add these to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all three answers under Part 10 questions in your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+ok next we will do part 11 give me some background on what we will be doing here
+
+Part 11 — Residual Analysis
+
+For each test observation, calculate:
+
+r e s i d u a l equals a c t u a l minus p r e d i c t e d
+
+Create a residual plot showing:
+
+- predicted exam score on the x-axis;
+- residual on the y-axis.
+
+Add a horizontal line at:
+
+residual = 0
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 11 helps us examine the size and direction of each prediction error. In Part 9, MAE and RMSE summarized the model’s errors. Residual analysis lets us look at individual errors and see whether they follow a pattern.
+
+A residual is calculated as:
+
+\[
+\text{residual} = \text{actual score} - \text{predicted score}
+\]
+
+For example:
+
+| Actual score | Predicted score | Residual | Meaning |
+
+| 80 | 75 | +5 | The model predicted 5 points too low. |
+| 80 | 85 | −5 | The model predicted 5 points too high. |
+| 80 | 80 | 0 | The prediction was correct. |
+
+The sign tells us the direction:
+
+- Positive residual: the model underpredicted.
+- Negative residual: the model overpredicted.
+- Residual near zero: the prediction was close.
+
+For the residual plot, each dot represents one test student:
+
+- Its horizontal position is the predicted exam score.
+- Its vertical position is the residual.
+
+Suppose the model predicts 75 and the student actually scores 80. We would plot that student at (75, 5).
+
+The horizontal line at residual = 0 represents perfect predictions. Points above it are underpredictions; points below it are overpredictions. The farther a point is vertically from that line, the larger its error.
+
+Ideally, we would see relatively small residuals scattered above and below zero without a clear pattern. We will look for:
+
+- Points far from zero: students with large prediction errors.
+- A curve or trend: a relationship the linear model may be missing.
+- A widening spread: predictions becoming less consistent in part of the score range.
+
+This fits into the pipeline as a diagnostic step after evaluation. It helps us understand where the model struggles, so we can inspect those students and decide what to investigate in later experiments.
+
+----------------------------------------------------------------------
+
+YOU:
+what kind of plot do you think would look the best here?
+
+----------------------------------------------------------------------
+
+CODEX:
+A residual scatter plot would work best here and matches the assignment. Each point represents one test student.
+
+I’d use:
+
+- X-axis: Predicted exam score.
+- Y-axis: Residual (actual − predicted), measured in exam-score points.
+- Blue dots with some transparency: consistent with your earlier plots and easier to read when points overlap.
+- A dashed black horizontal line at zero: a clear reference for perfect predictions.
+- Title: “Residuals vs. Predicted Exam Scores.”
+
+This makes it easy to see which predictions were too low or too high, spot large errors, and check whether the errors form a pattern. Ideally, the dots would be scattered fairly evenly above and below zero.
+
+----------------------------------------------------------------------
+
+YOU:
+would a box plot make sense or no?
+
+----------------------------------------------------------------------
+
+CODEX:
+Yes—a box plot of the residuals would make sense as an additional summary. It would show:
+
+- The median residual and whether it is near zero.
+- The spread of the middle 50% of errors.
+- Potentially unusual residuals.
+
+However, a single box plot would hide how errors change across predicted scores. For example, it would be harder to see whether errors become larger when the model predicts higher scores.
+
+For Part 11, the scatter plot should be the main plot because the assignment asks for predicted score on the x-axis and residual on the y-axis. A box plot could supplement it.
+
+----------------------------------------------------------------------
+
+YOU:
+ok lets just do the scatter plot then show me what the code for this should look like and explain it to me so i understand
+
+----------------------------------------------------------------------
+
+CODEX:
+Here’s the code for Part 11. It uses y_test and test_predictions from the earlier parts:
+
+[Code: python]
+import matplotlib.pyplot as plt
+
+# Calculate the residual for each test student.
+residuals = y_test - test_predictions
+
+# Create the residual scatter plot.
+fig, ax = plt.subplots(figsize=(8, 5))
+
+ax.scatter(
+    test_predictions,
+    residuals,
+    color="#4C78A8",
+    alpha=0.7,
+    label="Test students",
+)
+
+# Add a reference line for perfect predictions.
+ax.axhline(
+    y=0,
+    color="black",
+    linestyle="--",
+    label="Residual = 0",
+)
+
+# Add a title and axis labels.
+ax.set_title("Residuals vs. Predicted Exam Scores")
+ax.set_xlabel("Predicted exam score")
+ax.set_ylabel("Residual (actual − predicted)")
+
+ax.legend()
+fig.tight_layout()
+plt.show()
+
+Here’s how it works:
+
+1. Calculate the residuals
+   ```python
+   residuals = y_test - test_predictions
+   ```
+   y_test contains the actual scores, and test_predictions contains the predictions in the same student order. This subtracts each student’s prediction from their actual score.
+
+   For example, actual 80 minus predicted 75 gives a residual of +5.
+
+2. Create the plotting area
+   ```python
+   fig, ax = plt.subplots(figsize=(8, 5))
+   ```
+   This creates a figure that is 8 inches wide and 5 inches tall. ax is the plotting area where we add the points, line, and labels.
+
+3. Plot each student
+   ```python
+   ax.scatter(test_predictions, residuals, ...)
+   ```
+   The first argument provides the x-values; the second provides the y-values. A student with predicted score 75 and residual +5 appears at (75, 5).
+
+   alpha=0.7 makes the dots slightly transparent so overlapping points are easier to see.
+
+4. Draw the zero line
+   ```python
+   ax.axhline(y=0, ...)
+   ```
+   axhline draws a horizontal line. Points above zero indicate underprediction; points below zero indicate overprediction.
+
+5. Label and display the graph
+
+   The title and axis labels explain what we are plotting. ax.legend() identifies the dots and reference line, fig.tight_layout() adjusts spacing, and plt.show() displays the finished graph.
+
+When reading it, focus on how far points are from zero and whether they form a pattern across predicted scores.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added Part 11: Residual analysis to your notebook.
+
+Verified all 50 residuals and the horizontal reference line at zero.
+
+----------------------------------------------------------------------
+
+YOU:
+next we have to answer these questions
+
+Questions
+
+Explain:
+
+1. What does a positive residual mean?
+2. What does a negative residual mean?
+3. What does a residual close to zero mean?
+4. Do you see any pattern in the residual plot?
+
+Ideally, residuals should not show a strong systematic pattern.
+
+If they do, the model may be missing something about the structure of the data
+
+1. a positive residual would me the actual was higher then the predicted
+2. a negative would mean the predicted was higher than the actual
+3. a residual close to zero would mean the perdiction was close to the actual
+4. for pattern i just really see that most points are close to the line and the futher away the less points there are
+
+im not super confident on the last one
+
+----------------------------------------------------------------------
+
+CODEX:
+Your first three answers are correct. For question 4, we’re looking at whether the residuals change consistently as we move from left to right across predicted scores. Your observation about fewer points far from zero describes the size of the errors.
+
+Your answers could read:
+
+1. What does a positive residual mean?
+   The actual score was higher than the predicted score, so the model underpredicted.
+
+2. What does a negative residual mean?
+   The predicted score was higher than the actual score, so the model overpredicted.
+
+3. What does a residual close to zero mean?
+   The predicted score was close to the actual score, so the prediction error was small.
+
+4. Do you see any pattern in the residual plot?
+   Most residuals are scattered above and below zero, with no obvious curved pattern in the main group of points. At higher predicted scores, several residuals are negative, including one large residual of approximately −37 points. This suggests possible overprediction at the high end, although there are relatively few students in that range, so the evidence for a systematic pattern is limited.
+
+For that last answer, you don’t need to claim a definite pattern. Describe what you see and how strong the evidence looks.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all four answers under Part 11 questions in your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+ok next up we have question 12 give me some background before we move on the code
+
+Part 12 — Find the Largest Errors
+
+Calculate the absolute prediction error:
+
+straight ∣ a c t u a l minus p r e d i c t e d straight ∣
+
+Find the 10 test students with the largest prediction errors.
+
+Display useful information for these students, including:
+
+- actual exam score;
+- predicted exam score;
+- residual;
+- absolute error;
+- several input features.
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 12 lets us connect the large errors in your residual plot to individual students and their input information. We’ll inspect the ten test students whose predictions were farthest from their actual scores.
+
+We already calculated:
+
+\[
+\text{residual} = \text{actual} - \text{predicted}
+\]
+
+Now we take its absolute value, which removes the negative sign:
+
+\[
+\text{absolute error} = |\text{actual} - \text{predicted}|
+\]
+
+For example:
+
+| Actual | Predicted | Residual | Absolute error |
+
+| 80 | 65 | +15 | 15 |
+| 80 | 95 | −15 | 15 |
+
+Both predictions missed by 15 points. The residual tells us the direction; the absolute error tells us the size.
+
+This matters when finding the largest mistakes. Sorting the signed residuals would put large positive errors at the top and large negative errors at the bottom. Sorting absolute errors from largest to smallest captures both overpredictions and underpredictions.
+
+We’ll follow these steps:
+
+1. Create a results table that pairs each test student’s actual score, predicted score, residual, and absolute error.
+2. Add their input features, such as study hours, sleep hours, attendance, and practice problems.
+3. Sort by absolute error in descending order and display the first ten rows.
+
+The input features provide context. We might investigate whether these students:
+
+- Have unusually high or low feature values.
+- Have missing information that preprocessing filled in.
+- Have similar habits but very different exam scores.
+- Share a pattern that the model handles poorly.
+
+For example, the point with a residual near −37 represents a substantial overprediction. Looking at that student’s features may help us understand why the model expected such a high score.
+
+These observations give us possible explanations to investigate; they don’t automatically establish why an error occurred.
+
+This is the “inspect mistakes” stage of your pipeline. The metrics tell us overall performance, the plots show error patterns, and this table helps us examine the students behind those errors before planning experiments.
+
+----------------------------------------------------------------------
+
+YOU:
+this is the second part of 12 what do you think would be the best way to go about this problem from start to finish
+
+Investigation
+
+Choose at least two large-error cases and examine them carefully.
+
+For each case, write a short discussion.
+
+For example:
+
+The model predicted 75.2, while the student's actual score was 89. The student had relatively high attendance and completed many practice problems. These observations may help us form hypotheses about why the linear model underestimated the score, but they do not establish the cause of the error.
+
+Distinguish between:
+
+what the data show
+
+and
+
+your hypothesis about why it happened.
+
+----------------------------------------------------------------------
+
+CODEX:
+I would treat Part 12 as a small investigation: find the largest errors, examine two students, and separate the evidence from possible explanations.
+
+1. Build the results table.
+   Include each test student’s actual score, predicted score, residual, absolute error, and the original input features. We can also display student_id to identify the students; it still won’t be used to make predictions.
+
+2. Find the ten largest errors.
+   Sort by absolute error from largest to smallest. This captures large errors in both directions.
+
+3. Choose two contrasting cases.
+   A useful pair would be the largest overprediction and the largest underprediction among those ten. Your residual plot shows substantial errors in both directions, so this should give us two interesting cases.
+
+4. Examine their original feature values.
+   Look at study hours, sleep, attendance, practice problems, experience, study group, and commute. Use the original values so the information is easy to interpret.
+
+   If we describe attendance or study hours as “high,” we should compare them with something concrete, such as the training-set median. That gives our description a clear basis.
+
+5. Separate observations from hypotheses.
+
+   | What the data show | Your hypothesis |
+
+   | Actual score, prediction, residual, and feature values | A possible explanation for the error |
+   | “The student completed more practice problems than the training median.” | “The model may not fully capture how practice and attendance work together.” |
+   | Directly supported by the table | Plausible, but not established by this case |
+
+   Words such as “may,” “could,” and “one possible explanation” help make that distinction clear.
+
+6. Write one short paragraph per student.
+   Each paragraph should contain the prediction error, two or three relevant observations, and a cautious hypothesis.
+
+A useful template would be:
+
+For Student [ID], the model predicted [prediction], while the actual score was [actual]. The residual was [residual], meaning the model [underpredicted/overpredicted] by [absolute error] points. The student had [specific feature observations and comparisons]. One possible explanation is [hypothesis]. These observations suggest something to investigate, but they do not establish the cause of the error.
+
+Once we have the table, we can choose the two cases based on their actual values and write discussions that are specific to your dataset.
+
+----------------------------------------------------------------------
+
+YOU:
+ok lets do it that way
+
+----------------------------------------------------------------------
+
+CODEX:
+I ran the analysis using your existing model and test split. S174 has the largest overprediction, and S109 has the largest underprediction.
+
+Here is the code for the results table:
+
+[Code: python]
+# Keep the original features and identify each test student.
+error_results = X_test.copy()
+error_results.insert(
+    0, "student_id", df.loc[X_test.index, "student_id"]
+)
+
+# Add actual scores, predictions, and errors.
+error_results["actual_exam_score"] = y_test
+error_results["predicted_exam_score"] = test_predictions
+error_results["residual"] = y_test - test_predictions
+error_results["absolute_error"] = error_results["residual"].abs()
+
+# Find the ten largest absolute errors.
+largest_errors = error_results.sort_values(
+    "absolute_error",
+    ascending=False,
+).head(10)
+
+# Put the prediction results before the input features.
+display_columns = [
+    "student_id",
+    "actual_exam_score",
+    "predicted_exam_score",
+    "residual",
+    "absolute_error",
+] + feature_columns
+
+display(largest_errors[display_columns].round(2))
+
+The main new pieces are:
+
+- X_test.copy() keeps the original, readable feature values.
+- df.loc[X_test.index, "student_id"] retrieves the IDs belonging to those same test students.
+- .abs() removes the sign from each residual.
+- ascending=False sorts from largest error to smallest.
+- .head(10) selects the first ten students.
+- .round(2) rounds the displayed results while keeping the underlying values unchanged.
+
+These are the ten largest errors, with three of their input features shown here. The code displays all seven features.
+
+| Student | Actual | Predicted | Residual | Absolute error | Study hours/week | Attendance | Practice/week |
+
+| S174 | 64.80 | 102.09 | −37.29 | 37.29 | 17.8 | 98.1% | 0 |
+| S109 | 100.00 | 82.25 | +17.75 | 17.75 | 10.1 | 91.6% | 25 |
+| S020 | 92.20 | 76.93 | +15.27 | 15.27 | 7.1 | 90.0% | 14 |
+| S070 | 75.50 | 60.72 | +14.78 | 14.78 | 4.6 | 64.3% | 9 |
+| S241 | 74.10 | 85.16 | −11.06 | 11.06 | 10.4 | 91.2% | 20 |
+| S197 | 80.50 | 69.91 | +10.59 | 10.59 | 7.0 | 98.3% | 3 |
+| S016 | 60.50 | 70.98 | −10.48 | 10.48 | 4.6 | 88.0% | 0 |
+| S223 | 74.60 | 84.70 | −10.10 | 10.10 | 9.5 | 70.9% | 22 |
+| S068 | 86.30 | 76.42 | +9.88 | 9.88 | 5.3 | 98.2% | 22 |
+| S160 | 57.20 | 66.77 | −9.57 | 9.57 | 3.3 | 72.0% | 0 |
+
+We can then select our two cases and compare their numerical features with the training medians:
+
+[Code: python]
+# The table is already sorted by absolute error.
+# Select its first overprediction and first underprediction.
+overprediction_case = largest_errors[
+    largest_errors["residual"] < 0
+].iloc[0]
+
+underprediction_case = largest_errors[
+    largest_errors["residual"] > 0
+].iloc[0]
+
+# Compare the cases with typical training values.
+case_feature_comparison = pd.DataFrame({
+    "Training median": X_train[numeric_features].median(),
+    "Overprediction case":
+        overprediction_case[numeric_features].astype(float),
+    "Underprediction case":
+        underprediction_case[numeric_features].astype(float),
+})
+
+display(case_feature_comparison.round(2))
+
+Filtering by the residual’s sign separates the two error directions. .iloc[0] selects the first matching row, which has the largest absolute error in that direction. The median comparison gives us evidence for descriptions such as “above typical attendance.”
+
+The discussions could read:
+
+Case 1: S174 — Overprediction
+
+The data show that the model predicted 102.09, while the student’s actual score was 64.80, giving a residual of −37.29. The student studied 17.8 hours per week and had 98.1% attendance, both above the training medians of 7.6 hours and 85.75%. However, the student completed zero practice problems, compared with a training median of 16.5. One hypothesis is that the relationship between study hours and exam performance depends on how students practice, and the additive linear model may not capture that interaction. These observations do not establish why this student scored lower than predicted.
+
+Case 2: S109 — Underprediction
+
+The data show that the model predicted 82.25, while the student’s actual score was 100, giving a residual of +17.75. The student studied 10.1 hours per week, had 91.6% attendance, and completed 25 practice problems per week, all above the corresponding training medians. The student also reported no prior programming experience and participated in a study group. One hypothesis is that unrecorded factors, such as study effectiveness or understanding of the exam material, helped this student perform better than expected. The available data do not establish the cause of the underprediction.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added Part 12 to your notebook, including the code for the ten largest errors, feature comparisons, and both case discussions.
+
+Verified that the results match the discussions for S174 and S109.
+
+----------------------------------------------------------------------
+
+YOU:
+ok next up we have part 13
+
+please give me some background on the question before we move on to code
+
+Part 13 — Examine the Linear Regression Coefficients
+
+Ask your AI assistant to help you extract the fitted Linear Regression coefficients after preprocessing.
+
+Create a table showing:
+
+- transformed feature name;
+- coefficient.
+
+You may also create a bar chart.
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 13 helps us understand how the fitted model uses each feature to calculate an exam-score prediction.
+
+Your earlier understanding of linear regression applies here: each input gets a weight, called a coefficient:
+
+\[
+\text{prediction}
+=
+\text{intercept}
++
+w_1x_1+w_2x_2+\cdots
+\]
+
+The intercept is a constant added to every prediction, and each coefficient multiplies its corresponding feature value. These weights were learned during .fit(). Scikit-learn’s linear regression explanation.
+
+For a numerical feature, holding the other inputs fixed:
+
+- A positive coefficient means increasing that feature raises the prediction.
+- A negative coefficient means increasing it lowers the prediction.
+- A coefficient near zero means changes in that feature have relatively little influence within this fitted formula.
+
+The phrase “after preprocessing” matters because the model received transformed features.
+
+Your five numerical features were scaled. Therefore, a hypothetical study-hours coefficient of +3 would mean:
+
+Increasing study hours by one training-set standard deviation increases the predicted score by 3 points, with other inputs unchanged.
+
+It would not mean 3 points per additional study hour. The coefficient applies to the standardized value. Scikit-learn’s coefficient interpretation guide.
+
+Your categorical features were expanded into separate indicator columns. For example:
+
+- prior_programming_experience_None
+- prior_programming_experience_Some
+- prior_programming_experience_Strong
+- study_group_No
+- study_group_Yes
+
+That explains why our seven original features became ten transformed features, each with a coefficient.
+
+Because our encoder keeps every category, the clearest categorical interpretation comes from comparing coefficients within the same feature. For example, the difference between the “Strong” and “None” coefficients tells us how the prediction changes when switching between those categories, with other inputs unchanged.
+
+We will extract the transformed feature names from the fitted preprocessor, extract the matching coefficients from the fitted regression model, and pair them in a table. A horizontal bar chart with a vertical line at zero would make the signs and magnitudes easy to see.
+
+These coefficients describe the model’s learned associations. They do not establish cause, and a large coefficient alone is not a complete measure of feature importance—especially when features are related to one another. Scikit-learn’s interpretation guidance.
+
+----------------------------------------------------------------------
+
+YOU:
+ok what will the code for this look like
+
+----------------------------------------------------------------------
+
+CODEX:
+Here’s the code for the coefficient table. It uses the pipeline we already trained:
+
+[Code: python]
+# Retrieve the fitted preprocessing and regression steps.
+fitted_preprocessor = regression_pipeline.named_steps["preprocessor"]
+fitted_regressor = regression_pipeline.named_steps["regressor"]
+
+# Get the transformed feature names and their matching coefficients.
+transformed_feature_names = fitted_preprocessor.get_feature_names_out()
+coefficients = fitted_regressor.coef_
+
+# Pair each transformed feature with its coefficient.
+coefficient_table = pd.DataFrame({
+    "Transformed feature name": transformed_feature_names,
+    "Coefficient": coefficients,
+})
+
+display(coefficient_table.round(3))
+
+Here’s how it works:
+
+1. named_steps retrieves each part of the pipeline.
+   "preprocessor" contains the fitted imputers, scaler, and encoder. "regressor" contains the fitted Linear Regression model.
+
+2. get_feature_names_out() retrieves the final column names.
+   These include the numerical columns and the separate one-hot encoded categories. Names such as numeric__study_hours_per_week also identify which preprocessing branch produced the column.
+
+3. coef_ retrieves the learned weights.
+   Scikit-learn stores them in the same order as the transformed columns, so we can pair each name with its coefficient.
+
+4. pd.DataFrame() creates the table.
+   .round(3) makes the displayed values easier to read.
+
+We can also create the horizontal bar chart:
+
+[Code: python]
+import matplotlib.pyplot as plt
+
+# Sort the coefficients to make the chart easier to read.
+coefficient_plot = coefficient_table.sort_values("Coefficient")
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+ax.barh(
+    coefficient_plot["Transformed feature name"],
+    coefficient_plot["Coefficient"],
+    color="#4C78A8",
+)
+
+# Separate positive and negative coefficients visually.
+ax.axvline(
+    x=0,
+    color="black",
+    linestyle="--",
+)
+
+ax.set_title("Linear Regression Coefficients")
+ax.set_xlabel("Coefficient")
+ax.set_ylabel("Transformed feature")
+
+fig.tight_layout()
+plt.show()
+
+barh() creates horizontal bars, which gives the longer feature names room to fit. Bars extending right of zero are positive; bars extending left are negative. Their lengths show coefficient magnitude.
+
+When interpreting the results, remember that numerical coefficients apply to standardized values, and categorical comparisons use the difference between coefficients for categories of the same feature.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added Part 13, including the coefficient table and horizontal bar chart, to your notebook.
+
+Verified all ten feature–coefficient pairs and the chart.
+
+----------------------------------------------------------------------
+
+YOU:
+1. Which features have positive coefficients?
+2. Which features have negative coefficients?
+3. Which coefficients have relatively large magnitudes?
+4. What does a positive coefficient mean in this fitted model?
+
+ok next we have to answer these questions
+
+the features with positive coefficents where study hours, prior programming experence strong, attdendence rate, sleep hours per night, commute minutes, study group no
+
+negative features were study group yes, prior experence, some, and prior experence none
+
+Coeffient with high magnitude are study hours per week, prior programming experence strong, practice problems per week, and prior programming experence none
+
+A positive coeffient in this context means that it has a positive effect on exam score
+
+----------------------------------------------------------------------
+
+CODEX:
+Your answers are mostly correct. Practice problems per week is also positive. For question 4, describe the effect on the model’s prediction, rather than claiming it causes a higher actual score.
+
+Your answers could read:
+
+1. Which features have positive coefficients?
+   The positive coefficients are study hours per week, strong prior programming experience, practice problems per week, attendance rate, sleep hours per night, commute minutes, and the “No” category for study group.
+
+2. Which features have negative coefficients?
+   The negative coefficients are the “Yes” category for study group, “Some” prior programming experience, and “None” prior programming experience.
+
+3. Which coefficients have relatively large magnitudes?
+   The largest absolute coefficient values are study hours per week (+5.933), strong prior programming experience (+5.060), no prior programming experience (−4.867), and practice problems per week (+3.169). A negative coefficient can have a large magnitude because magnitude measures distance from zero.
+
+4. What does a positive coefficient mean in this fitted model?
+   A positive coefficient means increasing the corresponding transformed feature value increases the model’s predicted exam score, while the other inputs are held fixed. For example, the study-hours coefficient of approximately +5.93 means a one-standard-deviation increase in study hours raises the prediction by about 5.93 points. This describes a relationship learned by the model; it does not establish that changing the feature causes the actual score to increase.
+
+For categorical features, interpret differences between categories of the same feature. A category’s positive sign alone does not tell us its effect compared with every other category.
+
+----------------------------------------------------------------------
+
+YOU:
+this was a disclaimer right after these questions does this change any of our answers
+
+Important
+
+Do not automatically interpret a coefficient as a causal effect.
+
+For example, a positive coefficient for attendance means that the fitted model associates higher attendance with a higher predicted score, holding its other modeled features fixed.
+
+It does not prove that changing attendance by itself causes the corresponding change in exam score.
+
+----------------------------------------------------------------------
+
+CODEX:
+No changes are needed to our revised answers. The disclaimer reinforces the distinction we already made in question 4.
+
+Questions 1–3 describe the signs and magnitudes of the fitted coefficients.
+
+For question 4, we can use this wording:
+
+A positive coefficient means the fitted model associates a higher transformed feature value with a higher predicted exam score, holding its other modeled features fixed. This does not prove that changing the feature itself causes the actual exam score to increase.
+
+Your original phrase “positive effect on exam score” could suggest causation. “Associated with a higher predicted score” makes the intended meaning clearer.
+
+----------------------------------------------------------------------
+
+YOU:
+ok sounds good lets add the answers to the work book
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all four answers under Part 13 questions in your notebook, including the clarification about causation.
+
+----------------------------------------------------------------------
+
+YOU:
+ok next we have part 14 break down what we need to do and your opinion on what way would be best to complete this problem
+
+[Image attached; binary image data omitted]
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 14 asks us to test one question: Does adding quiz_average improve exam-score predictions?
+
+The best approach is to build a separate Linear Regression pipeline with the extra feature, using exactly the same training and test students. That makes the comparison fair and preserves the original model’s results.
+
+I would complete it in this order:
+
+1. Write the hypothesis before running the experiment.
+
+   A reasonable hypothesis would be:
+
+   > I expect adding quiz_average to reduce MAE and RMSE and increase R² because quiz performance provides information about a student’s understanding of the course material that study habits alone may not capture.
+
+   This is our expectation. The results will tell us whether the evidence supports it.
+
+2. Add quiz_average to the existing seven features.
+
+   We will keep the original features and add this one numerical column. exam_score remains the target.
+
+3. Keep the same training and test observations.
+
+   We will use the existing X_train and X_test row indexes to select the expanded feature tables. That keeps the same 200 training students and 50 test students.
+
+   Keeping the students fixed means any performance difference can be assessed without an easier or harder test group affecting the comparison.
+
+4. Create a new preprocessing and regression pipeline.
+
+   Include quiz_average with the numerical features, using:
+
+   Training-median imputation → StandardScaler
+
+   The categorical preprocessing stays the same. The new pipeline learns its preprocessing rules and coefficients from the training data.
+
+5. Predict and compare results.
+
+   Evaluate the new predictions against the same y_test scores. Your comparison table will look like this:
+
+   | Model | MAE | RMSE | R² |
+
+   | Mean baseline | 7.66 | 9.80 | −0.091 |
+   | Original Linear Regression | 5.77 | 8.35 | 0.209 |
+   | Linear Regression + quiz average | To calculate | To calculate | To calculate |
+
+   We want to see lower MAE and RMSE and higher R². We should also explain the size of any improvement—for example, how many exam-score points the average absolute error decreased.
+
+My recommendation is to keep this experiment focused on the single added feature. That gives us a clear conclusion about whether quiz_average adds useful predictive information on this test set.
+
+For a real prediction task, the quiz average would also need to be available before the exam score we are trying to predict.
+
+----------------------------------------------------------------------
+
+YOU:
+ok lets do this
+
+----------------------------------------------------------------------
+
+CODEX:
+Adding quiz_average improved the model on the same 50 test students. The results support our hypothesis:
+
+| Model | MAE | RMSE | R² |
+
+| Mean baseline | 7.66 | 9.80 | −0.091 |
+| Original Linear Regression | 5.77 | 8.35 | 0.209 |
+| Linear Regression + quiz average | 4.75 | 6.23 | 0.559 |
+
+The average absolute error decreased by roughly one exam-score point. RMSE also decreased, and R² increased, so all three measures show improvement.
+
+Here is the code for review:
+
+[Code: python]
+from sklearn.base import clone
+
+# Add quiz average while keeping the original training/test students.
+quiz_feature_columns = feature_columns + ["quiz_average"]
+
+X_train_quiz = df.loc[X_train.index, quiz_feature_columns].copy()
+X_test_quiz = df.loc[X_test.index, quiz_feature_columns].copy()
+
+# Treat quiz average as another numerical feature.
+quiz_numeric_features = numeric_features + ["quiz_average"]
+
+# Create fresh copies of the existing preprocessing workflows.
+quiz_preprocessor = ColumnTransformer(transformers=[
+    ("numeric", clone(numeric_pipeline), quiz_numeric_features),
+    ("categorical", clone(categorical_pipeline), categorical_features),
+])
+
+# Build and train the separate model.
+quiz_regression_pipeline = Pipeline(steps=[
+    ("preprocessor", quiz_preprocessor),
+    ("regressor", LinearRegression()),
+])
+
+quiz_regression_pipeline.fit(X_train_quiz, y_train)
+quiz_test_predictions = quiz_regression_pipeline.predict(X_test_quiz)
+
+# Evaluate on the same actual test scores.
+quiz_mae = mean_absolute_error(y_test, quiz_test_predictions)
+quiz_rmse = np.sqrt(mean_squared_error(y_test, quiz_test_predictions))
+quiz_r2 = r2_score(y_test, quiz_test_predictions)
+
+# Compare all three approaches.
+quiz_experiment_comparison = pd.DataFrame({
+    "Model": [
+        "Mean baseline",
+        "Original Linear Regression",
+        "Linear Regression + quiz average",
+    ],
+    "MAE": [baseline_mae, model_mae, quiz_mae],
+    "RMSE": [baseline_rmse, model_rmse, quiz_rmse],
+    "R squared": [baseline_r2, model_r2, quiz_r2],
+})
+
+display(quiz_experiment_comparison.round({
+    "MAE": 2,
+    "RMSE": 2,
+    "R squared": 3,
+}))
+
+The main new pieces are:
+
+- feature_columns + ["quiz_average"] creates an expanded feature list containing eight columns.
+- .loc[X_train.index, ...] and .loc[X_test.index, ...] select exactly the same students in the same order as before.
+- clone() makes fresh, unfitted copies of our preprocessing workflows. The new model learns its own preprocessing rules from the training data.
+- quiz_regression_pipeline stores the additional model separately, allowing us to compare its predictions with the original results.
+- quiz_experiment_comparison combines the three approaches into the assignment’s requested table.
+
+I verified that the experiment used the same 200 training students and 50 test students, and that the original model’s predictions stayed unchanged.
+
+----------------------------------------------------------------------
+
+YOU:
+ok lets add this to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added Part 14 to your notebook, including the hypothesis, tested experiment code, comparison table, and results explanation.
+
+----------------------------------------------------------------------
+
+YOU:
+Questions
+
+1. Did MAE improve?
+2. Did RMSE improve?
+3. Did R squared improve?
+4. Was your hypothesis supported?
+
+Most importantly, discuss:
+
+Would quiz_average actually be available at the time when the prediction is supposed to be made?
+
+If the prediction is made after quizzes but before the final exam, it may be a legitimate feature.
+
+If the prediction must be made before any quizzes occur, it would not be available.
+
+A feature can be highly predictive and still be inappropriate for a particular prediction scenario.
+
+next we have to answer these questions
+
+yes MAE improves
+
+yes RMSE improves
+
+yes R^2 imrpoved
+
+yes my hypotosis was supported
+
+----------------------------------------------------------------------
+
+CODEX:
+Your four answers are correct. Add the numbers and explain what improved. The availability discussion is also needed to complete this part.
+
+1. Did MAE improve?
+   Yes. MAE decreased from 5.77 to 4.75 points, meaning the predictions were approximately one point closer to the actual scores on average.
+
+2. Did RMSE improve?
+   Yes. RMSE decreased from 8.35 to 6.23 points. This shows improvement on a measure that gives larger errors more influence.
+
+3. Did R² improve?
+   Yes. R² increased from 0.209 to 0.559, meaning the model accounted for more of the variation in the test students’ exam scores.
+
+4. Was your hypothesis supported?
+   Yes. Our hypothesis was supported on this test set because adding quiz_average reduced MAE and RMSE and increased R². Quiz average provided useful predictive information beyond the original features.
+
+For the availability discussion, you could write:
+
+Whether quiz_average is appropriate depends on when the prediction is made. If we predict the final exam score after the quiz scores are available but before the final exam, quiz average would be a legitimate input. If we predict before any quizzes occur, it would not be available and should not be included. Therefore, the improved results do not automatically make it appropriate for every prediction scenario. We must use information that would actually be known at the time of prediction.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all looks good lets add this to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the Part 14 answers and the quiz-average availability discussion to your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+next we have part 15 give me some more information on this before we start looking at the code
+
+Part 15 — Compare with a Nonlinear Model
+
+Linear Regression assumes a relatively simple relationship between the features and the target.
+
+Now ask your AI assistant how to replace Linear Regression with:
+
+RandomForestRegressor
+
+Keep the same:
+
+- prediction target;
+- input features;
+- training/test split;
+- preprocessing approach where appropriate.
+
+Do not perform extensive hyperparameter tuning.
+
+Use reasonable default settings, with:
+
+random_state=42
+
+Compare:
+
+- mean baseline;
+- Linear Regression;
+- Random Forest Regression.
+
+At minimum, compare:
+
+- MAE;
+- RMSE;
+- R squared.
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 15 asks whether a more flexible model can predict exam scores better than Linear Regression, using the same information and the same students.
+
+Linear Regression uses one weighted formula. For example, its study-hours coefficient stays the same across students, holding the other modeled features fixed.
+
+A Random Forest Regressor combines many regression decision trees. Each tree learns a sequence of questions about feature values. An illustrative tree might ask:
+
+- Is the student’s quiz average above 80?
+- Within that group, is attendance above 90%?
+- Within that smaller group, how many practice problems did they complete?
+
+The tree predicts a numerical score based on the training students who reach the same final group. With the default squared-error setting, that prediction is their average score. Scikit-learn’s RandomForestRegressor documentation.
+
+The forest trains trees on different random samples of the training data, then averages their predictions. For example, predictions of 75, 80, and 85 would average to 80. Combining many trees makes predictions less dependent on the particular decisions of one tree. Scikit-learn’s explanation of random forests.
+
+This makes the model nonlinear: it can learn relationships that change across ranges and combinations of features. For instance, it could use study hours differently depending on quiz performance or practice activity. We’ll test whether that flexibility helps on our held-out students.
+
+For this assignment, I recommend:
+
+1. Carry forward the eight features from Part 14, including quiz_average, for the scenario where quiz scores are available before prediction. Compare Random Forest with the Linear Regression + quiz average model so both receive identical information.
+
+2. Keep the same 200 training students and 50 test students.
+   The target remains exam_score. The intended change in this experiment is the model type.
+
+3. Reuse the preprocessing approach in a separate pipeline.
+   We can keep imputation, scaling, and one-hot encoding. Trees generally do not need numerical scaling because they split on thresholds, but retaining our existing scaler keeps the workflow consistent.
+
+4. Use default model settings with random_state=42.
+   Hyperparameters are settings chosen before training, such as the number of trees and their allowed depth. The default forest has 100 trees. Fixing its random state makes its random training choices reproducible with the same data and settings. RandomForestRegressor settings.
+
+5. Compare the mean baseline, Linear Regression, and Random Forest.
+   We’ll calculate MAE, RMSE, and R² on the same test scores. Lower MAE and RMSE and higher R² indicate better performance.
+
+The linear model with quiz average currently has MAE 4.75, RMSE 6.23, and R² 0.559. Those are the results the forest will be compared against; greater flexibility does not guarantee better test predictions.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all makes sense show me what the code will look like and explain
+
+----------------------------------------------------------------------
+
+CODEX:
+This uses the same eight features from Part 14, including quiz_average, and the same training and test students.
+
+[Code: python]
+from sklearn.base import clone
+from sklearn.ensemble import RandomForestRegressor
+
+# Combine a fresh copy of preprocessing with Random Forest.
+forest_pipeline = Pipeline(steps=[
+    ("preprocessor", clone(quiz_preprocessor)),
+    ("regressor", RandomForestRegressor(random_state=42)),
+])
+
+# Train on the same students and features used in Part 14.
+forest_pipeline.fit(X_train_quiz, y_train)
+
+# Predict exam scores for the same test students.
+forest_test_predictions = forest_pipeline.predict(X_test_quiz)
+
+# Evaluate the Random Forest predictions.
+forest_mae = mean_absolute_error(y_test, forest_test_predictions)
+forest_rmse = np.sqrt(
+    mean_squared_error(y_test, forest_test_predictions)
+)
+forest_r2 = r2_score(y_test, forest_test_predictions)
+
+# Compare models using the same test scores.
+forest_model_comparison = pd.DataFrame({
+    "Model": [
+        "Mean baseline",
+        "Linear Regression + quiz average",
+        "Random Forest + quiz average",
+    ],
+    "MAE": [baseline_mae, quiz_mae, forest_mae],
+    "RMSE": [baseline_rmse, quiz_rmse, forest_rmse],
+    "R squared": [baseline_r2, quiz_r2, forest_r2],
+})
+
+display(forest_model_comparison.round({
+    "MAE": 2,
+    "RMSE": 2,
+    "R squared": 3,
+}))
+
+Here’s how it works:
+
+1. Import the model and clone.
+   RandomForestRegressor is the regression algorithm. clone() creates a fresh, unfitted copy of our preprocessing configuration.
+
+2. Build the pipeline.
+   The first step handles missing values, scales numerical features, and encodes categories. The second step uses Random Forest to learn how to predict exam scores.
+
+   random_state=42 makes the forest’s random training choices reproducible. The other settings use the defaults, including 100 trees.
+
+3. Train with .fit().
+   ```python
+   forest_pipeline.fit(X_train_quiz, y_train)
+   ```
+   The pipeline learns preprocessing rules from the training features, then trains the trees using those transformed features and the actual training scores.
+
+4. Predict with .predict().
+   ```python
+   forest_test_predictions = forest_pipeline.predict(X_test_quiz)
+   ```
+   The pipeline applies its learned preprocessing to the test features. Each tree predicts a score, and the forest averages those predictions.
+
+5. Calculate and compare the metrics.
+   We calculate MAE, RMSE, and R² against the same y_test values.
+
+   Notice that the comparison uses quiz_mae, quiz_rmse, and quiz_r2 for Linear Regression. Those belong to the model trained with the same eight features as the forest, keeping the comparison fair.
+
+When we run it, we’ll check whether Random Forest produces lower MAE and RMSE and higher R² than the linear model.
+
+----------------------------------------------------------------------
+
+YOU:
+ok that all looks good lets add it to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added and verified Part 15 in your notebook.
+
+Random Forest achieved MAE 5.03, RMSE 6.39, and R² 0.536—slightly worse than Linear Regression with quiz average on this test set.
+
+----------------------------------------------------------------------
+
+YOU:
+1. Which model had the lowest MAE?
+2. Which had the lowest RMSE?
+3. Which had the highest R squared?
+4. Did the more complicated model necessarily perform better?
+
+this model had lower MAE
+
+this model had lower MSE
+
+the other model had a higher R squared
+
+no the better model had better performance
+
+----------------------------------------------------------------------
+
+CODEX:
+Name the models explicitly so your answers are clear. Linear Regression with quiz average performed best on all three metrics. Also, question 2 asks about RMSE, not MSE.
+
+| Model | MAE ↓ | RMSE ↓ | R² ↑ |
+
+| Mean baseline | 7.66 | 9.80 | −0.091 |
+| Linear Regression + quiz average | 4.75 | 6.23 | 0.559 |
+| Random Forest + quiz average | 5.03 | 6.39 | 0.536 |
+
+Your answers could read:
+
+1. Which model had the lowest MAE?
+   Linear Regression with quiz average had the lowest MAE, approximately 4.75 exam-score points. Its predictions were closest to the actual scores on average.
+
+2. Which had the lowest RMSE?
+   Linear Regression with quiz average had the lowest RMSE, approximately 6.23 points. It also performed best on this measure, which gives larger errors more influence.
+
+3. Which had the highest R²?
+   Linear Regression with quiz average had the highest R², approximately 0.559. It accounted for more variation in the test scores than the other approaches.
+
+4. Did the more complicated model necessarily perform better?
+   No. Random Forest was more complicated, but Linear Regression performed slightly better on the same test students using the same features. Greater model complexity does not automatically produce better predictions on unseen data.
+
+----------------------------------------------------------------------
+
+YOU:
+this is right below the question section does this change any of our answers
+
+Important
+
+Do not conclude:
+
+Random Forest is better than Linear Regression.
+
+A more appropriate conclusion is:
+
+Random Forest performed better/worse than Linear Regression on this dataset and this particular train/test split.
+
+Later we will learn a better way to compare models using cross-validation.
+
+----------------------------------------------------------------------
+
+CODEX:
+It doesn’t change the results or our first three answers. It makes the scope of the conclusion more explicit.
+
+I would refine answer 4 to:
+
+No. Random Forest performed slightly worse than Linear Regression on this dataset and this particular training/test split, using the same eight features. The more complicated model did not improve performance in this experiment. This does not establish that Linear Regression will always outperform Random Forest.
+
+The difference could depend partly on which students ended up in the test set. Cross-validation evaluates models across several different training and validation groups, helping us see whether the performance difference is consistent.
+
+----------------------------------------------------------------------
+
+YOU:
+ok lets add the corrected answers to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added all four corrected answers under Part 15 questions in your notebook, including the qualification about this dataset and split.
+
+----------------------------------------------------------------------
+
+YOU:
+Ok here is question 16 layout how we should break down the steps for this and pause before any questions so that i can try and give the answer first to see where my understanding is at
+
+Part 16 — Think About Scaling Again
+
+You used StandardScaler for Linear Regression.
+
+Random Forests are based on decision-tree splits.
+
+Ask your AI assistant:
+
+Does RandomForestRegressor require StandardScaler? Explain why or why not.
+
+Write a short explanation of the answer.
+
+Think about a tree decision such as:
+
+study_hours_per_week < 8.5
+
+If the feature is standardized, the numerical threshold changes, but the ordering of the observations remains the same.
+
+This is one reason tree-based models generally do not require feature scaling.
+
+----------------------------------------------------------------------
+
+CODEX:
+We’ll work through this one step at a time. I’ll wait for your answer before explaining or correcting each step.
+
+1. Review StandardScaler: recall what it does to numerical values.
+2. Review a tree split: consider how study_hours_per_week < 8.5 divides students into groups.
+3. Consider scaling: examine what happens to the threshold and the students assigned to each group.
+4. Reach a conclusion: decide whether Random Forest requires scaling and explain your reasoning.
+5. Write the explanation: turn your understanding into a short answer for the notebook.
+
+Let’s start with step 1:
+
+In your own words, what does StandardScaler do to a numerical feature?
+
+----------------------------------------------------------------------
+
+YOU:
+SandarScalar gets all values to be in the same range so one feature will not overwelm the data set
+
+----------------------------------------------------------------------
+
+CODEX:
+You have the general idea: StandardScaler puts numerical features on a comparable scale.
+
+One correction: it doesn’t force every feature into the same fixed range. It transforms each value using:
+
+\[
+\text{scaled value}
+=
+\frac{\text{value} - \text{training mean}}
+{\text{training standard deviation}}
+\]
+
+Each transformed feature has approximately mean 0 and standard deviation 1. Values can be negative or greater than 1.
+
+This helps algorithms that are sensitive to differences in numerical scale. Whether scaling matters depends on how the model uses the values.
+
+Now let’s consider a tree split:
+
+[Code: text]
+study_hours_per_week < 8.5
+
+Three students study 6, 8, and 10 hours per week.
+
+Which students satisfy this condition, and which student goes into the other group?
+
+----------------------------------------------------------------------
+
+YOU:
+only student who studies 10 hours the rest go into the other
+
+----------------------------------------------------------------------
+
+CODEX:
+The < symbol means “less than,” so the groups go the other way:
+
+| Study hours | Is it less than 8.5? | Branch |
+
+| 6 | Yes | Condition satisfied |
+| 8 | Yes | Condition satisfied |
+| 10 | No | Other group |
+
+So 6 and 8 hours satisfy the condition; 10 hours does not.
+
+One quick check before we move on: if another student studies 9 hours, would they satisfy study_hours_per_week < 8.5?
+
+----------------------------------------------------------------------
+
+YOU:
+yes
+
+----------------------------------------------------------------------
+
+CODEX:
+For 9 hours, the answer is no. Read < 8.5 as “below 8.5.”
+
+Since 9 is above 8.5, that student goes into the “8.5 or more” group.
+
+Let’s try it without the symbol: a student studies 7 hours. Are they in the “below 8.5” group or the “8.5 or more” group?
+
+----------------------------------------------------------------------
+
+YOU:
+8.5 or more
+
+----------------------------------------------------------------------
+
+CODEX:
+7 hours belongs in the “below 8.5” group.
+
+Think of 8.5 hours as 8 hours and 30 minutes. Someone who studied 7 hours studied less than that amount.
+
+[Code: text]
+7 hours < 8.5 hours < 9 hours
+
+The “8.5 or more” group includes students who studied at least 8 hours and 30 minutes.
+
+Let’s pause here: can you explain how you decided that 7 belonged in the “8.5 or more” group?
+
+----------------------------------------------------------------------
+
+YOU:
+i just picked the wrong one to be honest i feel like i understand this 8.5 or higher in the up group 8.5 or less in the below group
+
+----------------------------------------------------------------------
+
+CODEX:
+Got it. There’s just one boundary correction for our < 8.5 rule:
+
+- Below group: strictly less than 8.5.
+- Other group: 8.5 or higher.
+
+Exactly 8.5 belongs in the second group.
+
+Now let’s consider scaling. Suppose StandardScaler learned a mean of 8 hours and a standard deviation of 2 hours from the training data:
+
+| Original hours | Standardized value |
+
+| 6 | −1 |
+| 8 | 0 |
+| 10 | 1 |
+
+The original threshold of 8.5 becomes:
+
+\[
+(8.5 - 8) / 2 = 0.25
+\]
+
+So the equivalent condition is now:
+
+[Code: text]
+standardized_study_hours < 0.25
+
+Would the same students satisfy this condition after scaling, or would the groups change?
+
+----------------------------------------------------------------------
+
+YOU:
+no because it is equal to .25 not greater
+
+----------------------------------------------------------------------
+
+CODEX:
+If a student’s scaled value were exactly 0.25, they would not satisfy < 0.25, because the condition means strictly less than.
+
+Here, 0.25 is the cutoff. We compare each student’s scaled value with it:
+
+| Original hours | Scaled value | Below 0.25? |
+
+| 6 | −1 | Yes |
+| 8 | 0 | Yes |
+| 10 | 1 | No |
+
+So the groups stay the same: the 6- and 8-hour students remain together, and the 10-hour student remains in the other group. Scaling changed the numbers and the threshold together.
+
+Now try the main question:
+
+Does RandomForestRegressor require StandardScaler? Explain your reasoning using what happened to these groups.
+
+----------------------------------------------------------------------
+
+YOU:
+yes becaues it needs a scaled value for the tree splits to work
+
+----------------------------------------------------------------------
+
+CODEX:
+No. A tree can split directly on the original values.
+
+For example, this rule already works:
+
+[Code: text]
+study_hours_per_week < 8.5
+
+The 6- and 8-hour students satisfy it; the 10-hour student does not. The tree can learn thresholds expressed in hours without converting those hours into scaled values.
+
+StandardScaler changes that threshold to 0.25 in our example, but the same students remain in each group. It preserves their ordering.
+
+Trees choose splits based on how well they separate the target values. A feature does not automatically become more influential simply because its numbers are larger.
+
+Therefore, RandomForestRegressor generally does not require StandardScaler. We can retain scaling in our pipeline for consistency, but it is optional for the forest. Our workflow still handles missing values and encodes categories.
+
+Now try the final writing step: write one or two sentences in your own words explaining why Random Forest does not require StandardScaler.
+
+----------------------------------------------------------------------
+
+YOU:
+Random forest can learn hour thresholds, it splits based on how well they seperate the target values and does not automatically become more influential because it is larger and because of this does not require standard scalar
+
+----------------------------------------------------------------------
+
+CODEX:
+Your explanation is correct. I’d clarify what “larger” refers to and include the point about ordering:
+
+RandomForestRegressor does not require StandardScaler because its decision trees can learn thresholds directly from the original feature values. A feature does not automatically become more influential because its numerical values are larger. Standardization changes the values and thresholds but preserves the ordering of observations, so equivalent splits put students into the same groups.
+
+----------------------------------------------------------------------
+
+YOU:
+ok lets finish step 16 now
+
+----------------------------------------------------------------------
+
+CODEX:
+Finished Part 16 and added your corrected explanation to the notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+of step 17 is the final step break this down before we come up with the hypothsis and any code
+
+Part 17 — Design Your Own Regression Experiment
+
+Perform one additional experiment.
+
+Possible ideas include:
+
+- remove one feature;
+- add a reasonable engineered feature;
+- investigate a different missing-value strategy;
+- compare predictions for particular groups;
+- examine whether the model performs differently for low and high exam scores;
+- compare Linear Regression with and without scaling.
+
+You may propose another reasonable experiment.
+
+Before running it
+
+Write:
+
+Hypothesis: I expect \_\_\_\_\_\_ because \_\_\_\_\_\_.
+
+Then:
+
+1. perform the experiment;
+2. report the result;
+3. compare it with the original model;
+4. state whether the evidence supports your hypothesis.
+
+Do not repeatedly change the model simply until you obtain a better test score.
+
+The purpose is to answer a specific question.
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 17 is a small, controlled investigation. The goal is to answer one specific question, even if the experiment produces worse results.
+
+I would break it down like this:
+
+1. Choose one question.
+   Pick something narrow enough that we can test it by changing one part of the existing workflow.
+
+2. Write the hypothesis before running anything.
+   You’ll explain what you expect to happen and why. We’ll review your reasoning before writing the code.
+
+3. Define the comparison clearly.
+   I recommend using the original seven-feature Linear Regression model as our reference. Its results were:
+   - MAE: 5.77
+   - RMSE: 8.35
+   - R²: 0.209
+
+4. Make the planned change.
+   Keep exam_score as the target and use the same 200 training students and 50 test students. Keep the other modeling choices consistent.
+
+5. Evaluate and compare.
+   Calculate MAE, RMSE, and R², then explain how they changed relative to the reference model.
+
+6. Assess the hypothesis.
+   State whether the evidence supports your expectation on this dataset and split. Report the outcome without making additional changes simply to obtain a better score.
+
+Two manageable experiments would be:
+
+| Experiment | Specific question |
+
+| Remove study_group | Does study-group information contribute useful predictions beyond the other features? |
+| Remove StandardScaler from Linear Regression | Does scaling change this fitted model’s test predictions or performance? |
+
+My recommendation is to remove study_group. Its two coefficients were close to zero, making it a reasonable feature to investigate. We would remove the entire original column, including both encoded categories, and compare the resulting six-feature model with the original seven-feature model.
+
+Testing Linear Regression without scaling would also be a useful follow-up to Part 16.
+
+Which would you like to investigate: removing study_group, or testing Linear Regression without scaling?
+
+----------------------------------------------------------------------
+
+YOU:
+ok i wnat to do this one
+Remove study_groupDoes study-group information contribute useful predictions beyond the other features?
+
+and yes i agree the hypothsis is that if study group feature is removed i expect there will not be any meaningful change as it did not a high coefficent positive or negative
+
+----------------------------------------------------------------------
+
+CODEX:
+That is a reasonable hypothesis. I would write it as:
+
+Hypothesis: I expect removing study_group to produce little change in MAE, RMSE, and R² because its encoded categories had coefficients close to zero in the original Linear Regression model.
+
+The coefficients were approximately +0.120 for “No” and −0.120 for “Yes.” That supports investigating whether the feature contributes much to predictions.
+
+Small coefficients don’t guarantee that removing it will have little effect: when we retrain, the remaining coefficients can adjust.
+
+Our experiment will compare:
+
+- Reference: the original seven-feature Linear Regression model.
+- Experiment: the same model with six features, removing study_group.
+- Controls: the same training/test students, target, and preprocessing strategies.
+
+We’ll measure the changes and use those results to assess your hypothesis.
+
+----------------------------------------------------------------------
+
+YOU:
+ok lets add all of this to the workbook
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the Part 17 question, hypothesis, reasoning, and experiment plan to your notebook.
+
+----------------------------------------------------------------------
+
+YOU:
+Is there code in the workbook to backup this claim
+
+----------------------------------------------------------------------
+
+CODEX:
+Not yet for the removal experiment.
+
+Part 13 contains code supporting the small study-group coefficients (+0.120 and −0.120). Part 17 currently contains only the hypothesis and experiment plan.
+
+We still need code to train the six-feature model and compare its MAE, RMSE, and R² with the original model. Until we run that comparison, “little change” is an expectation, not an established result.
+
+----------------------------------------------------------------------
+
+YOU:
+Ok let’s do the next step
+
+----------------------------------------------------------------------
+
+CODEX:
+I ran the planned experiment using the same 200 training students and 50 test students. Here are the results:
+
+| Model | MAE | RMSE | R² |
+
+| Original Linear Regression | 5.7740 | 8.3485 | 0.208510 |
+| Without study_group | 5.7723 | 8.3480 | 0.208617 |
+
+Removing the feature changed:
+
+- MAE by −0.001732 points.
+- RMSE by −0.000567 points.
+- R² by +0.000108.
+
+We need extra decimal places here because rounding to two decimals would hide these differences.
+
+Here is the tested code for review:
+
+[Code: python]
+from sklearn.base import clone
+
+# Remove study_group from the original training and test features.
+X_train_no_group = X_train.drop(columns=["study_group"])
+X_test_no_group = X_test.drop(columns=["study_group"])
+
+# Keep the original numerical workflow and remaining category.
+no_group_preprocessor = ColumnTransformer(transformers=[
+    ("numeric", clone(numeric_pipeline), numeric_features),
+    ("categorical", clone(categorical_pipeline),
+     ["prior_programming_experience"]),
+])
+
+# Train a separate six-feature Linear Regression model.
+no_group_pipeline = Pipeline(steps=[
+    ("preprocessor", no_group_preprocessor),
+    ("regressor", LinearRegression()),
+])
+
+no_group_pipeline.fit(X_train_no_group, y_train)
+no_group_predictions = no_group_pipeline.predict(X_test_no_group)
+
+# Evaluate on the same actual test scores.
+no_group_mae = mean_absolute_error(y_test, no_group_predictions)
+no_group_rmse = np.sqrt(
+    mean_squared_error(y_test, no_group_predictions)
+)
+no_group_r2 = r2_score(y_test, no_group_predictions)
+
+# Compare with the original seven-feature Linear Regression model.
+study_group_comparison = pd.DataFrame({
+    "Model": [
+        "Original Linear Regression",
+        "Linear Regression without study_group",
+    ],
+    "MAE": [model_mae, no_group_mae],
+    "RMSE": [model_rmse, no_group_rmse],
+    "R squared": [model_r2, no_group_r2],
+})
+
+display(study_group_comparison.round({
+    "MAE": 4,
+    "RMSE": 4,
+    "R squared": 6,
+}))
+
+# Changes = reduced model minus original model.
+study_group_changes = pd.Series({
+    "MAE change": no_group_mae - model_mae,
+    "RMSE change": no_group_rmse - model_rmse,
+    "R squared change": no_group_r2 - model_r2,
+})
+
+display(study_group_changes.round(6))
+
+.drop() creates feature tables without study_group. The new categorical preprocessing includes only programming experience, so both study-group indicator columns disappear. clone() keeps the preprocessing strategies consistent while allowing the separate model to learn its own fitted values.
+
+Before we write the final conclusion, try this yourself:
+
+Do these results support your hypothesis, and why?
+
+----------------------------------------------------------------------
+
+YOU:
+These results support my hypothesis because there was very little change to any of the numbers because this feature did not have a larger overall effect on the data set
+
+----------------------------------------------------------------------
+
+CODEX:
+Yes, that conclusion is supported. I’d replace “effect on the dataset” with “effect on the model’s test performance.”
+
+You could write:
+
+The results support my hypothesis because removing study_group produced very little change in performance. MAE decreased by approximately 0.0017 points, RMSE decreased by 0.0006 points, and R² increased by 0.0001. These changes are extremely small, showing that removing this feature had little effect on the model’s test performance on this dataset and this particular training/test split.
+
+----------------------------------------------------------------------
+
+YOU:
+Ok that looks good let’s add it to the work book
+
+----------------------------------------------------------------------
+
+CODEX:
+Added the Part 17 experiment code, comparison results, and corrected conclusion to your notebook.
+
+Verified that all notebook code runs successfully in order and the results match your conclusion.
+
+----------------------------------------------------------------------
+
+YOU:
+ok what do we have left for this step
+
+----------------------------------------------------------------------
+
+CODEX:
+Part 17 is complete. We have:
+
+- Recorded your hypothesis before the experiment.
+- Trained the model without study_group.
+- Compared its results with the original model.
+- Written the conclusion that the tiny changes support your hypothesis on this dataset and split.
+
+Before submitting, run all cells in your notebook editor and save so the comparison tables and plots are included. I already verified that the code runs successfully in order.
+
+----------------------------------------------------------------------
