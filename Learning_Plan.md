@@ -12,9 +12,10 @@ We will use `CSE4095_Class5_Starter_v3.ipynb` as our working notebook. The assig
 - The best sampled model uses 200 trees, unrestricted depth, all inputs considered per split, minimum split size 2, and minimum leaf size 1. No additional search has run.
 - Learning step 11 is complete: final metrics, plots, and largest-error tables are saved for the chosen untuned forest and assignment-required search winner. Your final-performance interpretation and two error-case discussions are recorded. No test-guided model changes have been made.
 - Final test MAE was about 1.67 MPG for the chosen untuned forest, 1.71 for the search winner, and 5.96 for the mean baseline. The notebook computes its numerical summaries, fold counts, and error-case facts on each run.
-- Learning step 12 now has AI-assisted draft answers for the AI reflection, workflow reflection, and four remaining hyperparameter explanations, based on the recorded discussion and evidence. Your earlier `min_samples_leaf` explanation remains in Section 11. Review the draft wording for accuracy and personal voice; the submission chat link still needs to be included.
-- Submission cleanup removes notebook teaching labels and the closing checklist and labels corrections as AI feedback. Supporting checks include a training-only Spearman table, paired comparison SDs, predicted-MPG error bands, and a bootstrap interval using the frozen predictions. The 0.05-MPG practical yardstick is explicitly retrospective. Library versions are printed first. The concluding answers are labeled AI-assisted drafts rather than presented as independently written student responses.
-- The revised notebook contains 23 code cells. A fresh-kernel check verifies execution and saved figures. The split, six-feature choice, forest settings, search, and prediction-generation code are preserved.
+- Learning step 12 is complete: you reread the AI reflection, workflow reflection, and remaining hyperparameter explanations. Your earlier `min_samples_leaf` explanation remains in Section 11. AI help is acknowledged in the reflection and the AI-feedback labels. The required submission chat link must still be included separately.
+- Submission cleanup removes teaching labels, draft labels, and the closing checklist. Supporting checks include training-only Spearman correlations, paired comparison SDs, predicted-MPG error bands, and a bootstrap interval using fixed predictions. The 0.05-MPG practical yardstick is explicitly retrospective. Library versions are printed first.
+- The final audit reviews all 25 assignment parts and every source cell, verifies all four figures visually, and runs all 23 code cells plus extra invariant checks in a fresh kernel. The split, six-feature choice, forest settings, search, and prediction-generation code are preserved. Section 10 now reports the ten additional folds separately from the reused five-fold pilot.
+- The saved pre-audit outputs used scikit-learn 1.8.0; the audit uses 1.9.1. Small numerical and error-order changes occur, but choices, importance ranks, search settings, model ordering, and conclusions agree. Current outputs and generated summaries belong to the audit environment. See `Submission_Audit.md` for the full requirement-by-requirement review.
 
 ## How we will work together
 
@@ -177,22 +178,22 @@ We will not fill in the whole notebook in advance. Results and conclusions will 
 
 ## Completion checklist
 
-- [ ] Data inspection, missing-value checks, MPG visualization, and description.
-- [ ] Fixed 80/20 split with `random_state=42`.
-- [ ] Mean baseline and untuned Random Forest baseline.
-- [ ] At least three engineered features with names, formulas, and reasoning.
-- [ ] Original versus engineered CV comparison with mean MAE and standard deviation.
-- [ ] Built-in importance table/bar chart and permutation importance.
-- [ ] Discussion of correlated predictors and importance limitations.
-- [ ] Several feature-subset experiments and a justified selected set.
-- [ ] Explanation of why engineering precedes selection.
-- [ ] Student-designed experiment with a hypothesis written before running it.
-- [ ] Randomized search over at least four hyperparameters, with explanations.
-- [ ] Best parameters, best CV MAE, and top search configurations.
-- [ ] Modeling-stage comparison table.
-- [ ] Final test MAE, RMSE, R², and mean-baseline comparison.
-- [ ] Actual-versus-predicted plot and residual analysis.
-- [ ] Ten largest errors and discussion of at least two cases.
-- [ ] AI reflection including one rejected or modified suggestion.
-- [ ] Final workflow reflection and a successful top-to-bottom run.
+- [x] Data inspection, missing-value checks, MPG visualization, and description.
+- [x] Fixed 80/20 split with `random_state=42`.
+- [x] Mean baseline and untuned Random Forest baseline.
+- [x] At least three engineered features with names, formulas, and reasoning.
+- [x] Original versus engineered CV comparison with mean MAE and standard deviation.
+- [x] Built-in importance table/bar chart and permutation importance.
+- [x] Discussion of correlated predictors and importance limitations.
+- [x] Several feature-subset experiments and a justified selected set.
+- [x] Explanation of why engineering precedes selection.
+- [x] Student-designed experiment with a hypothesis written before the additional folds, disclosing the pilot result.
+- [x] Randomized search over at least four hyperparameters, with explanations.
+- [x] Best parameters, best CV MAE, and top search configurations.
+- [x] Modeling-stage comparison table.
+- [x] Final test MAE, RMSE, R², and mean-baseline comparison.
+- [x] Actual-versus-predicted plot and residual analysis.
+- [x] Ten largest errors and discussion of at least two cases.
+- [x] AI reflection including one rejected or modified suggestion.
+- [x] Final workflow reflection and a successful top-to-bottom run.
 - [ ] Notebook and AI chat link ready to submit.
