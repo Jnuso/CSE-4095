@@ -1,0 +1,273 @@
+{
+  "created_utc": "2026-10-08T22:33:18.281490+00:00",
+  "training": "Only public dictionaries; completed-run output is used only for replay testing",
+  "public_words": {
+    "games": 633,
+    "wins": 633,
+    "losses": 0,
+    "errors": 0,
+    "win_rate": 1.0,
+    "total_score": 96490,
+    "average_guesses": 7.274881516587678,
+    "average_remaining_on_wins": 5.243285939968405,
+    "strategy_seconds": 0.731085200139205
+  },
+  "previous_run_original": {
+    "games": 300,
+    "wins": 300,
+    "losses": 0,
+    "errors": 0,
+    "win_rate": 1.0,
+    "total_score": 45270,
+    "average_guesses": 7.336666666666667,
+    "average_remaining_on_wins": 5.09,
+    "strategy_seconds": 19.100291999988258
+  },
+  "previous_run_tree": {
+    "games": 300,
+    "wins": 300,
+    "losses": 0,
+    "errors": 0,
+    "win_rate": 1.0,
+    "total_score": 45840,
+    "average_guesses": 7.1466666666666665,
+    "average_remaining_on_wins": 5.28,
+    "strategy_seconds": 0.3346149999051704
+  },
+  "fresh_tree": {
+    "games": 300,
+    "wins": 300,
+    "losses": 0,
+    "errors": 0,
+    "win_rate": 1.0,
+    "total_score": 45840,
+    "average_guesses": 7.1466666666666665,
+    "average_remaining_on_wins": 5.28,
+    "strategy_seconds": 0.44496269999217475
+  },
+  "prepared_states": 279,
+  "proof_by_bank_and_length": {
+    "combined": [
+      {
+        "length": 4,
+        "words": 84,
+        "exact": false,
+        "states": 95872,
+        "seconds": 2.0025634999983595
+      },
+      {
+        "length": 5,
+        "words": 101,
+        "exact": false,
+        "states": 75136,
+        "seconds": 2.001313200002187
+      },
+      {
+        "length": 6,
+        "words": 96,
+        "exact": false,
+        "states": 61184,
+        "seconds": 2.0006300000022748
+      },
+      {
+        "length": 7,
+        "words": 73,
+        "exact": true,
+        "wins": 73,
+        "remaining_lives_sum": 401,
+        "first_informative_letter": "e",
+        "states": 217,
+        "seconds": 0.0066899000012199394
+      },
+      {
+        "length": 8,
+        "words": 38,
+        "exact": true,
+        "wins": 38,
+        "remaining_lives_sum": 208,
+        "first_informative_letter": "e",
+        "states": 236,
+        "seconds": 0.005369300000893418
+      },
+      {
+        "length": 9,
+        "words": 11,
+        "exact": true,
+        "wins": 11,
+        "remaining_lives_sum": 65,
+        "first_informative_letter": "e",
+        "states": 13,
+        "seconds": 0.00017350000052829273
+      },
+      {
+        "length": 10,
+        "words": 23,
+        "exact": true,
+        "wins": 23,
+        "remaining_lives_sum": 136,
+        "first_informative_letter": "e",
+        "states": 30,
+        "seconds": 0.0006217999980435707
+      },
+      {
+        "length": 11,
+        "words": 75,
+        "exact": true,
+        "wins": 75,
+        "remaining_lives_sum": 437,
+        "first_informative_letter": "e",
+        "states": 94,
+        "seconds": 0.0022576000010303687
+      },
+      {
+        "length": 12,
+        "words": 132,
+        "exact": true,
+        "wins": 132,
+        "remaining_lives_sum": 772,
+        "first_informative_letter": "e",
+        "states": 185,
+        "seconds": 0.004026499998872168
+      }
+    ],
+    "easy": [
+      {
+        "length": 4,
+        "words": 84,
+        "exact": false,
+        "states": 172288,
+        "seconds": 6.003088299999945
+      },
+      {
+        "length": 5,
+        "words": 57,
+        "exact": false,
+        "states": 152960,
+        "seconds": 6.001116799998272
+      },
+      {
+        "length": 6,
+        "words": 34,
+        "exact": true,
+        "wins": 34,
+        "remaining_lives_sum": 180,
+        "first_informative_letter": "e",
+        "states": 508,
+        "seconds": 0.015316000000893837
+      },
+      {
+        "length": 7,
+        "words": 13,
+        "exact": true,
+        "wins": 13,
+        "remaining_lives_sum": 72,
+        "first_informative_letter": "e",
+        "states": 30,
+        "seconds": 0.0005372000014176592
+      }
+    ],
+    "medium": [
+      {
+        "length": 5,
+        "words": 44,
+        "exact": false,
+        "states": 106880,
+        "seconds": 6.003064700002142
+      },
+      {
+        "length": 6,
+        "words": 62,
+        "exact": true,
+        "wins": 62,
+        "remaining_lives_sum": 320,
+        "first_informative_letter": "e",
+        "states": 10173,
+        "seconds": 0.42081989999860525
+      },
+      {
+        "length": 7,
+        "words": 60,
+        "exact": true,
+        "wins": 60,
+        "remaining_lives_sum": 333,
+        "first_informative_letter": "e",
+        "states": 87,
+        "seconds": 0.0038982999976724386
+      },
+      {
+        "length": 8,
+        "words": 37,
+        "exact": true,
+        "wins": 37,
+        "remaining_lives_sum": 203,
+        "first_informative_letter": "e",
+        "states": 220,
+        "seconds": 0.006441899997298606
+      },
+      {
+        "length": 9,
+        "words": 8,
+        "exact": true,
+        "wins": 8,
+        "remaining_lives_sum": 48,
+        "first_informative_letter": "e",
+        "states": 10,
+        "seconds": 0.00016309999773511663
+      }
+    ],
+    "hard": [
+      {
+        "length": 8,
+        "words": 1,
+        "exact": true,
+        "wins": 1,
+        "remaining_lives_sum": 6,
+        "first_informative_letter": null,
+        "states": 1,
+        "seconds": 2.9000002541579306e-06
+      },
+      {
+        "length": 9,
+        "words": 3,
+        "exact": true,
+        "wins": 3,
+        "remaining_lives_sum": 18,
+        "first_informative_letter": "q",
+        "states": 4,
+        "seconds": 0.00010710000060498714
+      },
+      {
+        "length": 10,
+        "words": 23,
+        "exact": true,
+        "wins": 23,
+        "remaining_lives_sum": 136,
+        "first_informative_letter": "e",
+        "states": 30,
+        "seconds": 0.0006190999993123114
+      },
+      {
+        "length": 11,
+        "words": 75,
+        "exact": true,
+        "wins": 75,
+        "remaining_lives_sum": 437,
+        "first_informative_letter": "e",
+        "states": 94,
+        "seconds": 0.003615400000853697
+      },
+      {
+        "length": 12,
+        "words": 132,
+        "exact": true,
+        "wins": 132,
+        "remaining_lives_sum": 772,
+        "first_informative_letter": "e",
+        "states": 185,
+        "seconds": 0.007939799997984665
+      }
+    ]
+  },
+  "elapsed_seconds": 70.2774544999993,
+  "limitations": "Dictionary-covered local simulations, not a new official evaluation or a guarantee on unseen words."
+}

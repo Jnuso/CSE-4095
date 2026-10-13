@@ -1,0 +1,15 @@
+{
+  "source": "User-provided completed evaluation terminal output (successful_run.txt)",
+  "evaluation_id": "3469322578b80fce",
+  "name": "JON17006",
+  "total_games": 300,
+  "wins": 300,
+  "win_rate": 1.0,
+  "total_score": 45270,
+  "total_guesses": 2201,
+  "total_incorrect_guesses": 273,
+  "average_guesses": 7.336666666666667,
+  "average_remaining_guesses_on_wins": 5.09,
+  "rank_in_pasted_leaderboard": 18,
+  "note": "Historical result, not a live ranking. Add the required website screenshot before submitting."
+}

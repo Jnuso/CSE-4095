@@ -1,0 +1,899 @@
+{
+  "source": "answers revealed after completed evaluation games",
+  "server": "https://hangman-ex89.onrender.com",
+  "name": "JON17006",
+  "evaluation_completed": false,
+  "observed_games": 127,
+  "unique_observed_this_run": 102,
+  "games": [
+    {
+      "word": "home",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 1
+    },
+    {
+      "word": "help",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 2
+    },
+    {
+      "word": "step",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 3
+    },
+    {
+      "word": "knee",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 4
+    },
+    {
+      "word": "land",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 5
+    },
+    {
+      "word": "glad",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 6
+    },
+    {
+      "word": "room",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 7
+    },
+    {
+      "word": "ready",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 8
+    },
+    {
+      "word": "heart",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 9
+    },
+    {
+      "word": "short",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 10
+    },
+    {
+      "word": "natural",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 11
+    },
+    {
+      "word": "wait",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 12
+    },
+    {
+      "word": "night",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 13
+    },
+    {
+      "word": "night",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 14
+    },
+    {
+      "word": "small",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 15
+    },
+    {
+      "word": "master",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 16
+    },
+    {
+      "word": "free",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 17
+    },
+    {
+      "word": "reason",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 18
+    },
+    {
+      "word": "simple",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 19
+    },
+    {
+      "word": "wall",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 20
+    },
+    {
+      "word": "life",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 21
+    },
+    {
+      "word": "place",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 22
+    },
+    {
+      "word": "present",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 23
+    },
+    {
+      "word": "long",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 24
+    },
+    {
+      "word": "idea",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 25
+    },
+    {
+      "word": "friend",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 26
+    },
+    {
+      "word": "light",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 27
+    },
+    {
+      "word": "fear",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 28
+    },
+    {
+      "word": "present",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 29
+    },
+    {
+      "word": "hair",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 30
+    },
+    {
+      "word": "chair",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 31
+    },
+    {
+      "word": "money",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 32
+    },
+    {
+      "word": "west",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 33
+    },
+    {
+      "word": "note",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 34
+    },
+    {
+      "word": "peace",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 35
+    },
+    {
+      "word": "book",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 1,
+      "completed_games": 36
+    },
+    {
+      "word": "country",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 37
+    },
+    {
+      "word": "early",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 38
+    },
+    {
+      "word": "wife",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 39
+    },
+    {
+      "word": "matter",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 40
+    },
+    {
+      "word": "horse",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 41
+    },
+    {
+      "word": "black",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 42
+    },
+    {
+      "word": "side",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 43
+    },
+    {
+      "word": "fresh",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 44
+    },
+    {
+      "word": "special",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 45
+    },
+    {
+      "word": "afraid",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 46
+    },
+    {
+      "word": "open",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 47
+    },
+    {
+      "word": "blue",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 48
+    },
+    {
+      "word": "high",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 49
+    },
+    {
+      "word": "clear",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 50
+    },
+    {
+      "word": "year",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 51
+    },
+    {
+      "word": "public",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 52
+    },
+    {
+      "word": "speak",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 53
+    },
+    {
+      "word": "front",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 54
+    },
+    {
+      "word": "heavy",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 55
+    },
+    {
+      "word": "thin",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 56
+    },
+    {
+      "word": "dinner",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 57
+    },
+    {
+      "word": "village",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 58
+    },
+    {
+      "word": "keep",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 59
+    },
+    {
+      "word": "body",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 60
+    },
+    {
+      "word": "easy",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 61
+    },
+    {
+      "word": "simple",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 62
+    },
+    {
+      "word": "trade",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 63
+    },
+    {
+      "word": "idea",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 64
+    },
+    {
+      "word": "little",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 65
+    },
+    {
+      "word": "bank",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 66
+    },
+    {
+      "word": "soldier",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 67
+    },
+    {
+      "word": "wall",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 68
+    },
+    {
+      "word": "bank",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 69
+    },
+    {
+      "word": "vote",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 70
+    },
+    {
+      "word": "short",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 71
+    },
+    {
+      "word": "party",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 72
+    },
+    {
+      "word": "blue",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 73
+    },
+    {
+      "word": "doubt",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 74
+    },
+    {
+      "word": "free",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 75
+    },
+    {
+      "word": "army",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 76
+    },
+    {
+      "word": "gold",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 77
+    },
+    {
+      "word": "view",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 78
+    },
+    {
+      "word": "hope",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 79
+    },
+    {
+      "word": "doctor",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 80
+    },
+    {
+      "word": "place",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 81
+    },
+    {
+      "word": "clock",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 2,
+      "completed_games": 82
+    },
+    {
+      "word": "cold",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 83
+    },
+    {
+      "word": "face",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 84
+    },
+    {
+      "word": "year",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 85
+    },
+    {
+      "word": "help",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 86
+    },
+    {
+      "word": "body",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 4,
+      "completed_games": 87
+    },
+    {
+      "word": "rule",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 88
+    },
+    {
+      "word": "coat",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 89
+    },
+    {
+      "word": "reason",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 90
+    },
+    {
+      "word": "idea",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 91
+    },
+    {
+      "word": "step",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 92
+    },
+    {
+      "word": "party",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 93
+    },
+    {
+      "word": "ground",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 94
+    },
+    {
+      "word": "doctor",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 95
+    },
+    {
+      "word": "chair",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 6,
+      "completed_games": 96
+    },
+    {
+      "word": "fine",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 5,
+      "completed_games": 97
+    },
+    {
+      "word": "child",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 1,
+      "completed_games": 98
+    },
+    {
+      "word": "thin",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 99
+    },
+    {
+      "word": "small",
+      "status": "won",
+      "difficulty": "easy",
+      "remaining_guesses": 3,
+      "completed_games": 100
+    },
+    {
+      "word": "absent",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 101
+    },
+    {
+      "word": "worthy",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 4,
+      "completed_games": 102
+    },
+    {
+      "word": "remove",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 103
+    },
+    {
+      "word": "quarter",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 104
+    },
+    {
+      "word": "feeble",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 105
+    },
+    {
+      "word": "worthy",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 4,
+      "completed_games": 106
+    },
+    {
+      "word": "prayer",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 107
+    },
+    {
+      "word": "winter",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 108
+    },
+    {
+      "word": "candidate",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 109
+    },
+    {
+      "word": "vitality",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 110
+    },
+    {
+      "word": "expense",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 111
+    },
+    {
+      "word": "drink",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 4,
+      "completed_games": 112
+    },
+    {
+      "word": "currency",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 113
+    },
+    {
+      "word": "liberal",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 114
+    },
+    {
+      "word": "fashion",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 115
+    },
+    {
+      "word": "member",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 116
+    },
+    {
+      "word": "throw",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 117
+    },
+    {
+      "word": "choose",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 4,
+      "completed_games": 118
+    },
+    {
+      "word": "absent",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 119
+    },
+    {
+      "word": "vitality",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 120
+    },
+    {
+      "word": "review",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 121
+    },
+    {
+      "word": "absent",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 122
+    },
+    {
+      "word": "recent",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 123
+    },
+    {
+      "word": "function",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 6,
+      "completed_games": 124
+    },
+    {
+      "word": "fortune",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 125
+    },
+    {
+      "word": "brain",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 4,
+      "completed_games": 126
+    },
+    {
+      "word": "factor",
+      "status": "won",
+      "difficulty": "medium",
+      "remaining_guesses": 5,
+      "completed_games": 127
+    }
+  ]
+}

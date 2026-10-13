@@ -1,0 +1,662 @@
+C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Hangman bot>python my_bot.py --evaluate --name JON17006 --url https://hangman-ex89.onrender.com
+Started evaluation 3469322578b80fce (300 games; this can take several minutes on a remote host)
+Game 1/300 easy won
+Game 2/300 easy won
+Game 3/300 easy won
+Game 4/300 easy won
+Game 5/300 easy won
+Game 6/300 easy won
+Game 7/300 easy won
+Game 8/300 easy won
+Game 9/300 easy won
+Game 10/300 easy won
+Game 11/300 easy won
+Game 12/300 easy won
+Game 13/300 easy won
+Game 14/300 easy won
+Game 15/300 easy won
+Game 16/300 easy won
+Game 17/300 easy won
+Game 18/300 easy won
+Game 19/300 easy won
+Game 20/300 easy won
+Game 21/300 easy won
+Game 22/300 easy won
+Game 23/300 easy won
+Game 24/300 easy won
+Game 25/300 easy won
+Game 26/300 easy won
+Game 27/300 easy won
+Game 28/300 easy won
+Game 29/300 easy won
+Game 30/300 easy won
+Game 31/300 easy won
+Game 32/300 easy won
+Game 33/300 easy won
+Game 34/300 easy won
+Game 35/300 easy won
+Game 36/300 easy won
+Game 37/300 easy won
+Game 38/300 easy won
+Game 39/300 easy won
+Game 40/300 easy won
+Game 41/300 easy won
+Game 42/300 easy won
+Game 43/300 easy won
+Game 44/300 easy won
+Game 45/300 easy won
+Game 46/300 easy won
+Game 47/300 easy won
+Game 48/300 easy won
+Game 49/300 easy won
+Game 50/300 easy won
+Game 51/300 easy won
+Game 52/300 easy won
+Game 53/300 easy won
+Game 54/300 easy won
+Game 55/300 easy won
+Game 56/300 easy won
+Game 57/300 easy won
+Game 58/300 easy won
+Game 59/300 easy won
+Game 60/300 easy won
+Game 61/300 easy won
+Game 62/300 easy won
+Game 63/300 easy won
+Game 64/300 easy won
+Game 65/300 easy won
+Game 66/300 easy won
+Game 67/300 easy won
+Game 68/300 easy won
+Game 69/300 easy won
+Game 70/300 easy won
+Game 71/300 easy won
+Game 72/300 easy won
+Game 73/300 easy won
+Game 74/300 easy won
+Game 75/300 easy won
+Game 76/300 easy won
+Game 77/300 easy won
+Game 78/300 easy won
+Game 79/300 easy won
+Game 80/300 easy won
+Game 81/300 easy won
+Game 82/300 easy won
+Game 83/300 easy won
+Game 84/300 easy won
+Game 85/300 easy won
+Game 86/300 easy won
+Game 87/300 easy won
+Game 88/300 easy won
+Game 89/300 easy won
+Game 90/300 easy won
+Game 91/300 easy won
+Game 92/300 easy won
+Game 93/300 easy won
+Game 94/300 easy won
+Game 95/300 easy won
+Game 96/300 easy won
+Game 97/300 easy won
+Game 98/300 easy won
+Game 99/300 easy won
+Game 100/300 easy won
+Game 101/300 medium won
+Game 102/300 medium won
+Game 103/300 medium won
+Game 104/300 medium won
+Game 105/300 medium won
+Game 106/300 medium won
+Game 107/300 medium won
+Game 108/300 medium won
+Game 109/300 medium won
+Game 110/300 medium won
+Game 111/300 medium won
+Game 112/300 medium won
+Game 113/300 medium won
+Game 114/300 medium won
+Game 115/300 medium won
+Game 116/300 medium won
+Game 117/300 medium won
+Game 118/300 medium won
+Game 119/300 medium won
+Game 120/300 medium won
+Game 121/300 medium won
+Game 122/300 medium won
+Game 123/300 medium won
+Game 124/300 medium won
+Game 125/300 medium won
+Game 126/300 medium won
+Game 127/300 medium won
+Game 128/300 medium won
+Game 129/300 medium won
+Game 130/300 medium won
+Game 131/300 medium won
+Game 132/300 medium won
+Game 133/300 medium won
+Game 134/300 medium won
+Game 135/300 medium won
+Game 136/300 medium won
+Game 137/300 medium won
+Game 138/300 medium won
+Game 139/300 medium won
+Game 140/300 medium won
+Game 141/300 medium won
+Game 142/300 medium won
+Game 143/300 medium won
+Game 144/300 medium won
+Game 145/300 medium won
+Game 146/300 medium won
+Game 147/300 medium won
+Game 148/300 medium won
+Game 149/300 medium won
+Game 150/300 medium won
+Game 151/300 medium won
+Game 152/300 medium won
+Game 153/300 medium won
+Game 154/300 medium won
+Game 155/300 medium won
+Game 156/300 medium won
+Game 157/300 medium won
+Game 158/300 medium won
+Game 159/300 medium won
+Game 160/300 medium won
+Game 161/300 medium won
+Game 162/300 medium won
+Game 163/300 medium won
+Game 164/300 medium won
+Game 165/300 medium won
+Game 166/300 medium won
+Game 167/300 medium won
+Game 168/300 medium won
+Game 169/300 medium won
+Game 170/300 medium won
+Game 171/300 medium won
+Game 172/300 medium won
+Game 173/300 medium won
+Game 174/300 medium won
+Game 175/300 medium won
+Game 176/300 medium won
+Game 177/300 medium won
+Game 178/300 medium won
+Game 179/300 medium won
+Game 180/300 medium won
+Game 181/300 medium won
+Game 182/300 medium won
+Game 183/300 medium won
+Game 184/300 medium won
+Game 185/300 medium won
+Game 186/300 medium won
+Game 187/300 medium won
+Game 188/300 medium won
+Game 189/300 medium won
+Game 190/300 medium won
+Game 191/300 medium won
+Game 192/300 medium won
+Game 193/300 medium won
+Game 194/300 medium won
+Game 195/300 medium won
+Game 196/300 medium won
+Game 197/300 medium won
+Game 198/300 medium won
+Game 199/300 medium won
+Game 200/300 medium won
+Game 201/300 hard won
+Game 202/300 hard won
+Game 203/300 hard won
+Game 204/300 hard won
+Game 205/300 hard won
+Game 206/300 hard won
+Game 207/300 hard won
+Game 208/300 hard won
+Game 209/300 hard won
+Game 210/300 hard won
+Game 211/300 hard won
+Game 212/300 hard won
+Game 213/300 hard won
+Game 214/300 hard won
+Game 215/300 hard won
+Game 216/300 hard won
+Game 217/300 hard won
+Game 218/300 hard won
+Game 219/300 hard won
+Game 220/300 hard won
+Game 221/300 hard won
+Game 222/300 hard won
+Game 223/300 hard won
+Game 224/300 hard won
+Game 225/300 hard won
+Game 226/300 hard won
+Game 227/300 hard won
+Game 228/300 hard won
+Game 229/300 hard won
+Game 230/300 hard won
+Game 231/300 hard won
+Game 232/300 hard won
+Game 233/300 hard won
+Game 234/300 hard won
+Game 235/300 hard won
+Game 236/300 hard won
+Game 237/300 hard won
+Game 238/300 hard won
+Game 239/300 hard won
+Game 240/300 hard won
+Game 241/300 hard won
+Game 242/300 hard won
+Game 243/300 hard won
+Game 244/300 hard won
+Game 245/300 hard won
+Game 246/300 hard won
+Game 247/300 hard won
+Game 248/300 hard won
+Game 249/300 hard won
+Game 250/300 hard won
+Game 251/300 hard won
+Game 252/300 hard won
+Game 253/300 hard won
+Game 254/300 hard won
+Game 255/300 hard won
+Game 256/300 hard won
+Game 257/300 hard won
+Game 258/300 hard won
+Game 259/300 hard won
+Game 260/300 hard won
+Game 261/300 hard won
+Game 262/300 hard won
+Game 263/300 hard won
+Game 264/300 hard won
+Game 265/300 hard won
+Game 266/300 hard won
+Game 267/300 hard won
+Game 268/300 hard won
+Game 269/300 hard won
+Game 270/300 hard won
+Game 271/300 hard won
+Game 272/300 hard won
+Game 273/300 hard won
+Game 274/300 hard won
+Game 275/300 hard won
+Game 276/300 hard won
+Game 277/300 hard won
+Game 278/300 hard won
+Game 279/300 hard won
+Game 280/300 hard won
+Game 281/300 hard won
+Game 282/300 hard won
+Game 283/300 hard won
+Game 284/300 hard won
+Game 285/300 hard won
+Game 286/300 hard won
+Game 287/300 hard won
+Game 288/300 hard won
+Game 289/300 hard won
+Game 290/300 hard won
+Game 291/300 hard won
+Game 292/300 hard won
+Game 293/300 hard won
+Game 294/300 hard won
+Game 295/300 hard won
+Game 296/300 hard won
+Game 297/300 hard won
+Game 298/300 hard won
+Game 299/300 hard won
+Game 300/300 hard won
+Dictionary and context bot — official evaluation 300/300 wins  score=45270
+Guesses: 2201  Incorrect: 273  Avg remaining on wins: 5.09
+
+    1. easy    won   word=great             guesses= 6  remaining=5  score=150
+    2. easy    won   word=late              guesses= 5  remaining=5  score=150
+    3. easy    won   word=free              guesses= 5  remaining=4  score=140
+    4. easy    won   word=chair             guesses= 5  remaining=6  score=160
+    5. easy    won   word=fear              guesses= 4  remaining=6  score=160
+    6. easy    won   word=water             guesses= 6  remaining=5  score=150
+    7. easy    won   word=public            guesses= 9  remaining=3  score=130
+    8. easy    won   word=seat              guesses= 5  remaining=5  score=150
+    9. easy    won   word=field             guesses= 7  remaining=4  score=140
+   10. easy    won   word=special           guesses= 7  remaining=6  score=160
+   11. easy    won   word=sound             guesses= 9  remaining=2  score=120
+   12. easy    won   word=window            guesses= 7  remaining=4  score=140
+   13. easy    won   word=crowd             guesses= 8  remaining=3  score=130
+   14. easy    won   word=friend            guesses= 7  remaining=5  score=150
+   15. easy    won   word=world             guesses= 6  remaining=5  score=150
+   16. easy    won   word=rise              guesses= 6  remaining=4  score=140
+   17. easy    won   word=cold              guesses= 6  remaining=4  score=140
+   18. easy    won   word=dark              guesses= 6  remaining=4  score=140
+   19. easy    won   word=usual             guesses= 7  remaining=3  score=130
+   20. easy    won   word=master            guesses= 6  remaining=6  score=160
+   21. easy    won   word=cold              guesses= 6  remaining=4  score=140
+   22. easy    won   word=ready             guesses= 5  remaining=6  score=160
+   23. easy    won   word=afraid            guesses= 7  remaining=4  score=140
+   24. easy    won   word=glad              guesses= 7  remaining=3  score=130
+   25. easy    won   word=true              guesses= 7  remaining=3  score=130
+   26. easy    won   word=good              guesses= 7  remaining=2  score=120
+   27. easy    won   word=friend            guesses= 7  remaining=5  score=150
+   28. easy    won   word=doubt             guesses= 9  remaining=2  score=120
+   29. easy    won   word=sound             guesses= 9  remaining=2  score=120
+   30. easy    won   word=group             guesses= 7  remaining=4  score=140
+   31. easy    won   word=strange           guesses= 7  remaining=6  score=160
+   32. easy    won   word=tell              guesses= 5  remaining=4  score=140
+   33. easy    won   word=deep              guesses= 4  remaining=5  score=150
+   34. easy    won   word=matter            guesses= 5  remaining=6  score=160
+   35. easy    won   word=news              guesses= 5  remaining=5  score=150
+   36. easy    won   word=white             guesses= 8  remaining=3  score=130
+   37. easy    won   word=road              guesses= 6  remaining=4  score=140
+   38. easy    won   word=family            guesses= 8  remaining=4  score=140
+   39. easy    won   word=father            guesses= 6  remaining=6  score=160
+   40. easy    won   word=land              guesses= 4  remaining=6  score=160
+   41. easy    won   word=husband           guesses= 8  remaining=5  score=150
+   42. easy    won   word=hand              guesses= 7  remaining=3  score=130
+   43. easy    won   word=human             guesses=10  remaining=1  score=110
+   44. easy    won   word=party             guesses= 6  remaining=5  score=150
+   45. easy    won   word=table             guesses= 6  remaining=5  score=150
+   46. easy    won   word=history           guesses= 9  remaining=4  score=140
+   47. easy    won   word=money             guesses= 6  remaining=5  score=150
+   48. easy    won   word=body              guesses= 6  remaining=4  score=140
+   49. easy    won   word=wife              guesses= 6  remaining=4  score=140
+   50. easy    won   word=side              guesses= 6  remaining=4  score=140
+   51. easy    won   word=wife              guesses= 6  remaining=4  score=140
+   52. easy    won   word=someone           guesses= 5  remaining=6  score=160
+   53. easy    won   word=smile             guesses= 8  remaining=3  score=130
+   54. easy    won   word=public            guesses= 9  remaining=3  score=130
+   55. easy    won   word=foot              guesses= 6  remaining=3  score=130
+   56. easy    won   word=peace             guesses= 5  remaining=5  score=150
+   57. easy    won   word=simple            guesses= 6  remaining=6  score=160
+   58. easy    won   word=attack            guesses= 7  remaining=3  score=130
+   59. easy    won   word=trade             guesses= 5  remaining=6  score=160
+   60. easy    won   word=fresh             guesses= 5  remaining=6  score=160
+   61. easy    won   word=fire              guesses= 6  remaining=4  score=140
+   62. easy    won   word=brother           guesses= 6  remaining=6  score=160
+   63. easy    won   word=late              guesses= 5  remaining=5  score=150
+   64. easy    won   word=change            guesses= 7  remaining=5  score=150
+   65. easy    won   word=crowd             guesses= 8  remaining=3  score=130
+   66. easy    won   word=battle            guesses= 6  remaining=5  score=150
+   67. easy    won   word=poor              guesses= 6  remaining=3  score=130
+   68. easy    won   word=friend            guesses= 7  remaining=5  score=150
+   69. easy    won   word=group             guesses= 7  remaining=4  score=140
+   70. easy    won   word=keep              guesses= 5  remaining=4  score=140
+   71. easy    won   word=present           guesses= 6  remaining=6  score=160
+   72. easy    won   word=crowd             guesses= 8  remaining=3  score=130
+   73. easy    won   word=return            guesses= 6  remaining=5  score=150
+   74. easy    won   word=silent            guesses= 6  remaining=6  score=160
+   75. easy    won   word=fine              guesses= 5  remaining=5  score=150
+   76. easy    won   word=time              guesses= 7  remaining=3  score=130
+   77. easy    won   word=table             guesses= 6  remaining=5  score=150
+   78. easy    won   word=show              guesses= 6  remaining=4  score=140
+   79. easy    won   word=wait              guesses= 8  remaining=2  score=120
+   80. easy    won   word=lady              guesses= 4  remaining=6  score=160
+   81. easy    won   word=work              guesses= 9  remaining=1  score=110
+   82. easy    won   word=size              guesses= 7  remaining=3  score=130
+   83. easy    won   word=ground            guesses= 7  remaining=5  score=150
+   84. easy    won   word=girl              guesses= 7  remaining=3  score=130
+   85. easy    won   word=girl              guesses= 7  remaining=3  score=130
+   86. easy    won   word=silent            guesses= 6  remaining=6  score=160
+   87. easy    won   word=order             guesses= 4  remaining=6  score=160
+   88. easy    won   word=need              guesses= 4  remaining=5  score=150
+   89. easy    won   word=tell              guesses= 5  remaining=4  score=140
+   90. easy    won   word=horse             guesses= 7  remaining=4  score=140
+   91. easy    won   word=enemy             guesses= 5  remaining=5  score=150
+   92. easy    won   word=read              guesses= 4  remaining=6  score=160
+   93. easy    won   word=early             guesses= 5  remaining=6  score=160
+   94. easy    won   word=evening           guesses= 5  remaining=6  score=160
+   95. easy    won   word=table             guesses= 6  remaining=5  score=150
+   96. easy    won   word=single            guesses= 7  remaining=5  score=150
+   97. easy    won   word=white             guesses= 8  remaining=3  score=130
+   98. easy    won   word=power             guesses= 6  remaining=5  score=150
+   99. easy    won   word=large             guesses= 5  remaining=6  score=160
+  100. easy    won   word=glad              guesses= 7  remaining=3  score=130
+  101. medium  won   word=intimate          guesses= 6  remaining=6  score=160
+  102. medium  won   word=household         guesses= 7  remaining=6  score=160
+  103. medium  won   word=anxiety           guesses= 7  remaining=6  score=160
+  104. medium  won   word=science           guesses= 5  remaining=6  score=160
+  105. medium  won   word=benefit           guesses= 6  remaining=6  score=160
+  106. medium  won   word=armchair          guesses= 6  remaining=6  score=160
+  107. medium  won   word=merchant          guesses= 9  remaining=5  score=150
+  108. medium  won   word=record            guesses= 7  remaining=4  score=140
+  109. medium  won   word=benefit           guesses= 6  remaining=6  score=160
+  110. medium  won   word=sorrow            guesses= 6  remaining=4  score=140
+  111. medium  won   word=thumb             guesses= 8  remaining=3  score=130
+  112. medium  won   word=currency          guesses= 7  remaining=5  score=150
+  113. medium  won   word=winter            guesses= 7  remaining=5  score=150
+  114. medium  won   word=observe           guesses= 6  remaining=6  score=160
+  115. medium  won   word=daily             guesses= 9  remaining=2  score=120
+  116. medium  won   word=alliance          guesses= 6  remaining=6  score=160
+  117. medium  won   word=prayer            guesses= 5  remaining=6  score=160
+  118. medium  won   word=dream             guesses= 7  remaining=4  score=140
+  119. medium  won   word=league            guesses= 5  remaining=6  score=160
+  120. medium  won   word=mistake           guesses= 8  remaining=5  score=150
+  121. medium  won   word=member            guesses= 5  remaining=5  score=150
+  122. medium  won   word=grief             guesses= 5  remaining=6  score=160
+  123. medium  won   word=hollow            guesses= 7  remaining=3  score=130
+  124. medium  won   word=bottom            guesses= 5  remaining=5  score=150
+  125. medium  won   word=useless           guesses= 4  remaining=6  score=160
+  126. medium  won   word=hurry             guesses= 5  remaining=5  score=150
+  127. medium  won   word=record            guesses= 7  remaining=4  score=140
+  128. medium  won   word=autumn            guesses= 8  remaining=3  score=130
+  129. medium  won   word=balance           guesses= 6  remaining=6  score=160
+  130. medium  won   word=welfare           guesses= 7  remaining=5  score=150
+  131. medium  won   word=platform          guesses=10  remaining=4  score=140
+  132. medium  won   word=armchair          guesses= 6  remaining=6  score=160
+  133. medium  won   word=delay             guesses= 6  remaining=5  score=150
+  134. medium  won   word=absolute          guesses= 9  remaining=5  score=150
+  135. medium  won   word=legal             guesses= 5  remaining=5  score=150
+  136. medium  won   word=archive           guesses= 7  remaining=6  score=160
+  137. medium  won   word=contest           guesses= 6  remaining=6  score=160
+  138. medium  won   word=welfare           guesses= 7  remaining=5  score=150
+  139. medium  won   word=payment           guesses= 7  remaining=6  score=160
+  140. medium  won   word=print             guesses= 7  remaining=4  score=140
+  141. medium  won   word=print             guesses= 7  remaining=4  score=140
+  142. medium  won   word=article           guesses= 7  remaining=6  score=160
+  143. medium  won   word=music             guesses=10  remaining=1  score=110
+  144. medium  won   word=science           guesses= 5  remaining=6  score=160
+  145. medium  won   word=thrust            guesses= 8  remaining=3  score=130
+  146. medium  won   word=dream             guesses= 7  remaining=4  score=140
+  147. medium  won   word=balance           guesses= 6  remaining=6  score=160
+  148. medium  won   word=worthy            guesses= 8  remaining=4  score=140
+  149. medium  won   word=thrust            guesses= 8  remaining=3  score=130
+  150. medium  won   word=aspect            guesses= 7  remaining=5  score=150
+  151. medium  won   word=level             guesses= 4  remaining=5  score=150
+  152. medium  won   word=frequent          guesses= 8  remaining=5  score=150
+  153. medium  won   word=joyful            guesses= 8  remaining=4  score=140
+  154. medium  won   word=catch             guesses= 6  remaining=4  score=140
+  155. medium  won   word=ancient           guesses= 6  remaining=6  score=160
+  156. medium  won   word=leader            guesses= 6  remaining=5  score=150
+  157. medium  won   word=print             guesses= 7  remaining=4  score=140
+  158. medium  won   word=memory            guesses= 5  remaining=6  score=160
+  159. medium  won   word=cousin            guesses= 7  remaining=5  score=150
+  160. medium  won   word=merchant          guesses= 9  remaining=5  score=150
+  161. medium  won   word=clever            guesses= 5  remaining=6  score=160
+  162. medium  won   word=failure           guesses= 7  remaining=6  score=160
+  163. medium  won   word=baggage           guesses= 4  remaining=6  score=160
+  164. medium  won   word=recovery          guesses= 7  remaining=5  score=150
+  165. medium  won   word=saddle            guesses= 7  remaining=4  score=140
+  166. medium  won   word=cousin            guesses= 7  remaining=5  score=150
+  167. medium  won   word=excuse            guesses= 5  remaining=6  score=160
+  168. medium  won   word=offer             guesses= 5  remaining=5  score=150
+  169. medium  won   word=anxiety           guesses= 7  remaining=6  score=160
+  170. medium  won   word=dense             guesses= 6  remaining=4  score=140
+  171. medium  won   word=record            guesses= 7  remaining=4  score=140
+  172. medium  won   word=rough             guesses= 6  remaining=5  score=150
+  173. medium  won   word=saddle            guesses= 7  remaining=4  score=140
+  174. medium  won   word=anxiety           guesses= 7  remaining=6  score=160
+  175. medium  won   word=principle         guesses= 7  remaining=6  score=160
+  176. medium  won   word=distant           guesses= 7  remaining=5  score=150
+  177. medium  won   word=payment           guesses= 7  remaining=6  score=160
+  178. medium  won   word=function          guesses= 7  remaining=6  score=160
+  179. medium  won   word=historic          guesses= 7  remaining=6  score=160
+  180. medium  won   word=baker             guesses= 8  remaining=3  score=130
+  181. medium  won   word=shadow            guesses= 7  remaining=5  score=150
+  182. medium  won   word=capture           guesses= 8  remaining=5  score=150
+  183. medium  won   word=choice            guesses= 5  remaining=6  score=160
+  184. medium  won   word=delicate          guesses= 7  remaining=6  score=160
+  185. medium  won   word=modern            guesses= 6  remaining=6  score=160
+  186. medium  won   word=physical          guesses= 8  remaining=6  score=160
+  187. medium  won   word=ballot            guesses= 6  remaining=5  score=150
+  188. medium  won   word=pocket            guesses= 7  remaining=5  score=150
+  189. medium  won   word=alcohol           guesses= 7  remaining=4  score=140
+  190. medium  won   word=fancy             guesses=10  remaining=1  score=110
+  191. medium  won   word=inquiry           guesses= 7  remaining=5  score=150
+  192. medium  won   word=destroy           guesses= 7  remaining=6  score=160
+  193. medium  won   word=modern            guesses= 6  remaining=6  score=160
+  194. medium  won   word=exchange          guesses= 8  remaining=5  score=150
+  195. medium  won   word=anger             guesses= 5  remaining=6  score=160
+  196. medium  won   word=stranger          guesses= 8  remaining=5  score=150
+  197. medium  won   word=alarm             guesses= 5  remaining=5  score=150
+  198. medium  won   word=anger             guesses= 5  remaining=6  score=160
+  199. medium  won   word=prisoner          guesses= 7  remaining=6  score=160
+  200. medium  won   word=review            guesses= 5  remaining=6  score=160
+  201. hard    won   word=paradoxical       guesses=10  remaining=5  score=150
+  202. hard    won   word=impoverished      guesses=10  remaining=6  score=160
+  203. hard    won   word=connoisseur       guesses= 8  remaining=6  score=160
+  204. hard    won   word=conciliatory      guesses=10  remaining=5  score=150
+  205. hard    won   word=cosmopolitan      guesses=11  remaining=5  score=150
+  206. hard    won   word=overbearing       guesses= 9  remaining=6  score=160
+  207. hard    won   word=masterpiece       guesses= 9  remaining=6  score=160
+  208. hard    won   word=contrivance       guesses= 9  remaining=6  score=160
+  209. hard    won   word=inapplicable      guesses= 8  remaining=6  score=160
+  210. hard    won   word=reminiscence      guesses= 7  remaining=6  score=160
+  211. hard    won   word=predictable       guesses=10  remaining=6  score=160
+  212. hard    won   word=encyclopedia      guesses=10  remaining=6  score=160
+  213. hard    won   word=intelligible      guesses= 7  remaining=6  score=160
+  214. hard    won   word=disintegrate      guesses= 9  remaining=6  score=160
+  215. hard    won   word=intentional       guesses= 7  remaining=6  score=160
+  216. hard    won   word=unprofitable      guesses=12  remaining=6  score=160
+  217. hard    won   word=discriminate      guesses=10  remaining=6  score=160
+  218. hard    won   word=departmental      guesses= 9  remaining=6  score=160
+  219. hard    won   word=inefficiency      guesses= 6  remaining=6  score=160
+  220. hard    won   word=philanthropy      guesses=11  remaining=5  score=150
+  221. hard    won   word=cosmopolitan      guesses=11  remaining=5  score=150
+  222. hard    won   word=exaggerate        guesses= 6  remaining=6  score=160
+  223. hard    won   word=unexplored        guesses= 9  remaining=6  score=160
+  224. hard    won   word=questionable      guesses=11  remaining=6  score=160
+  225. hard    won   word=discriminate      guesses=10  remaining=6  score=160
+  226. hard    won   word=unscrupulous      guesses=10  remaining=4  score=140
+  227. hard    won   word=compensatory      guesses=11  remaining=6  score=160
+  228. hard    won   word=detrimental       guesses= 9  remaining=6  score=160
+  229. hard    won   word=battleground      guesses=11  remaining=6  score=160
+  230. hard    won   word=simultaneous      guesses=10  remaining=6  score=160
+  231. hard    won   word=confectioner      guesses= 8  remaining=6  score=160
+  232. hard    won   word=preposterous      guesses= 7  remaining=6  score=160
+  233. hard    won   word=encyclopedia      guesses=10  remaining=6  score=160
+  234. hard    won   word=counterpart       guesses= 9  remaining=6  score=160
+  235. hard    won   word=exhaustive        guesses= 9  remaining=6  score=160
+  236. hard    won   word=devastating       guesses= 9  remaining=6  score=160
+  237. hard    won   word=inconvenient      guesses= 7  remaining=6  score=160
+  238. hard    won   word=candlelight       guesses=10  remaining=6  score=160
+  239. hard    won   word=magnificence      guesses= 8  remaining=6  score=160
+  240. hard    won   word=conventional      guesses= 9  remaining=6  score=160
+  241. hard    won   word=equestrian        guesses= 9  remaining=6  score=160
+  242. hard    won   word=commensurate      guesses=10  remaining=6  score=160
+  243. hard    won   word=unrestricted      guesses= 9  remaining=6  score=160
+  244. hard    won   word=intentional       guesses= 7  remaining=6  score=160
+  245. hard    won   word=inequitable       guesses= 9  remaining=6  score=160
+  246. hard    won   word=resurrection      guesses= 9  remaining=6  score=160
+  247. hard    won   word=impoverished      guesses=10  remaining=6  score=160
+  248. hard    won   word=incalculable      guesses= 8  remaining=6  score=160
+  249. hard    won   word=forbearance       guesses= 8  remaining=6  score=160
+  250. hard    won   word=credibility       guesses= 9  remaining=6  score=160
+  251. hard    won   word=desirability      guesses=10  remaining=6  score=160
+  252. hard    won   word=ideological       guesses= 8  remaining=6  score=160
+  253. hard    won   word=unrestricted      guesses= 9  remaining=6  score=160
+  254. hard    won   word=investigator      guesses=10  remaining=6  score=160
+  255. hard    won   word=perseverance      guesses= 8  remaining=6  score=160
+  256. hard    won   word=loquacious        guesses= 9  remaining=5  score=150
+  257. hard    won   word=constructive      guesses=10  remaining=6  score=160
+  258. hard    won   word=commentator       guesses= 8  remaining=6  score=160
+  259. hard    won   word=pleasurable       guesses= 8  remaining=6  score=160
+  260. hard    won   word=longitudinal      guesses=10  remaining=5  score=150
+  261. hard    won   word=relinquish        guesses= 9  remaining=6  score=160
+  262. hard    won   word=multiplicity      guesses= 9  remaining=5  score=150
+  263. hard    won   word=desirability      guesses=10  remaining=6  score=160
+  264. hard    won   word=compensatory      guesses=11  remaining=6  score=160
+  265. hard    won   word=commentator       guesses= 8  remaining=6  score=160
+  266. hard    won   word=obsequious        guesses= 7  remaining=6  score=160
+  267. hard    won   word=complexity        guesses=10  remaining=6  score=160
+  268. hard    won   word=complexion        guesses= 9  remaining=6  score=160
+  269. hard    won   word=exhaustive        guesses= 9  remaining=6  score=160
+  270. hard    won   word=substantiate      guesses= 8  remaining=6  score=160
+  271. hard    won   word=bewilderment      guesses=10  remaining=6  score=160
+  272. hard    won   word=cognizance        guesses= 8  remaining=6  score=160
+  273. hard    won   word=interlocutor      guesses= 9  remaining=6  score=160
+  274. hard    won   word=expectancy        guesses= 8  remaining=6  score=160
+  275. hard    won   word=convertible       guesses=10  remaining=6  score=160
+  276. hard    won   word=invulnerable      guesses= 9  remaining=6  score=160
+  277. hard    won   word=intermediary      guesses= 9  remaining=6  score=160
+  278. hard    won   word=desirability      guesses=10  remaining=6  score=160
+  279. hard    won   word=interminable      guesses= 9  remaining=6  score=160
+  280. hard    won   word=impartiality      guesses= 9  remaining=5  score=150
+  281. hard    won   word=inexperience      guesses= 7  remaining=6  score=160
+  282. hard    won   word=expenditure       guesses= 9  remaining=6  score=160
+  283. hard    won   word=pleasurable       guesses= 8  remaining=6  score=160
+  284. hard    won   word=inextricable      guesses=10  remaining=6  score=160
+  285. hard    won   word=excellence        guesses= 5  remaining=6  score=160
+  286. hard    won   word=disaffected       guesses= 8  remaining=6  score=160
+  287. hard    won   word=earthquake        guesses= 8  remaining=6  score=160
+  288. hard    won   word=governmental      guesses=10  remaining=6  score=160
+  289. hard    won   word=productivity      guesses=11  remaining=5  score=150
+  290. hard    won   word=extinguish        guesses= 9  remaining=6  score=160
+  291. hard    won   word=extravagant       guesses= 8  remaining=6  score=160
+  292. hard    won   word=resurrection      guesses= 9  remaining=6  score=160
+  293. hard    won   word=battleground      guesses=11  remaining=6  score=160
+  294. hard    won   word=exorbitant        guesses= 9  remaining=6  score=160
+  295. hard    won   word=unexplained       guesses= 9  remaining=6  score=160
+  296. hard    won   word=bureaucratic      guesses= 8  remaining=6  score=160
+  297. hard    won   word=nomenclature      guesses=10  remaining=6  score=160
+  298. hard    won   word=intelligible      guesses= 7  remaining=6  score=160
+  299. hard    won   word=unaccustomed      guesses=11  remaining=5  score=150
+  300. hard    won   word=discrepancy       guesses=10  remaining=6  score=160
+
+Leaderboard (in-memory; resets when the server restarts)
+   1. nas21019                wins=300/300  win_rate=100.0%  avg_guesses=7.07  avg_lives=5.24  score=45730
+   2. jam22085                wins=300/300  win_rate=100.0%  avg_guesses=7.10  avg_lives=5.24  score=45730
+   3. dsf21006                wins=300/300  win_rate=100.0%  avg_guesses=7.15  avg_lives=5.22  score=45660
+   4. tkk22001                wins=300/300  win_rate=100.0%  avg_guesses=7.27  avg_lives=5.21  score=45630
+   5. pks23002                wins=300/300  win_rate=100.0%  avg_guesses=7.16  avg_lives=5.20  score=45610
+   6. oyw24005                wins=300/300  win_rate=100.0%  avg_guesses=7.11  avg_lives=5.20  score=45600
+   7. prs22018                wins=300/300  win_rate=100.0%  avg_guesses=7.24  avg_lives=5.20  score=45590
+   8. pvt20001-PatternBot     wins=300/300  win_rate=100.0%  avg_guesses=7.06  avg_lives=5.19  score=45560
+   9. spc21003                wins=300/300  win_rate=100.0%  avg_guesses=7.20  avg_lives=5.19  score=45560
+  10. egt23001                wins=300/300  win_rate=100.0%  avg_guesses=7.21  avg_lives=5.17  score=45520
+  11. meb23002                wins=300/300  win_rate=100.0%  avg_guesses=7.32  avg_lives=5.17  score=45520
+  12. zhl20032                wins=300/300  win_rate=100.0%  avg_guesses=7.16  avg_lives=5.17  score=45510
+  13. jbg23002                wins=300/300  win_rate=100.0%  avg_guesses=7.21  avg_lives=5.13  score=45390
+  14. gej23001                wins=300/300  win_rate=100.0%  avg_guesses=7.23  avg_lives=5.13  score=45380
+  15. jwb22011                wins=300/300  win_rate=100.0%  avg_guesses=7.25  avg_lives=5.11  score=45340
+  16. ara23025                wins=300/300  win_rate=100.0%  avg_guesses=7.23  avg_lives=5.10  score=45310
+  17. mef22019                wins=300/300  win_rate=100.0%  avg_guesses=7.29  avg_lives=5.10  score=45300
+  18. JON17006                wins=300/300  win_rate=100.0%  avg_guesses=7.34  avg_lives=5.09  score=45270
+  19. egt23001                wins=300/300  win_rate=100.0%  avg_guesses=7.37  avg_lives=5.09  score=45270
+  20. mrf20004                wins=300/300  win_rate=100.0%  avg_guesses=7.38  avg_lives=5.08  score=45240
+  21. neq25002                wins=300/300  win_rate=100.0%  avg_guesses=7.30  avg_lives=5.07  score=45220
+  22. nas22028                wins=300/300  win_rate=100.0%  avg_guesses=7.35  avg_lives=5.07  score=45200
+  23. brn21003                wins=300/300  win_rate=100.0%  avg_guesses=7.28  avg_lives=5.06  score=45180
+  24. ajm22074                wins=300/300  win_rate=100.0%  avg_guesses=7.23  avg_lives=5.05  score=45160
+  25. gnm23006                wins=300/300  win_rate=100.0%  avg_guesses=7.41  avg_lives=5.05  score=45140
+  26. ana17023                wins=300/300  win_rate=100.0%  avg_guesses=7.27  avg_lives=5.04  score=45130
+  27. xis22012                wins=300/300  win_rate=100.0%  avg_guesses=7.35  avg_lives=5.04  score=45120
+  28. xis22012                wins=300/300  win_rate=100.0%  avg_guesses=7.23  avg_lives=5.01  score=45030
+  29. oyw24005                wins=300/300  win_rate=100.0%  avg_guesses=7.31  avg_lives=5.00  score=45000
+  30. ess22008                wins=300/300  win_rate=100.0%  avg_guesses=7.31  avg_lives=4.97  score=44920
+  31. hcc22005                wins=300/300  win_rate=100.0%  avg_guesses=7.45  avg_lives=4.91  score=44720
+  32. ANP23005                wins=300/300  win_rate=100.0%  avg_guesses=7.50  avg_lives=4.90  score=44700
+  33. vll23001                wins=300/300  win_rate=100.0%  avg_guesses=7.46  avg_lives=4.80  score=44400
+  34. nas21019                wins=299/300  win_rate=99.7%  avg_guesses=7.18  avg_lives=5.22  score=45500
+  35. ajg22021                wins=299/300  win_rate=99.7%  avg_guesses=7.19  avg_lives=5.17  score=45350
+  36. brn21003                wins=299/300  win_rate=99.7%  avg_guesses=7.25  avg_lives=5.15  score=45310
+  37. ww12345                 wins=299/300  win_rate=99.7%  avg_guesses=7.20  avg_lives=5.12  score=45220
+  38. mkk23004                wins=299/300  win_rate=99.7%  avg_guesses=7.26  avg_lives=5.11  score=45170
+  39. ess22008                wins=299/300  win_rate=99.7%  avg_guesses=7.38  avg_lives=5.08  score=45100
+  40. rar21011                wins=299/300  win_rate=99.7%  avg_guesses=7.41  avg_lives=5.06  score=45040
+  41. mef22019                wins=299/300  win_rate=99.7%  avg_guesses=7.36  avg_lives=5.05  score=44990
+  42. amp21020                wins=299/300  win_rate=99.7%  avg_guesses=7.39  avg_lives=5.03  score=44940
+  43. gnm23006                wins=299/300  win_rate=99.7%  avg_guesses=7.39  avg_lives=5.00  score=44860
+  44. jwb22011                wins=299/300  win_rate=99.7%  avg_guesses=7.44  avg_lives=4.97  score=44750
+  45. jwb22011                wins=299/300  win_rate=99.7%  avg_guesses=7.36  avg_lives=4.94  score=44670
+  46. MEG22019                wins=298/300  win_rate=99.3%  avg_guesses=7.10  avg_lives=5.28  score=45530
+  47. krr21006                wins=298/300  win_rate=99.3%  avg_guesses=7.34  avg_lives=5.05  score=44840
+  48. cjp11004                wins=294/300  win_rate=98.0%  avg_guesses=7.49  avg_lives=4.91  score=43840
+  49. vin22002                wins=291/300  win_rate=97.0%  avg_guesses=8.13  avg_lives=4.40  score=41910
+  50. jbg23002                wins=229/300  win_rate=76.3%  avg_guesses=8.76  avg_lives=4.17  score=32460
+  51. ww12345                 wins=25/300  win_rate=8.3%  avg_guesses=10.03  avg_lives=1.88  score=2970
+  52. amp21020                wins=1/300  win_rate=0.3%  avg_guesses=7.79  avg_lives=1.00  score=110
+  53. gel22008                wins=0/300  win_rate=0.0%  avg_guesses=7.85  avg_lives=0.00  score=0
+
+C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Hangman bot>

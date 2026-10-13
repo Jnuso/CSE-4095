@@ -1,0 +1,106 @@
+{
+  "proof": [
+    {
+      "length": 4,
+      "words": 84,
+      "exact": true,
+      "wins": 84,
+      "remaining_lives_sum": 325,
+      "first_informative_letter": "e",
+      "states": 0,
+      "seconds": 8.39999847812578e-06
+    },
+    {
+      "length": 5,
+      "words": 101,
+      "exact": true,
+      "wins": 101,
+      "remaining_lives_sum": 429,
+      "first_informative_letter": "r",
+      "states": 0,
+      "seconds": 4.19999923906289e-06
+    },
+    {
+      "length": 6,
+      "words": 96,
+      "exact": true,
+      "wins": 96,
+      "remaining_lives_sum": 482,
+      "first_informative_letter": "e",
+      "states": 0,
+      "seconds": 5.40000110049732e-06
+    },
+    {
+      "length": 7,
+      "words": 73,
+      "exact": true,
+      "wins": 73,
+      "remaining_lives_sum": 401,
+      "first_informative_letter": "e",
+      "states": 0,
+      "seconds": 3.1000017770566046e-06
+    },
+    {
+      "length": 8,
+      "words": 38,
+      "exact": true,
+      "wins": 38,
+      "remaining_lives_sum": 208,
+      "first_informative_letter": "e",
+      "states": 0,
+      "seconds": 5.199999577598646e-06
+    },
+    {
+      "length": 9,
+      "words": 11,
+      "exact": true,
+      "wins": 11,
+      "remaining_lives_sum": 65,
+      "first_informative_letter": "e",
+      "states": 0,
+      "seconds": 3.2999996619764715e-06
+    },
+    {
+      "length": 10,
+      "words": 23,
+      "exact": true,
+      "wins": 23,
+      "remaining_lives_sum": 136,
+      "first_informative_letter": "e",
+      "states": 0,
+      "seconds": 3.2999996619764715e-06
+    },
+    {
+      "length": 11,
+      "words": 75,
+      "exact": true,
+      "wins": 75,
+      "remaining_lives_sum": 437,
+      "first_informative_letter": "e",
+      "states": 0,
+      "seconds": 1.1100000847363845e-05
+    },
+    {
+      "length": 12,
+      "words": 132,
+      "exact": true,
+      "wins": 132,
+      "remaining_lives_sum": 772,
+      "first_informative_letter": "e",
+      "states": 0,
+      "seconds": 7.399998139590025e-06
+    }
+  ],
+  "summary": {
+    "games": 633,
+    "wins": 633,
+    "losses": 0,
+    "errors": 0,
+    "win_rate": 1.0,
+    "total_score": 95850,
+    "average_guesses": 7.3759873617693525,
+    "average_remaining_on_wins": 5.14218009478673,
+    "strategy_seconds": 39.81897179998123
+  },
+  "losses": []
+}
