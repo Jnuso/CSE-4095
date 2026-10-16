@@ -1,0 +1,162 @@
+.welcome {
+  width: min(1120px, calc(100% - 64px));
+  min-height: 100svh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 36px;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #263b64;
+  color: white;
+  font-size: 32px;
+  font-weight: 500;
+}
+.welcome-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 72px;
+  padding: 72px 0;
+}
+.eyebrow {
+  color: #557062;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.9px;
+}
+h1 {
+  margin: 24px 0;
+  font-size: clamp(42px, 5vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -2.8px;
+}
+h1 span {
+  color: #487557;
+}
+.introduction-copy {
+  max-width: 390px;
+  color: #576176;
+  font-size: 19px;
+  line-height: 1.7;
+}
+.operation-marks {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+.operation-marks span {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #dedfd7;
+  border-radius: 14px;
+  color: #4d6757;
+  background: #f1f2e9;
+  font-size: 26px;
+}
+.hello-card {
+  position: relative;
+  padding: 44px 36px 28px;
+  border: 1px solid #e4e5df;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 16px 48px #263b640a;
+}
+.card-accent {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 28px;
+  border-radius: 17px;
+  color: #805a16;
+  background: #fff1cd;
+  font-size: 32px;
+}
+h2 {
+  margin: 18px 0 12px;
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+.hello-card > p:not(.eyebrow) {
+  color: #576176;
+  line-height: 1.7;
+}
+.hello-card button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 12px;
+  background: #263b64;
+  color: white;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+.hello-card button:hover {
+  background: #344f81;
+}
+.hello-card button:active {
+  background: #1a2c4e;
+}
+.hello-card button:focus-visible {
+  outline: 3px solid #b77713;
+  outline-offset: 4px;
+}
+.hello-card .hello-message {
+  min-height: 3.4em;
+  margin: 20px 0 0;
+  font-size: 14px;
+  text-align: center;
+}
+.foundation-note {
+  margin: 0 0 28px;
+  color: #626c7b;
+  font-size: 12px;
+}
+@media (max-width: 800px) {
+  .welcome-content {
+    gap: 36px;
+  }
+  .hello-card {
+    padding: 32px 24px 24px;
+  }
+}
+@media (max-width: 640px) {
+  .welcome {
+    width: calc(100% - 40px);
+  }
+  .brand {
+    padding-top: 24px;
+  }
+  .welcome-content {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 48px 0 36px;
+  }
+  h1 {
+    max-width: 420px;
+    letter-spacing: -2px;
+  }
+  .introduction-copy {
+    font-size: 17px;
+  }
+}
