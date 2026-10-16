@@ -1,5 +1,7 @@
 # Phase 1 testing guide
 
+Historical milestone: the student reported that Phase 1 worked. Phase 2 replaces the temporary greeting with navigation; use PHASE_2_TESTING.md for the current application.
+
 Phase 1 establishes the project and tools. It does not yet implement question generation, card flipping, sessions, statistics, or saved progress. The welcome screen's greeting checks that React is responding to input.
 
 ## 1. Start the application

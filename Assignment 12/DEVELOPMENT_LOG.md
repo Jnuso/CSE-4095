@@ -60,3 +60,50 @@ The isolated automated browser and temporary development/preview servers are sto
 ### Student verification and evidence
 
 Use PHASE_1_TESTING.md and the testing guide in this chat. Student manual checks are initially unchecked and must be recorded by the student. Preserve this Phase 1 request, the implementation discussion, the installation issue and resolution, screenshots, and check results as evidence for the development report. Describe the installation issue honestly as a setup/debugging experience, not as an invented arithmetic bug.
+
+The student subsequently reported "everything works" in chat before authorizing Phase 2. This records the student's overall confirmation, without inventing additional browser or test details.
+
+## October 16, 2026 - Phase 2: Basic Interface
+
+### Request and scope
+
+The student asked to complete Phase 2 in the same way as Phase 1: explain the work, implement the supplied checklist, verify it, update only verified TODO items, record decisions, and provide a testing guide in chat. This phase covers Tasks 4-6: shared layout, home page, and application routing.
+
+### Main components and decisions
+
+- Preserve the Phase 1 visual style and shared TypeScript definitions.
+- Replace the temporary Say hello setup interaction with the required Start Practice, View Statistics, and Settings navigation actions.
+- Install React Router 8.4.0 and use its documented declarative BrowserRouter, Routes, Route, and Outlet APIs. Keep route definitions separate from the router wrapper so component tests can use MemoryRouter.
+- Extract PageContainer, Header, Navigation, and AppLayout. The header, navigation, main content, and footer are shared by every route, including the unknown-page fallback.
+- Use ActionLink for consistent button-like styling while retaining correct anchor semantics for navigation. Enter activates these links; Space is not treated as button activation.
+- Indicate the active section with styling and aria-current, including the Practice section on all three practice routes. Include a keyboard-visible skip link and visible focus outlines. When the route changes, move focus to the destination heading and update the browser tab title.
+- Implement all six required URLs and a wildcard fallback. The home page is functional; the practice, summary, statistics, and settings pages are honest placeholders. They do not present fake results or controls that imply later-phase functionality exists.
+- Direct session/summary URLs show explanatory content and a link to setup. Session guards and actual session behavior remain later work.
+- Reuse the student's already-running local development and production-preview servers. Leave those servers running; close only the isolated browser created for the agent's checks.
+- Keep the professor's specification unchanged. The Phase 1 testing guide is retained as historical evidence; the current guide is PHASE_2_TESTING.md.
+
+### Verification
+
+The combined `npm.cmd run check` command passed: formatting, ESLint, 12 component tests in one file, TypeScript compilation, and the Vite production build. The test suite now checks the routed interface rather than the removed Phase 1 greeting. The output is saved in `notes/phase-2-check-output.txt`. npm reported zero vulnerabilities when installing React Router.
+
+| Check | Observed result |
+| --- | --- |
+| Required URLs | Home, setup, session, summary, statistics, and settings each render the correct heading and shared header |
+| Unknown URL | Friendly fallback appears, and Back home returns to the home page |
+| Home actions | All three actions open the expected URL, highlight the correct navigation item, and focus the new heading |
+| Browser history | Back returns to practice setup and Forward returns to statistics in the tested flow |
+| Keyboard | Skip to content is first in the tab order and focuses main content; Tab reaches navigation, visible focus appears, and Enter opens Practice |
+| Direct loading and refresh | All six routes plus the fallback passed on both port 5173 (development) and port 4173 (built preview) |
+| Screen sizes | Desktop 1440 x 960 visually inspected; widths 320, 390, and 768 had no horizontal overflow and all navigation links remained within the viewport |
+| Screenshots | Desktop home, mobile home, and desktop statistics placeholder captured and visually inspected |
+| Browser errors | No runtime errors, console errors, or warnings were collected during the route and layout checks |
+
+Browser interaction and route-check transcripts are saved in `notes/phase-2-browser-interactions.txt` and `notes/phase-2-browser-routes.txt`. Screenshot evidence is in `math-practice-app/output/playwright/phase-2-home-desktop.png`, `phase-2-home-mobile.png`, and `phase-2-statistics-desktop.png`.
+
+An inline multiline browser-check command initially failed to parse. Running the same checks through the CLI's supported `--filename` input completed successfully. This was a testing-harness issue, not an application bug. The temporary helper files and browser-session data remain ignored in `.playwright-cli/`.
+
+All 17 Phase 2 checklist items were verified before being marked complete. Phase 1 remains complete and Phase 3 onward remains unchecked. The direct-refresh checks apply to Vite's local servers; deployment-host routing will still need verification during release preparation. This phase does not claim completed arithmetic, saved progress, statistics calculations, full accessibility, or testing in other browser engines.
+
+### Student verification and report evidence
+
+The student's Phase 2 checklist remains unchecked in PHASE_2_TESTING.md. Use the guide there and in chat to verify navigation independently. Save the initial Phase 2 request, a home-page screenshot, a destination-page screenshot, and successful check output. A useful explanation for the report is that one shared layout provides consistent navigation while the router chooses which page appears inside it.

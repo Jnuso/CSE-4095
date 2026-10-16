@@ -1,0 +1,53 @@
+### Ran Playwright code
+```js
+await (async (page) => {
+  const base = 'http://127.0.0.1:5173';
+  const results = [];
+  await page.setViewportSize({width:1440,height:960});
+  await page.goto(base + '/');
+  await page.getByRole('heading', {level:1,name:'Big ideas start with small steps.'}).waitFor();
+  await page.screenshot({path:'output/playwright/phase-2-home-desktop.png', fullPage:true});
+  for (const [label, path, heading, nav] of [
+    ['Start Practice','/practice/setup','Choose your practice','Practice'],
+    ['View Statistics','/statistics','Your statistics','Statistics'],
+    ['Settings','/settings','Make it your own','Settings']
+  ]) {
+    await page.goto(base + '/');
+    await page.getByRole('main').getByRole('link',{name:label,exact:true}).click();
+    await page.getByRole('heading',{level:1,name:heading,exact:true}).waitFor();
+    if (new URL(page.url()).pathname !== path) throw new Error(label + ' opened wrong route');
+    const current = await page.getByRole('navigation').getByRole('link',{name:nav,exact:true}).getAttribute('aria-current');
+    if (current !== 'page') throw new Error('Missing active navigation for ' + nav);
+    await page.waitForFunction(() => document.activeElement?.tagName === 'H1');
+    results.push({action:label, destination:path, activeNavigation:true, headingFocused:true});
+  }
+  await page.goto(base + '/');
+  await page.getByRole('main').getByRole('link',{name:'Start Practice',exact:true}).click();
+  await page.getByRole('navigation').getByRole('link',{name:'Statistics',exact:true}).click();
+  await page.goBack();
+  await page.getByRole('heading',{level:1,name:'Choose your practice',exact:true}).waitFor();
+  await page.goForward();
+  await page.getByRole('heading',{level:1,name:'Your statistics',exact:true}).waitFor();
+  results.push({browserBackAndForward:true});
+  await page.goto(base + '/');
+  await page.keyboard.press('Tab');
+  if (await page.evaluate(() => document.activeElement?.textContent) !== 'Skip to content') throw new Error('Skip link not first');
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(() => document.activeElement?.id === 'main-content');
+  results.push({skipToContent:true});
+  await page.goto(base + '/');
+  for (let i=0;i<4;i++) await page.keyboard.press('Tab');
+  const focus = await page.evaluate(() => ({label:document.activeElement?.textContent,visible:document.activeElement?.matches(':focus-visible')}));
+  if (focus.label !== 'Practice' || !focus.visible) throw new Error('Practice keyboard focus failed');
+  await page.keyboard.press('Enter');
+  await page.getByRole('heading',{level:1,name:'Choose your practice',exact:true}).waitFor();
+  results.push({keyboardPracticeLink:true,visibleFocus:true});
+  console.log(JSON.stringify(results,null,2));
+}
+)(page);
+```
+### Page
+- Page URL: http://127.0.0.1:5173/practice/setup
+- Page Title: Choose your practice | Math Practice
+### Events
+- New console entries: .playwright-cli\console-2026-10-16T22-43-09-274Z.log#L2-L8

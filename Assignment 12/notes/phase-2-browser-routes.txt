@@ -1,0 +1,61 @@
+### Ran Playwright code
+```js
+await (async (page) => {
+  const results = [];
+  const errors = [];
+  const onError = error => errors.push(error.message);
+  const onConsole = message => { if (message.type() === 'error' || message.type() === 'warning') errors.push(message.text()); };
+  page.on('pageerror', onError);
+  page.on('console', onConsole);
+  try {
+    for (const base of ['http://127.0.0.1:5173','http://127.0.0.1:4173']) {
+      for (const [path, name] of [
+        ['/','Big ideas start with small steps.'],
+        ['/practice/setup','Choose your practice'],
+        ['/practice/session','Your practice space'],
+        ['/practice/summary','Your practice recap'],
+        ['/statistics','Your statistics'],
+        ['/settings','Make it your own'],
+        ['/not-a-real-page',/find your way back/]
+      ]) {
+        await page.goto(base + path);
+        await page.getByRole('heading',{level:1,name,exact:true}).waitFor();
+        await page.reload();
+        await page.getByRole('heading',{level:1,name,exact:true}).waitFor();
+        if (await page.getByRole('banner').count() !== 1) throw new Error('Shared header missing at ' + path);
+        results.push({base,path,directLoad:true,refresh:true,title:await page.title()});
+      }
+      await page.getByRole('main').getByRole('link',{name:'Back home',exact:true}).click();
+      await page.getByRole('heading',{level:1,name:'Big ideas start with small steps.',exact:true}).waitFor();
+      await page.getByRole('main').getByRole('link',{name:'View Statistics',exact:true}).click();
+      await page.getByRole('heading',{level:1,name:'Your statistics',exact:true}).waitFor();
+    }
+    await page.setViewportSize({width:1440,height:960});
+    await page.screenshot({path:'output/playwright/phase-2-statistics-desktop.png',fullPage:true});
+    for (const width of [390,768,320]) {
+      await page.setViewportSize({width,height:844});
+      await page.goto('http://127.0.0.1:5173/');
+      await page.getByRole('heading',{level:1,name:'Big ideas start with small steps.',exact:true}).waitFor();
+      const contentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+      if (contentWidth > width) throw new Error('Horizontal overflow at ' + width);
+      for (const link of await page.getByRole('navigation').getByRole('link').all()) {
+        const box = await link.boundingBox();
+        if (!box || box.x < 0 || box.x + box.width > width) throw new Error('Clipped navigation at ' + width);
+      }
+      if (width === 390) await page.screenshot({path:'output/playwright/phase-2-home-mobile.png',fullPage:true});
+      results.push({viewport:width,contentWidth,allNavigationVisible:true});
+    }
+    if (errors.length) throw new Error(JSON.stringify(errors));
+    console.log('PHASE2_ROUTE_RESULTS ' + JSON.stringify({checks:results,browserErrors:errors.length}));
+  } finally {
+    page.off('pageerror', onError);
+    page.off('console', onConsole);
+  }
+}
+)(page);
+```
+### Page
+- Page URL: http://127.0.0.1:5173/
+- Page Title: Math Practice
+### Events
+- New console entries: .playwright-cli\console-2026-10-16T22-43-09-274Z.log#L9-L25

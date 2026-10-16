@@ -2,9 +2,9 @@
 
 A math practice app for children ages 7-12, developed incrementally for Assignment 12.
 
-## Current milestone: Phase 1
+## Current milestone: Phase 2
 
-The project foundation is implemented: a custom React welcome screen with a working greeting button, TypeScript data definitions, and development tools. Practice questions, routing, sessions, statistics, and saved progress belong to later phases. The arithmetic symbols on this screen are decorative, not buttons.
+The project foundation and basic interface are implemented: a custom home page, shared header and navigation, responsive page layout, consistent action styles, and React Router navigation. Home provides Start Practice, View Statistics, and Settings actions. All six specified routes and an unknown-page fallback work. Practice options, question cards, statistics, saved progress, and preferences remain clearly labeled future features rather than nonfunctional controls. The arithmetic symbols on the home page are decorative.
 
 The requirements are in [the professor's specification](../specification.md), and progress is tracked in [the professor's TODO list](../TODO.md). Implementation choices and evidence belong in [the development log](../DEVELOPMENT_LOG.md), rather than changes to the specification.
 
@@ -49,15 +49,19 @@ This runs the formatting check, ESLint, component tests, and the production buil
 
 Run `npm.cmd run build` before `npm.cmd run preview`, then open <http://127.0.0.1:4173/>. Preview verifies the production output locally; it does not publish a website.
 
-The full Phase 1 manual checklist and expected results are in [PHASE_1_TESTING.md](../PHASE_1_TESTING.md).
+The current manual checklist and expected results are in [PHASE_2_TESTING.md](../PHASE_2_TESTING.md). [PHASE_1_TESTING.md](../PHASE_1_TESTING.md) preserves the earlier milestone's checks; the temporary greeting has now been replaced by navigation.
 
 ## Main components
 
 - `src/main.tsx`: attaches React to the browser page.
-- `src/app/App.tsx`: the current welcome screen and greeting interaction.
+- `src/app/App.tsx`: starts browser-based routing.
+- `src/app/AppRoutes.tsx`: maps URLs to pages, with a shared layout and fallback.
+- `src/components/layout/`: reusable page container, header, navigation, and layout.
+- `src/components/common/`: shared navigation-action styling and honest future-feature screens.
+- `src/pages/`: the home page, five destination pages, and unknown-page fallback.
 - `src/types/`: shared descriptions of questions, attempts, sessions, mistake patterns, statistics, settings, and application state.
-- `src/components/`, `pages/`, `hooks/`, `services/`, and `utils/`: the initial organization for later phases; empty folders are intentionally retained with `.gitkeep` files.
-- `src/app/App.test.tsx`: checks that the screen appears and responds to a learner.
+- `src/hooks/`, `services/`, and `utils/`: initial organization for later phases; empty folders are intentionally retained with `.gitkeep` files.
+- `src/app/AppRoutes.test.tsx`: checks all routes, home actions, keyboard navigation, focus, and fallback recovery.
 - `src/test/setup.ts`: browser-like test setup and cleanup between tests.
 - `vite.config.ts`: development server, production preview, and Vitest settings.
 - `eslint.config.js` and `.prettierrc.json`: code-quality and formatting rules.
@@ -68,3 +72,4 @@ The full Phase 1 manual checklist and expected results are in [PHASE_1_TESTING.m
 - [Vite getting started](https://vite.dev/guide/)
 - [Vitest getting started](https://vitest.dev/guide/)
 - [React introduction](https://react.dev/learn)
+- [React Router declarative routing](https://reactrouter.com/start/declarative/routing)
