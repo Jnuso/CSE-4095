@@ -16,7 +16,7 @@ describe('Phase 2 pages and navigation', () => {
   it.each([
     ['/', 'Big ideas start with small steps.'],
     ['/practice/setup', 'Choose your practice'],
-    ['/practice/session', 'Your practice space'],
+    ['/practice/session', 'Choose your practice'],
     ['/practice/summary', 'Your practice recap'],
     ['/statistics', 'Your statistics'],
     ['/settings', 'Make it your own'],

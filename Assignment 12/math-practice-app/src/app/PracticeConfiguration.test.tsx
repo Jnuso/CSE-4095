@@ -82,17 +82,14 @@ describe('Practice configuration', () => {
     expect(screen.getByText('Continuous practice')).toBeInTheDocument()
   })
 
-  it('rejects invalid incoming session configuration and offers a safe return to setup', () => {
+  it('rejects invalid incoming session configuration and redirects to setup', () => {
     setup(
       {
         practiceConfig: { operations: ['addition', 'addition'], difficulty: 99, sessionLength: 0 },
       },
       '/practice/session',
     )
-    expect(screen.getByRole('link', { name: 'Go to practice setup' })).toHaveAttribute(
-      'href',
-      '/practice/setup',
-    )
+    expect(screen.getByRole('heading', { name: 'Choose your practice' })).toBeInTheDocument()
     expect(screen.queryByText('Edit choices')).not.toBeInTheDocument()
   })
 })

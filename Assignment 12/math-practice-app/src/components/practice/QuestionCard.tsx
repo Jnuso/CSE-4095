@@ -59,7 +59,7 @@ function QuestionCardContent({
         {totalQuestions !== undefined ? ` of ${totalQuestions}` : ''}
       </p>
       <div
-        className={`card-face ${isCardFlipped ? 'card-back' : 'card-front'} ${isCardFlipped && animationEnabled ? 'card-flip' : ''}`}
+        className={`card-face ${isCardFlipped ? 'card-back' : 'card-front'} ${isCardFlipped && animationEnabled ? 'card-flip' : ''} ${!isCardFlipped && focusOnMount && animationEnabled ? 'card-next' : ''}`}
       >
         {isCardFlipped ? (
           <>

@@ -445,6 +445,32 @@ button:focus-visible {
   border-top: 1px solid #e4e5df;
   padding-top: 24px;
 }
+.session-panel {
+  margin-top: 28px;
+  border-top: 1px solid #e4e5df;
+  padding-top: 16px;
+}
+.session-totals {
+  font-weight: 650;
+  line-height: 1.7;
+}
+.session-progress {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0;
+}
+.session-progress progress {
+  width: 100%;
+  height: 18px;
+  accent-color: #487557;
+}
+.session-recap h2 {
+  font-size: 30px;
+}
+.session-recap h2:focus {
+  outline: 2px solid #9d7622;
+  outline-offset: 6px;
+}
 .card-preview > h2 {
   font-size: 26px;
   margin-bottom: 10px;
@@ -571,6 +597,17 @@ button:focus-visible {
 .card-flip {
   animation: reveal-card 320ms ease-out;
 }
+.card-next {
+  animation: next-card 160ms ease-out;
+}
+@keyframes next-card {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
 @keyframes reveal-card {
   from {
     transform: rotateY(-85deg);
@@ -582,7 +619,8 @@ button:focus-visible {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .card-flip {
+  .card-flip,
+  .card-next {
     animation: none;
   }
 }

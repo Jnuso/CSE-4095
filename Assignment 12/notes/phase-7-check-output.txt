@@ -1,0 +1,45 @@
+
+> math-practice-app@0.1.0 check
+> npm run format:check && npm run lint && npm run test && npm run build
+
+
+> math-practice-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> math-practice-app@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> math-practice-app@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+
+ Test Files  8 passed (8)
+      Tests  113 passed (113)
+   Start at  03:22:26
+   Duration  13.19s (environment 63%, tests 16%, setup 14%, import 5%, transform 2%)
+
+Environment  jsdom was created 8 times · 44.82s total, 63% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+> math-practice-app@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 120 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.60 kB │ gzip:  0.35 kB
+dist/assets/index-B2Ua3flx.css    9.49 kB │ gzip:  2.78 kB
+dist/assets/index-BAwaEoCz.js   280.32 kB │ gzip: 88.29 kB
+
+✓ built in 504ms

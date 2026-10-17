@@ -1,0 +1,17 @@
+### Result
+{"result":"PASS","confirmedRecap":"Completed: 2 · Right: 1 · Wrong: 1","nativeDialog":"Cancel retained Question 3; Accept ended session excluding that unreported question","mobileWidths":[320,390]}
+### Ran Playwright code
+```js
+await (async page => {
+ const totals = await page.getByRole('status',{name:'Session totals'}).innerText();
+ if(totals !== 'Completed: 2 · Right: 1 · Wrong: 1') throw new Error('End recap totals mismatch');
+ if(await page.getByRole('group',{name:'Answer choices'}).count()) throw new Error('Active card remains');
+ for(const width of [320,390]) {
+  await page.setViewportSize({width,height:844});
+  if(!await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)) throw new Error('Recap overflow');
+ }
+ await page.locator('.session-panel').screenshot({path:'output/playwright/phase-7-recap-mobile.png'});
+ return {result:'PASS',confirmedRecap:totals,nativeDialog:'Cancel retained Question 3; Accept ended session excluding that unreported question',mobileWidths:[320,390]};
+}
+)(page);
+```

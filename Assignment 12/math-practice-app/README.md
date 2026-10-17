@@ -2,9 +2,9 @@
 
 A math practice app for children ages 7-12, developed incrementally for Assignment 12.
 
-## Current milestone: Phase 6
+## Current milestone: Phase 7
 
-The project foundation, navigation, and practice configuration are implemented. Choose one or more operations, one of four difficulties, and 5, 10, 20, or continuous practice. Start Session validates these choices and carries them to the practice page, which displays the configuration and offers Edit choices. Arithmetic generation now supports all four operations and difficulty levels, with validated question data and automated boundary tests. The main generator now attaches four shuffled, distinct choices with exactly one correct answer. The practice page includes a labeled card preview: choose an answer, flip to check it, self-report once, and try another card. Animation can be disabled and respects reduced motion. Results are not counted or saved; tracked practice sessions remain later work. Statistics and settings are still honest placeholders. The arithmetic symbols on the home page are decorative.
+The project foundation, navigation, and practice configuration are implemented. Choose one or more operations, one of four difficulties, and 5, 10, 20, or continuous practice. Start Session validates these choices and carries them to the practice page, which displays the configuration and offers Edit choices. Arithmetic generation now supports all four operations and difficulty levels, with validated question data and automated boundary tests. The main generator now attaches four shuffled, distinct choices with exactly one correct answer. The practice page now runs in-memory sessions: choose an answer, flip, and self-report to count the attempt and automatically advance. Fixed sessions show progress and stop at 5/10/20 attempts; continuous sessions continue until End Session. Ending requires confirmation and shows a basic recap. Duplicate reports and immediate identical arithmetic are prevented. Animation can be disabled and respects reduced motion. Leaving or refreshing resets the session; persistent storage and the dedicated summary page remain later work. Statistics and settings are still honest placeholders. The arithmetic symbols on the home page are decorative.
 
 The requirements are in [the professor's specification](../specification.md), and progress is tracked in [the professor's TODO list](../TODO.md). Implementation choices and evidence belong in [the development log](../DEVELOPMENT_LOG.md), rather than changes to the specification.
 
@@ -49,7 +49,7 @@ This runs the formatting check, ESLint, component tests, and the production buil
 
 Run `npm.cmd run build` before `npm.cmd run preview`, then open <http://127.0.0.1:4173/>. Preview verifies the production output locally; it does not publish a website.
 
-The current manual checklist and expected results are in [PHASE_6_TESTING.md](../PHASE_6_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
+The current manual checklist and expected results are in [PHASE_7_TESTING.md](../PHASE_7_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
 
 ## Main components
 
@@ -59,10 +59,11 @@ The current manual checklist and expected results are in [PHASE_6_TESTING.md](..
 - `src/components/layout/`: reusable page container, header, navigation, and layout.
 - `src/components/common/`: shared navigation-action styling and honest future-feature screens.
 - `src/pages/`: the home page, five destination pages, and unknown-page fallback.
-- `src/components/practice/`: accessible selectors, AnswerChoice buttons, the stateful QuestionCard, and a CardPreview that connects generated data without session scoring.
+- `src/components/practice/`: accessible selectors, AnswerChoice buttons, the stateful QuestionCard, and PracticeSessionPanel for session interaction. CardPreview remains an isolated Phase 6 example; the application uses the session panel.
 - `src/constants/practice.ts`: shared operation labels, difficulty descriptions, and session-length options.
 - `src/services/practiceConfiguration.ts`: validates configuration received through navigation state.
 - `src/types/`: shared descriptions of questions, attempts, sessions, mistake patterns, statistics, settings, and application state.
+- `src/services/practiceSession.ts`: session/attempt state transitions, duplicate guards, repeat avoidance, recovery, and completion.
 - `src/services/questionGenerator.ts`: operation-specific arithmetic drafts, mixed selection, validated arithmetic, and integration of complete answer choices.
 - `src/services/answerChoices.ts`: plausible operation-specific distractors, bounded selection with fallback, shuffling, and choice validation.
 - `src/utils/`: inclusive random integers, non-mutating shuffle, unique IDs, and utility tests. `src/hooks/` is reserved for later phases.

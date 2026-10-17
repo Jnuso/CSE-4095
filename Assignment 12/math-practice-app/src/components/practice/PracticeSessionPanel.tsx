@@ -1,0 +1,130 @@
+import { useEffect, useRef, useState } from 'react'
+import type { PracticeConfiguration } from '../../types/practice'
+import {
+  endSession,
+  recordResult,
+  retryQuestion,
+  startSession,
+} from '../../services/practiceSession'
+import QuestionCard, { type CardResult } from './QuestionCard'
+
+export default function PracticeSessionPanel({
+  configuration,
+}: {
+  configuration: PracticeConfiguration
+}) {
+  const [state, setState] = useState(() => startSession(configuration))
+  const latest = useRef(state)
+  const [animationEnabled, setAnimationEnabled] = useState(true)
+  const recapHeading = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    if (!state.isActive) recapHeading.current?.focus()
+  }, [state.isActive])
+
+  function report(result: CardResult) {
+    const next = recordResult(latest.current, result)
+    latest.current = next
+    setState(next)
+  }
+
+  function finish() {
+    if (
+      !window.confirm(
+        'End this session? Completed answers will appear in your recap. The current unreported question will not count.',
+      )
+    )
+      return
+    const next = endSession(latest.current)
+    latest.current = next
+    setState(next)
+  }
+
+  function retry() {
+    const next = retryQuestion(latest.current)
+    latest.current = next
+    setState(next)
+  }
+
+  const { session } = state
+  return (
+    <div className="session-panel">
+      <p className="preview-note">
+        Results stay in this session until you leave or refresh. Saving progress comes in a later
+        phase.
+      </p>
+      <p className="session-totals" role="status" aria-label="Session totals">
+        Completed: {session.attempted} · Right: {session.correct} · Wrong: {session.incorrect}
+      </p>
+      {state.isActive ? (
+        <>
+          {session.sessionLength !== 'continuous' && (
+            <div className="session-progress">
+              <label htmlFor="session-progress">
+                Completed {session.attempted} of {session.sessionLength}
+              </label>
+              <progress
+                id="session-progress"
+                aria-label="Session progress"
+                value={session.attempted}
+                max={session.sessionLength}
+              />
+            </div>
+          )}
+          <label className="animation-setting">
+            <input
+              type="checkbox"
+              checked={animationEnabled}
+              onChange={(event) => setAnimationEnabled(event.target.checked)}
+            />{' '}
+            Animate card flips
+          </label>
+          {state.question ? (
+            <QuestionCard
+              question={state.question}
+              questionNumber={state.questionIndex + 1}
+              totalQuestions={
+                session.sessionLength === 'continuous' ? undefined : session.sessionLength
+              }
+              animationEnabled={animationEnabled}
+              focusOnMount={state.questionIndex > 0}
+              onResult={report}
+            />
+          ) : (
+            <div role="alert">
+              <p>{state.error}</p>
+              <button type="button" className="button button-primary" onClick={retry}>
+                Try again
+              </button>
+            </div>
+          )}
+          <button type="button" className="button button-secondary" onClick={finish}>
+            End Session
+          </button>
+        </>
+      ) : (
+        <section className="session-recap" aria-labelledby="recap-title">
+          <h2 id="recap-title" ref={recapHeading} tabIndex={-1}>
+            Session complete
+          </h2>
+          <p>Thanks for practicing! Here is your session recap.</p>
+          <dl className="configuration-summary">
+            <div>
+              <dt>Questions attempted</dt>
+              <dd>{session.attempted}</dd>
+            </div>
+            <div>
+              <dt>Marked right</dt>
+              <dd>{session.correct}</dd>
+            </div>
+            <div>
+              <dt>Marked wrong</dt>
+              <dd>{session.incorrect}</dd>
+            </div>
+          </dl>
+          <p>Use Edit choices to set up another session.</p>
+        </section>
+      )}
+    </div>
+  )
+}

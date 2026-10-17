@@ -1,0 +1,79 @@
+### Result
+{"result":"PASS","ports":[5173,4173],"browserProblems":[]}
+### Ran Playwright code
+```js
+await (async page => {
+ const problems = [];
+ page.on('pageerror', error => problems.push(error.message));
+ page.on('console', message => { if (['error','warning'].includes(message.type())) problems.push(message.text()); });
+ const assert = (value, message) => { if (!value) throw new Error(message); };
+ const totals = () => page.getByRole('status', {name:'Session totals',exact:true});
+ const choice = () => page.getByRole('group',{name:'Answer choices',exact:true}).getByRole('button').first();
+ const report = async right => {
+   await choice().click();
+   await page.getByRole('button',{name:'Flip Card',exact:true}).click();
+   await page.getByRole('button',{name:right?'I Got It Right':'I Got It Wrong',exact:true}).click();
+ };
+ for (const port of [5173,4173]) {
+   await page.setViewportSize({width:1440,height:1000});
+   await page.emulateMedia({reducedMotion:'no-preference'});
+   await page.goto(`http://127.0.0.1:${port}/practice/setup`);
+   await page.getByRole('button',{name:'Select all operations',exact:true}).click();
+   await page.getByRole('radio',{name:/^Advanced/}).check();
+   await page.getByRole('radio',{name:'5 questions',exact:true}).check();
+   await page.getByRole('button',{name:'Start Session',exact:true}).click();
+   await choice().waitFor();
+   assert(await page.getByText('Question 1 of 5',{exact:true}).isVisible(),'First question');
+   assert(await page.getByRole('progressbar',{name:'Session progress'}).getAttribute('value')==='0','Initial progress zero');
+   let previous = '';
+   for (let index=0;index<5;index++) {
+     await page.getByText(`Question ${index+1} of 5`,{exact:true}).waitFor();
+     const math = await page.locator('.card-front h2').innerText();
+     assert(math !== previous,'No immediate arithmetic repeat'); previous=math;
+     assert(await page.getByRole('button',{name:'Flip Card',exact:true}).isDisabled(),'New selection reset');
+     assert((await totals().innerText()).includes(`Completed: ${index}`),'Only reported attempts counted');
+     await choice().focus(); await page.keyboard.press('Space');
+     await page.getByRole('button',{name:'Flip Card',exact:true}).focus(); await page.keyboard.press('Enter');
+     assert((await totals().innerText()).includes(`Completed: ${index}`),'Flip does not count');
+     const revealed=page.getByRole('heading',{name:/^Correct answer:/});
+     assert(await revealed.evaluate(el=>document.activeElement===el),'Reveal focus');
+     await page.getByRole('button',{name:index<3?'I Got It Right':'I Got It Wrong',exact:true}).click();
+     if(index<4) {
+       await page.getByText(`Question ${index+2} of 5`,{exact:true}).waitFor();
+       assert(await page.locator('.card-front h2').evaluate(el=>document.activeElement===el),'Next question focus');
+       assert(await page.getByRole('progressbar').getAttribute('value')===String(index+1),'Progress increment');
+       if (port===4173 && index===1) await page.locator('.session-panel').screenshot({path:'output/playwright/phase-7-session-desktop.png',animations:'disabled'});
+     }
+   }
+   const recap=page.getByRole('heading',{name:'Session complete',exact:true});
+   await recap.waitFor();
+   assert(await recap.evaluate(el=>document.activeElement===el),'Recap focus');
+   assert((await totals().innerText()).includes('Completed: 5 · Right: 3 · Wrong: 2'),'Fixed recap totals');
+   assert(await page.getByRole('button',{name:'Flip Card',exact:true}).count()===0,'No extra card after limit');
+   if(port===4173) await page.locator('.session-panel').screenshot({path:'output/playwright/phase-7-recap-desktop.png'});
+   await page.getByRole('link',{name:'Edit choices',exact:true}).click();
+   await page.getByRole('radio',{name:'Continuous practice',exact:true}).check();
+   await page.getByRole('button',{name:'Start Session',exact:true}).click();
+   await choice().waitFor();
+   assert(await page.getByRole('progressbar').count()===0,'No fixed continuous progress');
+   await page.getByRole('checkbox',{name:'Animate card flips',exact:true}).uncheck();
+   await report(true); await report(false);
+   await page.getByText('Question 3',{exact:true}).waitFor();
+   for(const width of [390,320]) {
+     await page.setViewportSize({width,height:844});
+     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'No mobile session overflow');
+     if(port===4173 && width===390) await page.locator('.session-panel').screenshot({path:'output/playwright/phase-7-session-mobile.png',animations:'disabled'});
+   }
+   await page.goto(`http://127.0.0.1:${port}/`);
+   await page.goto(`http://127.0.0.1:${port}/practice/session`);
+   await page.getByRole('heading',{name:'Choose your practice',exact:true}).waitFor();
+   assert(new URL(page.url()).pathname==='/practice/setup','Missing session redirected');
+ }
+ assert(problems.length===0,`Browser problems: ${problems.join('; ')}`);
+ return {result:'PASS',ports:[5173,4173],browserProblems:problems};
+}
+
+)(page);
+```
+### Events
+- New console entries: .playwright-cli\console-2026-10-17T07-22-30-924Z.log#L5-L7

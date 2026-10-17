@@ -1,5 +1,7 @@
 # Phase 6 testing guide
 
+Historical milestone: Phase 7 replaces the preview with tracked in-memory sessions. Use [PHASE_7_TESTING.md](PHASE_7_TESTING.md) for the current page flow.
+
 This phase adds interactive question cards. The practice page labels them as a preview: results are not counted or saved. Full session progression follows in Phase 7.
 
 ## Start the app

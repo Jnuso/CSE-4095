@@ -220,3 +220,37 @@ Evidence is in notes/phase-6-check-output.txt, notes/phase-6-browser-checks.txt,
 ### Report evidence
 
 Save the phase request, before/after card screenshots, a mobile screenshot, and successful checks. Explain the three distinct steps—selection, reveal, self-assessment—and why choosing an answer does not automatically decide the self-reported result. Record the sizing issue and its verified fix. No specification changes, dependencies, saved results, or Phase 7 progress are claimed.
+
+## October 17, 2026 - Phase 7: Practice Session
+
+### Authorization and baseline browser check
+
+The student asked to test the current app in the browser and proceed to the next step if it looked good. Before editing, an isolated Chrome run repeated the Phase 6 development-browser card checks: selection/change, reveal, self-report lock, fresh card reset/focus, keyboard input, motion controls, mobile widths, continuous label, and missing-state fallback. It passed with no collected runtime/console problems. Evidence: notes/phase-7-baseline-browser.txt. Proceeded to Phase 7 only after this passed.
+
+### Scope and decisions
+
+Implemented Tasks 26–31. A practiceSession service stores a session ID/start time/configuration, current question index, active flag, attempts, and correct/incorrect totals. Each completed attempt has its own ID, question/session IDs, arithmetic, selected answer, self-reported correctness, difficulty/source, and timestamp. Attempts and totals live in React memory only, not localStorage; leaving, editing configuration, or refreshing resets the session. A refresh can retain navigation configuration and start a fresh session; it does not restore prior attempts.
+
+PracticeSessionPanel replaces the preview on the practice page. It reads validated setup configuration, creates the first question, displays the existing card, counts only self-reported results, and advances immediately. Missing/invalid configuration redirects to setup with replacement history. Existing route/configuration tests were updated for this explicitly required redirect. CardPreview remains an isolated Phase 6 example and test fixture, not the current application flow.
+
+Session transitions return new state without mutating previous state. Stale question IDs, invalid choices, previously recorded question IDs, and inactive sessions are rejected. The panel also keeps the latest state in a synchronous ref so rapid callbacks cannot use stale totals. Card-level locking remains in place. Self-reported correctness remains independent of selected-answer arithmetic correctness.
+
+Repeat avoidance compares operation and ordered operands rather than IDs, since each generated question has a fresh UUID. It tries at most eight random questions, then the two supported endpoint candidates. Failure is bounded and offers Retry/End Session; a completed attempt is retained even when the next generation fails, and retry cannot recount it. The same ordered arithmetic is avoided immediately; swapped commutative operands are allowed as different questions.
+
+Fixed sessions show Question X of Y and a labeled native progress bar of completed attempts. They stop at exactly 5/10/20 reports with no extra generated card. Continuous sessions have no fixed progress bar or endpoint. End Session uses a native browser confirmation, preserves the current session on Cancel, and excludes the unreported current question on confirmation. Both manual endings and fixed completion produce a basic inline recap with attempted/right/wrong counts and a completion timestamp. This minimal completion behavior supports Phase 7; the dedicated summary route, accuracy/details/actions, and summary navigation remain Phase 8 work. No Phase 8 TODO boxes were checked.
+
+The optional transition is a 160ms fade on a new question. Both this transition and the card flip respect the animation checkbox and reduced-motion CSS. Focus moves to the next question and to the ending recap. No dependencies were added and the professor's specification was not edited.
+
+### Verification
+
+The final npm.cmd run check passed formatting, ESLint, 113 tests across eight files, TypeScript, and the production build. Thirteen new tests cover full state/attempt records, self-report totals, duplicate/stale rejection, exact 5/10/20 limits, continuous practice beyond 20 attempts, bounded repeat handling, generation failure/retry without recounting, zero-attempt endings, progress, reset/focus, and confirmation cancel/accept. Existing card, generator, choice, route, and setup tests continue to pass.
+
+The initial test run found an ambiguous status query: the revealed card and totals both use live status messages. Added an accessible Session totals label and targeted that label in the integration test; the full check passed afterward. A documentation formatting command was accidentally issued from the course root without a package.json, then rerun successfully from the app folder. This did not change application dependencies.
+
+Chrome checks passed on development port 5173 and production preview port 4173: mixed Advanced operations, fixed five-question progression, no immediate identical arithmetic, selection/reset/focus, counts unchanged by selecting/flipping, progress increments, exact ending totals (5 attempted, 3 right, 2 wrong), no extra card, continuous numbering and no fixed bar, disabled animation progression, 390/320-pixel session layouts, and missing-state redirects. No runtime/console errors or warnings were collected in the final scripted run. Native confirmation was checked separately on production preview: Cancel retained Question 3 and two attempts; Accept showed 2 attempted, 1 right, 1 wrong and removed the active card. Mobile recap had no horizontal overflow at 320/390 pixels. Automated tests additionally cover empty endings and both larger fixed lengths.
+
+The first browser script surfaced the native confirmation as modal state before returning final script output; explicit CLI dialog-dismiss/dialog-accept steps were used for reviewable confirmation checks. This was a browser-harness interaction, not a confirmed application failure. Successful evidence: notes/phase-7-check-output.txt, notes/phase-7-browser-checks.txt, notes/phase-7-dialog-checks.txt, and four phase-7 session/recap screenshots under math-practice-app/output/playwright. Desktop/mobile session and mobile recap screenshots were visually inspected. The isolated browser and temporary production preview are closed afterward; the student's existing development server stays running.
+
+### Student testing and report evidence
+
+PHASE_7_TESTING.md gives an unchecked independent checklist, expected totals, commands, and limitations. The older Phase 6 guide is marked historical. Save the request, active progress screenshot, ending recap, and successful output. Explain why choosing/revealing does not count an attempt, why selectedAnswer differs from selfReportedCorrect, and how stale/duplicate callbacks are rejected. Permanent saving and the dedicated summary page remain later work.
