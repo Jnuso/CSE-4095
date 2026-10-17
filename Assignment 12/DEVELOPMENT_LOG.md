@@ -194,3 +194,29 @@ New tests cover operation-specific candidate strategies, zero and one answers ac
 The first check process stopped producing output during lint and was interrupted. A restart caught README formatting after its milestone update; the file was formatted before the final full check. No application failure was established by the interrupted run. PHASE_5_TESTING.md contains independent student checks; notes/phase-5-check-output.txt records the final full verification output. No server or browser was started because this phase changes data services only; prior navigation/configuration tests remain part of the suite.
 
 Final result: npm.cmd run check passed formatting, ESLint, all 89 tests across five files, TypeScript, and production build. The 29 new answer-choice tests passed along with all earlier tests. All 18 Phase 5 checklist items were then marked complete; Phase 6 onward remains unchecked. Save the phase prompt and successful output for the report, and explain Set-based uniqueness, bounded completion, and shuffled positions. Student verification boxes remain unchecked in the guide.
+
+## October 16, 2026 - Phase 6: Question Card
+
+### Scope and decisions
+
+Implemented Tasks 20–25. AnswerChoice supplies native answer buttons with accessible names, pressed states, checkmarks, hover/focus styling, and large touch targets. QuestionCard owns selectedAnswer, isCardFlipped, and one self-reported result. Flip stays disabled until selection. The back displays solved original arithmetic and the student's answer. Answer controls are removed after flipping, so they cannot be changed or focused behind the back.
+
+Self-assessment is separate from arithmetic correctness: the student may choose either right or wrong regardless of the selected answer. A synchronous ref lock prevents duplicate result callbacks, and both result buttons become disabled after reporting. The component emits questionId, selectedAnswer, and selfReportedCorrect for future session integration. Selection or flipping alone never emits a result. New question IDs remount the internal state before painting; no stale selection, flipped face, or report is carried over.
+
+Added a clearly labeled CardPreview below the existing configuration summary so this phase can be tried on the website. It uses the real generation/choice services and displays Question 1 of the configured length; continuous mode omits the total. Try another card creates a fresh independent preview after self-report. It deliberately remains Question 1 and does not count or save attempts, increment progress, avoid repeated arithmetic, or claim an active tracked session. Those behaviors belong to Phase 7. Generation failures offer a retry message rather than crashing the page.
+
+The Animate card flips checkbox controls only the current preview, defaults on, and does not persist. Permanent global settings/storage remain later phases. CSS reduced-motion overrides the checkbox and disables animation. A short rotateY reveal never passes into mirrored orientation; only the current face exists in the DOM. Both faces share sizing. Focus moves to the revealed answer and to the question after requesting another preview; native buttons support Enter and Space.
+
+### Verification and fixes
+
+npm.cmd run check passed formatting, ESLint, 100 tests across six files, TypeScript, and the production build. Eleven new component/preview tests verify initial front/progress, selection changes, reveal, focus, both self-report outcomes independently of correctness, duplicate prevention, new-question resets, keyboard-only use without animation, continuous numbering, animation control, and disabled answer buttons. The prior 89 tests still pass. A final README formatting check passed as well.
+
+Isolated Chrome checks passed on both the existing development server (5173) and a temporary production preview (4173): four answers, disabled initial flip, selection switching, keyboard outlines/Space/Enter/Tab, revealed answer focus, removed front controls, disabled result buttons, fresh preview reset/focus, animation switch, reduced-motion override, configured/continuous totals, edit flow, and a genuinely fresh session URL fallback. Front/back layout height was checked at desktop size. Both faces were checked for no horizontal overflow at 390 and 320 pixels, and answer touch targets exceeded 44 pixels. No runtime errors, console errors, or warnings were collected during the final browser run. This is Chrome verification, not a full accessibility audit or all-browser certification.
+
+Browser verification found a real sizing issue: front controls required 438 pixels while the back used 365, causing the card to shrink on flip. Shared minimum sizing and a scoped button-margin override corrected it; the complete check and browser workflow passed afterward. Early browser scripts also needed explicit rendering waits. A direct navigation to the same current URL retained its existing history state; the fresh-URL check was corrected by leaving that entry first. These harness adjustments were not application defects.
+
+Evidence is in notes/phase-6-check-output.txt, notes/phase-6-browser-checks.txt, and four phase-6-card screenshots under math-practice-app/output/playwright. Desktop and mobile front/back screenshots were visually inspected. The test browser and temporary preview server are closed afterward; the user's pre-existing development server is left running. PHASE_6_TESTING.md contains the student's unchecked manual checklist and expected outputs.
+
+### Report evidence
+
+Save the phase request, before/after card screenshots, a mobile screenshot, and successful checks. Explain the three distinct steps—selection, reveal, self-assessment—and why choosing an answer does not automatically decide the self-reported result. Record the sizing issue and its verified fix. No specification changes, dependencies, saved results, or Phase 7 progress are claimed.

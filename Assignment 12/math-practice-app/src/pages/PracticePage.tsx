@@ -2,6 +2,7 @@ import FeaturePlaceholder from '../components/common/FeaturePlaceholder'
 import { Link, useLocation } from 'react-router'
 import { DIFFICULTIES, OPERATIONS, SESSION_LENGTHS } from '../constants/practice'
 import { configurationFromState } from '../services/practiceConfiguration'
+import CardPreview from '../components/practice/CardPreview'
 
 export default function PracticePage() {
   const location = useLocation()
@@ -39,9 +40,6 @@ export default function PracticePage() {
               </dd>
             </div>
           </dl>
-          <p className="feature-description">
-            Your choices are ready. Math question cards are coming next.
-          </p>
           <Link
             className="button button-primary"
             to="/practice/setup"
@@ -49,6 +47,7 @@ export default function PracticePage() {
           >
             Edit choices
           </Link>
+          <CardPreview key={JSON.stringify(configuration)} configuration={configuration} />
         </div>
       </section>
     )

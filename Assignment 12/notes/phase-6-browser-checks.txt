@@ -1,0 +1,103 @@
+### Result
+{"result":"PASS","ports":[5173,4173],"browserProblems":[]}
+### Ran Playwright code
+```js
+await (async (page) => {
+  const problems = [];
+  page.on('pageerror', error => problems.push(error.message));
+  page.on('console', message => { if (['error', 'warning'].includes(message.type())) problems.push(message.text()); });
+  const assert = (condition, message) => { if (!condition) throw new Error(message); };
+  for (const port of [5173, 4173]) {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto(`http://127.0.0.1:${port}/practice/setup`);
+    await page.getByRole('button', { name: 'Clear selection' }).click();
+    await page.getByRole('checkbox', { name: 'Multiplication', exact: true }).check();
+    await page.getByRole('radio', { name: /^Advanced/ }).check();
+    await page.getByRole('radio', { name: '20 questions', exact: true }).check();
+    await page.getByRole('button', { name: 'Start Session', exact: true }).click();
+    const choices = page.getByRole('group', { name: 'Answer choices', exact: true }).getByRole('button');
+    await choices.first().waitFor();
+    assert(await choices.count() === 4, 'Expected four answer buttons');
+    assert(await page.getByRole('button', { name: 'Flip Card', exact: true }).isDisabled(), 'Flip initially disabled');
+    assert(await page.getByText('Question 1 of 20', { exact: true }).isVisible(), 'Configured total shown');
+    const first = choices.nth(0);
+    await first.focus();
+    await page.keyboard.press('Space');
+    assert(await first.getAttribute('aria-pressed') === 'true', 'Keyboard answer selected');
+    assert(await first.evaluate(el => getComputedStyle(el).outlineStyle) !== 'none', 'Visible keyboard outline');
+    await choices.nth(1).click();
+    assert(await first.getAttribute('aria-pressed') === 'false', 'Previous choice deselected');
+    const selected = await choices.nth(1).innerText();
+    const before = await page.locator('.card-face').evaluate(el => el.offsetHeight);
+    if (port === 4173) await page.getByRole('region', { name: 'Math question card' }).screenshot({ path: 'output/playwright/phase-6-card-front-desktop.png' });
+    await page.getByRole('button', { name: 'Flip Card', exact: true }).focus();
+    await page.keyboard.press('Enter');
+    const revealed = page.getByRole('heading', { name: /^Correct answer:/ });
+    assert(await revealed.evaluate(el => document.activeElement === el), 'Reveal receives focus');
+    assert(await page.getByRole('group', { name: 'Answer choices', exact: true }).count() === 0, 'Choices removed after flip');
+    assert((await page.locator('.student-answer').innerText()).includes(selected.replace('✓', '').trim()), 'Selected answer displayed');
+    assert(await page.locator('.card-back').evaluate(el => getComputedStyle(el).animationName) === 'reveal-card', 'Animation enabled');
+    const after = await page.locator('.card-face').evaluate(el => el.offsetHeight);
+    assert(Math.abs(before - after) < 2, 'Front/back height aligned');
+    if (port === 4173) {
+      await revealed.focus();
+      await page.getByRole('region', { name: 'Math question card' }).screenshot({ path: 'output/playwright/phase-6-card-back-desktop.png', animations: 'disabled' });
+    }
+    await page.keyboard.press('Tab');
+    assert(await page.getByRole('button', { name: 'I Got It Right', exact: true }).evaluate(el => document.activeElement === el), 'Tab reaches self-report');
+    await page.keyboard.press('Space');
+    assert(await page.getByRole('button', { name: 'I Got It Right', exact: true }).isDisabled(), 'Right locked after result');
+    assert(await page.getByRole('button', { name: 'I Got It Wrong', exact: true }).isDisabled(), 'Wrong locked after result');
+    await page.getByRole('button', { name: 'Try another card', exact: true }).click();
+    assert(await page.getByRole('button', { name: 'Flip Card', exact: true }).isDisabled(), 'Fresh card resets');
+    assert(await page.locator('.card-front h2').evaluate(el => document.activeElement === el), 'Fresh card focus');
+    await page.getByRole('checkbox', { name: 'Animate card flips', exact: true }).uncheck();
+    await choices.first().click();
+    await page.getByRole('button', { name: 'Flip Card', exact: true }).click();
+    assert(await page.locator('.card-back').evaluate(el => getComputedStyle(el).animationName) === 'none', 'Animation switch works');
+    await page.getByRole('button', { name: 'I Got It Wrong', exact: true }).click();
+    await page.getByRole('button', { name: 'Try another card', exact: true }).click();
+    await page.getByRole('checkbox', { name: 'Animate card flips', exact: true }).check();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    for (const width of [390, 320]) {
+      await page.setViewportSize({ width, height: 844 });
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'No mobile overflow on front');
+      const bounds = await choices.first().boundingBox();
+      assert(bounds.height >= 44 && bounds.width >= 44, 'Touch targets large enough');
+      if (port === 4173 && width === 390) await page.getByRole('region', { name: 'Math question card' }).screenshot({ path: 'output/playwright/phase-6-card-front-mobile.png' });
+    }
+    await choices.first().click();
+    await page.getByRole('button', { name: 'Flip Card', exact: true }).click();
+    assert(await page.locator('.card-back').evaluate(el => getComputedStyle(el).animationName) === 'none', 'Reduced motion overrides enabled switch');
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'No mobile overflow on back');
+    }
+    if (port === 4173) await page.getByRole('region', { name: 'Math question card' }).screenshot({ path: 'output/playwright/phase-6-card-back-mobile.png' });
+    await page.getByRole('button', { name: 'I Got It Wrong', exact: true }).click();
+    await page.getByRole('link', { name: 'Edit choices', exact: true }).click();
+    await page.getByRole('radio', { name: 'Continuous practice', exact: true }).check();
+    await page.getByRole('button', { name: 'Start Session', exact: true }).click();
+    await page.getByText('Question 1', { exact: true }).waitFor();
+    assert(await page.getByText('Question 1', { exact: true }).isVisible(), 'Continuous omits fixed total');
+    await page.goto(`http://127.0.0.1:${port}/`);
+    await page.goto(`http://127.0.0.1:${port}/practice/session`);
+    await page.getByRole('link', { name: 'Go to practice setup', exact: true }).waitFor();
+    assert(await page.getByRole('link', { name: 'Go to practice setup', exact: true }).isVisible(), 'Fresh direct URL has safe fallback');
+  }
+  assert(problems.length === 0, `Browser problems: ${problems.join('; ')}`);
+  return { result: 'PASS', ports: [5173, 4173], browserProblems: problems };
+}
+
+
+
+
+
+)(page);
+```
+### Page
+- Page URL: http://127.0.0.1:4173/practice/session
+- Page Title: Your practice space | Math Practice
+### Events
+- New console entries: .playwright-cli\console-2026-10-17T03-04-37-668Z.log#L5-L12
