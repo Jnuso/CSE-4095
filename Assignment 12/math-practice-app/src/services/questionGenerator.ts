@@ -1,6 +1,7 @@
 import type { DifficultyLevel, MathOperation, Question } from '../types/question'
 import { randomInteger, type RandomSource } from '../utils/random'
 import { uniqueId } from '../utils/uniqueId'
+import { generateAnswerChoices, isValidAnswerChoices } from './answerChoices'
 
 const operations: MathOperation[] = ['addition', 'subtraction', 'multiplication', 'division']
 const symbols = { addition: '+', subtraction: '−', multiplication: '×', division: '÷' }
@@ -24,7 +25,7 @@ function answer(operation: MathOperation, first: number, second: number): number
   }
 }
 
-// Phase 4 questions carry an empty choices array; Phase 5 will populate four choices.
+// Operation generators create arithmetic drafts; the main generator attaches answer choices.
 function createQuestion(
   operation: MathOperation,
   difficulty: DifficultyLevel,
@@ -112,7 +113,9 @@ export function isValidGeneratedQuestion(question: Question): boolean {
   if (!operations.includes(operation) || ![1, 2, 3, 4].includes(difficulty)) return false
   if (![a, b, correctAnswer].every((value) => Number.isSafeInteger(value) && value >= 0))
     return false
-  if (!question.id || question.source !== 'regular' || question.choices.length !== 0) return false
+  if (!question.id || question.source !== 'regular') return false
+  if (question.choices.length !== 0 && !isValidAnswerChoices(question.choices, correctAnswer))
+    return false
   if (
     question.displayText !== `${a} ${symbols[operation]} ${b} = ?` ||
     correctAnswer !== answer(operation, a, b)
@@ -167,7 +170,11 @@ export function generateQuestion(
   try {
     const operation: MathOperation =
       selected.length === 1 ? selected[0] : selected[randomInteger(0, selected.length - 1, random)]
-    return generators[operation](difficulty, random)
+    const question = generators[operation](difficulty, random)
+    const complete = { ...question, choices: generateAnswerChoices(question, random) }
+    if (!isValidGeneratedQuestion(complete))
+      throw new Error('Completed question failed validation.')
+    return complete
   } catch (cause) {
     throw new Error('Unable to generate a math question.', { cause })
   }

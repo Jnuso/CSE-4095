@@ -176,3 +176,21 @@ Check evidence: notes/phase-4-check-output.txt. Student instructions: PHASE_4_TE
 ### Report evidence
 
 Save test output and this phase's prompt. Explain why constructing dividend = divisor × quotient guarantees whole-number division, how injected random inputs make boundaries testable, and why answer choices and card interaction remain separate future work.
+
+## October 16, 2026 - Phase 5: Multiple-Choice Answers
+
+### Scope and implementation decisions
+
+Implemented Tasks 17–19 as answer-choice services. The main question generator now attaches four shuffled choices. Operation-specific generators continue producing arithmetic drafts, which lets their boundary tests and later generation strategies reuse the same arithmetic. Generated-question validation accepts either an empty arithmetic draft or a valid four-choice record; choice validation independently requires four distinct nonnegative safe integers containing the correct answer exactly once.
+
+A separate answerChoices service builds candidate wrong answers from nearby numbers and operation-specific mistakes: adding/subtracting ten, confusing addition with subtraction, keeping an operand, neighboring multiplication facts, and division fact-family/operand confusion. Candidates are filtered for whole, nonnegative values, deduplicated, and exclude the correct answer. Nearby offsets through +3 ensure enough candidates even for zero facts. These are heuristics for plausible mistakes; their educational effectiveness has not been measured.
+
+Random candidate selection is capped at 12 draws. If draws repeat, deterministic completion uses unused valid candidates. All four answers then pass through the existing Fisher–Yates shuffle. This avoids an endless retry loop even with a constant valid random source. Invalid random-source output is reported through the generator's existing error handling. No new dependencies or UI changes were introduced. The professor's specification remains unchanged.
+
+### Verification and report evidence
+
+New tests cover operation-specific candidate strategies, zero and one answers across all operations, 12-draw completion under a constant source, invalid answers/random sources, input preservation, corrupt choice sets, and controlled shuffles that place the correct answer in every position. Another 1600 reproducible generated questions cover every operation/difficulty pair. The existing 1600 arithmetic examples now also check completed four-choice records. These samples and endpoint checks are not a statistical randomness audit or exhaustive proof.
+
+The first check process stopped producing output during lint and was interrupted. A restart caught README formatting after its milestone update; the file was formatted before the final full check. No application failure was established by the interrupted run. PHASE_5_TESTING.md contains independent student checks; notes/phase-5-check-output.txt records the final full verification output. No server or browser was started because this phase changes data services only; prior navigation/configuration tests remain part of the suite.
+
+Final result: npm.cmd run check passed formatting, ESLint, all 89 tests across five files, TypeScript, and production build. The 29 new answer-choice tests passed along with all earlier tests. All 18 Phase 5 checklist items were then marked complete; Phase 6 onward remains unchecked. Save the phase prompt and successful output for the report, and explain Set-based uniqueness, bounded completion, and shuffled positions. Student verification boxes remain unchecked in the guide.

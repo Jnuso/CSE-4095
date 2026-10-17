@@ -98,8 +98,10 @@ describe('main generator', () => {
           operation,
           difficulty: level,
           source: 'regular',
-          choices: [],
         })
+        expect(question.choices).toHaveLength(4)
+        expect(new Set(question.choices).size).toBe(4)
+        expect(question.choices.filter((value) => value === expected)).toHaveLength(1)
         if (operation === 'division') expect(b).toBeGreaterThan(0)
       }
     })
