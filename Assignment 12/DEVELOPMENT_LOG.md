@@ -150,3 +150,29 @@ All 26 Phase 3 checklist items were verified before marking them complete. Phase
 ### Report evidence
 
 Save the Phase 3 request, a screenshot with chosen settings, a screenshot of the receiving page, and successful test output. Explain that typed data describes valid configuration while runtime validation checks actual incoming data; both the disabled button and the receiving page enforce appropriate boundaries. Student manual verification remains separate from the agent's checks.
+
+## October 16, 2026 - Phase 4: Basic Math Question Generation
+
+### Scope and decisions
+
+Implemented Tasks 11–16 as arithmetic services, without changing the visible UI or introducing session tracking. Added inclusive random integers, a non-mutating Fisher–Yates shuffle, and Web Crypto UUIDs. Random inputs can be injected for repeatable tests; production defaults to Math.random. Invalid bounds/source values fail explicitly.
+
+Separate generators create addition, subtraction, multiplication, and division data. A main generator accepts one operation or a distinct nonempty selection and chooses uniformly by index among enabled operations. Every result is validated for arithmetic, integer/nonnegative values, difficulty ranges, display text, ID, source, and the Phase 4 choices convention. Invalid configuration throws RangeError. Generation failures preserve their cause in a descriptive Error, with no fabricated fallback or retry loop.
+
+Questions use the existing Question model with choices: [] and source: regular. These are valid arithmetic-stage records, not finished multiple-choice cards. Phase 5 will populate choices and must extend or replace the arithmetic-stage validation contract. No claim of four valid answer choices is made in this phase.
+
+Professor requirements remain unchanged. Addition/subtraction use maximum operands 10, 50, 100, and 1000. Subtraction sorts operands to prevent negatives. Multiplication uses factors 0–5, 0–10, then 0–9 by 0–99, then 10–99 by 0–99. Zero is retained as an arithmetic fact. Intermediate permits carrying/borrowing but does not force either on every question.
+
+Division selects a divisor and whole quotient and multiplies them to obtain the dividend. Divisor maxima are 5, 10, 12, and 99. Where the professor leaves limits open, implementation decisions are Beginner quotients 0–5, Easy 0–10, and Advanced dividends at most 9999. Intermediate quotient bounds are floor(144/divisor), permitting every specified dividend range without exceeding 144. Advanced uses floor(9999/divisor). Zero quotients are allowed; zero divisors are impossible.
+
+### Verification
+
+The complete check passed: formatting, ESLint, 60 tests across four files, TypeScript, and Vite production build. The 41 new tests cover endpoint ranges, exact arithmetic, carrying/borrowing examples, mixed selection, invalid configuration, failed sources, corrupted output, random utility validation, shuffle preservation, and 1000 distinct UUID samples. Across all 16 operation/difficulty combinations, 1600 varied deterministic examples were also checked. This complements boundary testing; it does not establish exhaustive coverage or statistical randomness.
+
+The first check found a TypeScript index typing issue after all tests passed. An explicit MathOperation annotation fixed it; the complete check then passed. A later formatting command was accidentally issued from the course root (which has no package.json); it was rerun from the app folder. No dependencies were added. No UI files changed, so the previous 19 route/configuration tests provide regression checks; no new browser session or server was needed.
+
+Check evidence: notes/phase-4-check-output.txt. Student instructions: PHASE_4_TESTING.md. Only the 38 Phase 4 TODO boxes were newly checked after successful verification. Later phases remain unchecked. Student manual verification remains separate.
+
+### Report evidence
+
+Save test output and this phase's prompt. Explain why constructing dividend = divisor × quotient guarantees whole-number division, how injected random inputs make boundaries testable, and why answer choices and card interaction remain separate future work.

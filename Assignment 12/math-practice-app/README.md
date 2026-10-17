@@ -2,9 +2,9 @@
 
 A math practice app for children ages 7-12, developed incrementally for Assignment 12.
 
-## Current milestone: Phase 3
+## Current milestone: Phase 4
 
-The project foundation, navigation, and practice configuration are implemented. Choose one or more operations, one of four difficulties, and 5, 10, 20, or continuous practice. Start Session validates these choices and carries them to the practice page, which displays the configuration and offers Edit choices. Question generation and actual practice sessions remain later work. Statistics and settings are still honest placeholders. The arithmetic symbols on the home page are decorative.
+The project foundation, navigation, and practice configuration are implemented. Choose one or more operations, one of four difficulties, and 5, 10, 20, or continuous practice. Start Session validates these choices and carries them to the practice page, which displays the configuration and offers Edit choices. Arithmetic generation now supports all four operations and difficulty levels, with validated question data and automated boundary tests. Generators are not connected to the page yet; multiple-choice choices, cards, and actual practice sessions remain later work. Statistics and settings are still honest placeholders. The arithmetic symbols on the home page are decorative.
 
 The requirements are in [the professor's specification](../specification.md), and progress is tracked in [the professor's TODO list](../TODO.md). Implementation choices and evidence belong in [the development log](../DEVELOPMENT_LOG.md), rather than changes to the specification.
 
@@ -49,7 +49,7 @@ This runs the formatting check, ESLint, component tests, and the production buil
 
 Run `npm.cmd run build` before `npm.cmd run preview`, then open <http://127.0.0.1:4173/>. Preview verifies the production output locally; it does not publish a website.
 
-The current manual checklist and expected results are in [PHASE_3_TESTING.md](../PHASE_3_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
+The current manual checklist and expected results are in [PHASE_4_TESTING.md](../PHASE_4_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
 
 ## Main components
 
@@ -63,7 +63,8 @@ The current manual checklist and expected results are in [PHASE_3_TESTING.md](..
 - `src/constants/practice.ts`: shared operation labels, difficulty descriptions, and session-length options.
 - `src/services/practiceConfiguration.ts`: validates configuration received through navigation state.
 - `src/types/`: shared descriptions of questions, attempts, sessions, mistake patterns, statistics, settings, and application state.
-- `src/hooks/` and `utils/`: initial organization for later phases; empty folders are intentionally retained with `.gitkeep` files.
+- `src/services/questionGenerator.ts`: operation-specific generators, mixed selection, and generated-arithmetic validation (empty choices until Phase 5).
+- `src/utils/`: inclusive random integers, non-mutating shuffle, unique IDs, and utility tests. `src/hooks/` is reserved for later phases.
 - `src/app/AppRoutes.test.tsx`: checks all routes, home actions, keyboard navigation, focus, and fallback recovery.
 - `src/app/PracticeConfiguration.test.tsx`: checks defaults, multiple selections, validation, exclusive options, and the configuration handoff/edit flow.
 - `src/test/setup.ts`: browser-like test setup and cleanup between tests.
