@@ -1,5 +1,7 @@
 # Phase 2 testing guide
 
+Historical milestone: Phase 3 replaces the practice-setup placeholder with working configuration controls. Use PHASE_3_TESTING.md for the current app.
+
 This phase verifies the basic interface and navigation, not arithmetic practice. Start Practice opens the future practice-configuration page. Statistics and settings are honest placeholder pages until their implementation phases. The Phase 1 greeting button has been replaced by the required home actions.
 
 ## 1. Start or reuse local development

@@ -107,3 +107,46 @@ All 17 Phase 2 checklist items were verified before being marked complete. Phase
 ### Student verification and report evidence
 
 The student's Phase 2 checklist remains unchecked in PHASE_2_TESTING.md. Use the guide there and in chat to verify navigation independently. Save the initial Phase 2 request, a home-page screenshot, a destination-page screenshot, and successful check output. A useful explanation for the report is that one shared layout provides consistent navigation while the router chooses which page appears inside it.
+
+## October 16, 2026 - Phase 3: Practice Configuration
+
+### Request and scope
+
+The student authorized Phase 3 following the same explain, implement, verify, record, and manual-testing workflow. This covers Tasks 7-10: operation selection, difficulty selection, session length, and a working practice-setup form. Question generation, answer cards, and actual session tracking remain later phases.
+
+### Decisions and main components
+
+- Create reusable OperationSelector, DifficultySelector, and SessionLengthSelector components, using native checkboxes and radio buttons inside labeled fieldsets. Checkmarks and selected borders supplement color, and controls have visible keyboard focus.
+- Offer all four operations, any combination, Select all operations, and Clear selection. Repeated Select all does not duplicate operations.
+- Show four exclusive difficulties with short descriptions, and four exclusive session lengths: 5, 10, 20, or continuous.
+- Use Addition, Beginner, and 10 questions as simple initial defaults. Configurable saved defaults will follow in the settings/storage phases.
+- Disable Start Session with no operations, show an explanatory live status message, and validate again in the form-submit handler.
+- Add a shared PracticeConfiguration type and central option definitions. Runtime validation also rejects unsupported operations, duplicate operations, invalid difficulties, and unsupported session lengths received through navigation state.
+- Pass configuration through React Router history state to the practice page. Display the actual received values and offer Edit choices, which carries those values back to setup. Do not fabricate questions or attempts to simulate a finished session.
+- Do not introduce localStorage early. Permanent persistence and restoration of unsent edits through arbitrary navigation are not promised by this phase.
+- No new dependencies were needed. The professor's specification and earlier completed TODO phases remain unchanged.
+
+### Verification results
+
+`npm.cmd run check` passed: formatting, ESLint, 19 tests across two files, TypeScript checking, and the production build. The prior 12 route/navigation tests still pass. The seven new tests cover defaults, mixed/all operations, validation recovery, exclusive controls, the selected-configuration handoff and edit round trip, continuous mode, and safe handling of invalid incoming navigation state. A formatting check also passed after the README was updated.
+
+An isolated Chrome session verified the following on both development (port 5173) and built preview (port 4173):
+
+- Correct default choices; clear selection disables Start Session and shows its explanation.
+- Select all works repeatedly; Multiplication and Division can be selected together.
+- Advanced and 20 questions reach the practice page accurately; Edit choices restores all selections.
+- All four session lengths remain mutually exclusive; continuous mode arrives as Continuous practice.
+- Arrow keys change a difficulty radio option; Space toggles an operation checkbox; the focused control has a visible outline.
+- Setup has no horizontal overflow at 390- and 320-pixel widths.
+- A fresh direct session URL without navigation state offers a safe route to setup, and setup survives a refresh.
+- No runtime errors or console errors/warnings were reported in the browser checks.
+
+Desktop setup and receiving-page screenshots and a mobile setup screenshot were captured under `math-practice-app/output/playwright/phase-3-*.png`. The desktop and mobile setup screenshots were visually inspected. Check output and browser-check transcripts are saved in `notes/phase-3-check-output.txt` and `notes/phase-3-browser-checks.txt`.
+
+No application defect was found during these checks. This phase's evidence demonstrates configuration and handoff only; it does not establish working generated questions, difficulty-specific arithmetic, scoring, saved progress, or a completed session.
+
+All 26 Phase 3 checklist items were verified before marking them complete. Phase 4 onward remains unchecked. The isolated test browser and the temporary servers started for verification are stopped afterward. PHASE_3_TESTING.md provides commands and an unchecked checklist for the student's independent testing.
+
+### Report evidence
+
+Save the Phase 3 request, a screenshot with chosen settings, a screenshot of the receiving page, and successful test output. Explain that typed data describes valid configuration while runtime validation checks actual incoming data; both the disabled button and the receiving page enforce appropriate boundaries. Student manual verification remains separate from the agent's checks.

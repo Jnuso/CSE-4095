@@ -1,0 +1,80 @@
+### Ran Playwright code
+```js
+await (async (page) => {
+  const errors = [];
+  const onError = error => errors.push(error.message);
+  page.on('pageerror', onError);
+  try {
+    for (const base of ['http://127.0.0.1:5173','http://127.0.0.1:4173']) {
+      await page.setViewportSize({width:1440,height:1100});
+      await page.goto(base + '/practice/setup');
+      await page.getByRole('heading',{level:1,name:'Choose your practice'}).waitFor();
+      if (!await page.getByRole('checkbox',{name:'Addition',exact:true}).isChecked()) throw new Error('Addition default missing');
+      if (!await page.getByRole('radio',{name:/^Beginner/}).isChecked()) throw new Error('Beginner default missing');
+      if (!await page.getByRole('radio',{name:'10 questions',exact:true}).isChecked()) throw new Error('Length default missing');
+      await page.getByRole('button',{name:'Clear selection',exact:true}).click();
+      if (!await page.getByRole('button',{name:'Start Session',exact:true}).isDisabled()) throw new Error('Empty operations can start');
+      if (!await page.getByRole('status').innerText().then(text=>text.includes('Choose at least one operation'))) throw new Error('Validation message missing');
+      await page.getByRole('button',{name:'Select all operations',exact:true}).click();
+      await page.getByRole('button',{name:'Select all operations',exact:true}).click();
+      for (const checkbox of await page.getByRole('checkbox').all()) if (!await checkbox.isChecked()) throw new Error('Select all failed');
+      await page.getByRole('button',{name:'Clear selection',exact:true}).click();
+      await page.getByRole('checkbox',{name:'Multiplication',exact:true}).check();
+      await page.getByRole('checkbox',{name:'Division',exact:true}).check();
+      await page.getByRole('radio',{name:/^Advanced/}).check();
+      await page.getByRole('radio',{name:'20 questions',exact:true}).check();
+      if (base.endsWith('5173')) await page.screenshot({path:'output/playwright/phase-3-setup-desktop.png',fullPage:true});
+      await page.getByRole('button',{name:'Start Session',exact:true}).click();
+      await page.getByRole('heading',{level:1,name:'Your practice space'}).waitFor();
+      for (const text of ['Multiplication, Division','Advanced','20 questions']) await page.getByText(text,{exact:true}).waitFor();
+      if (new URL(page.url()).pathname !== '/practice/session') throw new Error('Wrong session URL');
+      if (base.endsWith('5173')) await page.screenshot({path:'output/playwright/phase-3-configuration-desktop.png',fullPage:true});
+      await page.getByRole('link',{name:'Edit choices',exact:true}).click();
+      for (const name of ['Multiplication','Division']) if (!await page.getByRole('checkbox',{name,exact:true}).isChecked()) throw new Error('Edit choices lost operations');
+      if (!await page.getByRole('radio',{name:/^Advanced/}).isChecked()) throw new Error('Edit lost difficulty');
+      if (!await page.getByRole('radio',{name:'20 questions',exact:true}).isChecked()) throw new Error('Edit lost length');
+      for (const length of ['5 questions','10 questions','20 questions','Continuous practice']) {
+        await page.getByRole('radio',{name:length,exact:true}).check();
+        const radios = await page.getByRole('group',{name:/^3\./}).getByRole('radio').all();
+        let checked = 0;
+        for (const radio of radios) if (await radio.isChecked()) checked++;
+        if (checked !== 1) throw new Error('Session lengths not exclusive');
+      }
+      await page.getByRole('button',{name:'Start Session',exact:true}).click();
+      await page.getByText('Continuous practice',{exact:true}).waitFor();
+      await page.getByRole('link',{name:'Edit choices',exact:true}).click();
+      await page.getByRole('radio',{name:/^Beginner/}).focus();
+      await page.keyboard.press('ArrowRight');
+      if (!await page.getByRole('radio',{name:/^Easy/}).isChecked()) throw new Error('Keyboard radio selection failed');
+      const multiplication = page.getByRole('checkbox',{name:'Multiplication',exact:true});
+      await multiplication.focus();
+      await page.keyboard.press('Space');
+      if (await multiplication.isChecked()) throw new Error('Keyboard checkbox toggle failed');
+      await page.keyboard.press('Space');
+      if (!await multiplication.isChecked()) throw new Error('Keyboard checkbox restoration failed');
+      const focus = await multiplication.evaluate(el => ({focused:el===document.activeElement,outline:getComputedStyle(el.closest('label')).outlineStyle}));
+      if (!focus.focused || focus.outline === 'none') throw new Error('Focus outline missing');
+      await page.getByRole('radio',{name:/^Advanced/}).check();
+      await page.getByRole('radio',{name:'20 questions',exact:true}).check();
+      for (const width of [390,320]) {
+        await page.setViewportSize({width,height:844});
+        if (await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth)) throw new Error('Setup overflow at ' + width);
+        if (width===390 && base.endsWith('5173')) await page.screenshot({path:'output/playwright/phase-3-setup-mobile.png',fullPage:true});
+      }
+      await page.goto(base + '/');
+      await page.goto(base + '/practice/session');
+      await page.getByRole('link',{name:'Go to practice setup',exact:true}).waitFor();
+      await page.getByRole('link',{name:'Go to practice setup',exact:true}).click();
+      await page.reload();
+      await page.getByRole('heading',{level:1,name:'Choose your practice'}).waitFor();
+    }
+    if (errors.length) throw new Error(JSON.stringify(errors));
+  } finally { page.off('pageerror',onError); }
+}
+)(page);
+```
+### Page
+- Page URL: http://127.0.0.1:4173/practice/setup
+- Page Title: Choose your practice | Math Practice
+### Events
+- New console entries: .playwright-cli\console-2026-10-17T02-04-18-717Z.log#L2-L5

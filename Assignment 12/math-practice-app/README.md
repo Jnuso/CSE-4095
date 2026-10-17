@@ -2,9 +2,9 @@
 
 A math practice app for children ages 7-12, developed incrementally for Assignment 12.
 
-## Current milestone: Phase 2
+## Current milestone: Phase 3
 
-The project foundation and basic interface are implemented: a custom home page, shared header and navigation, responsive page layout, consistent action styles, and React Router navigation. Home provides Start Practice, View Statistics, and Settings actions. All six specified routes and an unknown-page fallback work. Practice options, question cards, statistics, saved progress, and preferences remain clearly labeled future features rather than nonfunctional controls. The arithmetic symbols on the home page are decorative.
+The project foundation, navigation, and practice configuration are implemented. Choose one or more operations, one of four difficulties, and 5, 10, 20, or continuous practice. Start Session validates these choices and carries them to the practice page, which displays the configuration and offers Edit choices. Question generation and actual practice sessions remain later work. Statistics and settings are still honest placeholders. The arithmetic symbols on the home page are decorative.
 
 The requirements are in [the professor's specification](../specification.md), and progress is tracked in [the professor's TODO list](../TODO.md). Implementation choices and evidence belong in [the development log](../DEVELOPMENT_LOG.md), rather than changes to the specification.
 
@@ -49,7 +49,7 @@ This runs the formatting check, ESLint, component tests, and the production buil
 
 Run `npm.cmd run build` before `npm.cmd run preview`, then open <http://127.0.0.1:4173/>. Preview verifies the production output locally; it does not publish a website.
 
-The current manual checklist and expected results are in [PHASE_2_TESTING.md](../PHASE_2_TESTING.md). [PHASE_1_TESTING.md](../PHASE_1_TESTING.md) preserves the earlier milestone's checks; the temporary greeting has now been replaced by navigation.
+The current manual checklist and expected results are in [PHASE_3_TESTING.md](../PHASE_3_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
 
 ## Main components
 
@@ -59,9 +59,13 @@ The current manual checklist and expected results are in [PHASE_2_TESTING.md](..
 - `src/components/layout/`: reusable page container, header, navigation, and layout.
 - `src/components/common/`: shared navigation-action styling and honest future-feature screens.
 - `src/pages/`: the home page, five destination pages, and unknown-page fallback.
+- `src/components/practice/`: accessible operation, difficulty, and session-length selectors.
+- `src/constants/practice.ts`: shared operation labels, difficulty descriptions, and session-length options.
+- `src/services/practiceConfiguration.ts`: validates configuration received through navigation state.
 - `src/types/`: shared descriptions of questions, attempts, sessions, mistake patterns, statistics, settings, and application state.
-- `src/hooks/`, `services/`, and `utils/`: initial organization for later phases; empty folders are intentionally retained with `.gitkeep` files.
+- `src/hooks/` and `utils/`: initial organization for later phases; empty folders are intentionally retained with `.gitkeep` files.
 - `src/app/AppRoutes.test.tsx`: checks all routes, home actions, keyboard navigation, focus, and fallback recovery.
+- `src/app/PracticeConfiguration.test.tsx`: checks defaults, multiple selections, validation, exclusive options, and the configuration handoff/edit flow.
 - `src/test/setup.ts`: browser-like test setup and cleanup between tests.
 - `vite.config.ts`: development server, production preview, and Vitest settings.
 - `eslint.config.js` and `.prettierrc.json`: code-quality and formatting rules.
