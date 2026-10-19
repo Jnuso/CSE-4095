@@ -29,6 +29,8 @@ After cloning the project with its committed lockfile, use `npm.cmd ci` for a cl
 
 ## Checks
 
+GitHub Pages deployment and URL-based review are documented in [DEPLOYMENT.md](../DEPLOYMENT.md). The Pages build uses hash routes and separate output; ordinary local development keeps its existing URLs.
+
 ```powershell
 npm.cmd run check:all
 ```

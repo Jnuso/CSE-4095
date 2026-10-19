@@ -1,0 +1,36 @@
+One-turn read-only code review experiment. All code and contracts are below, so do not call tools, edit files, create tests, or request more context. Give a final concise review now, under 350 words. Do not claim execution or passing tests. Evaluate each function independently; there may be correct functions. Ignore style and invalid inputs outside these contracts.
+
+accuracy_a and accuracy_b: integer inputs 0 <= correct <= attempted <= 1000000. Return nearest whole-number percentage, round .5 upward, and return 0 for zero attempts.
+append_c and append_d: attempts is a list of dictionaries with nonempty string id. IDs uniquely identify attempts. Preserve existing entries, append a new ID once, ignore an existing ID even when other fields differ. Return a new list without mutating the input; no deep-copy requirement.
+
+For each actionable defect give function name, exact counterexample, actual versus required result, and brief correction. Explicitly say no findings for each function that satisfies its contract. No external tools or generated code execution is needed for this static review.
+
+```python
+"""Synthetic reviewer-evaluation fixtures; never imported by the application."""
+
+from math import floor
+
+
+def accuracy_a(correct, attempted):
+    if attempted == 0:
+        return 0
+    return int(100 * correct / attempted)
+
+
+def accuracy_b(correct, attempted):
+    if attempted == 0:
+        return 0
+    return floor(100 * correct / attempted + 0.5)
+
+
+def append_c(attempts, attempt):
+    if attempt in attempts:
+        return list(attempts)
+    return [*attempts, attempt]
+
+
+def append_d(attempts, attempt):
+    if any(existing["id"] == attempt["id"] for existing in attempts):
+        return list(attempts)
+    return [*attempts, attempt]
+```

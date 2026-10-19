@@ -1,0 +1,4 @@
+TypeScript strict compilation passed for all four fixtures.
+Ground truth confirmed: change A drops valid zero answers; change B preserves the contract.
+Retention checks passed for ordering, stable ties, empty inputs, limits, and frozen inputs.
+This local verification made no API requests and executed no external model output.

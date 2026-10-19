@@ -13,6 +13,7 @@ export default function HomePage() {
         </p>
         <div
           className="operation-marks"
+          role="img"
           aria-label="Addition, subtraction, multiplication, and division"
         >
           <span aria-hidden="true">+</span>

@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: '**/pages.spec.ts',
   fullyParallel: true,
   workers: 2,
   forbidOnly: true,
@@ -20,16 +21,27 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [
-    { name: 'desktop', use: { browserName: 'chromium', viewport: { width: 1440, height: 1000 } } },
+    {
+      name: 'desktop',
+      testIgnore: ['**/restart.spec.ts', '**/pages.spec.ts'],
+      use: { browserName: 'chromium', viewport: { width: 1440, height: 1000 } },
+    },
     {
       name: 'mobile',
-      testIgnore: '**/restart.spec.ts',
+      testIgnore: ['**/restart.spec.ts', '**/pages.spec.ts'],
       use: {
         browserName: 'chromium',
         viewport: { width: 390, height: 844 },
         isMobile: true,
         hasTouch: true,
       },
+    },
+    {
+      name: 'restart',
+      testMatch: '**/restart.spec.ts',
+      // Persistent browser-process startup/shutdown must not contend with other flows.
+      dependencies: ['desktop', 'mobile'],
+      use: { browserName: 'chromium', viewport: { width: 1440, height: 1000 } },
     },
   ],
   webServer: {

@@ -1,0 +1,44 @@
+One-turn read-only TypeScript/React static review. Use no tools, do not edit files, do not claim tests ran. Return concise actionable findings or No findings under 250 words. Inspect this routing/skip-link change for real browser regressions with concrete scenarios; do not invent missing future features.
+Context: React19 and ReactRouter8 declarative API. BrowserRouter remains default local mode. GitHub Pages hosts only static files under /CSE-4095/ with no history fallback. Dedicated build runs vite build --mode pages --base=./ --outDir dist-pages; committed .env.pages sets VITE_ROUTER_MODE=hash. This env is fixed per build. HashRouter should keep route fragments like #/practice/setup; asset references must work under repository prefix. AppRoutes has standard Routes/Route paths /practice/setup, session, summary, statistics, settings. AppLayout uses useLocation.pathname for focus/title; mainRef = useRef<HTMLElement>(null) and <main id='main-content' tabIndex={-1} ref={mainRef}>. The skip link should focus main without replacing the hash route. Real modern browsers support scrollIntoView; this scope is browser behavior, not jsdom. Source diff:
+diff --git a/Assignment 12/math-practice-app/src/app/App.tsx b/Assignment 12/math-practice-app/src/app/App.tsx
+index 510a84b..dce5d94 100644
+--- a/Assignment 12/math-practice-app/src/app/App.tsx	
++++ b/Assignment 12/math-practice-app/src/app/App.tsx	
+@@ -1,11 +1,12 @@
+-import { BrowserRouter } from 'react-router'
++import { BrowserRouter, HashRouter } from 'react-router'
+ import AppRoutes from './AppRoutes'
+ import './App.css'
+ 
+ export default function App() {
++  const Router = import.meta.env.VITE_ROUTER_MODE === 'hash' ? HashRouter : BrowserRouter
+   return (
+-    <BrowserRouter>
++    <Router>
+       <AppRoutes />
+-    </BrowserRouter>
++    </Router>
+   )
+ }
+diff --git a/Assignment 12/math-practice-app/src/components/layout/AppLayout.tsx b/Assignment 12/math-practice-app/src/components/layout/AppLayout.tsx
+index ab92ba0..b76cf50 100644
+--- a/Assignment 12/math-practice-app/src/components/layout/AppLayout.tsx	
++++ b/Assignment 12/math-practice-app/src/components/layout/AppLayout.tsx	
+@@ -19,7 +19,15 @@ export default function AppLayout() {
+ 
+   return (
+     <div className="app-shell">
+-      <a className="skip-link" href="#main-content">
++      <a
++        className="skip-link"
++        href="#main-content"
++        onClick={(event) => {
++          event.preventDefault()
++          mainRef.current?.focus()
++          mainRef.current?.scrollIntoView()
++        }}
++      >
+         Skip to content
+       </a>
+       <Header />
+

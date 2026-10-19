@@ -1,10 +1,16 @@
 # Assignment 12 development checks
 
 - Follow the professor's specification and TODO, completing only the phase authorized by the student.
+- At the start of each phase, explain its purpose in plain language and ask only useful unresolved clarification questions. Implement the authorized scope, add meaningful tests, run verification/review, then give the student concrete manual review steps and the deployed URL when available.
+- Accepted Phase 10 defaults: count every reported answer including incomplete sessions; label incomplete recent sessions; statistics reset preserves preferences; initially show 10 recent sessions with Show more. These decisions do not authorize implementing Phase 10 until requested.
 - For changes to application code or test/build configuration, run `npm.cmd run check:all` from `math-practice-app` before declaring the change verified. This runs formatting, lint, unit/component tests, test type checking, production build, and the browser regression suite.
 - If the browser is missing, run `npm.cmd run test:install` once. Browser launching may need the host's normal execution permissions. If a check cannot run, report that limitation and do not claim it passed.
 - Extend the tests with meaningful new flows when a phase adds behavior. Keep existing coverage; update expectations only when the intended behavior changes, not merely to silence failures.
 - Browser tests use isolated contexts and the test-owned server at port 4273. Keep them separate from the student's saved browser profile and development server. Never seed, clear, or corrupt the student's real saved history for testing.
 - Record important decisions, actual test results, and remaining limitations in DEVELOPMENT_LOG.md. Only check TODO items that were completed and verified.
 - Keep TESTING.md current as the main test guide. Historical phase guides preserve milestone evidence.
+- GitHub Pages deployment follows DEPLOYMENT.md. The student explicitly authorized making Jnuso/CSE-4095 public and publishing the math app. Deploy only the verified dist-pages output; keep the existing Cloudflare base site configuration intact. Pages checks are included in check:all.
+- Use the independent review workflow in REVIEW.md for feature phases and substantial application/test-infrastructure changes. The student authorized this workflow. Request a separate read-only reviewer when available, compare the final diff with the authorized requirements, investigate concrete findings, and record the result. Do not claim review happened if no separate reviewer ran.
+- The student also authorized ongoing focused Gemma reviews through the existing coding-workers setup. Follow REVIEW.md: compact text-only TypeScript review requests, max_calls=1 per job, no overlapping requests, at least 60 seconds after the previous request finishes before another, and no automatic retries. Locally verify findings and keep static-review results distinct from passing application tests.
+- Accessibility scans are part of check:all. Extend them for new pages and interactive states; preserve full-page scans and existing rules. Do not suppress violations just to obtain a passing result. Automated scans do not complete the professor's full accessibility phase.
 - For documentation-only changes, use the relevant formatting/link checks rather than rerunning unrelated browser flows.

@@ -1,0 +1,35 @@
+{
+  "job_id": "6f06a0acd7494f0196c2807be1455ea9",
+  "model": "gemma-4-26b-a4b-it",
+  "evaluation": "Two synthetic TypeScript diffs, static review",
+  "api_calls": 1,
+  "max_calls": 1,
+  "job_state": "completed",
+  "job_duration_seconds": 59.71,
+  "known_defects": 1,
+  "detected_known_defects": 1,
+  "correct_changes": 1,
+  "false_positive_findings_on_correct_changes": 0,
+  "valid_counterexamples": 1,
+  "location": {
+    "file": "attempt.ts",
+    "reported_line": 6,
+    "actual_changed_condition_line": 7,
+    "exact_line_correct": false
+  },
+  "reviewer_edited_files": 0,
+  "worker_verified": false,
+  "worker_test_count": 0,
+  "local_verification": "Strict TypeScript compilation plus executable fixture characterization assertions passed.",
+  "worker_test_note": "Empty-project Docker pytest collected zero tests. This is static-review evidence, not a verified application change.",
+  "token_usage": null,
+  "token_usage_note": "Not exposed by the worker result.",
+  "rate_policy": "One model call total, no retry/resume. Submitted more than 60 seconds after previous job completion.",
+  "limits": [
+    "One seeded defect and one correct change",
+    "Synthetic self-contained TypeScript only",
+    "No React components or browser execution assessed",
+    "One line-location error",
+    "No application changes integrated"
+  ]
+}

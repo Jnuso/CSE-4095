@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "CommonJS",
+    "strict": true,
+    "types": [],
+    "noEmitOnError": true,
+    "outDir": ".generated"
+  },
+  "include": ["a-before.ts", "a-after.ts", "b-before.ts", "b-after.ts"]
+}

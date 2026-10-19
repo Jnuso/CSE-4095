@@ -1,0 +1,53 @@
+
+> math-practice-app@0.1.0 test:pages
+> npm run build:pages && node scripts/browser-tests.mjs test --config playwright.pages.config.ts
+
+
+> math-practice-app@0.1.0 build:pages
+> tsc -b && vite build --mode pages --base=./ --outDir dist-pages
+
+vite v8.3.4 building client environment for pages...
+transforming...
+✓ 124 modules transformed.
+rendering chunks...
+computing gzip size...
+dist-pages/index.html                   0.60 kB │ gzip:  0.36 kB
+dist-pages/assets/index-CDKdZ6x_.css   10.34 kB │ gzip:  2.95 kB
+dist-pages/assets/index-DeR6bBKl.js   289.73 kB │ gzip: 90.78 kB
+
+✓ built in 759ms
+[WebServer] (node:69336) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 20 tests using 2 workers
+
+(node:83736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:64048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route / survives refresh (2.9s)
+  ok  1 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/setup survives refresh (3.9s)
+  ok  3 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/session survives refresh (2.0s)
+  ok  4 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/summary survives refresh (2.3s)
+  ok  5 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /statistics survives refresh (1.6s)
+  ok  6 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /settings survives refresh (1.8s)
+  ok  7 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /unknown-page survives refresh (1.6s)
+  ok  8 [pages-desktop] › e2e\pages.spec.ts:21:1 › Pages hosting has no history fallback (99ms)
+  ok  9 [pages-desktop] › e2e\pages.spec.ts:26:1 › Pages skip link preserves route and focuses main content (1.8s)
+(node:24004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 [pages-desktop] › e2e\pages.spec.ts:37:1 › Pages session, summary persistence, navigation, and accessibility (8.7s)
+  ok 11 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route / survives refresh (2.1s)
+(node:60040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 12 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/session survives refresh (1.5s)
+  ok 13 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/summary survives refresh (2.1s)
+  ok 15 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /statistics survives refresh (1.9s)
+  ok 14 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/setup survives refresh (2.8s)
+  ok 16 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /settings survives refresh (1.7s)
+  ok 18 [pages-mobile] › e2e\pages.spec.ts:21:1 › Pages hosting has no history fallback (227ms)
+  ok 17 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /unknown-page survives refresh (2.3s)
+  ok 19 [pages-mobile] › e2e\pages.spec.ts:26:1 › Pages skip link preserves route and focuses main content (2.1s)
+  ok 20 [pages-mobile] › e2e\pages.spec.ts:37:1 › Pages session, summary persistence, navigation, and accessibility (9.2s)
+
+  20 passed (46.3s)

@@ -1,0 +1,2 @@
+Ground truth confirmed: A and C violate requirements; B and D are correct controls.
+This local verification made no API requests and executed no external model output.

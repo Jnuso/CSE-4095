@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+dist-pages
 dist-ssr
 *.local
 coverage/
@@ -16,6 +17,9 @@ coverage/
 .playwright-cli/
 output/playwright/regression-results/
 output/playwright/regression-report/
+output/playwright/pages-results/
+output/playwright/pages-report/
+output/playwright/pages-live/
 
 # Editor directories and files
 .vscode/*

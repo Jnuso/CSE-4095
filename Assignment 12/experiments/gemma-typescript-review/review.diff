@@ -1,0 +1,22 @@
+--- a/attempt.ts
++++ b/attempt.ts
+@@ -1,9 +1,9 @@
+ export type Attempt = { questionId: string; selectedAnswer: number };
+ 
+ export function buildAttempt(
+   questionId: string,
+   selectedAnswer: number | null,
+ ): Attempt | null {
+-  if (selectedAnswer === null) return null;
++  if (!selectedAnswer) return null;
+   return { questionId, selectedAnswer };
+ }
+--- a/history.ts
++++ b/history.ts
+@@ -1,5 +1,5 @@
+ export type Record = { id: string; savedAt: number };
+ 
+ export function retainRecent(records: Record[], limit: number): Record[] {
+-  return [...records].sort((a, b) => b.savedAt - a.savedAt).slice(0, limit);
++  return records.toSorted((a, b) => b.savedAt - a.savedAt).slice(0, limit);
+ }

@@ -19,7 +19,15 @@ export default function AppLayout() {
 
   return (
     <div className="app-shell">
-      <a className="skip-link" href="#main-content">
+      <a
+        className="skip-link"
+        href="#main-content"
+        onClick={(event) => {
+          event.preventDefault()
+          mainRef.current?.focus()
+          mainRef.current?.scrollIntoView()
+        }}
+      >
         Skip to content
       </a>
       <Header />

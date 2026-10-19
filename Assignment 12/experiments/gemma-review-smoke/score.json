@@ -1,0 +1,28 @@
+{
+  "job_id": "32269ee13cd74888b78684ab61235ed1",
+  "model": "gemma-4-26b-a4b-it",
+  "evaluation": "Four synthetic Python functions; static text review",
+  "api_calls": 1,
+  "max_calls": 1,
+  "job_state": "completed",
+  "job_duration_seconds": 78.18,
+  "known_defects": 2,
+  "detected_known_defects": 2,
+  "correct_controls": 2,
+  "false_positive_findings_on_controls": 0,
+  "valid_counterexamples": 2,
+  "reviewer_edited_files": 0,
+  "worker_verified": false,
+  "worker_test_count": 0,
+  "worker_test_note": "Empty project: no tests collected. Not a verified application change. Local ground-truth assertions are recorded separately.",
+  "token_usage": null,
+  "token_usage_note": "Provider token usage is not exposed in the worker result.",
+  "rate_policy": "One model call total. No automatic retry/resume; any future request waits >=60 seconds after preceding completion.",
+  "limits": [
+    "Tiny synthetic sample",
+    "Python only",
+    "No React or browser assessment",
+    "No multi-turn agent or rate-limiter reliability assessment",
+    "No application changes integrated"
+  ]
+}

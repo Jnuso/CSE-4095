@@ -1,0 +1,142 @@
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { mkdir, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+
+const require = createRequire(
+  new URL("../math-practice-app/package.json", import.meta.url),
+);
+const { chromium } = require("@playwright/test");
+process.env.PLAYWRIGHT_BROWSERS_PATH = fileURLToPath(
+  new URL(
+    "../math-practice-app/node_modules/.cache/playwright-browsers/",
+    import.meta.url,
+  ),
+);
+const address = "https://jnuso.github.io/CSE-4095/";
+const output = new URL(
+  "../math-practice-app/output/playwright/pages-live/",
+  import.meta.url,
+);
+await mkdir(output, { recursive: true });
+const browser = await chromium.launch({ headless: true, channel: "chromium" });
+const results = [];
+try {
+  for (const [name, viewport] of [
+    ["desktop", { width: 1440, height: 1000 }],
+    ["mobile", { width: 390, height: 844 }],
+  ]) {
+    // Fresh disposable data: never use the student's browser or saved profile.
+    const context = await browser.newContext({
+      viewport,
+      isMobile: name === "mobile",
+      hasTouch: name === "mobile",
+    });
+    try {
+      const page = await context.newPage();
+      const errors = [];
+      page.on("pageerror", (error) => errors.push(error.message));
+      page.on("console", (message) => {
+        if (["error", "warning"].includes(message.type()))
+          errors.push(message.text());
+      });
+      page.on("response", (response) => {
+        if (response.url().startsWith(address) && response.status() >= 400)
+          errors.push(`${response.status()} ${response.url()}`);
+      });
+      for (const [route, heading] of [
+        ["/", "Big ideas start with small steps."],
+        ["/practice/setup", "Choose your practice"],
+        ["/practice/summary", "Your practice recap"],
+        ["/statistics", "Your statistics"],
+        ["/settings", "Make it your own"],
+        ["/unknown-page", "Let's find your way back."],
+      ]) {
+        const response = await page.goto(`${address}#${route}`);
+        // Same-document hash navigations may not make an HTTP request.
+        if (response) assert.equal(response.status(), 200);
+        await page
+          .getByRole("heading", { name: heading, exact: true, level: 1 })
+          .waitFor();
+        assert.equal((await page.reload()).status(), 200);
+        await page
+          .getByRole("heading", { name: heading, exact: true, level: 1 })
+          .waitFor();
+      }
+      await page.goto(`${address}#/practice/setup`);
+      await page
+        .getByRole("radio", { name: "5 questions", exact: true })
+        .check();
+      await page
+        .getByRole("button", { name: "Start Session", exact: true })
+        .click();
+      for (const right of [true, false, true, false, true]) {
+        await page
+          .getByRole("group", { name: "Answer choices" })
+          .getByRole("button")
+          .first()
+          .click();
+        await page
+          .getByRole("button", { name: "Flip Card", exact: true })
+          .click();
+        await page
+          .getByRole("button", {
+            name: right ? "I Got It Right" : "I Got It Wrong",
+            exact: true,
+          })
+          .click();
+      }
+      await page
+        .getByRole("heading", { name: "Your practice recap", exact: true })
+        .waitFor();
+      const metric = (label) =>
+        page.getByText(label, { exact: true }).locator("..").locator("dd");
+      assert.equal(await metric("Accuracy").innerText(), "60%");
+      await page.reload();
+      await page
+        .getByRole("heading", { name: "Your practice recap", exact: true })
+        .waitFor();
+      assert.equal(await metric("Questions attempted").innerText(), "5");
+      assert.equal(await metric("Marked right").innerText(), "3");
+      assert.equal(await metric("Marked wrong").innerText(), "2");
+      await page.screenshot({
+        path: fileURLToPath(new URL(`${name}-summary.png`, output)),
+        fullPage: true,
+      });
+      await page
+        .getByRole("link", { name: "Change Settings", exact: true })
+        .click();
+      const skip = page.getByRole("link", {
+        name: "Skip to content",
+        exact: true,
+      });
+      await skip.focus();
+      await skip.press("Enter");
+      assert.equal(new URL(page.url()).hash, "#/practice/setup");
+      assert.equal(
+        await page
+          .getByRole("main")
+          .evaluate((element) => document.activeElement === element),
+        true,
+      );
+      assert.deepEqual(errors, []);
+      results.push({
+        viewport: name,
+        routesAndRefreshes: "passed",
+        session: "5 attempts, 3 right, 2 wrong, 60%",
+        persistedReload: "passed",
+        skipLink: "passed",
+        browserErrors: [],
+      });
+    } finally {
+      await context.close();
+    }
+  }
+} finally {
+  await browser.close();
+}
+await writeFile(
+  new URL("results.json", output),
+  JSON.stringify({ address, results }, null, 2) + "\n",
+);
+console.log(JSON.stringify({ address, results }, null, 2));

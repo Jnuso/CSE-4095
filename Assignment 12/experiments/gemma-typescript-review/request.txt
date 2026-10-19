@@ -1,0 +1,30 @@
+One-turn STATIC TYPESCRIPT DIFF REVIEW experiment. Although the worker infrastructure is Python-oriented, this task is read-only text review of TypeScript; do not create Python substitutes, call tools, edit files, or claim execution/tests. All source context and contracts are included. Return a final concise review under 300 words now. Inspect changes A (attempt.ts) and B (history.ts) independently. Flag only concrete regressions introduced by the diff; a change may be correct. For each finding give changed file/line, input, actual versus required output, and brief fix. Explicitly say no findings for a change that satisfies its contract. Ignore style and inputs outside the contracts.
+
+Contract A: buildAttempt receives a nonempty questionId and selectedAnswer which is null or a nonnegative integer <=1000000. Null means no selection. Every numeric answer, including zero, must create an attempt preserving both values. Return null only for no selection.
+
+Contract B: retainRecent receives records with unique IDs and finite integer savedAt timestamps 0..1000000000000, in any order; limit is an integer 1..100. Return a NEW array of the newest entries first capped to limit, maintaining input order on tied timestamps. Never mutate the input array or entries; deep copies are not required. Target/runtime supports ES2023 including Array.prototype.toSorted. Do not invent older-runtime compatibility requirements.
+
+```diff
+--- a/attempt.ts
++++ b/attempt.ts
+@@ -1,9 +1,9 @@
+ export type Attempt = { questionId: string; selectedAnswer: number };
+ 
+ export function buildAttempt(
+   questionId: string,
+   selectedAnswer: number | null,
+ ): Attempt | null {
+-  if (selectedAnswer === null) return null;
++  if (!selectedAnswer) return null;
+   return { questionId, selectedAnswer };
+ }
+--- a/history.ts
++++ b/history.ts
+@@ -1,5 +1,5 @@
+ export type Record = { id: string; savedAt: number };
+ 
+ export function retainRecent(records: Record[], limit: number): Record[] {
+-  return [...records].sort((a, b) => b.savedAt - a.savedAt).slice(0, limit);
++  return records.toSorted((a, b) => b.savedAt - a.savedAt).slice(0, limit);
+ }
+```

@@ -9,10 +9,13 @@ export default tseslint.config(
   {
     ignores: [
       'dist/**',
+      'dist-pages/**',
       'coverage/**',
       '.vitest/**',
       'output/playwright/regression-results/**',
       'output/playwright/regression-report/**',
+      'output/playwright/pages-results/**',
+      'output/playwright/pages-report/**',
     ],
   },
   {

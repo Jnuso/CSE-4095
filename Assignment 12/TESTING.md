@@ -12,6 +12,8 @@ npm.cmd run check:all
 
 This checks formatting and lint, runs the existing unit/component tests, type-checks both app and browser tests, builds production output, and runs the browser suite. A failure stops the command and returns a nonzero exit code. Tests do not automatically retry and hide a first failure.
 
+The gate also builds and tests the GitHub Pages variant using a strict static server at port 4373. See DEPLOYMENT.md for hosted review steps, hash-route behavior, and the separate Pages report. Vitest uses at most two workers to limit jsdom resource contention while retaining the existing per-test deadlines and assertions.
+
 On a fresh checkout, install dependencies and the test browser first:
 
 ```powershell
@@ -29,6 +31,7 @@ Chromium installs under this project's ignored `node_modules/.cache/playwright-b
 | `npm.cmd run check`           | Formatting, lint, unit/component tests, type checking, production build |
 | `npm.cmd run test:watch`      | Rerun unit/component tests as you edit source                           |
 | `npm.cmd run test:e2e`        | Rebuild and run browser tests                                           |
+| `npm.cmd run test:a11y`       | Rebuild and run accessibility scans on desktop and mobile               |
 | `npm.cmd run test:e2e:headed` | Rebuild and watch tests run in visible browser windows                  |
 | `npm.cmd run test:report`     | Open the latest browser report                                          |
 
@@ -58,13 +61,32 @@ The existing unit/component tests complement this with all operation/difficulty 
 ## Test isolation and reports
 
 - The runner starts and stops a production-preview server on **127.0.0.1:4273**. It does not reuse a server already on that port, so a conflict fails clearly. Your development server on 5173 and preview on 4173 are unaffected.
-- Each normal test gets a fresh browser context and localStorage. Storage faults and fake records are injected only there. The restart test owns a separate temporary profile under the ignored test-results directory.
-- Desktop and mobile projects run the shared flows; the actual process-restart scenario runs once on desktop.
+- Each normal test gets a fresh browser context and localStorage. Storage faults and fake records are injected only there. The restart test owns a short `math-e2e-*` profile in the system temporary directory, outside synced folders, and validates its exact parent/name before cleanup.
+- Desktop and mobile projects run the shared flows. A separate desktop-sized restart project depends on both, running the real process restart alone after those flows. It retains the same deadline/assertions and reports launch/close/cleanup steps.
 - Unexpected page errors or console errors/warnings fail tests.
 - The HTML report is under `math-practice-app/output/playwright/regression-report/index.html`. Failing tests retain screenshots and traces under `regression-results`; the report links to them. These generated files are ignored by Git. The next run replaces the last report/results.
 - Playwright manages browser/server cleanup. Stop an interactive run with Ctrl+C. Do not kill unrelated browser or server processes to resolve a test-port conflict.
 
 The reporter groups results by desktop/mobile and shows the exact passed/failed count. New tests should be added as later phases add statistics, mistakes, and settings features; those unfinished features are not claimed as covered now.
+
+## Automated accessibility checks and independent review
+
+`npm.cmd run check:all` includes the accessibility suite automatically. To run only accessibility checks:
+
+```powershell
+npm.cmd run test:a11y
+npm.cmd run test:report
+```
+
+The axe scans cover Home, setup, missing-summary results, current Statistics/Settings placeholders, unknown-route recovery, setup validation and selected options, card front/selection/reveal/next question, continuous practice with reduced motion, completed/zero-attempt summaries, and a saved-data warning. Scans run on both desktop and mobile-sized Chromium in isolated contexts. Future features need scans of their populated and interactive states; placeholders do not establish accessibility of unimplemented features.
+
+A separate scanner-confidence test deliberately inserts an unnamed button into its own isolated page and requires axe to detect it. Its attachment intentionally contains that violation; the application scans still require zero detected violations. Card scans wait for actual animations to finish before checking the settled state.
+
+The suite checks axe rules tagged WCAG 2 A/AA, WCAG 2.1 A/AA, and best practice. It requires zero detected violations, with no excluded elements or disabled rules. Every scan attaches full JSON results to its test in the HTML report, including passed rules and inconclusive (`incomplete`) checks. Open the attachment to inspect manual-review needs; inconclusive results are not silently counted as proof of accessibility. An automated pass is not a claim of WCAG conformance.
+
+Independent review follows REVIEW.md. A separate read-only agent checks significant changes against the authorized requirements and tests, then the implementer investigates findings and records the outcome. This runs during development in this chat; it does not start a background service or require a new account.
+
+Implementation follows the official [Playwright accessibility guide](https://playwright.dev/docs/accessibility-testing).
 
 ## What still needs human review
 

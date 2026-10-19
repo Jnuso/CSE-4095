@@ -1,32 +1,33 @@
 import { chromium } from '@playwright/test'
-import { mkdir, mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { test, expect, report, metric, saved } from './helpers'
 
 test('saved attempts and settings survive closing and reopening a real browser', async ({
   baseURL,
-}, testInfo) => {
-  // Keep the profile path short: nested Windows LevelDB filenames can exceed MAX_PATH.
-  const profileRoot = resolve(testInfo.project.outputDir)
-  await mkdir(profileRoot, { recursive: true })
-  const profile = await mkdtemp(join(profileRoot, 'p-'))
-  if (dirname(resolve(profile)) !== profileRoot || !basename(profile).startsWith('p-'))
+}) => {
+  // Short, local temp storage avoids MAX_PATH and OneDrive sync overhead for LevelDB.
+  const profileRoot = resolve(tmpdir())
+  const profile = await mkdtemp(join(profileRoot, 'math-e2e-'))
+  if (dirname(resolve(profile)) !== profileRoot || !basename(profile).startsWith('math-e2e-'))
     throw new Error('Unexpected test profile cleanup path.')
   const problems: string[] = []
-  const open = async () => {
-    const context = await chromium.launchPersistentContext(profile, {
-      headless: true,
-      channel: 'chromium',
-      baseURL,
-      viewport: { width: 1440, height: 1000 },
+  const open = async () =>
+    test.step('Launch persistent browser process', async () => {
+      const context = await chromium.launchPersistentContext(profile, {
+        headless: true,
+        channel: 'chromium',
+        baseURL,
+        viewport: { width: 1440, height: 1000 },
+      })
+      const page = context.pages()[0] ?? (await context.newPage())
+      page.on('pageerror', (error) => problems.push(error.message))
+      page.on('console', (message) => {
+        if (['error', 'warning'].includes(message.type())) problems.push(message.text())
+      })
+      return { context, page }
     })
-    const page = context.pages()[0] ?? (await context.newPage())
-    page.on('pageerror', (error) => problems.push(error.message))
-    page.on('console', (message) => {
-      if (['error', 'warning'].includes(message.type())) problems.push(message.text())
-    })
-    return { context, page }
-  }
   try {
     const first = await open()
     try {
@@ -41,7 +42,7 @@ test('saved attempts and settings survive closing and reopening a real browser',
       await expect(metric(first.page, 'Accuracy')).toHaveText('60%')
       expect((await saved(first.page)).records[0].attempts).toHaveLength(5)
     } finally {
-      await first.context.close()
+      await test.step('Close first browser process', () => first.context.close())
     }
     const second = await open()
     try {
@@ -58,10 +59,11 @@ test('saved attempts and settings survive closing and reopening a real browser',
         second.page.getByRole('checkbox', { name: 'Animate card flips', exact: true }),
       ).not.toBeChecked()
     } finally {
-      await second.context.close()
+      await test.step('Close second browser process', () => second.context.close())
     }
     expect(problems).toEqual([])
   } finally {
-    await rm(profile, { recursive: true, force: true })
+    await test.step('Remove owned temporary profile', () =>
+      rm(profile, { recursive: true, force: true }))
   }
 })

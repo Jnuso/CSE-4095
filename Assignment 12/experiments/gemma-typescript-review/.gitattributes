@@ -1,0 +1,3 @@
+# Preserve exact unified-diff context lines in submitted evaluation evidence.
+request.txt -whitespace
+review.diff -whitespace
