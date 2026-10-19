@@ -1,0 +1,85 @@
+### Result
+{"result":"PASS","cases":["corrupt JSON","future schema protected","invalid settings recovery","missing version migration","quota failure","blocked storage"],"browserProblems":[]}
+### Ran Playwright code
+```js
+await (async page => {
+ const assert=(value,message)=>{if(!value)throw new Error(message);};
+ const problems=[];
+ page.on('pageerror',error=>problems.push(error.message));
+ page.on('console',message=>{if(['error','warning'].includes(message.type()))problems.push(message.text());});
+ const origin='http://127.0.0.1:4173';
+ const report=async()=>{
+  await page.getByRole('group',{name:'Answer choices'}).getByRole('button').first().click();
+  await page.getByRole('button',{name:'Flip Card',exact:true}).click();
+  await page.getByRole('button',{name:'I Got It Wrong',exact:true}).click();
+ };
+ const restore=async()=>page.evaluate(()=>{sessionStorage.removeItem('phase9.mode');localStorage.setItem('mathPractice.data',localStorage.getItem('phase9.good-backup'));});
+ await page.addInitScript(()=>{
+  const mode=sessionStorage.getItem('phase9.mode');
+  if(mode==='quota'){
+   const original=Storage.prototype.setItem;
+   Storage.prototype.setItem=function(key,value){if(key==='mathPractice.data')throw new DOMException('test quota','QuotaExceededError');return original.call(this,key,value);};
+  }
+  if(mode==='blocked')Object.defineProperty(window,'localStorage',{configurable:true,get(){throw new DOMException('test blocked','SecurityError');}});
+ });
+ for(const raw of ['{broken',JSON.stringify({version:99,settings:{},records:[]})]){
+  await restore();
+  await page.evaluate(raw=>localStorage.setItem('mathPractice.data',raw),raw);
+  await page.goto(`${origin}/practice/setup`);
+  await page.getByRole('status',{name:'Saved data notice'}).waitFor();
+  assert(await page.getByRole('radio',{name:/^Beginner/}).isChecked(),'Safe defaults for unreadable data');
+  await page.getByRole('button',{name:'Start Session',exact:true}).click();
+  await report();
+  await page.getByText('Question 2 of 10',{exact:true}).waitFor();
+  assert(await page.evaluate(()=>localStorage.getItem('mathPractice.data'))===raw,'Unreadable/future bytes protected');
+ }
+ await restore();
+ await page.evaluate(()=>{const good=JSON.parse(localStorage.getItem('mathPractice.data'));good.settings={};localStorage.setItem('mathPractice.data',JSON.stringify(good));});
+ await page.goto(`${origin}/practice/setup`);
+ assert((await page.getByRole('status',{name:'Saved data notice'}).innerText()).includes('settings were invalid'),'Invalid settings warning');
+ assert(await page.getByRole('radio',{name:/^Beginner/}).isChecked(),'Defaults from invalid settings');
+ await page.getByRole('button',{name:'Start Session',exact:true}).click();
+ assert(await page.evaluate(()=>JSON.parse(localStorage.getItem('mathPractice.data')).records.some(record=>record.session.completedAt && record.attempts.length===5)),'Valid history preserved during settings recovery');
+ await restore();
+ await page.evaluate(()=>{const good=JSON.parse(localStorage.getItem('mathPractice.data'));delete good.version;localStorage.setItem('mathPractice.data',JSON.stringify(good));});
+ await page.goto(`${origin}/practice/setup`);
+ assert((await page.getByRole('status',{name:'Saved data notice'}).innerText()).includes('Older saved data'),'Missing version detected');
+ await page.getByRole('button',{name:'Start Session',exact:true}).click();
+ assert(await page.evaluate(()=>JSON.parse(localStorage.getItem('mathPractice.data')).version)===1,'Legacy schema migrated on save');
+ await restore();
+ const before=await page.evaluate(()=>localStorage.getItem('mathPractice.data'));
+ await page.evaluate(()=>sessionStorage.setItem('phase9.mode','quota'));
+ await page.goto(`${origin}/practice/setup`);
+ await page.getByRole('button',{name:'Start Session',exact:true}).click();
+ await page.getByRole('status',{name:'Saved data notice'}).waitFor();
+ await report();
+ await page.getByText('Question 2 of 5',{exact:true}).waitFor();
+ assert((await page.getByRole('status',{name:'Saved data notice'}).innerText()).includes('storage is full'),'Quota warning');
+ assert((await page.getByRole('status',{name:'Session totals'}).innerText()).includes('Wrong: 1'),'Quota keeps session working');
+ assert(await page.evaluate(()=>localStorage.getItem('mathPractice.data'))===before,'Last successful save unchanged');
+ for(const width of [390,320]){
+  await page.setViewportSize({width,height:844});
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Warning mobile no overflow');
+  if(width===390)await page.screenshot({path:'output/playwright/phase-9-storage-warning-mobile.png',fullPage:true});
+ }
+ await page.evaluate(()=>sessionStorage.removeItem('phase9.mode'));
+ await page.goto(`${origin}/practice/setup`);
+ await page.evaluate(()=>sessionStorage.setItem('phase9.mode','blocked'));
+ await page.reload();
+ assert((await page.getByRole('status',{name:'Saved data notice'}).innerText()).includes('unavailable'),'Blocked storage warning');
+ await page.getByRole('button',{name:'Start Session',exact:true}).click();
+ await report();
+ await page.getByText('Question 2 of 10',{exact:true}).waitFor();
+ await page.evaluate(()=>sessionStorage.removeItem('phase9.mode'));
+ await page.goto(`${origin}/practice/setup`);
+ assert(await page.getByRole('checkbox',{name:'Division',exact:true}).isChecked(),'Saved data recovered after storage re-enabled');
+ assert(await page.evaluate(()=>localStorage.getItem('phase9.unrelated'))==='keep me','Unrelated key survives all tests');
+ await page.evaluate(()=>localStorage.removeItem('phase9.good-backup'));
+ assert(problems.length===0,problems.join('; '));
+ return {result:'PASS',cases:['corrupt JSON','future schema protected','invalid settings recovery','missing version migration','quota failure','blocked storage'],browserProblems:problems};
+}
+)(page);
+```
+### Page
+- Page URL: http://127.0.0.1:4173/practice/setup
+- Page Title: Choose your practice | Math Practice

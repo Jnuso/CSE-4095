@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navigate } from 'react-router'
 import type { PracticeConfiguration } from '../../types/practice'
 import {
@@ -8,6 +8,7 @@ import {
   startSession,
 } from '../../services/practiceSession'
 import QuestionCard, { type CardResult } from './QuestionCard'
+import { usePracticeStorage } from '../storage/PracticeStorageProvider'
 
 export default function PracticeSessionPanel({
   configuration,
@@ -16,7 +17,11 @@ export default function PracticeSessionPanel({
 }) {
   const [state, setState] = useState(() => startSession(configuration))
   const latest = useRef(state)
-  const [animationEnabled, setAnimationEnabled] = useState(true)
+  const { data, saveSession, saveSettings } = usePracticeStorage()
+  const [animationEnabled, setAnimationEnabled] = useState(data.settings.cardAnimationEnabled)
+  useEffect(() => {
+    saveSession({ session: state.session, attempts: state.attempts })
+  }, [state.session, state.attempts, saveSession])
   function report(result: CardResult) {
     const next = recordResult(latest.current, result)
     latest.current = next
@@ -53,8 +58,8 @@ export default function PracticeSessionPanel({
   return (
     <div className="session-panel">
       <p className="preview-note">
-        Results stay in this session until you leave or refresh. Saving progress comes in a later
-        phase.
+        Reported answers are saved in this browser when storage is available. Refreshing starts a
+        new session.
       </p>
       <p className="session-totals" role="status" aria-label="Session totals">
         Completed: {session.attempted} · Right: {session.correct} · Wrong: {session.incorrect}
@@ -78,7 +83,10 @@ export default function PracticeSessionPanel({
             <input
               type="checkbox"
               checked={animationEnabled}
-              onChange={(event) => setAnimationEnabled(event.target.checked)}
+              onChange={(event) => {
+                setAnimationEnabled(event.target.checked)
+                saveSettings({ cardAnimationEnabled: event.target.checked })
+              }}
             />{' '}
             Animate card flips
           </label>

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import Header from './Header'
 import PageContainer from './PageContainer'
+import StorageNotice from '../storage/StorageNotice'
 
 export default function AppLayout() {
   const { pathname } = useLocation()
@@ -24,6 +25,7 @@ export default function AppLayout() {
       <Header />
       <main id="main-content" className="page-content" tabIndex={-1} ref={mainRef}>
         <PageContainer>
+          <StorageNotice />
           <Outlet />
         </PageContainer>
       </main>

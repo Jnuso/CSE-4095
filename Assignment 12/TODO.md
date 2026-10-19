@@ -577,67 +577,67 @@ Initial routes:
 
 ### 35\. Create the Storage Service
 
-- [ ] Create a wrapper around `localStorage`.
+- [x] Create a wrapper around `localStorage`.
 
-- [ ] Add functions for reading data.
+- [x] Add functions for reading data.
 
-- [ ] Add functions for writing data.
+- [x] Add functions for writing data.
 
-- [ ] Add JSON parsing error handling.
+- [x] Add JSON parsing error handling.
 
-- [ ] Add validation for loaded data.
+- [x] Add validation for loaded data.
 
-- [ ] Handle unavailable browser storage.
+- [x] Handle unavailable browser storage.
 
-- [ ] Handle storage-capacity errors.
+- [x] Handle storage-capacity errors.
 
 
 ### 36\. Add Data Schema Versioning
 
-- [ ] Store a data-schema version.
+- [x] Store a data-schema version.
 
-- [ ] Detect missing or older versions.
+- [x] Detect missing or older versions.
 
-- [ ] Create an initial migration structure.
+- [x] Create an initial migration structure.
 
-- [ ] Avoid deleting unrelated stored data.
+- [x] Avoid deleting unrelated stored data.
 
 
 ### 37\. Persist Application Settings
 
-- [ ] Save selected settings.
+- [x] Save selected settings.
 
-- [ ] Load settings when the application starts.
+- [x] Load settings when the application starts.
 
-- [ ] Use defaults when no settings exist.
+- [x] Use defaults when no settings exist.
 
-- [ ] Recover from invalid stored settings.
+- [x] Recover from invalid stored settings.
 
 
 ### 38\. Persist Practice Sessions
 
-- [ ] Save session information.
+- [x] Save session information.
 
-- [ ] Save session completion details.
+- [x] Save session completion details.
 
-- [ ] Load recent sessions.
+- [x] Load recent sessions.
 
-- [ ] Limit or summarize old session records when necessary.
+- [x] Limit or summarize old session records when necessary.
 
 
 ### 39\. Persist Practice Attempts
 
-- [ ] Save every completed attempt.
+- [x] Save every completed attempt.
 
-- [ ] Include the selected answer.
+- [x] Include the selected answer.
 
-- [ ] Include the self-reported result.
+- [x] Include the self-reported result.
 
-- [ ] Include the operation and difficulty.
+- [x] Include the operation and difficulty.
 
-- [ ] Include the session ID and timestamp.
+- [x] Include the session ID and timestamp.
 
-- [ ] Confirm that attempts persist after a browser restart.
+- [x] Confirm that attempts persist after a browser restart.
 
 
 * * *

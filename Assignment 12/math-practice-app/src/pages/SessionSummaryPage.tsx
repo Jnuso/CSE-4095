@@ -2,10 +2,13 @@ import FeaturePlaceholder from '../components/common/FeaturePlaceholder'
 import { Link, useLocation } from 'react-router'
 import { summaryFromState, summarize } from '../services/sessionSummary'
 import { DIFFICULTIES, OPERATIONS } from '../constants/practice'
+import { usePracticeStorage } from '../components/storage/PracticeStorageProvider'
+import { latestCompletedSession, MAX_SAVED_SESSIONS } from '../services/storageService'
 
 export default function SessionSummaryPage() {
   const { state } = useLocation()
-  const completed = summaryFromState(state)
+  const { data } = usePracticeStorage()
+  const completed = summaryFromState(state) ?? (state == null ? latestCompletedSession(data) : null)
   if (completed) {
     const results = summarize(completed)
     const { session } = completed
@@ -105,7 +108,8 @@ export default function SessionSummaryPage() {
             Practice Mistakes will be available when mistake review is added.
           </p>
           <p className="field-help">
-            This recap is for this session. Results are not saved to your practice history yet.
+            Reported answers are saved on this browser when storage is available. The newest{' '}
+            {MAX_SAVED_SESSIONS} sessions and their attempts are retained.
           </p>
         </div>
       </section>

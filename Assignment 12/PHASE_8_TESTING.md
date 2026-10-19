@@ -1,5 +1,7 @@
 # Phase 8 testing guide
 
+Historical milestone: Phase 9 adds persistent settings/session data and a saved-summary fallback. Use [PHASE_9_TESTING.md](PHASE_9_TESTING.md) for current storage behavior.
+
 Completed sessions now navigate to `/practice/summary`. This replaces the inline Phase 7 recap. Results are based on self-reported right/wrong choices, not automatic grading of the selected answer.
 
 ## Run locally

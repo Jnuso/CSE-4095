@@ -1,0 +1,27 @@
+### Result
+{"result":"PASS","restarted":true,"restoredCompletedAttempts":5,"settingsRestored":true}
+### Ran Playwright code
+```js
+await (async page => {
+ const assert=(value,message)=>{if(!value)throw new Error(message);};
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('mathPractice.data')));
+ assert(saved.records.length===1 && saved.records[0].attempts.length===5,'Attempts survive browser restart');
+ assert(saved.records[0].session.correct===3 && saved.records[0].session.incorrect===2,'Saved totals after restart');
+ await page.setViewportSize({width:1440,height:1000});
+ await page.screenshot({path:'output/playwright/phase-9-restored-summary-desktop.png',fullPage:true});
+ await page.goto('http://127.0.0.1:4173/practice/setup');
+ assert(await page.getByRole('checkbox',{name:'Division',exact:true}).isChecked(),'Saved operation after restart');
+ assert(!await page.getByRole('checkbox',{name:'Addition',exact:true}).isChecked(),'Saved operation exclusive');
+ assert(await page.getByRole('radio',{name:/^Advanced/}).isChecked(),'Saved difficulty after restart');
+ assert(await page.getByRole('radio',{name:'5 questions',exact:true}).isChecked(),'Saved length after restart');
+ await page.getByRole('button',{name:'Start Session',exact:true}).click();
+ await page.getByRole('checkbox',{name:'Animate card flips',exact:true}).waitFor();
+ assert(!await page.getByRole('checkbox',{name:'Animate card flips',exact:true}).isChecked(),'Saved animation preference after restart');
+ await page.evaluate(()=>localStorage.setItem('phase9.good-backup',localStorage.getItem('mathPractice.data')));
+ return {result:'PASS',restarted:true,restoredCompletedAttempts:5,settingsRestored:true};
+}
+)(page);
+```
+### Page
+- Page URL: http://127.0.0.1:4173/practice/session
+- Page Title: Your practice space | Math Practice

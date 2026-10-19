@@ -6,24 +6,32 @@ import DifficultySelector from '../components/practice/DifficultySelector'
 import SessionLengthSelector from '../components/practice/SessionLengthSelector'
 import { configurationFromState, isPracticeConfiguration } from '../services/practiceConfiguration'
 import type { PracticeConfiguration } from '../types'
+import { usePracticeStorage } from '../components/storage/PracticeStorageProvider'
 
 export default function PracticeSetupPage() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { data, saveSettings } = usePracticeStorage()
   const [configuration, setConfiguration] = useState<PracticeConfiguration>(
     () =>
       configurationFromState(location.state) ?? {
-        operations: ['addition'],
-        difficulty: 1,
-        sessionLength: 10,
+        operations: data.settings.defaultOperations,
+        difficulty: data.settings.defaultDifficulty,
+        sessionLength: data.settings.defaultSessionLength,
       },
   )
   const valid = isPracticeConfiguration(configuration)
 
   function startSession(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (isPracticeConfiguration(configuration))
+    if (isPracticeConfiguration(configuration)) {
+      saveSettings({
+        defaultOperations: configuration.operations,
+        defaultDifficulty: configuration.difficulty,
+        defaultSessionLength: configuration.sessionLength,
+      })
       navigate('/practice/session', { state: { practiceConfig: configuration } })
+    }
   }
 
   return (

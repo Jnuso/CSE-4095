@@ -1,0 +1,56 @@
+### Result
+{"result":"PASS","ports":[5173,4173],"browserProblems":[],"attemptsPerSavedSession":5}
+### Ran Playwright code
+```js
+await (async page => {
+ const problems=[];
+ page.on('pageerror',error=>problems.push(error.message));
+ page.on('console',message=>{if(['error','warning'].includes(message.type())) problems.push(message.text());});
+ const assert=(value,message)=>{if(!value) throw new Error(message);};
+ for(const port of [5173,4173]) {
+  await page.goto(`http://127.0.0.1:${port}/practice/setup`);
+  await page.evaluate(()=>localStorage.setItem('phase9.unrelated','keep me'));
+  await page.getByRole('button',{name:'Clear selection',exact:true}).click();
+  await page.getByRole('checkbox',{name:'Division',exact:true}).check();
+  await page.getByRole('radio',{name:/^Advanced/}).check();
+  await page.getByRole('radio',{name:'5 questions',exact:true}).check();
+  await page.getByRole('button',{name:'Start Session',exact:true}).click();
+  await page.getByText('Question 1 of 5',{exact:true}).waitFor();
+  await page.getByRole('checkbox',{name:'Animate card flips',exact:true}).uncheck();
+  for(let index=0;index<5;index++) {
+   const first=page.getByRole('group',{name:'Answer choices'}).getByRole('button').first();
+   const selected=Number((await first.getAttribute('aria-label')).replace('Answer ',''));
+   await first.click();
+   await page.getByRole('button',{name:'Flip Card',exact:true}).click();
+   await page.getByRole('button',{name:index<3?'I Got It Right':'I Got It Wrong',exact:true}).click();
+   if(index<4) await page.getByText(`Question ${index+2} of 5`,{exact:true}).waitFor();
+   else await page.waitForURL(`http://127.0.0.1:${port}/practice/summary`);
+   const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('mathPractice.data')));
+   assert(saved.version===1,'Schema version');
+   assert(saved.records.length===1,'Repeated saves upsert one session');
+   assert(saved.records[0].attempts.length===index+1,'Each attempt saved immediately');
+   const attempt=saved.records[0].attempts[index];
+   assert(attempt.selectedAnswer===selected,'Selected answer persisted');
+   assert(attempt.selfReportedCorrect===(index<3),'Self report persisted');
+   assert(attempt.operation==='division' && attempt.difficulty===4 && attempt.sessionId===saved.records[0].session.id && Boolean(attempt.attemptedAt),'Attempt context persisted');
+  }
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('mathPractice.data')));
+  assert(Boolean(saved.records[0].session.completedAt),'Completion saved');
+  assert(saved.settings.cardAnimationEnabled===false,'Animation preference saved');
+  assert(saved.settings.defaultDifficulty===4 && saved.settings.defaultSessionLength===5 && saved.settings.defaultOperations.join(',')==='division','Setup saved');
+  await page.goto(`http://127.0.0.1:${port}/`);
+  await page.goto(`http://127.0.0.1:${port}/practice/summary`);
+  await page.getByText('Accuracy',{exact:true}).waitFor();
+  assert((await page.getByText('Accuracy',{exact:true}).locator('..').innerText()).includes('60%'),'Fresh recap loaded from browser storage');
+  assert(await page.evaluate(()=>localStorage.getItem('phase9.unrelated'))==='keep me','Unrelated key untouched');
+ }
+ assert(problems.length===0,problems.join('; '));
+ return {result:'PASS',ports:[5173,4173],browserProblems:problems,attemptsPerSavedSession:5};
+}
+)(page);
+```
+### Page
+- Page URL: http://127.0.0.1:4173/practice/summary
+- Page Title: Your practice recap | Math Practice
+### Events
+- New console entries: .playwright-cli\console-2026-10-19T01-16-29-754Z.log#L2-L4

@@ -2,9 +2,9 @@
 
 A math practice app for children ages 7-12, developed incrementally for Assignment 12.
 
-## Current milestone: Phase 8
+## Current milestone: Phase 9
 
-The project foundation, navigation, and practice configuration are implemented. Choose one or more operations, one of four difficulties, and 5, 10, 20, or continuous practice. Start Session validates these choices and carries them to the practice page, which displays the configuration and offers Edit choices. Arithmetic generation now supports all four operations and difficulty levels, with validated question data and automated boundary tests. The main generator now attaches four shuffled, distinct choices with exactly one correct answer. The practice page now runs in-memory sessions: choose an answer, flip, and self-report to count the attempt and automatically advance. Fixed sessions show progress and stop at 5/10/20 attempts; continuous sessions continue until End Session. Early ending requires confirmation. Completed sessions now navigate to a dedicated recap with attempted/right/wrong counts, rounded accuracy, actual practiced operations, difficulty, and review count. Practice Again starts fresh with the same configuration; Change Settings restores setup choices. Duplicate reports and immediate identical arithmetic are prevented. Animation can be disabled and respects reduced motion. Active attempts reset when leaving or refreshing. Summary data travels in navigation history and may survive a reload of that entry; permanent storage remains later work. Practice Mistakes is visibly disabled until mistake review is implemented. Statistics and settings are still honest placeholders. The arithmetic symbols on the home page are decorative.
+The project foundation, navigation, and practice configuration are implemented. Choose one or more operations, one of four difficulties, and 5, 10, 20, or continuous practice. Start Session validates these choices and carries them to the practice page, which displays the configuration and offers Edit choices. Arithmetic generation now supports all four operations and difficulty levels, with validated question data and automated boundary tests. The main generator now attaches four shuffled, distinct choices with exactly one correct answer. The practice page now runs sessions: choose an answer, flip, and self-report to count the attempt and automatically advance. Fixed sessions show progress and stop at 5/10/20 attempts; continuous sessions continue until End Session. Early ending requires confirmation. Completed sessions now navigate to a dedicated recap with attempted/right/wrong counts, rounded accuracy, actual practiced operations, difficulty, and review count. Practice Again starts fresh with the same configuration; Change Settings restores setup choices. Duplicate reports and immediate identical arithmetic are prevented. Animation can be disabled and respects reduced motion. Reported attempts, session details, completion records, setup defaults, and animation preference now save in versioned browser localStorage. A fresh summary URL loads the latest saved completed session. Active question state resets on refresh, while reported attempts remain in history. The newest 100 active/completed session records and their attempts are retained. Validation, legacy migration, and storage warnings protect saved data and keep practice usable during failures. Practice Mistakes is visibly disabled until mistake review is implemented. Statistics and settings are still honest placeholders. The arithmetic symbols on the home page are decorative.
 
 The requirements are in [the professor's specification](../specification.md), and progress is tracked in [the professor's TODO list](../TODO.md). Implementation choices and evidence belong in [the development log](../DEVELOPMENT_LOG.md), rather than changes to the specification.
 
@@ -49,7 +49,7 @@ This runs the formatting check, ESLint, component tests, and the production buil
 
 Run `npm.cmd run build` before `npm.cmd run preview`, then open <http://127.0.0.1:4173/>. Preview verifies the production output locally; it does not publish a website.
 
-The current manual checklist and expected results are in [PHASE_8_TESTING.md](../PHASE_8_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
+The current manual checklist and expected results are in [PHASE_9_TESTING.md](../PHASE_9_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
 
 ## Main components
 
@@ -63,6 +63,8 @@ The current manual checklist and expected results are in [PHASE_8_TESTING.md](..
 - `src/constants/practice.ts`: shared operation labels, difficulty descriptions, and session-length options.
 - `src/services/practiceConfiguration.ts`: validates configuration received through navigation state.
 - `src/types/`: shared descriptions of questions, attempts, sessions, mistake patterns, statistics, settings, and application state.
+- `src/services/storageService.ts`: versioned localStorage reads/writes, validation/migration, defaults, and bounded recent session records.
+- `src/components/storage/`: shared saved-data provider and friendly storage notices.
 - `src/services/sessionSummary.ts`: runtime validation of completed sessions and summary calculations.
 - `src/services/practiceSession.ts`: session/attempt state transitions, duplicate guards, repeat avoidance, recovery, and completion.
 - `src/services/questionGenerator.ts`: operation-specific arithmetic drafts, mixed selection, validated arithmetic, and integration of complete answer choices.
