@@ -3,3 +3,5 @@ dist/
 coverage/
 .vitest/
 package-lock.json
+output/playwright/regression-results/
+output/playwright/regression-report/

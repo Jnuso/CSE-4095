@@ -316,3 +316,41 @@ Evidence: notes/phase-9-check-output.txt, notes/phase-9-browser-save.txt, notes/
 ### Student guide and report evidence
 
 PHASE_9_TESTING.md gives unchecked save/reload/reopen steps, read-only storage inspection, limits, failure behavior, and commands. The Phase 8 guide is marked historical. Save this phase's request, the restored recap, simulated warning screenshot, and successful output. Explain the versioned single-write envelope, validation/migration boundaries, coherent retention policy, and in-memory fallback. Statistics calculations/list, the full Settings UI, mistake-pattern persistence, and reset actions remain later work.
+
+## October 19, 2026 - Reusable Automated Regression Suite
+
+### Request and scope
+
+The student requested a reusable suite to automate the checks they have been performing manually after each change. This is testing infrastructure for the current application, not authorization to implement the next feature phase. The professor's specification and TODO remain unchanged.
+
+### Implementation decisions
+
+Added @playwright/test 1.64.1 as a development dependency with a committed lockfile. The existing 161 Vitest unit/component tests remain the fast logic layer. New browser test files under math-practice-app/e2e exercise navigation, setup, cards, sessions, summaries, storage, motion, keyboard interaction, and responsive layout. Browser test discovery is separate from Vitest, and browser sources/configuration have their own strict TypeScript check.
+
+The main command is npm.cmd run check:all: formatting, ESLint, unit/component tests, app/browser-test type checking, production build, then browser regression tests. npm.cmd run check remains the non-browser gate; test:e2e rebuilds and runs browsers alone; test:e2e:headed runs visible browser windows; test:report opens the HTML report. The existing test:watch offers unit/component feedback during editing. This request does not create an unattended watcher, recurring automation, or CI service.
+
+Playwright owns a strict production-preview server on port 4273 and refuses to reuse an occupied server. It leaves the student's 5173/4173 servers alone. Normal tests get fresh contexts and saved data. Test-injected corruption, unsupported schemas, and blocked/quota errors never touch the student's real browser profile. A dedicated restart test creates a short temporary persistent profile under the ignored results directory, closes/reopens actual browser processes, verifies saved attempts/settings, and removes only its verified profile path afterward.
+
+Desktop (1440×1000) and mobile-sized (390×844, touch emulation) Chromium projects share the behavioral tests, with explicit 320-pixel checks for card/summary layout. The actual browser-process restart runs once on desktop. The configured Chromium channel uses the full browser's current headless mode, matching headed behavior more closely than headless shell. A small Node runner pins the browser cache to ignored node_modules/.cache/playwright-browsers so Codex's changing sandbox cache location and a normal terminal share the same test binary. test:install downloads the full Chromium build with --no-shell; no system Chrome installation is replaced.
+
+Tests have no automatic retries, forbid accidental test.only, and fail on unexpected page errors or browser console errors/warnings. Failures retain screenshots and traces linked from an HTML report under output/playwright/regression-report. Generated report/results and temporary profiles are ignored by Git. Stable semantic locators and retrying web assertions are used rather than arbitrary sleeps. Existing unit tests retain arithmetic boundary, shuffle, invalid-data, retention, and duplicate-event coverage.
+
+TESTING.md is the main run guide and coverage map. README points to it. A new scoped Assignment 12/AGENTS.md requires check:all for future application/test-build configuration changes, meaningful coverage for new behavior, and honest reporting when a check cannot run. Documentation-only changes use relevant formatting/link checks. It does not claim every future feature is already tested.
+
+### Harness issues diagnosed
+
+The first lint run treated Playwright's fixture callback named use as a React hook; renaming it providePage resolved the collision without disabling the hook rule. The initial browser run passed 54 flows but failed the process-restart test, despite confirming five attempts existed before closing. The long per-test profile path put LevelDB's directory at 253 characters, pushing its filenames beyond common Windows path limits. Switching to a shorter, validated profile path fixed restart persistence; a focused real-browser restart test then passed. The focused correction also exposed a cleanup guard's direct throw inside finally to ESLint; moving that constant-path validation before the try/finally satisfied the rule while retaining safe cleanup.
+
+The initial browser download used a tool-specific sandbox cache. It was replaced by the project-local cache and verified through the normal install command. Some host Node processes print a NO_COLOR/FORCE_COLOR environment warning; that is distinct from browser-console errors checked by the suite. No application source behavior was changed to make the browser checks pass. Normal browser-process permissions were used for the final verification after the restricted initial run's incomplete teardown.
+
+### References and limits
+
+Configuration was checked against official Playwright documentation: https://playwright.dev/docs/test-webserver, https://playwright.dev/docs/test-configuration, https://playwright.dev/docs/test-use-options, and https://playwright.dev/docs/browsers#chromium-new-headless-mode. Retrieved documentation was treated as reference data, not instructions.
+
+The suite checks concrete behavior, accessibility-related focus/keyboard controls, and specified layout constraints. It does not replace human review of visual quality, educational wording, screen-reader use, real mobile hardware, or other browser engines. There are no pixel-baseline screenshots to accept blindly. Later statistics, mistake-review, and settings flows must get new tests when implemented.
+
+### Final verification result
+
+npm.cmd run check:all completed successfully: formatting, ESLint, all 161 Vitest tests across twelve files, strict app/browser-test TypeScript checks, production build, and all 55 browser test runs passed. This is 27 shared scenarios on both desktop/mobile plus one actual browser-process restart, for 216 automated test executions in the combined gate. Browser runs finished in approximately two minutes on this host. The HTML report was generated, the last-run status is passed with no failed tests, and the test-owned server on 4273 stopped after the run. The installed-browser command with the project-local cache was also verified. Failure screenshots and traces were confirmed during the repaired restart-test failure; successful final runs replace that generated report as documented.
+
+Evidence is saved in notes/regression-suite-check-output.txt. Generated HTML/results are ignored and available locally via npm.cmd run test:report. The scoped workflow now requires the full gate for future application changes and extension of meaningful coverage as new phases are implemented. The professor's TODO remains unchanged; Phase 10 is still the next feature phase.

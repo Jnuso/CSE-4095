@@ -30,10 +30,10 @@ After cloning the project with its committed lockfile, use `npm.cmd ci` for a cl
 ## Checks
 
 ```powershell
-npm.cmd run check
+npm.cmd run check:all
 ```
 
-This runs the formatting check, ESLint, component tests, and the production build. The build includes TypeScript checking. Every step must exit successfully.
+Use `npm.cmd run check:all` as the standard regression gate: formatting, ESLint, 161 unit/component checks, app/browser-test type checking, a production build, and desktop/mobile browser flows. On a fresh install, run `npm.cmd run test:install` once first. The complete commands, coverage map, isolation rules, reports, and limitations are in [TESTING.md](../TESTING.md). `npm.cmd run check` remains the quicker non-browser gate.
 
 | Command                    | Purpose                                            |
 | -------------------------- | -------------------------------------------------- |
@@ -49,7 +49,9 @@ This runs the formatting check, ESLint, component tests, and the production buil
 
 Run `npm.cmd run build` before `npm.cmd run preview`, then open <http://127.0.0.1:4173/>. Preview verifies the production output locally; it does not publish a website.
 
-The current manual checklist and expected results are in [PHASE_9_TESTING.md](../PHASE_9_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
+The main automated testing guide is [TESTING.md](../TESTING.md). The current manual checklist and expected results are in [PHASE_9_TESTING.md](../PHASE_9_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
+
+Browser regression tests live in `e2e/`, configured by `playwright.config.ts`. The test runner owns port 4273 and isolated browser data. Run `npm.cmd run test:e2e:headed` to watch it, or `npm.cmd run test:report` for the latest HTML results.
 
 ## Main components
 

@@ -11,12 +11,17 @@
     "build": "tsc -b && vite build",
     "lint": "eslint . --max-warnings 0",
     "preview": "vite preview",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b && tsc -p tsconfig.e2e.json",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run format:check && npm run lint && npm run test && npm run build"
+    "check": "npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build",
+    "test:install": "node scripts/browser-tests.mjs install chromium --no-shell",
+    "test:e2e": "npm run build && node scripts/browser-tests.mjs test",
+    "test:e2e:headed": "npm run build && node scripts/browser-tests.mjs test --headed",
+    "test:report": "node scripts/browser-tests.mjs show-report output/playwright/regression-report",
+    "check:all": "npm run check && node scripts/browser-tests.mjs test"
   },
   "dependencies": {
     "react": "^19.2.8",
@@ -25,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
