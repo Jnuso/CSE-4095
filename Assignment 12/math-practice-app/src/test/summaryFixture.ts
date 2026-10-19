@@ -1,0 +1,61 @@
+import type { CompletedSession } from '../services/sessionSummary'
+
+export function completedFixture(): CompletedSession {
+  return {
+    session: {
+      id: 'session-1',
+      startedAt: '2026-10-18T12:00:00.000Z',
+      completedAt: '2026-10-18T12:03:00.000Z',
+      operations: ['addition', 'subtraction', 'multiplication', 'division'],
+      difficulty: 2,
+      sessionLength: 5,
+      attempted: 3,
+      correct: 2,
+      incorrect: 1,
+    },
+    attempts: [
+      {
+        id: 'attempt-1',
+        questionId: 'question-1',
+        sessionId: 'session-1',
+        operation: 'addition',
+        firstOperand: 3,
+        secondOperand: 2,
+        correctAnswer: 5,
+        selectedAnswer: 4,
+        selfReportedCorrect: true,
+        difficulty: 2,
+        source: 'regular',
+        attemptedAt: '2026-10-18T12:01:00.000Z',
+      },
+      {
+        id: 'attempt-2',
+        questionId: 'question-2',
+        sessionId: 'session-1',
+        operation: 'subtraction',
+        firstOperand: 7,
+        secondOperand: 2,
+        correctAnswer: 5,
+        selectedAnswer: 5,
+        selfReportedCorrect: false,
+        difficulty: 2,
+        source: 'mistake-review',
+        attemptedAt: '2026-10-18T12:02:00.000Z',
+      },
+      {
+        id: 'attempt-3',
+        questionId: 'question-3',
+        sessionId: 'session-1',
+        operation: 'multiplication',
+        firstOperand: 2,
+        secondOperand: 3,
+        correctAnswer: 6,
+        selectedAnswer: 6,
+        selfReportedCorrect: true,
+        difficulty: 2,
+        source: 'regular',
+        attemptedAt: '2026-10-18T12:02:30.000Z',
+      },
+    ],
+  }
+}

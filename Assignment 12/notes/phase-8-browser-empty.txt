@@ -1,0 +1,12 @@
+### Result
+{"result":"PASS","route":"/practice/summary","attempted":"0","accuracy":"0%","operations":"None yet"}
+### Ran Playwright code
+```js
+await (async page => {
+ const value=async label=>page.getByText(label,{exact:true}).locator('..').locator('dd').innerText();
+ if(await value('Questions attempted')!=='0' || await value('Accuracy')!=='0%' || await value('Operations practiced')!=='None yet') throw new Error('Empty summary mismatch');
+ await page.screenshot({path:'output/playwright/phase-8-summary-empty.png',fullPage:true});
+ return {result:'PASS',route:new URL(page.url()).pathname,attempted:await value('Questions attempted'),accuracy:await value('Accuracy'),operations:await value('Operations practiced')};
+}
+)(page);
+```

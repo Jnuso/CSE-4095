@@ -60,10 +60,11 @@ describe('practice session page', () => {
   it('completes five questions with the correct totals and removes the active card', async () => {
     const user = setup()
     for (let index = 0; index < 5; index += 1) await answer(user, index < 3)
-    expect(screen.getByRole('heading', { name: 'Session complete' })).toHaveFocus()
-    expect(screen.getByRole('status', { name: 'Session totals' })).toHaveTextContent(
-      'Completed: 5 · Right: 3 · Wrong: 2',
-    )
+    expect(screen.getByRole('heading', { name: 'Your practice recap' })).toHaveFocus()
+    expect(screen.getByText('Questions attempted').parentElement).toHaveTextContent('5')
+    expect(screen.getByText('Marked right').parentElement).toHaveTextContent('3')
+    expect(screen.getByText('Marked wrong').parentElement).toHaveTextContent('2')
+    expect(screen.getByText('Accuracy').parentElement).toHaveTextContent('60%')
     expect(screen.queryByRole('button', { name: 'Flip Card' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'End Session' })).not.toBeInTheDocument()
     expect(screen.getByText('Questions attempted')).toBeInTheDocument()
@@ -78,10 +79,9 @@ describe('practice session page', () => {
     expect(screen.getByText('Question 2')).toBeInTheDocument()
     confirmation.mockReturnValue(true)
     await user.click(screen.getByRole('button', { name: 'End Session' }))
-    expect(screen.getByRole('heading', { name: 'Session complete' })).toBeInTheDocument()
-    expect(screen.getByRole('status', { name: 'Session totals' })).toHaveTextContent(
-      'Completed: 1 · Right: 1 · Wrong: 0',
-    )
+    expect(screen.getByRole('heading', { name: 'Your practice recap' })).toBeInTheDocument()
+    expect(screen.getByText('Questions attempted').parentElement).toHaveTextContent('1')
+    expect(screen.getByText('Accuracy').parentElement).toHaveTextContent('100%')
     expect(confirmation).toHaveBeenCalledTimes(2)
   })
 })

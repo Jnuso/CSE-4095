@@ -254,3 +254,33 @@ The first browser script surfaced the native confirmation as modal state before 
 ### Student testing and report evidence
 
 PHASE_7_TESTING.md gives an unchecked independent checklist, expected totals, commands, and limitations. The older Phase 6 guide is marked historical. Save the request, active progress screenshot, ending recap, and successful output. Explain why choosing/revealing does not count an attempt, why selectedAnswer differs from selfReportedCorrect, and how stale/duplicate callbacks are rejected. Permanent saving and the dedicated summary page remain later work.
+
+## October 18, 2026 - Phase 8: Session Summary
+
+### Scope and implementation decisions
+
+Implemented Tasks 32–34 following the professor's checklist. The existing session service already stops at exactly the configured attempt limit, avoids an extra generated question, and stamps completion; those verified behaviors are retained. The session panel now hands a completed session and its attempt records to /practice/summary through React Router navigation state, replacing the finished session history entry. Fixed completion and confirmed early endings use the same handoff. The old inline recap is removed. Browser Back therefore does not reopen the completed final card.
+
+The dedicated summary shows attempted/right/wrong counts, rounded whole-percent accuracy, actual operations practiced, selected difficulty, and mistake-review attempt count. Accuracy uses selfReportedCorrect totals, independent of selected-answer arithmetic correctness. Zero attempts display 0% with an explicit no-attempts explanation; operations practiced is None yet. Operations practiced comes from actual attempts, while Practice Again retains all operations originally selected. Current regular sessions have a genuine review count of zero; a test fixture verifies future mistake-review source counts without introducing fake review questions into the app.
+
+Practice Again starts a fresh session at Question 1 with zero totals and the same operation/difficulty/length configuration. Change Settings returns to practice setup with those choices restored. View Statistics opens the existing statistics placeholder; Return Home navigates home. Navigation actions use links styled as buttons, retaining keyboard and browser behavior. Practice Mistakes is present but disabled with an accessible explanation until the later mistake-review implementation. The Phase 8 checklist asks to add the action; this does not claim completed mistake-review functionality. No later-phase TODO boxes are checked.
+
+A new sessionSummary service validates unknown navigation payloads before showing results. It checks configuration, IDs, completion/start dates, nonnegative integer counts, totals versus attempts, unique attempt/question IDs, matching session/configuration, arithmetic, answer/source fields, timestamps, and recomputed self-reported totals. Missing/incomplete/inconsistent payloads show the existing safe no-results screen with a setup link. This is local data validation, not authentication or a server trust boundary.
+
+Summary data is carried in browser history rather than localStorage. Back and reloading the same summary entry can retain its data; a fresh URL without state has no results. Active sessions still reset on leaving/refreshing. Permanent history and overall statistics remain later work. No dependencies or professor specification changes were introduced.
+
+### Verification
+
+npm.cmd run check passed formatting, ESLint, 131 tests across ten files, TypeScript, and the production build. Eighteen new summary tests cover rounded/zero/all-right/all-wrong accuracy, actual operations, review counts, incomplete/mismatched/corrupt records, duplicate attempts, summary actions, replay reset, configuration restoration, and safe missing-state behavior. Existing fixed-session completion and canceled/confirmed early-ending tests now verify the actual summary page and totals. Prior generator, card, setup, route, and session tests still pass. A README formatting check was run after the documentation update.
+
+One early verification process remained running while another tried to write the same output file. The second command encountered a file lock; the first was interrupted and the final complete check was rerun alone. This was a verification orchestration issue, not an application failure. No test or application defect was found in the final checks.
+
+Isolated Chrome checks passed on development port 5173 and production preview 4173. A five-question mixed Advanced session navigated automatically to the summary with 5 attempts, 3 right, 2 wrong, and 60% accuracy. The summary matched actual attempted operations, selected difficulty, and zero review attempts. Focus landed on the summary heading. Practice Again reset counts and retained all original selected operations. Browser Back returned to the completed summary, reloading that history entry retained it, Change Settings restored choices via keyboard activation, and Statistics/Home links opened their destinations. Fresh summary URLs showed no fabricated results. No runtime errors or console errors/warnings were collected during the scripted checks.
+
+Production verification also confirmed that ending a continuous session before any report navigates to a zero-attempt summary with 0% and None yet; the native confirmation was handled explicitly. Early nonempty endings remain covered by integration tests. Desktop and 390-pixel summary screenshots plus an empty summary screenshot were captured and visually inspected. No horizontal overflow was found at 390/320 pixels. This is Chrome verification, not an all-browser or full accessibility audit.
+
+Evidence: notes/phase-8-check-output.txt, notes/phase-8-browser-dev.txt, notes/phase-8-browser-preview.txt, notes/phase-8-browser-empty.txt, and phase-8-summary screenshots under math-practice-app/output/playwright. The isolated test browser and temporary production preview are closed afterward; the pre-existing development server remains running.
+
+### Student guide and report evidence
+
+PHASE_8_TESTING.md includes expected totals, actions, early/empty endings, browser-history behavior, keyboard/mobile checks, and test commands. The Phase 7 guide is marked historical. Save the request, populated desktop/mobile summaries, zero-attempt summary, and successful check output. Explain the accuracy formula, validation of completed attempt records, preserved replay configuration, and why the disabled mistake-review action remains future work.

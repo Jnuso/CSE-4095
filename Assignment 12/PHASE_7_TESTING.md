@@ -1,5 +1,7 @@
 # Phase 7 testing guide
 
+Historical milestone: Phase 8 replaces the inline ending recap with a dedicated summary page. Use [PHASE_8_TESTING.md](PHASE_8_TESTING.md) for the current completion flow.
+
 The browser card preview passed before Phase 7 began. The practice page now runs a session: self-reporting automatically counts an attempt and opens the next card.
 
 ## Start locally

@@ -1,0 +1,81 @@
+### Result
+{"result":"PASS","ports":[4173],"browserProblems":[]}
+### Ran Playwright code
+```js
+await (async page => {
+ const problems=[];
+ page.on('pageerror',error=>problems.push(error.message));
+ page.on('console',message=>{if(['error','warning'].includes(message.type())) problems.push(message.text());});
+ const assert=(value,message)=>{if(!value) throw new Error(message);};
+ const metric=async label=>page.getByText(label,{exact:true}).locator('..').locator('dd').innerText();
+ for(const port of [4173]) {
+  await page.setViewportSize({width:1440,height:1000});
+  await page.goto(`http://127.0.0.1:${port}/practice/setup`);
+  await page.getByRole('button',{name:'Select all operations',exact:true}).click();
+  await page.getByRole('radio',{name:/^Advanced/}).check();
+  await page.getByRole('radio',{name:'5 questions',exact:true}).check();
+  await page.getByRole('button',{name:'Start Session',exact:true}).click();
+  const practiced=new Set();
+  const names=[['+','Addition'],['−','Subtraction'],['×','Multiplication'],['÷','Division']];
+  for(let index=0;index<5;index++) {
+   await page.getByText(`Question ${index+1} of 5`,{exact:true}).waitFor();
+   const math=await page.locator('.card-front h2').innerText();
+   practiced.add(names.find(([symbol])=>math.includes(symbol))[1]);
+   await page.getByRole('group',{name:'Answer choices'}).getByRole('button').first().click();
+   await page.getByRole('button',{name:'Flip Card',exact:true}).click();
+   await page.getByRole('button',{name:index<3?'I Got It Right':'I Got It Wrong',exact:true}).click();
+  }
+  await page.waitForURL(`http://127.0.0.1:${port}/practice/summary`);
+  const heading=page.getByRole('heading',{name:'Your practice recap',exact:true});
+  await heading.waitFor();
+  assert(await heading.evaluate(el=>document.activeElement===el),'Summary focus');
+  assert(await metric('Questions attempted')==='5','Attempt total');
+  assert(await metric('Marked right')==='3','Right total');
+  assert(await metric('Marked wrong')==='2','Wrong total');
+  assert(await metric('Accuracy')==='60%','Accuracy');
+  assert(await metric('Difficulty')==='Advanced','Difficulty');
+  assert(await metric('Mistake-review questions completed')==='0','Review count');
+  const operations=await metric('Operations practiced');
+  for(const name of practiced) assert(operations.includes(name),'Actual practiced operations included');
+  for(const [,name] of names) if(!practiced.has(name)) assert(!operations.includes(name),'Unused operation excluded');
+  assert(await page.getByRole('button',{name:'Practice Mistakes',exact:true}).isDisabled(),'Review intentionally unavailable');
+  if(port===4173) await page.screenshot({path:'output/playwright/phase-8-summary-desktop.png',fullPage:true});
+  await page.getByRole('link',{name:'Practice Again',exact:true}).click();
+  await page.getByText('Question 1 of 5',{exact:true}).waitFor();
+  assert((await page.getByRole('status',{name:'Session totals'}).innerText()).includes('Completed: 0'),'Replay zero totals');
+  assert(await page.getByText('Addition, Subtraction, Multiplication, Division',{exact:true}).isVisible(),'Replay original operation selection');
+  await page.goBack(); await heading.waitFor();
+  assert(await metric('Accuracy')==='60%','Back shows completed summary');
+  await page.reload(); await heading.waitFor();
+  assert(await metric('Accuracy')==='60%','History-state summary survives reload');
+  for(const width of [390,320]) {
+   await page.setViewportSize({width,height:844});
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Summary no mobile overflow');
+   if(port===4173 && width===390) await page.screenshot({path:'output/playwright/phase-8-summary-mobile.png',fullPage:true});
+  }
+  await page.getByRole('link',{name:'View Statistics',exact:true}).click();
+  await page.getByRole('heading',{name:'Your statistics',exact:true}).waitFor();
+  await page.goBack(); await heading.waitFor();
+  await page.getByRole('link',{name:'Return Home',exact:true}).click();
+  await page.getByRole('heading',{name:'Big ideas start with small steps.',exact:true}).waitFor();
+  await page.goBack(); await heading.waitFor();
+  await page.getByRole('link',{name:'Change Settings',exact:true}).focus();
+  await page.keyboard.press('Enter');
+  await page.getByRole('heading',{name:'Choose your practice',exact:true}).waitFor();
+  assert(await page.getByRole('radio',{name:/^Advanced/}).isChecked(),'Difficulty restored');
+  assert(await page.getByRole('radio',{name:'5 questions',exact:true}).isChecked(),'Length restored');
+  for(const [,name] of names) assert(await page.getByRole('checkbox',{name,exact:true}).isChecked(),'Operations restored');
+  await page.goto(`http://127.0.0.1:${port}/`);
+  await page.goto(`http://127.0.0.1:${port}/practice/summary`);
+  await page.getByRole('link',{name:'Go to practice setup',exact:true}).waitFor();
+  assert(await page.getByText('Questions attempted',{exact:true}).count()===0,'No invented results on fresh URL');
+ }
+ assert(problems.length===0,problems.join('; '));
+ return {result:'PASS',ports:[4173],browserProblems:problems};
+}
+
+)(page);
+```
+### Page
+- Page URL: http://127.0.0.1:4173/practice/summary
+- Page Title: Your practice recap | Math Practice

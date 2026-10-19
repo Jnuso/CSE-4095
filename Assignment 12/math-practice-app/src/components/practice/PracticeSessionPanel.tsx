@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import { Navigate } from 'react-router'
 import type { PracticeConfiguration } from '../../types/practice'
 import {
   endSession,
@@ -16,12 +17,6 @@ export default function PracticeSessionPanel({
   const [state, setState] = useState(() => startSession(configuration))
   const latest = useRef(state)
   const [animationEnabled, setAnimationEnabled] = useState(true)
-  const recapHeading = useRef<HTMLHeadingElement>(null)
-
-  useEffect(() => {
-    if (!state.isActive) recapHeading.current?.focus()
-  }, [state.isActive])
-
   function report(result: CardResult) {
     const next = recordResult(latest.current, result)
     latest.current = next
@@ -47,6 +42,14 @@ export default function PracticeSessionPanel({
   }
 
   const { session } = state
+  if (!state.isActive)
+    return (
+      <Navigate
+        to="/practice/summary"
+        replace
+        state={{ completedSession: { session, attempts: state.attempts } }}
+      />
+    )
   return (
     <div className="session-panel">
       <p className="preview-note">
@@ -56,7 +59,7 @@ export default function PracticeSessionPanel({
       <p className="session-totals" role="status" aria-label="Session totals">
         Completed: {session.attempted} · Right: {session.correct} · Wrong: {session.incorrect}
       </p>
-      {state.isActive ? (
+      {
         <>
           {session.sessionLength !== 'continuous' && (
             <div className="session-progress">
@@ -102,29 +105,7 @@ export default function PracticeSessionPanel({
             End Session
           </button>
         </>
-      ) : (
-        <section className="session-recap" aria-labelledby="recap-title">
-          <h2 id="recap-title" ref={recapHeading} tabIndex={-1}>
-            Session complete
-          </h2>
-          <p>Thanks for practicing! Here is your session recap.</p>
-          <dl className="configuration-summary">
-            <div>
-              <dt>Questions attempted</dt>
-              <dd>{session.attempted}</dd>
-            </div>
-            <div>
-              <dt>Marked right</dt>
-              <dd>{session.correct}</dd>
-            </div>
-            <div>
-              <dt>Marked wrong</dt>
-              <dd>{session.incorrect}</dd>
-            </div>
-          </dl>
-          <p>Use Edit choices to set up another session.</p>
-        </section>
-      )}
+      }
     </div>
   )
 }
