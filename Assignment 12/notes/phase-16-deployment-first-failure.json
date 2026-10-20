@@ -1,0 +1,146 @@
+{
+  "run": {
+    "id": 39493350737,
+    "head_sha": "86b40efc714d00a49fc375e66df2f65bde77e705",
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "https://github.com/Jnuso/CSE-4095/actions/runs/39493350737"
+  },
+  "jobs": [
+    {
+      "id": 118871946513,
+      "run_id": 39493350737,
+      "workflow_name": "Math Practice checks and Pages deployment",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/Jnuso/CSE-4095/actions/runs/39493350737",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUNqx_88AAAAbrVH1EQ",
+      "head_sha": "86b40efc714d00a49fc375e66df2f65bde77e705",
+      "url": "https://api.github.com/repos/Jnuso/CSE-4095/actions/jobs/118871946513",
+      "html_url": "https://github.com/Jnuso/CSE-4095/actions/runs/39493350737/job/118871946513",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-10-20T20:36:01Z",
+      "started_at": "2026-10-20T20:36:04Z",
+      "completed_at": "2026-10-20T20:39:21Z",
+      "name": "verify",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-20T20:36:04Z",
+          "completed_at": "2026-10-20T20:36:06Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-20T20:36:06Z",
+          "completed_at": "2026-10-20T20:36:08Z"
+        },
+        {
+          "name": "Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-20T20:36:08Z",
+          "completed_at": "2026-10-20T20:36:10Z"
+        },
+        {
+          "name": "Run npm ci",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-20T20:36:10Z",
+          "completed_at": "2026-10-20T20:36:13Z"
+        },
+        {
+          "name": "Install browser and Linux dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-20T20:36:13Z",
+          "completed_at": "2026-10-20T20:36:27Z"
+        },
+        {
+          "name": "Verify app and Pages build",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6,
+          "started_at": "2026-10-20T20:36:27Z",
+          "completed_at": "2026-10-20T20:39:18Z"
+        },
+        {
+          "name": "Upload verified website only",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-20T20:39:18Z",
+          "completed_at": "2026-10-20T20:39:18Z"
+        },
+        {
+          "name": "Post Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-10-20T20:39:18Z",
+          "completed_at": "2026-10-20T20:39:18Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-20T20:39:18Z",
+          "completed_at": "2026-10-20T20:39:19Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-20T20:39:19Z",
+          "completed_at": "2026-10-20T20:39:19Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Jnuso/CSE-4095/check-runs/118871946513",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000000545,
+      "runner_name": "GitHub Actions 1000000545",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 118873571076,
+      "run_id": 39493350737,
+      "workflow_name": "Math Practice checks and Pages deployment",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/Jnuso/CSE-4095/actions/runs/39493350737",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUNqx_88AAAAbrWq_BA",
+      "head_sha": "86b40efc714d00a49fc375e66df2f65bde77e705",
+      "url": "https://api.github.com/repos/Jnuso/CSE-4095/actions/jobs/118873571076",
+      "html_url": "https://github.com/Jnuso/CSE-4095/actions/runs/39493350737/job/118873571076",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-10-20T20:39:21Z",
+      "started_at": "2026-10-20T20:39:21Z",
+      "completed_at": "2026-10-20T20:39:21Z",
+      "name": "deploy",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/Jnuso/CSE-4095/check-runs/118873571076",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
+    }
+  ]
+}

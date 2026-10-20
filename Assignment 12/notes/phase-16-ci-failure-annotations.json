@@ -1,0 +1,62 @@
+[
+  {
+    "path": ".github",
+    "blob_href": "https://github.com/Jnuso/CSE-4095/blob/86b40efc714d00a49fc375e66df2f65bde77e705/.github",
+    "start_line": 316,
+    "start_column": null,
+    "end_line": 316,
+    "end_column": null,
+    "annotation_level": "failure",
+    "title": "",
+    "message": "Process completed with exit code 1.",
+    "raw_details": ""
+  },
+  {
+    "path": ".github",
+    "blob_href": "https://github.com/Jnuso/CSE-4095/blob/86b40efc714d00a49fc375e66df2f65bde77e705/.github",
+    "start_line": 311,
+    "start_column": null,
+    "end_line": 311,
+    "end_column": null,
+    "annotation_level": "notice",
+    "title": "\ud83c\udfad Playwright Run Summary",
+    "message": "  2 failed\n    [desktop] \u203a e2e/summary-layout.spec.ts:46:1 \u203a front, back, summary, and touch targets fit 390- and 320-pixel screens \n    [mobile] \u203a e2e/summary-layout.spec.ts:46:1 \u203a front, back, summary, and touch targets fit 390- and 320-pixel screens \n  1 did not run\n  122 passed (2.5m)",
+    "raw_details": ""
+  },
+  {
+    "path": "Assignment 12/math-practice-app/e2e/summary-layout.spec.ts",
+    "blob_href": "https://github.com/Jnuso/CSE-4095/blob/86b40efc714d00a49fc375e66df2f65bde77e705/Assignment 12/math-practice-app/e2e/summary-layout.spec.ts",
+    "start_line": 58,
+    "start_column": 78,
+    "end_line": 58,
+    "end_column": 78,
+    "annotation_level": "failure",
+    "title": "[mobile] \u203a e2e/summary-layout.spec.ts:46:1 \u203a front",
+    "message": "  2) [mobile] \u203a e2e/summary-layout.spec.ts:46:1 \u203a front, back, summary, and touch targets fit 390- and 320-pixel screens \n    Error: expect(received).toBe(expected) // Object.is equality\n\n    Expected: 493\n    Received: 480\n\n      56 |   const before = await page.locator('.card-face').evaluate((el) => el.clientHeight)\n      57 |   await page.getByRole('button', { name: 'Flip Card', exact: true }).click()\n    > 58 |   expect(await page.locator('.card-face').evaluate((el) => el.clientHeight)).toBe(before)\n         |                                                                              ^\n      59 |   for (const width of [320, 390]) {\n      60 |     await page.setViewportSize({ width, height: 844 })\n      61 |     await noOverflow(page)\n        at /home/runner/work/CSE-4095/CSE-4095/Assignment 12/math-practice-app/e2e/summary-layout.spec.ts:58:78",
+    "raw_details": ""
+  },
+  {
+    "path": "Assignment 12/math-practice-app/e2e/summary-layout.spec.ts",
+    "blob_href": "https://github.com/Jnuso/CSE-4095/blob/86b40efc714d00a49fc375e66df2f65bde77e705/Assignment 12/math-practice-app/e2e/summary-layout.spec.ts",
+    "start_line": 58,
+    "start_column": 78,
+    "end_line": 58,
+    "end_column": 78,
+    "annotation_level": "failure",
+    "title": "[desktop] \u203a e2e/summary-layout.spec.ts:46:1 \u203a front",
+    "message": "  1) [desktop] \u203a e2e/summary-layout.spec.ts:46:1 \u203a front, back, summary, and touch targets fit 390- and 320-pixel screens \n    Error: expect(received).toBe(expected) // Object.is equality\n\n    Expected: 493\n    Received: 480\n\n      56 |   const before = await page.locator('.card-face').evaluate((el) => el.clientHeight)\n      57 |   await page.getByRole('button', { name: 'Flip Card', exact: true }).click()\n    > 58 |   expect(await page.locator('.card-face').evaluate((el) => el.clientHeight)).toBe(before)\n         |                                                                              ^\n      59 |   for (const width of [320, 390]) {\n      60 |     await page.setViewportSize({ width, height: 844 })\n      61 |     await noOverflow(page)\n        at /home/runner/work/CSE-4095/CSE-4095/Assignment 12/math-practice-app/e2e/summary-layout.spec.ts:58:78",
+    "raw_details": ""
+  },
+  {
+    "path": ".github",
+    "blob_href": "https://github.com/Jnuso/CSE-4095/blob/86b40efc714d00a49fc375e66df2f65bde77e705/.github",
+    "start_line": 1,
+    "start_column": null,
+    "end_line": 1,
+    "end_column": null,
+    "annotation_level": "notice",
+    "title": "",
+    "message": "\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\"",
+    "raw_details": ""
+  }
+]

@@ -199,10 +199,7 @@ function QuestionCardContent({
             >
               Flip Card
             </button>
-            <p className="card-hint">
-              Choose an answer, then flip to check it. While focus is inside this card, use number
-              keys 1–4 to select a choice.
-            </p>
+            <p className="card-hint">Choose, then flip. Focus in card: keys 1–4 select answers.</p>
           </>
         )}
       </div>
