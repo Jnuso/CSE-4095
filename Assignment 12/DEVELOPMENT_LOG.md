@@ -546,3 +546,25 @@ Verified app commit 45d39037ad5eb0c4ce253bad42bf32a34b385e83 was published to ma
 The actual hosted site passed notes/phase-12-live-check.mjs in disposable desktop and mobile Chromium contexts (exit 0). Both verified routes/refreshes, five attempts with three right/two wrong/60%, two saved missed reports and their pattern fields, reload idempotence, reset cancellation and confirmation with preferences retained, fresh post-reset tracking, Clear All erasure, and keyboard skip-link focus. No runtime, console or HTTP errors were observed. Desktop/mobile Statistics screenshots were visually reviewed and fit their layouts. Evidence: notes/phase-12-hosted-check-output.txt; images/results remain ignored under output/playwright/phase-12-live. The student profile was not used.
 
 Only documentation and hosted evidence changed after the verified app commit. Phase 12 is complete; Phase 13 similar-question generation remains next and unimplemented. Gemma provided no verdict because of its recorded timeout.
+
+## October 20, 2026 - Phase 13 similar question generation
+
+### Authorized scope and decisions
+
+Implemented professor TODO tasks 54-57 only. The pure service accepts a validated mistake pattern and optional recent questions/random source, returns a new ID, four unique choices, source mistake-review and mistakePatternId. It does not write storage, alter mistake progress or expose review mode; Phase 14 remains next.
+
+Nearby candidates vary operands by up to two. For division, vary divisor and quotient by up to two and reconstruct dividend, then apply all existing regular-generation bounds. Addition/multiplication reversals and four inverse fact-family directions are enumerated and validated against the same difficulty; negative subtraction, fractions, division by zero and out-of-range inverse/reversal candidates are discarded. This honors the existing asymmetric Level 3/4 multiplication rules. Input facts outside their own difficulty are explicitly rejected. No unrelated random question substitutes for a related fact.
+
+Candidates are deduplicated by ordered fact identity, excluding the original completely. Choose uniformly among available strategy categories, then among candidates, so nearby's larger pool does not overwhelm reversals/inverses. Caller-supplied history is oldest-to-newest, with the last ten facts avoided. If a small pool is exhausted, choose its least recently seen fact; bounded enumeration avoids infinite retries even with a constant random source. No hidden global history; the later review-session builder must provide history. Generation leaves pattern/count/mastery and recent arrays unchanged.
+
+### Review and verification work
+
+The independent read-only reviewer initially found no source defect but identified that varied random samples did not actually reach all numerical maxima. Added explicit minima/maxima/mixed endpoints for each operation/level plus independent arithmetic and numeric-bound assertions, rather than relying only on the same validator as the implementation. The focused run passed 44 tests. The full gate reports 266 unit/component tests (44 more than Phase 12); its browser checks are still running. Counts here follow the actual runner output, including the four endpoint cases. Existing browser tests remain because this service adds no UI yet. TODO stays unchecked until verified.
+
+Checked the previous Gemma job's terminal state and completion timestamp against UTC; well over one minute had elapsed. One start_job attempt (review profile, max_calls=1, no project snapshot) was rejected with docker_unavailable before a job or model request was sent. No retry, host substitute, or verdict. Prompt/result are notes/phase-13-gemma-request.txt and phase-13-gemma-result.json. Separate independent review and actual application tests remain distinct from this unavailable secondary review.
+
+### Completed local verification and final review
+
+Final npm.cmd run check:all exited 0: formatting, ESLint, 266 unit/component tests across 21 files (44 generator tests), strict app/browser-test types, production build, 101 browser regression executions, Pages build and 20 strict-hosting executions all passed (387 automated executions). Evidence: notes/phase-13-final-check-output.txt. The focused run and full gate both include the added endpoint cases; earlier estimated counts were corrected to actual runner output. No existing assertion, deadline or accessibility rule was weakened.
+
+Final independent static review found no confirmed remaining source/test defects or in-scope omissions; it did not execute tests or approve live deployment. The initial endpoint coverage gap is addressed. Only the 20 verified Phase 13 tasks 54-57 checklist items were marked complete. Phase 14/15 and later milestones remain unchanged. Verified publication and hosted regression checks follow.

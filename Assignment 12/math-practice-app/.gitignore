@@ -34,3 +34,5 @@ output/playwright/phase-12-live/
 *.njsproj
 *.sln
 *.sw?
+
+/output/playwright/phase-13-live/

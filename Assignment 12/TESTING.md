@@ -111,3 +111,7 @@ PHASE_11_TESTING.md provides the live review walkthrough. New component/service 
 ## Mistake tracking checks
 
 PHASE_12_TESTING.md gives the student walkthrough and optional read-only storage inspection. Service tests cover exact fact keys, reported outcomes, duplicate report/question identities, count/date updates, progress reset, immutable inputs and invalid fields. Storage/provider regressions cover legacy backfill, malformed cache/journal recovery, independent retention beyond 100 sessions, delayed snapshots, quota failures/retries and reset cutoffs. Three browser scenarios on desktop/mobile cover immediate tracking, reload/settings-save idempotence, two tabs, stale-session reset protection, invalid-data warning accessibility, and erasing mistakes. The real browser restart also verifies mistake tracking. Similar-question generation, review mode and mastery gains are not claimed as implemented.
+
+## Phase 13 generator checks
+
+src/services/similarQuestionGenerator.test.ts checks nearby/reversed/inverse strategies across all operations and levels, explicit endpoints with independent numeric bounds, invalid/zero facts, complete review metadata/choices, strategy selection and bounded recent-fact avoidance without changing saved patterns. No review-mode UI is introduced yet; existing full browser/accessibility/Pages tests remain required. See PHASE_13_TESTING.md for the student walkthrough.

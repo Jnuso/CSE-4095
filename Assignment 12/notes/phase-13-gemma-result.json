@@ -1,0 +1,10 @@
+{
+  "error": {
+    "code": "docker_unavailable",
+    "message": "Cannot access Docker Linux engine. Start Docker Desktop and check engine permissions."
+  },
+  "job_started": false,
+  "model_request_sent": false,
+  "retry_attempted": false,
+  "verdict": null
+}
