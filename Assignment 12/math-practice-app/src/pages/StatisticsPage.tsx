@@ -1,3 +1,4 @@
+import MistakeStatistics from '../components/statistics/MistakeStatistics'
 import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { usePracticeStorage } from '../components/storage/PracticeStorageProvider'
@@ -100,12 +101,13 @@ export default function StatisticsPage() {
           ))}
         </div>
       </section>
+      <MistakeStatistics data={data} />
       <section aria-labelledby="recent-title">
         <h2 id="recent-title">Recent sessions</h2>
         {records.length === 0 ? (
           <p>No sessions yet. Your practice history will appear here.</p>
         ) : (
-          <ol className="session-history">
+          <ol className="session-history" aria-labelledby="recent-title">
             {records.slice(0, visible).map((record) => {
               const { session, attempts } = record
               const date = session.completedAt ?? attempts.at(-1)?.attemptedAt ?? session.startedAt

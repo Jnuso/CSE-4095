@@ -1,0 +1,392 @@
+
+> math-practice-app@0.1.0 check
+> npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build
+
+
+> math-practice-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> math-practice-app@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> math-practice-app@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+ ❯ src/app/Statistics.test.tsx (5 tests | 1 failed) 310ms
+   ❯ statistics dashboard (4)
+     × shows saved totals and incomplete sessions with actual practiced operations 70ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/Statistics.test.tsx > statistics dashboard > shows saved totals and incomplete sessions with actual practiced operations
+TestingLibraryElementError: Found multiple elements with the role "list" and name ""
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+<ul
+  class="frequent-facts"
+>
+  <li>
+    7 − 2 = 5
+     · Level
+    2
+     ·
+    1
+     misses
+  </li>
+</ul>
+
+Ignored nodes: comments, script, style
+<ol
+  class="mistake-history"
+>
+  <li>
+    <article
+      aria-label="7 − 2 = 5, level 2"
+      class="feature-card mistake-detail"
+    >
+      <h4>
+        7 − 2 = 5
+      </h4>
+      <p>
+        Level
+        2
+        :
+
+        Easy
+      </p>
+      <dl
+        class="configuration-summary"
+      >
+        <div>
+          <dt>
+            Times marked wrong
+          </dt>
+          <dd>
+            1
+          </dd>
+        </div>
+        <div>
+          <dt>
+            Latest miss
+          </dt>
+          <dd>
+            <time
+              datetime="2026-10-18T12:02:00.000Z"
+            >
+              10/18/2026, 8:02:00 AM
+            </time>
+          </dd>
+        </div>
+      </dl>
+      <label
+        for="_r_0_"
+      >
+        Mastery progress:
+        0
+         consecutive review answers marked right (goal:
+        3
+        )
+      </label>
+      <progress
+        id="_r_0_"
+        max="3"
+        value="0"
+      />
+      <p
+        class="field-help"
+      >
+        Active. A wrong review answer resets this progress.
+      </p>
+    </article>
+  </li>
+</ol>
+
+Ignored nodes: comments, script, style
+<ol
+  class="session-history"
+>
+  <li
+    class="feature-card"
+  >
+    <h3>
+      <time
+        datetime="2026-10-18T12:02:30.000Z"
+      >
+        10/18/2026, 8:02:30 AM
+      </time>
+    </h3>
+    <p>
+      Incomplete
+       - Level
+      2
+      :
+
+      Easy
+    </p>
+    <p>
+      Operations practiced:
+      Addition, Subtraction, Multiplication
+    </p>
+    <dl
+      aria-label="Session results"
+      class="summary-metrics"
+    >
+      <div>
+        <dt>
+          Questions attempted
+        </dt>
+        <dd>
+          3
+        </dd>
+      </div>
+      <div>
+        <dt>
+          Marked right
+        </dt>
+        <dd>
+          2
+        </dd>
+      </div>
+      <div>
+        <dt>
+          Marked wrong
+        </dt>
+        <dd>
+          1
+        </dd>
+      </div>
+      <div>
+        <dt>
+          Accuracy
+        </dt>
+        <dd>
+          67
+          %
+        </dd>
+      </div>
+    </dl>
+  </li>
+</ol>
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="app-shell"
+    >
+      <a
+        class="skip-link"
+        href="#main-content"
+      >
+        Skip to content
+      </a>
+      <header
+        class="site-header"
+      >
+        <div
+          class="page-container header-content"
+        >
+          <a
+            aria-label="Math Practice home"
+            class="brand"
+            data-discover="true"
+            href="/"
+          >
+            <span
+              aria-hidden="true"
+              class="brand-mark"
+            >
+              +
+            </span>
+            <span>
+              Math Practice
+            </span>
+          </a>
+          <nav
+            aria-label="Main navigation"
+            class="navigation"
+          >
+            <a
+              class="navigation-link"
+              data-discover="true"
+              href="/"
+            >
+              Home
+            </a>
+            <a
+              class="navigation-link"
+              data-discover="true"
+              href="/practice/setup"
+            >
+              Practice
+            </a>
+            <a
+              aria-current="page"
+              class="navigation-link active"
+              data-discover="true"
+              href="/statistics"
+            >
+              Statistics
+            </a>
+            <a
+              class="navigation-link"
+              data-discover="true"
+              href="/settings"
+            >
+              Settings
+            </a>
+          </nav>
+        </div>
+      </header>
+      <main
+        class="page-content"
+        id="main-content"
+        tabindex="-1"
+      >
+        <div
+          class="page-container"
+        >
+          <section
+            aria-labelledby="statistics-title"
+            class="statistics-page"
+          >
+            <div
+              class="feature-card"
+            >
+              <p
+                class="eyebrow"
+              >
+                YOUR PROGRESS
+              </p>
+              <h1
+                id="statistics-title"
+                tabindex="-1"
+              >
+                Your statistics
+              </h1>
+              <p>
+                Every question is a step forward. Results cover your newest
+                100
+                 saved sessions on this browser, including unfinished sessions.
+              </p>
+              <p
+                class="field-help"
+              >
+                Accuracy uses how you marked each answer, rounded to the nearest whole percent. With no attempts, accuracy is 0%.
+              </p>
+              <dl
+                aria-label="Overall results"
+                class="summary-metrics"
+              >
+                <div>
+                  <dt>
+                    Questions attempted
+                  </dt>
+                  <dd>
+                    3
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    Marked right
+                  </dt>
+                  <dd>
+                    2
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    Marked wrong
+                  </dt>
+                  <dd>
+                    1
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    Accuracy
+                  </dt>
+                  <dd>
+                    67
+                    %
+                  </dd>
+                </div>
+              </dl>
+              <a
+                class="button button-primary"
+                data-discover="true"
+                href="/practice/setup"
+              >
+                Start Practice
+              </a>
+            </div>
+            <section
+              aria-labelledby="operation-title"
+            >
+              <h2
+                id="operation-title"
+              >
+                By operation
+              </h2>
+              <div
+                class="statistics-grid"
+              >
+                <article
+                  aria-label="Addition"
+                  class="feature-card"
+                >
+                  <h3>
+                    Addition
+                  </h3>
+                  <dl
+                    aria-label="Addition results"
+                    class="summary-metrics"
+                  >
+                    <div>
+                      <dt>
+                        Questions attempted
+                      </dt>
+                      <dd>
+                        1
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>
+                        Marked right
+                      </dt>
+                      <dd>...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/app/Statistics.test.tsx:37:19
+     35|     writeSavedData({ ...emptySavedData(), records: [record] })
+     36|     mount()
+     37|     expect(screen.getByRole('list', { name: '' })).toHaveTextContent('…
+       |                   ^
+     38|     const totals = screen.getByLabelText('Overall results')
+     39|     expect(totals).toHaveTextContent('3')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 23 passed (24)
+      Tests  1 failed | 293 passed (294)
+   Start at  15:46:38
+   Duration  21.35s (environment 55%, tests 27%, setup 12%, import 5%, transform 1%)
+
+Environment  jsdom was created 24 times · 21.62s total, 55% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments

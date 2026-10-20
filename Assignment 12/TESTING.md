@@ -119,3 +119,7 @@ src/services/similarQuestionGenerator.test.ts checks nearby/reversed/inverse str
 ## Phase 14 review mode
 
 The mistakeReview unit suite covers priority/mixing/filtering, durable consecutive mastery, wrong-review updates on the original pattern, regular-miss reopening, configurable thresholds, idempotent journal replay, ordering/ties, stale reset, serialization/recovery/retention and session transitions. review.spec.ts adds desktop/mobile eligibility, matching choices, card/reveal/summary full-page accessibility, mastery after reload, mixed targets, two-tab merging/reset, and storage-full retry. Existing tests keep all prior checks; setup radio count and summary action expectations change because review mode now exists. See PHASE_14_TESTING.md.
+
+## Phase 15 advanced statistics
+
+The mistakeStatistics service/component suites cover active/mastered counts, source-review totals (including legacy/incomplete attempts), journal/record identity deduplication, retained-vs-remembered coverage, original-operation attribution, ties, stable immutable sorting, reset cutoff, detail dates/progress and pagination. mistake-statistics.spec.ts adds three flows on desktop/mobile for actual practice into mastery, journal-only data and read-only switching/reload, reset and empty states, ties/pagination, 320-pixel overflow checks and full-page axe scans preserving all rules. See PHASE_15_TESTING.md.

@@ -34,7 +34,7 @@ describe('statistics dashboard', () => {
     delete record.session.completedAt
     writeSavedData({ ...emptySavedData(), records: [record] })
     mount()
-    expect(screen.getByRole('list', { name: '' })).toHaveTextContent('Incomplete')
+    expect(screen.getByRole('list', { name: 'Recent sessions' })).toHaveTextContent('Incomplete')
     const totals = screen.getByLabelText('Overall results')
     expect(totals).toHaveTextContent('3')
     expect(

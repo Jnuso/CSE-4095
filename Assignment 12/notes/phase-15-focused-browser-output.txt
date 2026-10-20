@@ -1,0 +1,39 @@
+
+> math-practice-app@0.1.0 test:e2e
+> npm run build && node scripts/browser-tests.mjs test mistake-statistics.spec.ts
+
+
+> math-practice-app@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 132 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.60 kB │ gzip:  0.36 kB
+dist/assets/index-hfRNw3wZ.css   11.50 kB │ gzip:  3.23 kB
+dist/assets/index-DDlwzaS_.js   320.24 kB │ gzip: 97.76 kB
+
+✓ built in 195ms
+[WebServer] (node:6564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 2 workers
+
+(node:6428) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19664) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [desktop] › e2e\mistake-statistics.spec.ts:70:1 › ties, sorted details and pagination preserve matching counts on narrow screens (2.5s)
+  ok 1 [desktop] › e2e\mistake-statistics.spec.ts:25:1 › remembered statistics outlast session history, show mastered separately, and browsing is read-only (4.1s)
+(node:19124) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 [mobile] › e2e\mistake-statistics.spec.ts:25:1 › remembered statistics outlast session history, show mastered separately, and browsing is read-only (5.6s)
+  ok 3 [desktop] › e2e\mistake-statistics.spec.ts:111:1 › real practice and review immediately update dashboard mastery and review counts (8.4s)
+(node:23540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 5 [mobile] › e2e\mistake-statistics.spec.ts:70:1 › ties, sorted details and pagination preserve matching counts on narrow screens (2.2s)
+  ok 6 [mobile] › e2e\mistake-statistics.spec.ts:111:1 › real practice and review immediately update dashboard mastery and review counts (6.4s)
+
+  6 passed (21.2s)
