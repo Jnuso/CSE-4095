@@ -59,3 +59,10 @@ For manual Firefox zoom review, open a private window, set actual browser zoom t
 Firefox uses a fresh desktop context; responsive tests also set phone/tablet viewport sizes. This is not a claim of Firefox mobile-device emulation. No retries, timeouts or axe rules were relaxed. Browser reports remain separate under output/playwright; all contexts/profiles are disposable. Never use the student's saved profile for test data.
 
 Final gate evidence: notes/phase-20-check-all.txt. Focused evidence: notes/phase-20-focused.txt, phase-20-firefox-focused.txt and phase-20-firefox-pages-focused.txt. The independent reviewer identified the standalone command's missing build, which was fixed before the full gate.
+
+
+## Internal ChatGPT browser check requested by the student
+
+A complete five-question session passed on a fresh temporary local origin: setup, selection, reveal, reports, 3 right/2 wrong/60% recap, recap reload and populated Statistics. Screenshot: output/playwright/phase-20-live/internal-browser-recap.jpg; evidence: notes/phase-20-internal-browser-check.txt. The internal browser's zoom shortcut did not change observed scale/viewport metrics, so it does not complete actual zoom review. The student explicitly chose to leave speech review pending.
+
+CI also exercised all Firefox flows and found a focus-test setup assumption: programmatic focus did not establish keyboard focus-visible modality in Firefox. The test now reaches the answer with real Tab input, explicitly checks focus and retains the original visible-outline assertion. The focused repaired test passed; no whole-test retries or deadline increases were introduced.

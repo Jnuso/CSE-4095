@@ -1,0 +1,5 @@
+Internal ChatGPT browser functional check (2026-10-20)
+
+Used a temporary local preview at a fresh ephemeral origin, separate from the hosted app's saved history. Confirmed setup, five-question selection, answer selection, flip/reveal, self-reported progression, and completed recap: 5 attempts, 3 right, 2 wrong, 60%. Reload preserved those totals. Statistics showed the same totals, completed session and two remembered mistake patterns. Saved screenshot: math-practice-app/output/playwright/phase-20-live/internal-browser-recap.jpg. Closed the test tab and stopped the owned preview server afterward.
+
+Attempted browser zoom shortcut at the hosted Home page before scratch testing. Observed viewport width=1280, devicePixelRatio=3 and visualViewport.scale=1 before/after; no actual zoom was established. Do not mark literal browser zoom verified. The user explicitly selected Leave the speech check pending. Native Firefox computer control previously stopped due unsupported Windows browser URL-policy enforcement. No actual screen-reader speech claim is made.

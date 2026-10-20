@@ -3,7 +3,17 @@ import { test, expect, start, answerButtons, report, finish, metric, saved } fro
 test('selection, flip, keyboard controls, focus, and independent self-report', async ({ page }) => {
   await start(page)
   await expect(answerButtons(page)).toHaveCount(4)
-  await answerButtons(page).first().focus()
+  // Exercise real keyboard navigation so Firefox activates its focus-visible modality too.
+  for (let index = 0; index < 30; index++) {
+    if (
+      await answerButtons(page)
+        .first()
+        .evaluate((el) => el === document.activeElement)
+    )
+      break
+    await page.keyboard.press('Tab')
+  }
+  await expect(answerButtons(page).first()).toBeFocused()
   await page.keyboard.press('Space')
   await expect(answerButtons(page).first()).toHaveAttribute('aria-pressed', 'true')
   expect(
