@@ -58,3 +58,6 @@ Hosted localStorage belongs to the hosted browser origin. Existing localhost pro
 - https://vite.dev/guide/static-deploy.html#github-pages
 - https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
 - https://reactrouter.com/api/declarative-routers/HashRouter
+
+
+Phase 20 adds Firefox to the verification gate: CI installs Chromium and Firefox, runs the existing desktop/mobile/restart regressions, Pages checks on Chromium and Firefox, and the standalone Firefox regression project. Publishing still requires the entire verify job to succeed. Firefox tests use disposable profiles; actual screen-reader speech and literal Firefox zoom remain separate manual checks documented in PHASE_20_TESTING.md.

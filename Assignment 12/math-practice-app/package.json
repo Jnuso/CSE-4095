@@ -18,13 +18,14 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build",
-    "test:install": "node scripts/browser-tests.mjs install chromium --no-shell",
+    "test:install": "node scripts/browser-tests.mjs install chromium firefox --no-shell",
     "test:e2e": "npm run build && node scripts/browser-tests.mjs test",
     "test:a11y": "npm run test:e2e -- accessibility.spec.ts",
     "test:pages": "npm run build:pages && node scripts/browser-tests.mjs test --config playwright.pages.config.ts",
     "test:e2e:headed": "npm run build && node scripts/browser-tests.mjs test --headed",
     "test:report": "node scripts/browser-tests.mjs show-report output/playwright/regression-report",
-    "check:all": "npm run check && node scripts/browser-tests.mjs test && npm run test:pages"
+    "test:firefox": "npm run build && node scripts/browser-tests.mjs test --config playwright.firefox.config.ts",
+    "check:all": "npm run check && node scripts/browser-tests.mjs test && npm run test:pages && node scripts/browser-tests.mjs test --config playwright.firefox.config.ts"
   },
   "dependencies": {
     "react": "^19.2.8",

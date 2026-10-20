@@ -19,6 +19,8 @@ output/playwright/regression-results/
 output/playwright/regression-report/
 output/playwright/pages-results/
 output/playwright/pages-report/
+output/playwright/firefox-results/
+output/playwright/firefox-report/
 output/playwright/pages-live/
 output/playwright/phase-10-live/
 output/playwright/phase-11-live/

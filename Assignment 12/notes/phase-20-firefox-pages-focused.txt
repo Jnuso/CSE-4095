@@ -1,0 +1,21 @@
+[WebServer] (node:17528) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 2 workers
+
+(node:24004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17036) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [pages-firefox] › e2e\pages.spec.ts:13:3 › Pages direct hash route / survives refresh (7.3s)
+  ok  2 [pages-firefox] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/setup survives refresh (10.8s)
+  ok  3 [pages-firefox] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/session survives refresh (3.7s)
+  ok  4 [pages-firefox] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/summary survives refresh (2.1s)
+  ok  5 [pages-firefox] › e2e\pages.spec.ts:13:3 › Pages direct hash route /statistics survives refresh (3.0s)
+  ok  6 [pages-firefox] › e2e\pages.spec.ts:13:3 › Pages direct hash route /settings survives refresh (2.6s)
+  ok  8 [pages-firefox] › e2e\pages.spec.ts:21:1 › Pages hosting has no history fallback (79ms)
+  ok  7 [pages-firefox] › e2e\pages.spec.ts:13:3 › Pages direct hash route /unknown-page survives refresh (2.4s)
+  ok  9 [pages-firefox] › e2e\pages.spec.ts:26:1 › Pages skip link preserves route and focuses main content (2.5s)
+  ok 10 [pages-firefox] › e2e\pages.spec.ts:37:1 › Pages session, summary persistence, navigation, and accessibility (8.2s)
+
+  10 passed (30.3s)

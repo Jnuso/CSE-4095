@@ -16,16 +16,30 @@ export default defineConfig({
     ['html', { outputFolder: 'output/playwright/pages-report', open: 'never' }],
   ],
   use: {
-    channel: 'chromium',
     baseURL: 'http://127.0.0.1:4373/CSE-4095/',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
   projects: [
-    { name: 'pages-desktop', use: { viewport: { width: 1440, height: 1000 } } },
+    {
+      name: 'pages-desktop',
+      use: { channel: 'chromium', viewport: { width: 1440, height: 1000 } },
+    },
     {
       name: 'pages-mobile',
-      use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
+      use: {
+        channel: 'chromium',
+        viewport: { width: 390, height: 844 },
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
+    {
+      name: 'pages-firefox',
+      use: {
+        browserName: 'firefox',
+        viewport: { width: 1440, height: 1000 },
+      },
     },
   ],
   webServer: {

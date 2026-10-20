@@ -6,17 +6,12 @@ Read AGENTS.md, the relevant TODO phase and specification sections. Read DECISIO
 
 ## Current milestone
 
-- Phase 19 is deployed at https://jnuso.github.io/CSE-4095/.
-- Deployed commit: f05707b3ef852bfe0fe40cee08ee29069e3c3d85. Successful CI/Pages deployment: https://github.com/Jnuso/CSE-4095/actions/runs/39514009612.
-- Final hosted desktop/mobile checks passed missing-session explanation, safe Home navigation, valid-answer recovery, preserved preferences and save/reload.
-- CI initially caught an existing asynchronous migration assertion race. The test now waits for the actual save effect, preserving its expected version/history checks; full final local and CI gates passed.
-- Phase 18 session recovery/navigation safety remains pending: the student explicitly requested Phase 19 after Phase 17. Do not mark Phase 18 completed or start another phase automatically.
-- Final check:all passed in the normal host environment: 315 unit/component + 143 browser + 20 Pages tests = 478 passed, plus formatting, lint, types and both builds.
-- Supported saves recover valid answers from damaged sessions, deduplicate identities and rebuild totals. Malformed record categories preserve valid settings and independent mistake/review evidence. Reads do not rewrite saves; unknown versions/unreadable JSON remain protected.
-- Question display uses bounded validation/retries and deterministic fallbacks matching configuration and original review identity. Development warnings contain codes/counts only.
-- Missing-session navigation explains the problem and offers safe Home/setup actions. Render failures preserve layout/navigation and restore heading focus/title after retry.
-- One independent review found a layout/focus issue; it was fixed and re-reviewed. The remaining minor retry-title issue was also fixed and tested. Gemma remains paused.
-- Manual Phase 19 review: PHASE_19_TESTING.md. Phase 17 physical-device review and Phase 16 actual zoom, system text and screen-reader checks remain pending.
+- Phase 20 testing is in progress. Automated coverage has been mapped in PHASE_20_TESTING.md; new mixed-operation and complete keyboard-only sessions passed focused desktop/mobile Chromium and Firefox checks. Firefox Pages focused checks passed (10 tests).
+- The student's Firefox preference is implemented in new Firefox regression/Pages projects, local install commands and CI. The independent reviewer found a missing build in the standalone Firefox command; it was corrected. A focused run also caught and corrected inherited Chromium launch settings in the Firefox Pages project.
+- Full local and CI gates are pending for this test-only change. No application behavior was changed; the previously verified Phase 19 app remains at https://jnuso.github.io/CSE-4095/.
+- Phase 20 actual screen-reader speech, actual Firefox 200% zoom and final human accessibility review remain pending. Native Firefox control was stopped by the Windows tool because URL-policy enforcement is unsupported for that browser. The user was asked to provide screen-reader observations. Never mark these verified from DOM/axe/reflow tests.
+- Phase 18 session recovery/navigation safety remains pending. Phase 17 physical-device and Phase 16 actual zoom/system text/screen-reader checks remain pending.
+- Do not start Phase 21 or Phase 18 without a request. Gemma remains paused.
 
 ## Current workflow
 

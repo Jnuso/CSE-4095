@@ -139,3 +139,10 @@ See PHASE_17_TESTING.md. The responsive browser suite covers five phone/tablet p
 ## Phase 19 error handling
 
 See PHASE_19_TESTING.md. errorRecovery.test.ts checks isolated category recovery, valid-answer salvage, duplicate identities, repaired totals, unknown question validation, bounded fallbacks and original review identity. ErrorHandling.test.tsx checks missing-session explanations and an integrated route crash/retry/Home flow with navigation, focus and title recovery. error-handling.spec.ts verifies damaged-answer recovery and explicit save/reload while preserving preferences, plus accessible missing-session navigation on desktop/mobile with full-page axe rules. Existing protected-save, reset, cross-tab, restart and Pages tests remain required. Phase 18 remains pending.
+
+
+## Phase 20 coverage and Firefox
+
+PHASE_20_TESTING.md maps each requested unit/component/integration/accessibility area to concrete existing or new tests. phase20.spec.ts adds a reproducible mixed-operation session and a complete keyboard-only setup/session/recap. The full gate now also runs Firefox regressions (playwright.firefox.config.ts) and a Firefox Pages project. The existing desktop/mobile Chromium and real-process restart checks remain. npm.cmd run test:firefox builds before testing current source; check:all reuses its already-built normal output. Install both browsers with npm.cmd run test:install. Firefox reports/results are separate and ignored. CI installs both browsers before the complete gate.
+
+Actual Firefox browser zoom and screen-reader speech remain manual items. Native Windows Firefox control was stopped because the tool does not support URL-policy enforcement for that browser. Reflow, text simulation, focus assertions and axe do not establish those results. Phase 20 remains partially pending until the manual evidence is provided; Phase 18 remains pending too.

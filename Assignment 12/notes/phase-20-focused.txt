@@ -1,0 +1,19 @@
+[WebServer] (node:21848) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 2 workers
+
+(node:3540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:20128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [desktop] › e2e\phase20.spec.ts:56:1 › phase20: complete setup and a five-question session using keyboard input only (3.2s)
+(node:18380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [desktop] › e2e\phase20.spec.ts:4:1 › phase20: a reproducible mixed-operation session saves coherent arithmetic and totals (4.7s)
+(node:27364) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [mobile] › e2e\phase20.spec.ts:4:1 › phase20: a reproducible mixed-operation session saves coherent arithmetic and totals (5.2s)
+  ok 4 [mobile] › e2e\phase20.spec.ts:56:1 › phase20: complete setup and a five-question session using keyboard input only (5.7s)
+
+  4 passed (14.9s)

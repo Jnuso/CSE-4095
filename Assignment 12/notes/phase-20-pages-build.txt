@@ -1,0 +1,14 @@
+
+> math-practice-app@0.1.0 build:pages
+> tsc -b && vite build --mode pages --base=./ --outDir dist-pages
+
+vite v8.3.4 building client environment for pages...
+transforming...
+✓ 137 modules transformed.
+rendering chunks...
+computing gzip size...
+dist-pages/index.html                   0.60 kB │ gzip:  0.36 kB
+dist-pages/assets/index-D_180TK1.css   13.24 kB │ gzip:  3.62 kB
+dist-pages/assets/index-DIOqanGP.js   326.80 kB │ gzip: 99.68 kB
+
+✓ built in 364ms
