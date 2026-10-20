@@ -1,0 +1,16 @@
+
+> math-practice-app@0.1.0 test
+> vitest run src/services/statisticsService.test.ts src/app/Statistics.test.tsx src/services/storageService.test.ts
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+
+ Test Files  3 passed (3)
+      Tests  36 passed (36)
+   Start at  23:46:32
+   Duration  27.00s (environment 68%, setup 16%, tests 9%, transform 3%, import 3%, worker 1%)
+
+Environment  jsdom was created 3 times · 28.01s total, 68% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments

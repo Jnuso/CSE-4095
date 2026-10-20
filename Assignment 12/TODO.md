@@ -646,114 +646,114 @@ Initial routes:
 
 ### 40\. Implement Statistics Calculations
 
-- [ ] Calculate total attempted questions.
+- [x] Calculate total attempted questions.
 
-- [ ] Calculate total correct answers.
+- [x] Calculate total correct answers.
 
-- [ ] Calculate total incorrect answers.
+- [x] Calculate total incorrect answers.
 
-- [ ] Calculate overall accuracy.
+- [x] Calculate overall accuracy.
 
-- [ ] Handle zero attempts without dividing by zero.
+- [x] Handle zero attempts without dividing by zero.
 
-- [ ] Add unit tests for calculations.
+- [x] Add unit tests for calculations.
 
 
 ### 41\. Track Statistics by Operation
 
-- [ ] Track addition attempts.
+- [x] Track addition attempts.
 
-- [ ] Track subtraction attempts.
+- [x] Track subtraction attempts.
 
-- [ ] Track multiplication attempts.
+- [x] Track multiplication attempts.
 
-- [ ] Track division attempts.
+- [x] Track division attempts.
 
-- [ ] Calculate accuracy for each operation.
+- [x] Calculate accuracy for each operation.
 
 
 ### 42\. Track Statistics by Difficulty
 
-- [ ] Track Level 1 performance.
+- [x] Track Level 1 performance.
 
-- [ ] Track Level 2 performance.
+- [x] Track Level 2 performance.
 
-- [ ] Track Level 3 performance.
+- [x] Track Level 3 performance.
 
-- [ ] Track Level 4 performance.
+- [x] Track Level 4 performance.
 
-- [ ] Calculate accuracy for each level.
+- [x] Calculate accuracy for each level.
 
 
 ### 43\. Create the Statistics Overview
 
-- [ ] Display total attempted questions.
+- [x] Display total attempted questions.
 
-- [ ] Display total correct answers.
+- [x] Display total correct answers.
 
-- [ ] Display total incorrect answers.
+- [x] Display total incorrect answers.
 
-- [ ] Display overall accuracy.
+- [x] Display overall accuracy.
 
-- [ ] Add an empty state for new users.
+- [x] Add an empty state for new users.
 
 
 ### 44\. Display Statistics by Operation
 
-- [ ] Create one statistics card per operation.
+- [x] Create one statistics card per operation.
 
-- [ ] Display attempted, correct, and incorrect totals.
+- [x] Display attempted, correct, and incorrect totals.
 
-- [ ] Display accuracy.
+- [x] Display accuracy.
 
-- [ ] Make the layout responsive.
+- [x] Make the layout responsive.
 
 
 ### 45\. Display Statistics by Difficulty
 
-- [ ] Create one statistics card per difficulty level.
+- [x] Create one statistics card per difficulty level.
 
-- [ ] Display attempted, correct, and incorrect totals.
+- [x] Display attempted, correct, and incorrect totals.
 
-- [ ] Display accuracy.
+- [x] Display accuracy.
 
-- [ ] Clearly label each level.
+- [x] Clearly label each level.
 
 
 ### 46\. Display Recent Sessions
 
-- [ ] List recent session dates.
+- [x] List recent session dates.
 
-- [ ] Display operations practiced.
+- [x] Display operations practiced.
 
-- [ ] Display difficulty.
+- [x] Display difficulty.
 
-- [ ] Display attempted, correct, and incorrect totals.
+- [x] Display attempted, correct, and incorrect totals.
 
-- [ ] Display session accuracy.
+- [x] Display session accuracy.
 
-- [ ] Sort sessions from newest to oldest.
+- [x] Sort sessions from newest to oldest.
 
-- [ ] Add an empty state when no sessions exist.
+- [x] Add an empty state when no sessions exist.
 
 
 ### 47\. Add Statistics Reset
 
-- [ ] Add a **Reset Statistics** button.
+- [x] Add a **Reset Statistics** button.
 
-- [ ] Create a confirmation dialog.
+- [x] Create a confirmation dialog.
 
-- [ ] Require explicit confirmation.
+- [x] Require explicit confirmation.
 
-- [ ] Clear attempts.
+- [x] Clear attempts.
 
-- [ ] Clear sessions.
+- [x] Clear sessions.
 
-- [ ] Clear aggregate statistics.
+- [x] Clear aggregate statistics.
 
-- [ ] Decide whether settings should remain unchanged.
+- [x] Decide whether settings should remain unchanged.
 
-- [ ] Refresh the statistics page after deletion.
+- [x] Refresh the statistics page after deletion.
 
 
 * * *

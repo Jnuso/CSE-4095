@@ -151,3 +151,41 @@ describe('browser storage service', () => {
     expect(localStorage.getItem(STORAGE_KEY)).toBe(before)
   })
 })
+
+describe('history reset marker protection', () => {
+  it.each([1e100, -1, 1.5, 'bad', null])(
+    'does not lose valid records for invalid reset marker %s',
+    (marker) => {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          ...emptySavedData(),
+          records: [completedFixture()],
+          historyResetAt: marker,
+        }),
+      )
+      const loaded = readSavedData()
+      expect(loaded.data.records).toHaveLength(1)
+      expect(loaded.data.historyResetAt).toBeUndefined()
+    },
+  )
+  it('excludes erased sessions and preserves new sessions after a valid reset', () => {
+    const old = completedFixture()
+    const fresh = structuredClone(old)
+    fresh.session.id = 'fresh'
+    fresh.session.startedAt = '2026-10-19T12:00:00.000Z'
+    fresh.session.completedAt = '2026-10-19T12:03:00.000Z'
+    fresh.attempts.forEach((attempt) => {
+      attempt.sessionId = 'fresh'
+    })
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        ...emptySavedData(),
+        records: [old, fresh],
+        historyResetAt: Date.parse('2026-10-19T00:00:00Z'),
+      }),
+    )
+    expect(readSavedData().data.records.map((record) => record.session.id)).toEqual(['fresh'])
+  })
+})

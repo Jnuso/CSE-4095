@@ -22,6 +22,7 @@ interface StorageContextValue {
   warnings: string[]
   saveSettings: (patch: Partial<AppSettings>) => void
   saveSession: (record: StoredSession) => void
+  resetHistory: () => string | null
 }
 const StorageContext = createContext<StorageContextValue | null>(null)
 
@@ -37,10 +38,17 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
       // Keep unsaved attempts in memory when another tab updates storage.
       const next = {
         ...disk,
-        data: {
-          ...disk.data,
-          records: recentRecords([...disk.data.records, ...latest.current.data.records]),
-        },
+        data: !disk.canWrite
+          ? latest.current.data
+          : {
+              ...disk.data,
+              records: recentRecords([
+                ...disk.data.records,
+                ...(disk.data.historyResetAt === latest.current.data.historyResetAt
+                  ? latest.current.data.records
+                  : []),
+              ]),
+            },
       }
       latest.current = next
       setLoaded(next)
@@ -55,14 +63,21 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
     const memory = latest.current
     const data: SavedData = {
       version: 1,
+      historyResetAt: disk.data.historyResetAt ?? memory.data.historyResetAt,
       settings: {
         ...(disk.canWrite ? disk.data.settings : memory.data.settings),
         ...pendingSettings.current,
       },
       records: recentRecords([
         ...disk.data.records,
-        ...memory.data.records,
-        ...(record ? [record] : []),
+        ...(!disk.canWrite || disk.data.historyResetAt === memory.data.historyResetAt
+          ? memory.data.records
+          : []),
+        ...(record &&
+        Date.parse(record.session.startedAt) >
+          (disk.data.historyResetAt ?? memory.data.historyResetAt ?? 0)
+          ? [record]
+          : []),
       ]),
     }
     const error = disk.canWrite ? writeSavedData(data) : null
@@ -78,9 +93,34 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
   const saveSettings = useCallback((patch: Partial<AppSettings>) => commit(patch), [commit])
   const saveSession = useCallback((record: StoredSession) => commit({}, record), [commit])
 
+  const resetHistory = useCallback((): string | null => {
+    const disk = readSavedData()
+    if (!disk.canWrite)
+      return 'History could not be reset because browser storage is unavailable or protected.'
+    const data: SavedData = {
+      version: 1,
+      settings: { ...disk.data.settings, ...pendingSettings.current },
+      records: [],
+      historyResetAt: Math.max(Date.now(), (disk.data.historyResetAt ?? 0) + 1),
+    }
+    const error = writeSavedData(data)
+    if (error) return error
+    pendingSettings.current = {}
+    const next = { data, canWrite: true, warnings: [] }
+    latest.current = next
+    setLoaded(next)
+    return null
+  }, [])
+
   return (
     <StorageContext
-      value={{ data: loaded.data, warnings: loaded.warnings, saveSettings, saveSession }}
+      value={{
+        data: loaded.data,
+        warnings: loaded.warnings,
+        saveSettings,
+        saveSession,
+        resetHistory,
+      }}
     >
       {children}
     </StorageContext>

@@ -723,3 +723,45 @@ button:focus-visible {
     font-size: 19px;
   }
 }
+
+.statistics-page {
+  padding: 40px 0;
+  display: grid;
+  gap: 32px;
+}
+.statistics-page .feature-card {
+  min-width: 0;
+}
+.statistics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.statistics-page .summary-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.session-history {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+.reset-dialog {
+  width: min(520px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 24px;
+  border: 2px solid #35583f;
+  border-radius: 20px;
+  color: #243d2c;
+  background: #fffdf7;
+}
+.reset-dialog::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+@media (max-width: 700px) {
+  .statistics-grid {
+    grid-template-columns: 1fr;
+  }
+}

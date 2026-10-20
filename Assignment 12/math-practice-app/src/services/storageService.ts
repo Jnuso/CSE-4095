@@ -11,6 +11,7 @@ export interface SavedData {
   version: 1
   settings: AppSettings
   records: StoredSession[]
+  historyResetAt?: number
 }
 export interface LoadResult {
   data: SavedData
@@ -142,7 +143,22 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
       'Some saved session records could not be read. Valid session records are still available.',
     )
   return {
-    data: { version: SCHEMA_VERSION, settings, records: recentRecords(records) },
+    data: {
+      version: SCHEMA_VERSION,
+      settings,
+      records: recentRecords(records).filter(
+        (record) =>
+          typeof migrated.historyResetAt !== 'number' ||
+          !Number.isSafeInteger(migrated.historyResetAt) ||
+          migrated.historyResetAt < 0 ||
+          Date.parse(record.session.startedAt) > migrated.historyResetAt,
+      ),
+      ...(typeof migrated.historyResetAt === 'number' &&
+      Number.isSafeInteger(migrated.historyResetAt) &&
+      migrated.historyResetAt >= 0
+        ? { historyResetAt: migrated.historyResetAt }
+        : {}),
+    },
     warnings,
     canWrite: true,
   }

@@ -8,7 +8,11 @@ import { latestCompletedSession, MAX_SAVED_SESSIONS } from '../services/storageS
 export default function SessionSummaryPage() {
   const { state } = useLocation()
   const { data } = usePracticeStorage()
-  const completed = summaryFromState(state) ?? (state == null ? latestCompletedSession(data) : null)
+  const candidate = summaryFromState(state) ?? (state == null ? latestCompletedSession(data) : null)
+  const completed =
+    candidate && Date.parse(candidate.session.startedAt) > (data.historyResetAt ?? 0)
+      ? candidate
+      : null
   if (completed) {
     const results = summarize(completed)
     const { session } = completed

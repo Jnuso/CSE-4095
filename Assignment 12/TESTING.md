@@ -45,6 +45,8 @@ npm.cmd run test:e2e -- --project=desktop --grep "quota"
 
 ## Browser coverage
 
+For the Phase 10 live review walkthrough, see PHASE_10_TESTING.md. Statistics tests cover reported-answer calculations, operation/difficulty groups, unfinished sessions, cross-tab reset protection, history ordering/pagination, cancellation, preference preservation, failed writes, and accessibility of the populated dashboard and reset dialog.
+
 | Area            | Automated checks                                                                                                                                                                                                                                |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Navigation      | Direct routes, refreshes, missing-session redirects, unknown-route recovery, home actions, shared layout, active navigation, destination focus                                                                                                  |
@@ -67,7 +69,7 @@ The existing unit/component tests complement this with all operation/difficulty 
 - The HTML report is under `math-practice-app/output/playwright/regression-report/index.html`. Failing tests retain screenshots and traces under `regression-results`; the report links to them. These generated files are ignored by Git. The next run replaces the last report/results.
 - Playwright manages browser/server cleanup. Stop an interactive run with Ctrl+C. Do not kill unrelated browser or server processes to resolve a test-port conflict.
 
-The reporter groups results by desktop/mobile and shows the exact passed/failed count. New tests should be added as later phases add statistics, mistakes, and settings features; those unfinished features are not claimed as covered now.
+The reporter groups results by desktop/mobile and shows the exact passed/failed count. New tests should be added as later phases add mistakes and settings features; those unfinished features are not claimed as covered now.
 
 ## Automated accessibility checks and independent review
 
@@ -78,7 +80,7 @@ npm.cmd run test:a11y
 npm.cmd run test:report
 ```
 
-The axe scans cover Home, setup, missing-summary results, current Statistics/Settings placeholders, unknown-route recovery, setup validation and selected options, card front/selection/reveal/next question, continuous practice with reduced motion, completed/zero-attempt summaries, and a saved-data warning. Scans run on both desktop and mobile-sized Chromium in isolated contexts. Future features need scans of their populated and interactive states; placeholders do not establish accessibility of unimplemented features.
+The axe scans cover Home, setup, missing-summary results, empty Statistics and the current Settings placeholder, unknown-route recovery, setup validation and selected options, card front/selection/reveal/next question, continuous practice with reduced motion, completed/zero-attempt summaries, and a saved-data warning. Scans run on both desktop and mobile-sized Chromium in isolated contexts. Future features need scans of their populated and interactive states; placeholders do not establish accessibility of unimplemented features.
 
 A separate scanner-confidence test deliberately inserts an unnamed button into its own isolated page and requires axe to detect it. Its attachment intentionally contains that violation; the application scans still require zero detected violations. Card scans wait for actual animations to finish before checking the settled state.
 

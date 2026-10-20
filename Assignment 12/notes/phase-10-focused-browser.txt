@@ -1,0 +1,37 @@
+
+> math-practice-app@0.1.0 test:e2e
+> npm run build && node scripts/browser-tests.mjs test statistics.spec.ts
+
+
+> math-practice-app@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 125 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.60 kB │ gzip:  0.36 kB
+dist/assets/index-DVQSr0GJ.css   10.97 kB │ gzip:  3.10 kB
+dist/assets/index-rBYsRIQ_.js   295.50 kB │ gzip: 91.92 kB
+
+✓ built in 481ms
+[WebServer] (node:55000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 2 workers
+
+(node:55980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [desktop] › e2e\statistics.spec.ts:63:1 › statistics: newest-first history, pagination and failed-reset preservation (5.4s)
+(node:48288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [desktop] › e2e\statistics.spec.ts:6:1 › statistics: incomplete attempts, accessible reset, preferences and stale tabs (36.1s)
+  ok 3 [mobile] › e2e\statistics.spec.ts:6:1 › statistics: incomplete attempts, accessible reset, preferences and stale tabs (21.0s)
+(node:49248) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 [mobile] › e2e\statistics.spec.ts:63:1 › statistics: newest-first history, pagination and failed-reset preservation (2.9s)
+
+  4 passed (57.2s)
