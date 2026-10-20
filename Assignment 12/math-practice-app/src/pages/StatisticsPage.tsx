@@ -143,8 +143,8 @@ export default function StatisticsPage() {
       <section className="feature-card" aria-labelledby="reset-title">
         <h2 id="reset-title">Reset practice history</h2>
         <p>
-          Erase saved sessions, answers, and statistics on this browser. Your preferences stay
-          saved.
+          Erase saved sessions, answers, remembered mistakes, and statistics on this browser. Your
+          preferences stay saved.
         </p>
         <button
           className="button button-secondary"

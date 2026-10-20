@@ -16,7 +16,6 @@
 
 - [x] Create the initial application folder structure.
 
-
 Suggested command:
 
 ```
@@ -42,7 +41,6 @@ npm run dev
 
 - [x] Confirm that tests run successfully.
 
-
 ### 3\. Define Shared TypeScript Types
 
 - [x] Create the `MathOperation` type.
@@ -61,7 +59,6 @@ npm run dev
 
 - [x] Create the application settings interface.
 
-
 Suggested files:
 
 ```
@@ -73,7 +70,7 @@ src/types/
 └── settings.ts
 ```
 
-* * *
+---
 
 ## Phase 2: Basic Interface
 
@@ -93,7 +90,6 @@ src/types/
 
 - [x] Add a consistent button style.
 
-
 ### 5\. Create the Home Page
 
 - [x] Add a welcome message.
@@ -108,7 +104,6 @@ src/types/
 
 - [x] Add responsive styling for small screens.
 
-
 ### 6\. Add Application Routing
 
 - [x] Install React Router.
@@ -118,7 +113,6 @@ src/types/
 - [x] Connect the home-page buttons to their routes.
 
 - [x] Add a fallback page for unknown routes.
-
 
 Initial routes:
 
@@ -131,7 +125,7 @@ Initial routes:
  /settings
 ```
 
-* * *
+---
 
 ## Phase 3: Practice Configuration
 
@@ -155,7 +149,6 @@ Initial routes:
 
 - [x] Make operation controls keyboard accessible.
 
-
 ### 8\. Create the Difficulty Selector
 
 - [x] Create four difficulty options.
@@ -168,7 +161,6 @@ Initial routes:
 
 - [x] Add a short description for each level.
 
-
 ### 9\. Create the Session-Length Selector
 
 - [x] Add a 5-question option.
@@ -180,7 +172,6 @@ Initial routes:
 - [x] Add a continuous-practice option.
 
 - [x] Set a sensible default session length.
-
 
 ### 10\. Build the Practice Setup Page
 
@@ -198,8 +189,7 @@ Initial routes:
 
 - [x] Pass the selected configuration to the practice session.
 
-
-* * *
+---
 
 ## Phase 4: Basic Math Question Generation
 
@@ -212,7 +202,6 @@ Initial routes:
 - [x] Create a unique-ID utility.
 
 - [x] Add unit tests for each utility.
-
 
 ### 12\. Implement Addition Questions
 
@@ -230,7 +219,6 @@ Initial routes:
 
 - [x] Test maximum-result restrictions.
 
-
 ### 13\. Implement Subtraction Questions
 
 - [x] Generate two operands.
@@ -247,7 +235,6 @@ Initial routes:
 
 - [x] Test that the first operand is not smaller than the second.
 
-
 ### 14\. Implement Multiplication Questions
 
 - [x] Generate two factors.
@@ -261,7 +248,6 @@ Initial routes:
 - [x] Return a valid `Question` object.
 
 - [x] Test factor ranges for every difficulty level.
-
 
 ### 15\. Implement Division Questions
 
@@ -281,7 +267,6 @@ Initial routes:
 
 - [x] Test that all answers are whole numbers.
 
-
 ### 16\. Create the Main Question Generator
 
 - [x] Accept an operation and difficulty level.
@@ -296,8 +281,7 @@ Initial routes:
 
 - [x] Add unit tests for all operations and difficulty levels.
 
-
-* * *
+---
 
 ## Phase 5: Multiple-Choice Answers
 
@@ -317,7 +301,6 @@ Initial routes:
 
 - [x] Add a retry limit to prevent infinite loops.
 
-
 ### 18\. Add Operation-Specific Distractors
 
 - [x] Generate nearby-number distractors.
@@ -332,7 +315,6 @@ Initial routes:
 
 - [x] Test common edge cases such as answers near zero.
 
-
 ### 19\. Shuffle the Answer Choices
 
 - [x] Combine the correct answer with the distractors.
@@ -345,8 +327,7 @@ Initial routes:
 
 - [x] Add automated tests.
 
-
-* * *
+---
 
 ## Phase 6: Question Card
 
@@ -364,7 +345,6 @@ Initial routes:
 
 - [x] Prevent changes after the card has been flipped.
 
-
 ### 21\. Create the Front of the Question Card
 
 - [x] Display the arithmetic question.
@@ -381,7 +361,6 @@ Initial routes:
 
 - [x] Use large, readable math text.
 
-
 ### 22\. Add Answer Selection
 
 - [x] Store the selected answer in component state.
@@ -393,7 +372,6 @@ Initial routes:
 - [x] Enable the flip button after selection.
 
 - [x] Reset the selected answer for each new question.
-
 
 ### 23\. Create the Back of the Question Card
 
@@ -409,7 +387,6 @@ Initial routes:
 
 - [x] Prevent both buttons from being selected for the same attempt.
 
-
 ### 24\. Add Basic Card-Flipping Behavior
 
 - [x] Add an `isCardFlipped` state.
@@ -424,7 +401,6 @@ Initial routes:
 
 - [x] Ensure the card works without animation.
 
-
 ### 25\. Add the Card-Flip Animation
 
 - [x] Add a CSS flip animation.
@@ -437,8 +413,7 @@ Initial routes:
 
 - [x] Add a setting for disabling animations.
 
-
-* * *
+---
 
 ## Phase 7: Practice Session
 
@@ -458,7 +433,6 @@ Initial routes:
 
 - [x] Store whether the session is active.
 
-
 ### 27\. Build the Practice Session Page
 
 - [x] Read the setup configuration.
@@ -470,7 +444,6 @@ Initial routes:
 - [x] Handle missing or invalid setup data.
 
 - [x] Redirect to the setup page when no valid session exists.
-
 
 ### 28\. Record Self-Reported Results
 
@@ -486,7 +459,6 @@ Initial routes:
 
 - [x] Store the completed attempt.
 
-
 ### 29\. Advance to the Next Question
 
 - [x] Generate a new question after recording a result.
@@ -501,7 +473,6 @@ Initial routes:
 
 - [x] Add an optional short transition.
 
-
 ### 30\. Add Session Progress
 
 - [x] Display “Question X of Y.”
@@ -514,7 +485,6 @@ Initial routes:
 
 - [x] Ensure progress is accessible to screen readers.
 
-
 ### 31\. Support Continuous Practice
 
 - [x] Generate questions without a fixed endpoint.
@@ -525,8 +495,7 @@ Initial routes:
 
 - [x] Generate a summary after the session ends.
 
-
-* * *
+---
 
 ## Phase 8: Session Summary
 
@@ -539,7 +508,6 @@ Initial routes:
 - [x] Save the completion timestamp.
 
 - [x] Navigate to the summary page.
-
 
 ### 33\. Create the Session Summary Page
 
@@ -557,7 +525,6 @@ Initial routes:
 
 - [x] Display mistake-review question count.
 
-
 ### 34\. Add Summary Actions
 
 - [x] Add a **Practice Again** button.
@@ -570,8 +537,7 @@ Initial routes:
 
 - [x] Add a **Return Home** button.
 
-
-* * *
+---
 
 ## Phase 9: Local Data Storage
 
@@ -591,7 +557,6 @@ Initial routes:
 
 - [x] Handle storage-capacity errors.
 
-
 ### 36\. Add Data Schema Versioning
 
 - [x] Store a data-schema version.
@@ -601,7 +566,6 @@ Initial routes:
 - [x] Create an initial migration structure.
 
 - [x] Avoid deleting unrelated stored data.
-
 
 ### 37\. Persist Application Settings
 
@@ -613,7 +577,6 @@ Initial routes:
 
 - [x] Recover from invalid stored settings.
 
-
 ### 38\. Persist Practice Sessions
 
 - [x] Save session information.
@@ -623,7 +586,6 @@ Initial routes:
 - [x] Load recent sessions.
 
 - [x] Limit or summarize old session records when necessary.
-
 
 ### 39\. Persist Practice Attempts
 
@@ -639,8 +601,7 @@ Initial routes:
 
 - [x] Confirm that attempts persist after a browser restart.
 
-
-* * *
+---
 
 ## Phase 10: Statistics
 
@@ -658,7 +619,6 @@ Initial routes:
 
 - [x] Add unit tests for calculations.
 
-
 ### 41\. Track Statistics by Operation
 
 - [x] Track addition attempts.
@@ -670,7 +630,6 @@ Initial routes:
 - [x] Track division attempts.
 
 - [x] Calculate accuracy for each operation.
-
 
 ### 42\. Track Statistics by Difficulty
 
@@ -684,7 +643,6 @@ Initial routes:
 
 - [x] Calculate accuracy for each level.
 
-
 ### 43\. Create the Statistics Overview
 
 - [x] Display total attempted questions.
@@ -697,7 +655,6 @@ Initial routes:
 
 - [x] Add an empty state for new users.
 
-
 ### 44\. Display Statistics by Operation
 
 - [x] Create one statistics card per operation.
@@ -708,7 +665,6 @@ Initial routes:
 
 - [x] Make the layout responsive.
 
-
 ### 45\. Display Statistics by Difficulty
 
 - [x] Create one statistics card per difficulty level.
@@ -718,7 +674,6 @@ Initial routes:
 - [x] Display accuracy.
 
 - [x] Clearly label each level.
-
 
 ### 46\. Display Recent Sessions
 
@@ -735,7 +690,6 @@ Initial routes:
 - [x] Sort sessions from newest to oldest.
 
 - [x] Add an empty state when no sessions exist.
-
 
 ### 47\. Add Statistics Reset
 
@@ -755,8 +709,7 @@ Initial routes:
 
 - [x] Refresh the statistics page after deletion.
 
-
-* * *
+---
 
 ## Phase 11: Settings
 
@@ -776,7 +729,6 @@ Initial routes:
 
 - [x] Save settings automatically or through a save button.
 
-
 ### 49\. Apply Default Practice Settings
 
 - [x] Load default operations on the setup page.
@@ -786,7 +738,6 @@ Initial routes:
 - [x] Load the default session length.
 
 - [x] Allow defaults to be changed for an individual session.
-
 
 ### 50\. Add Clear-All-Data Functionality
 
@@ -800,55 +751,51 @@ Initial routes:
 
 - [x] Return the user to the home page.
 
-
-* * *
+---
 
 ## Phase 12: Mistake Tracking
 
 ### 51\. Create Mistake Patterns
 
-- [ ] Create a mistake pattern after an incorrect answer.
+- [x] Create a mistake pattern after an incorrect answer.
 
-- [ ] Store the operation.
+- [x] Store the operation.
 
-- [ ] Store both operands.
+- [x] Store both operands.
 
-- [ ] Store the correct answer.
+- [x] Store the correct answer.
 
-- [ ] Store the difficulty level.
+- [x] Store the difficulty level.
 
-- [ ] Store the last incorrect date.
+- [x] Store the last incorrect date.
 
-- [ ] Initialize the incorrect count.
+- [x] Initialize the incorrect count.
 
-- [ ] Initialize the similar-correct count.
-
+- [x] Initialize the similar-correct count.
 
 ### 52\. Update Existing Mistake Patterns
 
-- [ ] Detect when the same pattern already exists.
+- [x] Detect when the same pattern already exists.
 
-- [ ] Increment its incorrect count.
+- [x] Increment its incorrect count.
 
-- [ ] Update its last-incorrect timestamp.
+- [x] Update its last-incorrect timestamp.
 
-- [ ] Reset or reduce mastery progress when appropriate.
+- [x] Reset or reduce mastery progress when appropriate.
 
-- [ ] Avoid creating duplicate pattern records.
-
+- [x] Avoid creating duplicate pattern records.
 
 ### 53\. Store Mistake Patterns Locally
 
-- [ ] Save mistake patterns to local storage.
+- [x] Save mistake patterns to local storage.
 
-- [ ] Load mistake patterns at application startup.
+- [x] Load mistake patterns at application startup.
 
-- [ ] Validate stored mistake-pattern data.
+- [x] Validate stored mistake-pattern data.
 
-- [ ] Recover gracefully from invalid records.
+- [x] Recover gracefully from invalid records.
 
-
-* * *
+---
 
 ## Phase 13: Similar Question Generation
 
@@ -864,7 +811,6 @@ Initial routes:
 
 - [ ] Avoid generating the exact same question too frequently.
 
-
 ### 55\. Generate Reversed-Operand Questions
 
 - [ ] Reverse addition operands.
@@ -874,7 +820,6 @@ Initial routes:
 - [ ] Avoid treating reversed subtraction as equivalent.
 
 - [ ] Avoid treating reversed division as equivalent.
-
 
 ### 56\. Generate Fact-Family Questions
 
@@ -887,7 +832,6 @@ Initial routes:
 - [ ] Generate addition questions from subtraction mistakes.
 
 - [ ] Ensure generated questions match the selected difficulty.
-
 
 ### 57\. Create the Similar Question Generator Service
 
@@ -903,8 +847,7 @@ Initial routes:
 
 - [ ] Add unit tests for every operation.
 
-
-* * *
+---
 
 ## Phase 14: Mistake Review Mode
 
@@ -920,7 +863,6 @@ Initial routes:
 
 - [ ] Display the number of active mistake patterns.
 
-
 ### 59\. Prioritize Mistake Patterns
 
 - [ ] Give higher priority to frequently missed patterns.
@@ -932,7 +874,6 @@ Initial routes:
 - [ ] Randomize patterns with similar priority.
 
 - [ ] Test the prioritization logic.
-
 
 ### 60\. Build Mistake Review Sessions
 
@@ -946,7 +887,6 @@ Initial routes:
 
 - [ ] Display mistake-review counts in the session summary.
 
-
 ### 61\. Track Similar-Question Success
 
 - [ ] Increment similar-correct count after a correct review answer.
@@ -956,7 +896,6 @@ Initial routes:
 - [ ] Update the original mistake pattern.
 
 - [ ] Store the updated pattern locally.
-
 
 ### 62\. Implement Mastery Rules
 
@@ -970,8 +909,7 @@ Initial routes:
 
 - [ ] Add tests for mastery transitions.
 
-
-* * *
+---
 
 ## Phase 15: Advanced Statistics
 
@@ -985,7 +923,6 @@ Initial routes:
 
 - [ ] Display the number of review questions answered correctly.
 
-
 ### 64\. Identify Frequently Missed Areas
 
 - [ ] Identify the most frequently missed operation.
@@ -997,7 +934,6 @@ Initial routes:
 - [ ] Handle ties.
 
 - [ ] Add an empty state when there are no mistakes.
-
 
 ### 65\. Add Mistake Details
 
@@ -1011,8 +947,7 @@ Initial routes:
 
 - [ ] Allow mastered patterns to be viewed separately.
 
-
-* * *
+---
 
 ## Phase 16: Accessibility
 
@@ -1028,7 +963,6 @@ Initial routes:
 
 - [ ] Prevent keyboard shortcuts from interfering with form inputs.
 
-
 ### 67\. Improve Screen-Reader Support
 
 - [ ] Use semantic HTML.
@@ -1043,7 +977,6 @@ Initial routes:
 
 - [ ] Add accessible names to icon buttons.
 
-
 ### 68\. Support Reduced Motion
 
 - [ ] Detect `prefers-reduced-motion`.
@@ -1053,7 +986,6 @@ Initial routes:
 - [ ] Ensure card content still changes clearly.
 
 - [ ] Respect the application's animation setting.
-
 
 ### 69\. Check Visual Accessibility
 
@@ -1067,8 +999,7 @@ Initial routes:
 
 - [ ] Test with larger system font sizes.
 
-
-* * *
+---
 
 ## Phase 17: Responsive Design and Polish
 
@@ -1082,7 +1013,6 @@ Initial routes:
 
 - [ ] Test portrait and landscape orientations.
 
-
 ### 71\. Optimize for Mobile Devices
 
 - [ ] Stack answer choices when necessary.
@@ -1095,7 +1025,6 @@ Initial routes:
 
 - [ ] Test on common small-screen sizes.
 
-
 ### 72\. Optimize the Statistics Layout
 
 - [ ] Convert wide tables to cards on small screens.
@@ -1105,7 +1034,6 @@ Initial routes:
 - [ ] Keep recent sessions readable.
 
 - [ ] Support horizontal scrolling only when necessary.
-
 
 ### 73\. Add Child-Friendly Feedback
 
@@ -1119,8 +1047,7 @@ Initial routes:
 
 - [ ] Add an option to disable feedback effects.
 
-
-* * *
+---
 
 ## Phase 18: Session Recovery and Navigation Safety
 
@@ -1136,7 +1063,6 @@ Initial routes:
 
 - [ ] Clear restored state when the session ends.
 
-
 ### 75\. Protect Against Accidental Navigation
 
 - [ ] Detect attempts to leave an active session.
@@ -1149,8 +1075,7 @@ Initial routes:
 
 - [ ] Avoid showing warnings after session completion.
 
-
-* * *
+---
 
 ## Phase 19: Error Handling
 
@@ -1168,7 +1093,6 @@ Initial routes:
 
 - [ ] Avoid crashing the application.
 
-
 ### 77\. Handle Question-Generation Failures
 
 - [ ] Validate every generated question.
@@ -1180,7 +1104,6 @@ Initial routes:
 - [ ] Provide a fallback question.
 
 - [ ] Log useful development errors.
-
 
 ### 78\. Add User-Friendly Error Messages
 
@@ -1194,8 +1117,7 @@ Initial routes:
 
 - [ ] Avoid exposing technical stack traces.
 
-
-* * *
+---
 
 ## Phase 20: Testing
 
@@ -1219,7 +1141,6 @@ Initial routes:
 
 - [ ] Test storage serialization and validation.
 
-
 ### 80\. Complete Component Tests
 
 - [ ] Test operation selection.
@@ -1240,7 +1161,6 @@ Initial routes:
 
 - [ ] Test confirmation dialogs.
 
-
 ### 81\. Complete Integration Tests
 
 - [ ] Test a full addition session.
@@ -1259,7 +1179,6 @@ Initial routes:
 
 - [ ] Test resetting statistics.
 
-
 ### 82\. Complete Accessibility Testing
 
 - [ ] Complete a session using only the keyboard.
@@ -1274,8 +1193,7 @@ Initial routes:
 
 - [ ] Manually review reported issues.
 
-
-* * *
+---
 
 ## Phase 21: Performance and Data Management
 
@@ -1289,7 +1207,6 @@ Initial routes:
 
 - [ ] Avoid unnecessary global state updates.
 
-
 ### 84\. Manage Large Practice Histories
 
 - [ ] Test with several thousand attempts.
@@ -1301,7 +1218,6 @@ Initial routes:
 - [ ] Summarize older attempt records if necessary.
 
 - [ ] Preserve aggregate statistics when archiving details.
-
 
 ### 85\. Improve Loading Performance
 
@@ -1315,8 +1231,7 @@ Initial routes:
 
 - [ ] Test on slower devices.
 
-
-* * *
+---
 
 ## Phase 22: Release Preparation
 
@@ -1332,7 +1247,6 @@ Initial routes:
 
 - [ ] Explain that clearing browser data removes progress.
 
-
 ### 87\. Complete Browser Testing
 
 - [ ] Test in Chrome.
@@ -1346,7 +1260,6 @@ Initial routes:
 - [ ] Test on an iPad or tablet emulator.
 
 - [ ] Test on a mobile device or emulator.
-
 
 ### 88\. Prepare the Production Build
 
@@ -1362,7 +1275,6 @@ Initial routes:
 
 - [ ] Configure deployment routing for React Router.
 
-
 ### 89\. Deploy the Application
 
 - [ ] Select a hosting service.
@@ -1377,8 +1289,7 @@ Initial routes:
 
 - [ ] Verify that no development errors appear in the console.
 
-
-* * *
+---
 
 # Recommended Development Milestones
 
@@ -1396,7 +1307,6 @@ Deliverable:
 
 - The correct answer is revealed.
 
-
 ## Milestone 2: Functional Practice App
 
 Complete Tasks 26–34.
@@ -1409,7 +1319,6 @@ Deliverable:
 
 - A summary appears after each session.
 
-
 ## Milestone 3: Persistent Statistics
 
 Complete Tasks 35–50.
@@ -1421,7 +1330,6 @@ Deliverable:
 - Users can view overall, operation, difficulty, and recent-session statistics.
 
 - Users can configure application settings.
-
 
 ## Milestone 4: Personalized Mistake Practice
 
@@ -1437,7 +1345,6 @@ Deliverable:
 
 - It tracks mastery.
 
-
 ## Milestone 5: Production-Ready Application
 
 Complete Tasks 66–89.
@@ -1446,30 +1353,29 @@ Deliverable:
 
 - The app is accessible, responsive, tested, optimized, and deployed.
 
-
-* * *
+---
 
 # Suggested First Implementation Sequence
 
 For the fastest path to a working demonstration, implement these tasks first:
 
-01. [ ] Create the React and TypeScript project.
+1.  [ ] Create the React and TypeScript project.
 
-02. [ ] Define the question types.
+2.  [ ] Define the question types.
 
-03. [ ] Implement addition question generation.
+3.  [ ] Implement addition question generation.
 
-04. [ ] Generate four multiple-choice answers.
+4.  [ ] Generate four multiple-choice answers.
 
-05. [ ] Create the question card front.
+5.  [ ] Create the question card front.
 
-06. [ ] Add answer selection.
+6.  [ ] Add answer selection.
 
-07. [ ] Create the card back.
+7.  [ ] Create the card back.
 
-08. [ ] Add the flip-card behavior.
+8.  [ ] Add the flip-card behavior.
 
-09. [ ] Add the right and wrong buttons.
+9.  [ ] Add the right and wrong buttons.
 
 10. [ ] Generate the next question.
 
@@ -1482,6 +1388,5 @@ For the fastest path to a working demonstration, implement these tasks first:
 14. [ ] Add practice-session totals.
 
 15. [ ] Add the session summary.
-
 
 This produces a usable prototype before adding routing, persistence, advanced statistics, and personalized mistake review.

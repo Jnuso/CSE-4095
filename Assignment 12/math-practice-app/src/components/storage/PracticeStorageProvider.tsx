@@ -10,10 +10,10 @@ import {
 import type { AppSettings } from '../../types/settings'
 import {
   readSavedData,
+  trackMistakes,
   clearSavedData,
   isAppSettings,
   writeSavedData,
-  recentRecords,
   STORAGE_KEY,
   type SavedData,
   type StoredSession,
@@ -45,15 +45,21 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
         ...disk,
         data: !disk.canWrite
           ? latest.current.data
-          : {
+          : trackMistakes({
               ...disk.data,
-              records: recentRecords([
+              mistakeEvents: [
+                ...(disk.data.mistakeEvents ?? []),
+                ...(disk.data.historyResetAt === latest.current.data.historyResetAt
+                  ? (latest.current.data.mistakeEvents ?? [])
+                  : []),
+              ],
+              records: [
                 ...disk.data.records,
                 ...(disk.data.historyResetAt === latest.current.data.historyResetAt
                   ? latest.current.data.records
                   : []),
-              ]),
-            },
+              ],
+            }),
       }
       latest.current = next
       setLoaded(next)
@@ -68,15 +74,25 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
     if (disk.canWrite && disk.data.appResetAt !== memory.data.appResetAt)
       pendingSettings.current = {}
     pendingSettings.current = { ...pendingSettings.current, ...patch }
-    const data: SavedData = {
+    const data: SavedData = trackMistakes({
       version: 1,
       historyResetAt: disk.data.historyResetAt ?? memory.data.historyResetAt,
       appResetAt: disk.data.appResetAt ?? memory.data.appResetAt,
+      mistakeEvents: [
+        ...(disk.data.mistakeEvents ?? []),
+        ...(!disk.canWrite || disk.data.historyResetAt === memory.data.historyResetAt
+          ? (memory.data.mistakeEvents ?? [])
+          : []),
+      ],
+      mistakePatterns: [
+        ...(memory.data.mistakePatterns ?? []),
+        ...(disk.data.mistakePatterns ?? []),
+      ],
       settings: {
         ...(disk.canWrite ? disk.data.settings : memory.data.settings),
         ...pendingSettings.current,
       },
-      records: recentRecords([
+      records: [
         ...disk.data.records,
         ...(!disk.canWrite || disk.data.historyResetAt === memory.data.historyResetAt
           ? memory.data.records
@@ -86,8 +102,8 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
           (disk.data.historyResetAt ?? memory.data.historyResetAt ?? 0)
           ? [record]
           : []),
-      ]),
-    }
+      ],
+    })
     if (!isAppSettings(data.settings))
       return 'Choose at least one operation and valid practice options before saving.'
     const error = disk.canWrite ? writeSavedData(data) : null

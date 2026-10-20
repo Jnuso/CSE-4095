@@ -1,3 +1,11 @@
+import type { MistakePattern } from '../types/mistake'
+import {
+  buildMistakePatterns,
+  isMistakeEvent,
+  isMistakePattern,
+  mergeMistakeEvents,
+  type MistakeEvent,
+} from './mistakeService'
 import type { AppSettings } from '../types/settings'
 import type { CompletedSession } from './sessionSummary'
 import { isCompletedSession } from './sessionSummary'
@@ -11,6 +19,8 @@ export interface SavedData {
   version: 1
   settings: AppSettings
   records: StoredSession[]
+  mistakeEvents?: MistakeEvent[]
+  mistakePatterns?: MistakePattern[]
   historyResetAt?: number
   appResetAt?: number
 }
@@ -85,6 +95,26 @@ export function recentRecords(records: readonly StoredSession[]): StoredSession[
     .slice(0, MAX_SAVED_SESSIONS)
 }
 
+export function trackMistakes(data: SavedData): SavedData {
+  const fromRecords = data.records.flatMap((record) =>
+    record.attempts
+      .filter((attempt) => !attempt.selfReportedCorrect)
+      .map((attempt) => ({ attempt, sessionStartedAt: record.session.startedAt })),
+  )
+  if (!data.mistakeEvents && !data.mistakePatterns && fromRecords.length === 0)
+    return { ...data, records: recentRecords(data.records) }
+  const mistakeEvents = mergeMistakeEvents(
+    [...(data.mistakeEvents ?? []), ...fromRecords],
+    data.historyResetAt,
+  )
+  return {
+    ...data,
+    records: recentRecords(data.records),
+    mistakeEvents,
+    mistakePatterns: buildMistakePatterns(mistakeEvents, data.mistakePatterns),
+  }
+}
+
 // Only these documented legacy layouts are supported; unknown versions are read-only.
 function migrate(value: Record<string, unknown>): Record<string, unknown> | null {
   if (value.version === SCHEMA_VERSION) return value
@@ -147,20 +177,35 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
     typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : undefined
   const historyResetAt = marker(migrated.historyResetAt)
   const appResetAt = marker(migrated.appResetAt)
-  return {
-    data: {
-      version: SCHEMA_VERSION,
-      settings,
-      records: recentRecords(records).filter(
-        (record) =>
-          historyResetAt === undefined || Date.parse(record.session.startedAt) > historyResetAt,
-      ),
-      ...(historyResetAt === undefined ? {} : { historyResetAt }),
-      ...(appResetAt === undefined ? {} : { appResetAt }),
-    },
-    warnings,
-    canWrite: true,
-  }
+  const hasMistakes = migrated.mistakeEvents !== undefined || migrated.mistakePatterns !== undefined
+  const events = Array.isArray(migrated.mistakeEvents)
+    ? migrated.mistakeEvents.filter(isMistakeEvent)
+    : []
+  const patterns = Array.isArray(migrated.mistakePatterns)
+    ? migrated.mistakePatterns.filter(isMistakePattern)
+    : []
+  if (
+    hasMistakes &&
+    (!Array.isArray(migrated.mistakeEvents) ||
+      !Array.isArray(migrated.mistakePatterns) ||
+      events.length !== migrated.mistakeEvents.length ||
+      patterns.length !== migrated.mistakePatterns.length)
+  )
+    warnings.push(
+      'Some saved mistake data could not be read. Tracking was rebuilt from valid saved answers; valid practice history is still available.',
+    )
+  const data = trackMistakes({
+    version: SCHEMA_VERSION,
+    settings,
+    records: records.filter(
+      (record) =>
+        historyResetAt === undefined || Date.parse(record.session.startedAt) > historyResetAt,
+    ),
+    ...(historyResetAt === undefined ? {} : { historyResetAt }),
+    ...(appResetAt === undefined ? {} : { appResetAt }),
+    ...(hasMistakes ? { mistakeEvents: events, mistakePatterns: patterns } : {}),
+  })
+  return { data: { ...data, records: recentRecords(data.records) }, warnings, canWrite: true }
 }
 
 export function writeSavedData(
@@ -172,11 +217,17 @@ export function writeSavedData(
   if (
     data.version !== SCHEMA_VERSION ||
     !isAppSettings(data.settings) ||
-    !data.records.every(isStoredSession)
+    !data.records.every(isStoredSession) ||
+    (data.mistakeEvents !== undefined && !data.mistakeEvents.every(isMistakeEvent)) ||
+    (data.mistakePatterns !== undefined && !data.mistakePatterns.every(isMistakePattern))
   )
     return 'Practice data was not saved because it failed validation.'
   try {
-    access().setItem(STORAGE_KEY, JSON.stringify({ ...data, records: recentRecords(data.records) }))
+    const tracked = trackMistakes(data)
+    access().setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...tracked, records: recentRecords(tracked.records) }),
+    )
     return null
   } catch (error) {
     return error instanceof DOMException && error.name === 'QuotaExceededError'

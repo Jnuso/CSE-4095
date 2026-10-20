@@ -17,3 +17,5 @@
 
 - Phase 11 defaults are saved explicitly through Settings; individual session setup overrides must not rewrite them. Sound defaults off; animation and explanations default on. Keep browser audio failures from interrupting practice.
 - Clear All Application Data requires explicit destructive confirmation and restores preferences as well as history. It may deliberately replace protected app data, but must touch only the app's storage key, preserve unrelated data, report write failures honestly, and prevent stale tabs restoring erased records/pending preferences.
+
+- Phase 12 mistake counts follow self-reported wrong answers, keyed by operation, ordered operands and difficulty. Capture events before trimming session details; preserve idempotence across snapshots, retries and tabs. History reset and Clear All erase both the journal and cached patterns. Similar generation/review/mastery gains remain later phases.

@@ -1,0 +1,55 @@
+
+> math-practice-app@0.1.0 check
+> npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build
+
+
+> math-practice-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> math-practice-app@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> math-practice-app@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+ ❯ src/services/mistakeStorage.test.ts (6 tests | 1 failed) 80ms
+   ❯ persisted mistake tracking (6)
+     × recovers malformed entries using valid saved answers and reports the repair 26ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/services/mistakeStorage.test.ts > persisted mistake tracking > recovers malformed entries using valid saved answers and reports the repair
+AssertionError: expected 2 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ src/services/mistakeStorage.test.ts:72:60
+     70|     expect(loaded.warnings.join(' ')).toContain('mistake data could no…
+     71|     expect(loaded.data.records).toHaveLength(1)
+     72|     expect(loaded.data.mistakePatterns![0].incorrectCount).toBe(1)
+       |                                                            ^
+     73|     expect(writeSavedData(loaded.data)).toBeNull()
+     74|     expect(readSavedData().warnings).toEqual([])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 19 passed (20)
+      Tests  1 failed | 221 passed (222)
+   Start at  00:48:32
+   Duration  82.69s (environment 59%, tests 22%, setup 12%, import 5%, transform 1%)
+
+Environment  jsdom was created 20 times · 89.16s total, 59% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments

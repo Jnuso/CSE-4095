@@ -43,6 +43,7 @@ test('saved attempts and settings survive closing and reopening a real browser',
       for (const right of [true, true, true, false, false]) await report(first.page, right)
       await expect(metric(first.page, 'Accuracy')).toHaveText('60%')
       expect((await saved(first.page)).records[0].attempts).toHaveLength(5)
+      expect((await saved(first.page)).mistakeEvents).toHaveLength(2)
     } finally {
       await test.step('Close first browser process', () => first.context.close())
     }
@@ -51,6 +52,13 @@ test('saved attempts and settings survive closing and reopening a real browser',
       await second.page.goto('/practice/summary')
       await expect(metric(second.page, 'Questions attempted')).toHaveText('5')
       await expect(metric(second.page, 'Accuracy')).toHaveText('60%')
+      expect((await saved(second.page)).mistakeEvents).toHaveLength(2)
+      expect(
+        (await saved(second.page)).mistakePatterns!.reduce(
+          (sum, pattern) => sum + pattern.incorrectCount,
+          0,
+        ),
+      ).toBe(2)
       await second.page.goto('/practice/setup')
       await expect(
         second.page.getByRole('checkbox', { name: 'Division', exact: true }),

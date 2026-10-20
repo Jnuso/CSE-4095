@@ -1,0 +1,61 @@
+Static TypeScript review, text only, no tools/edits/test execution claims. Return concrete bugs with scenarios, max250words. Phase12: selfReportedCorrect=false remembers exact operation/ordered operands/difficulty. Different missed attempts increment one pattern, latest timestamp retained despite out-of-order arrival; repeat saves/callbacks must not increment. New miss resets similarCorrectCount=0 and mastered=false; no mastery increments or review mode yet. MistakeEvent={attempt:PracticeAttempt,sessionStartedAt:string}; persisted events validated by existing single-attempt session validator and false self-report. Patterncache fields id,operation,firstOperand,secondOperand,correctAnswer,difficulty,incorrectCount>=1,similarCorrectCount>=0,lastIncorrectAt,mastered; each validated. mistakeKey returns deterministic operation:difficulty:a:b key. Storage helper merges validated events from disk and memory only same historyResetAt (unreadable disk keepsmemory), then appends wrong attempts extracted from UNTRIMMED session snapshots, dedupes and rebuilds cache, finally retains newest100sessiondetails. Journal independentof100limit. Reset History/Clear All drop journal+cache and record new cutoff; old-session snapshots excluded even if their attemptedAt is newer. Ordinary reads backfill older valid saved session misses. Quota failure keeps memory journal; retry unions disk/memory and dedupes. Below is actual event merge and cache builder:
+
+// Both identities must be unique: retries and duplicate callbacks represent one reported question.
+export function mergeMistakeEvents(
+  events: readonly MistakeEvent[],
+  cutoff?: number,
+): MistakeEvent[] {
+  const ids = new Set<string>(),
+    questions = new Set<string>()
+  return events.filter((event) => {
+    if (event.attempt.selfReportedCorrect) return false
+    if (cutoff !== undefined && Date.parse(event.sessionStartedAt) <= cutoff) return false
+    const id = JSON.stringify([event.attempt.sessionId, event.attempt.id])
+    const question = JSON.stringify([event.attempt.sessionId, event.attempt.questionId])
+    if (ids.has(id) || questions.has(question)) return false
+    ids.add(id)
+    questions.add(question)
+    return true
+  })
+}
+export function buildMistakePatterns(
+  events: readonly MistakeEvent[],
+  previous: readonly MistakePattern[] = [],
+): MistakePattern[] {
+  const patterns = new Map<string, MistakePattern>()
+  for (const { attempt } of mergeMistakeEvents(events)) {
+    const key = mistakeKey(attempt)
+    const current = patterns.get(key)
+    if (current) {
+      current.incorrectCount++
+      if (Date.parse(attempt.attemptedAt) > Date.parse(current.lastIncorrectAt))
+        current.lastIncorrectAt = attempt.attemptedAt
+    } else
+      patterns.set(key, {
+        id: key,
+        operation: attempt.operation,
+        firstOperand: attempt.firstOperand,
+        secondOperand: attempt.secondOperand,
+        correctAnswer: attempt.correctAnswer,
+        difficulty: attempt.difficulty,
+        incorrectCount: 1,
+        similarCorrectCount: 0,
+        lastIncorrectAt: attempt.attemptedAt,
+        mastered: false,
+      })
+  }
+  const prior = new Map(previous.map((pattern) => [mistakeKey(pattern), pattern]))
+  for (const [key, pattern] of patterns) {
+    const old = prior.get(key)
+    // Preserve review progress on an unchanged pattern; any new miss reopens it.
+    if (
+      old &&
+      old.incorrectCount === pattern.incorrectCount &&
+      Date.parse(old.lastIncorrectAt) === Date.parse(pattern.lastIncorrectAt)
+    ) {
+      pattern.similarCorrectCount = old.similarCorrectCount
+      pattern.mastered = old.mastered
+    }
+  }
+  return [...patterns.values()]
+}
