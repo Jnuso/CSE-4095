@@ -115,16 +115,16 @@ describe('practice session transitions', () => {
     expect(question.displayText).not.toBe(repeated.displayText)
     expect(generator).toHaveBeenCalledTimes(10)
     const faulty = vi.fn(() => repeated)
-    expect(() => nextQuestion(config, repeated, faulty)).toThrow('different question')
+    expect(nextQuestion(config, repeated, faulty).displayText).not.toBe(repeated.displayText)
     expect(faulty).toHaveBeenCalledTimes(10)
   })
-  it('retains the recorded attempt if next generation fails, and retries without recounting', () => {
+  it('uses fallback after generation fails without losing or recounting an answer', () => {
     const fail = () => {
       throw new Error('generation failed')
     }
     const initialFailure = startSession(config, fail)
-    expect(initialFailure.question).toBeNull()
-    expect(initialFailure.error).toBeTruthy()
+    expect(initialFailure.question?.choices).toHaveLength(4)
+    expect(initialFailure.error).toBeNull()
     const initial = retryQuestion(initialFailure)
     const next = recordResult(
       initial,
@@ -136,8 +136,8 @@ describe('practice session transitions', () => {
       fail,
     )
     expect(next.session.attempted).toBe(1)
-    expect(next.question).toBeNull()
-    expect(next.error).toBeTruthy()
+    expect(next.question?.choices).toHaveLength(4)
+    expect(next.error).toBeNull()
     const recovered = retryQuestion(next)
     expect(recovered.question).not.toBeNull()
     expect(recovered.session.attempted).toBe(1)

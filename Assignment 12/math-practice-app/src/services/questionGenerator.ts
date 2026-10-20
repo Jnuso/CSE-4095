@@ -108,7 +108,11 @@ export function generateDivision(
   return createQuestion('division', difficulty, divisor * quotient, divisor)
 }
 
-export function isValidGeneratedQuestion(question: Question): boolean {
+export function isValidGeneratedQuestion(value: unknown): value is Question {
+  if (typeof value !== 'object' || value === null) return false
+  const question = value as Question
+  if (typeof question.id !== 'string' || !question.id.trim() || !Array.isArray(question.choices))
+    return false
   const { operation, difficulty, firstOperand: a, secondOperand: b, correctAnswer } = question
   if (!operations.includes(operation) || ![1, 2, 3, 4].includes(difficulty)) return false
   if (![a, b, correctAnswer].every((value) => Number.isSafeInteger(value) && value >= 0))

@@ -1,3 +1,4 @@
+import ErrorMessage from '../common/ErrorMessage'
 import { chooseFeedback } from '../../services/practiceFeedback'
 import { useEffect, useRef, useState } from 'react'
 import { Navigate } from 'react-router'
@@ -140,12 +141,9 @@ export default function PracticeSessionPanel({
               onResult={report}
             />
           ) : (
-            <div role="alert">
+            <ErrorMessage title="Let’s try another question" onRetry={retry}>
               <p>{state.error}</p>
-              <button type="button" className="button button-primary" onClick={retry}>
-                Try again
-              </button>
-            </div>
+            </ErrorMessage>
           )}
           <button type="button" className="button button-secondary" onClick={finish}>
             End Session

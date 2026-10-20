@@ -134,3 +134,8 @@ See [PHASE_16_TESTING.md](PHASE_16_TESTING.md) for keyboard, reduced-motion, act
 ## Phase 17 responsive design and feedback
 
 See PHASE_17_TESTING.md. The responsive browser suite covers five phone/tablet portrait and landscape sizes in both desktop and mobile contexts, 44px answer targets, single-column answers on narrow screens, populated statistics within viewport bounds, saved feedback opt-out and encouragement on the final recap. Existing card-height, keyboard, full-page axe and Pages tests remain intact. practiceFeedback.test.ts covers varied messages and optional-setting compatibility. Feedback uses the student's report and adds no sound or animation.
+
+
+## Phase 19 error handling
+
+See PHASE_19_TESTING.md. errorRecovery.test.ts checks isolated category recovery, valid-answer salvage, duplicate identities, repaired totals, unknown question validation, bounded fallbacks and original review identity. ErrorHandling.test.tsx checks missing-session explanations and an integrated route crash/retry/Home flow with navigation, focus and title recovery. error-handling.spec.ts verifies damaged-answer recovery and explicit save/reload while preserving preferences, plus accessible missing-session navigation on desktop/mobile with full-page axe rules. Existing protected-save, reset, cross-tab, restart and Pages tests remain required. Phase 18 remains pending.

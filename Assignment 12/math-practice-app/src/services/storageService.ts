@@ -77,6 +77,47 @@ export function isStoredSession(value: unknown): value is StoredSession {
   if (session.completedAt !== undefined) return isCompletedSession(value)
   return isCompletedSession({ ...value, session: { ...session, completedAt: session.startedAt } })
 }
+// Recover answers independently; cached totals must never decide which answers survive.
+function recoverStoredSession(value: unknown): StoredSession | null {
+  if (isStoredSession(value)) return value
+  if (!object(value) || !object(value.session) || !Array.isArray(value.attempts)) return null
+  const session = { ...value.session, attempted: 0, correct: 0, incorrect: 0 }
+  if (!isStoredSession({ session, attempts: [] })) return null
+  const attempts: StoredSession['attempts'] = []
+  const ids = new Set<string>()
+  const questions = new Set<string>()
+  for (const attempt of value.attempts) {
+    if (!object(attempt)) continue
+    const correct = Number(attempt.selfReportedCorrect === true)
+    const candidate = {
+      session: { ...session, attempted: 1, correct, incorrect: 1 - correct },
+      attempts: [attempt],
+    }
+    if (!isStoredSession(candidate)) continue
+    const answer = candidate.attempts[0]
+    if (ids.has(answer.id) || questions.has(answer.questionId)) continue
+    if (
+      value.session.sessionLength !== 'continuous' &&
+      attempts.length >= (value.session.sessionLength as number)
+    )
+      break
+    ids.add(answer.id)
+    questions.add(answer.questionId)
+    attempts.push(answer)
+  }
+  const correct = attempts.filter((attempt) => attempt.selfReportedCorrect).length
+  const recovered = {
+    session: {
+      ...session,
+      attempted: attempts.length,
+      correct,
+      incorrect: attempts.length - correct,
+    },
+    attempts,
+  }
+  return isStoredSession(recovered) ? recovered : null
+}
+
 function recordDate(record: StoredSession) {
   return Date.parse(
     record.session.completedAt ?? record.attempts.at(-1)?.attemptedAt ?? record.session.startedAt,
@@ -177,7 +218,7 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
     }
   }
   const migrated = object(parsed) ? migrate(parsed) : null
-  if (!migrated || !Array.isArray(migrated.records))
+  if (!migrated)
     return {
       data: emptySavedData(),
       warnings: [
@@ -193,10 +234,14 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
     warnings.push(
       'Saved settings were invalid, so default settings are being used. Your valid session history is still available.',
     )
-  const records = migrated.records.filter(isStoredSession)
-  if (records.length !== migrated.records.length)
+  const rawRecords = Array.isArray(migrated.records) ? migrated.records : []
+  const records = rawRecords.flatMap((value) => {
+    const recovered = recoverStoredSession(value)
+    return recovered ? [recovered] : []
+  })
+  if (!Array.isArray(migrated.records) || rawRecords.some((value) => !isStoredSession(value)))
     warnings.push(
-      'Some saved session records could not be read. Valid session records are still available.',
+      'Some saved session records could not be read. Valid session records and valid answers were kept; damaged answers and totals were repaired.',
     )
   const marker = (value: unknown): number | undefined =>
     typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : undefined

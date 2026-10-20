@@ -52,5 +52,5 @@ export default function PracticePage() {
         </div>
       </section>
     )
-  return <Navigate to="/practice/setup" replace />
+  return <Navigate to="/practice/setup" replace state={{ sessionMissing: true }} />
 }

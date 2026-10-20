@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import type { PracticeConfiguration } from '../../types/practice'
-import { generateQuestion } from '../../services/questionGenerator'
+import { nextQuestion } from '../../services/practiceSession'
+import ErrorMessage from '../common/ErrorMessage'
 import QuestionCard from './QuestionCard'
 
 function makePreview(configuration: PracticeConfiguration) {
   try {
-    return generateQuestion(configuration.operations, configuration.difficulty)
+    return nextQuestion(configuration, null)
   } catch {
     return null
   }
@@ -61,12 +62,9 @@ export default function CardPreview({ configuration }: { configuration: Practice
           )}
         </>
       ) : (
-        <div role="alert">
+        <ErrorMessage onRetry={newPreview}>
           <p>We couldn’t create a question. Please try again.</p>
-          <button type="button" className="button button-primary" onClick={newPreview}>
-            Try again
-          </button>
-        </div>
+        </ErrorMessage>
       )}
     </div>
   )

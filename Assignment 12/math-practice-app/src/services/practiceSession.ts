@@ -4,7 +4,8 @@ import type { PracticeConfiguration } from '../types/practice'
 import type { PracticeAttempt, PracticeSession } from '../types/session'
 import type { Question } from '../types/question'
 import type { CardResult } from '../components/practice/QuestionCard'
-import { generateQuestion } from './questionGenerator'
+import { generateQuestion, isValidGeneratedQuestion } from './questionGenerator'
+import { reportDevelopmentError } from './reportDevelopmentError'
 import { uniqueId } from '../utils/uniqueId'
 
 export interface SessionState {
@@ -35,15 +36,42 @@ export function nextQuestion(
   previous: Question | null,
   generator: Generator = generateQuestion,
 ): Question {
-  for (let attempt = 0; attempt < 8; attempt += 1) {
-    const question = generator(configuration.operations, configuration.difficulty)
-    if (!previous || !sameMath(previous, question)) return question
+  let failures = 0
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    try {
+      const random = attempt < 8 ? undefined : () => (attempt === 8 ? 0 : 1 - Number.EPSILON)
+      const question = generator(configuration.operations, configuration.difficulty, random)
+      if (
+        !isValidGeneratedQuestion(question) ||
+        question.choices.length !== 4 ||
+        !configuration.operations.includes(question.operation) ||
+        question.difficulty !== configuration.difficulty
+      ) {
+        failures++
+        continue
+      }
+      if (!previous || !sameMath(previous, question)) {
+        if (failures) reportDevelopmentError('regular-generation-recovered', failures)
+        return question
+      }
+    } catch {
+      failures++
+    }
   }
-  // Guaranteed distinct endpoint candidates for the supported arithmetic ranges.
-  // Still bounded if a replacement generator is faulty or ignores its random source.
+  reportDevelopmentError('regular-generation-fallback', failures)
+  // Use the trusted generator with deterministic input, independent of a faulty replacement or RNG.
   for (const value of [0, 1 - Number.EPSILON]) {
-    const question = generator(configuration.operations, configuration.difficulty, () => value)
-    if (!previous || !sameMath(previous, question)) return question
+    const question = generateQuestion(
+      configuration.operations,
+      configuration.difficulty,
+      () => value,
+    )
+    if (
+      isValidGeneratedQuestion(question) &&
+      question.choices.length === 4 &&
+      (!previous || !sameMath(previous, question))
+    )
+      return question
   }
   throw new Error('Could not create a different question.')
 }

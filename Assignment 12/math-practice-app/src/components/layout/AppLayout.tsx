@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router'
 import Header from './Header'
 import PageContainer from './PageContainer'
 import StorageNotice from '../storage/StorageNotice'
+import ErrorBoundary from '../common/ErrorBoundary'
 
 export default function AppLayout() {
   const { pathname } = useLocation()
@@ -34,7 +35,19 @@ export default function AppLayout() {
       <main id="main-content" className="page-content" tabIndex={-1} ref={mainRef}>
         <PageContainer>
           <StorageNotice />
-          <Outlet />
+          <ErrorBoundary
+            resetKey={pathname}
+            onRecover={() => {
+              const heading = mainRef.current?.querySelector('h1')
+              document.title =
+                pathname === '/'
+                  ? 'Math Practice'
+                  : `${heading?.textContent ?? 'Page'} | Math Practice`
+              heading?.focus()
+            }}
+          >
+            <Outlet />
+          </ErrorBoundary>
         </PageContainer>
       </main>
       <footer className="site-footer">

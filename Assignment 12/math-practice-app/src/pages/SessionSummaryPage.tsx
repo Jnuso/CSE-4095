@@ -1,5 +1,5 @@
 import { activeReviewPatterns } from '../services/mistakeReview'
-import FeaturePlaceholder from '../components/common/FeaturePlaceholder'
+import ErrorMessage from '../components/common/ErrorMessage'
 import { Link, useLocation } from 'react-router'
 import { summaryFromState, summarize } from '../services/sessionSummary'
 import { DIFFICULTIES, OPERATIONS } from '../constants/practice'
@@ -141,12 +141,21 @@ export default function SessionSummaryPage() {
     )
   }
   return (
-    <FeaturePlaceholder
-      category="YOUR RECAP"
-      title="Your practice recap"
-      description="Finish a practice session to see how you did. There are no session results to show yet."
-      actionLabel="Go to practice setup"
-      actionTo="/practice/setup"
-    />
+    <section className="feature-page" aria-labelledby="summary-title">
+      <div className="feature-card">
+        <p className="eyebrow">YOUR RECAP</p>
+        <h1 id="summary-title" tabIndex={-1}>
+          Your practice recap
+        </h1>
+        <ErrorMessage>
+          <p>
+            Finish a practice session to see how you did. There are no session results to show yet.
+          </p>
+          <Link className="button button-primary" to="/practice/setup">
+            Go to practice setup
+          </Link>
+        </ErrorMessage>
+      </div>
+    </section>
   )
 }

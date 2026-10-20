@@ -1,3 +1,4 @@
+import ErrorMessage from '../components/common/ErrorMessage'
 import { activeReviewPatterns } from '../services/mistakeReview'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
@@ -43,6 +44,14 @@ export default function PracticeSetupPage() {
         A quick warm-up or a bigger challenge? Changes here apply to this session. Save your usual
         choices in Settings.
       </p>
+      {location.state?.sessionMissing === true && (
+        <ErrorMessage title="Choose a new session">
+          <p>
+            There is no practice session to open. Choose your practice below to start. Any reported
+            answers are still in Statistics when saving was available.
+          </p>
+        </ErrorMessage>
+      )}
       <form className="setup-form" onSubmit={startSession}>
         <fieldset className="setup-fieldset" aria-describedby="review-help">
           <legend>Practice mode</legend>

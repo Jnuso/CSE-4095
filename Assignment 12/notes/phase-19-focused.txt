@@ -1,0 +1,17 @@
+
+> math-practice-app@0.1.0 test
+> vitest run errorRecovery ErrorHandling practiceSession storageService mistakeReview
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+
+ Test Files  6 passed (6)
+      Tests  69 passed (69)
+   Start at  19:02:19
+   Duration  7.03s (environment 63%, tests 17%, setup 12%, import 5%, transform 3%)
+
+Environment  jsdom was created 6 times · 7.39s total, 63% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

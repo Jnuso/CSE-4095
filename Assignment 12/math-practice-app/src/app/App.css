@@ -904,3 +904,17 @@ h2 {
     padding-block: 12px;
   }
 }
+
+.error-message {
+  margin-block: 20px;
+  padding: 20px;
+  border: 1px solid #d9bf81;
+  border-radius: 14px;
+  background: #fff8e8;
+  color: #634b23;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.error-message .summary-actions {
+  margin-bottom: 0;
+}

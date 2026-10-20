@@ -1,3 +1,5 @@
+import { isValidGeneratedQuestion } from './questionGenerator'
+import { reportDevelopmentError } from './reportDevelopmentError'
 import type { MistakePattern } from '../types/mistake'
 import type { PracticeConfiguration } from '../types/practice'
 import type { Question } from '../types/question'
@@ -52,12 +54,29 @@ export function nextReviewQuestion(
   random: RandomSource = Math.random,
   recentPatternIds?: readonly string[],
 ): Question {
-  const pattern = selectReviewPattern(
-    patterns,
-    recentPatternIds ?? recent.flatMap((q) => (q.mistakePatternId ? [q.mistakePatternId] : [])),
-    random,
-  )
-  return generateSimilarQuestion(pattern, { recentQuestions: recent, random })
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const source = attempt === 3 ? () => 0 : random
+      const pattern = selectReviewPattern(
+        patterns,
+        recentPatternIds ?? recent.flatMap((q) => (q.mistakePatternId ? [q.mistakePatternId] : [])),
+        source,
+      )
+      const question = generateSimilarQuestion(pattern, { recentQuestions: recent, random: source })
+      if (
+        question.source === 'mistake-review' &&
+        question.mistakePatternId === pattern.id &&
+        question.difficulty === pattern.difficulty &&
+        question.choices.length === 4 &&
+        isValidGeneratedQuestion({ ...question, source: 'regular' })
+      )
+        return question
+    } catch {
+      /* Retry within the bound, then use deterministic input. */
+    }
+    reportDevelopmentError('review-generation-retry', attempt + 1)
+  }
+  throw new Error('Related questions are unavailable.')
 }
 export function applyReviewResult(
   pattern: MistakePattern,

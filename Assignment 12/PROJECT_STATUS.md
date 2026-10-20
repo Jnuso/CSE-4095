@@ -6,17 +6,14 @@ Read AGENTS.md, the relevant TODO phase and specification sections. Read DECISIO
 
 ## Current milestone
 
-- Phase 17 is deployed at https://jnuso.github.io/CSE-4095/.
-- Deployed app commit: 162985cf14793e24d92da65f32fe9cec16df7985.
-- Successful CI and Pages deployment: https://github.com/Jnuso/CSE-4095/actions/runs/39510013849.
-- Isolated hosted phone (320px) and tablet (1024px) checks passed: practice, final feedback, statistics overflow and saved feedback opt-out.
-- Full final gate passed outside the sandbox: 306 unit/component + 139 browser + 20 Pages tests = 465 passed; formatting, lint, types and both builds passed.
-- Narrow phones use stacked answers and compact navigation; statistics cards wrap within the viewport. Revealing a card preserves its front height.
-- Encouraging feedback follows self-reported results, varies between short supportive phrases and has a saved Settings opt-out. Legacy settings remain valid.
-- One independent read-only review found no concrete defects. Gemma remains paused.
-- The sandbox lost the temporary restart-test profile on browser relaunch; the unchanged isolated test and complete gate passed outside it. Use the normal host environment if that sandbox behavior recurs; never weaken the persistence assertion.
-- Phase 17 physical-device review remains for the student: PHASE_17_TESTING.md. Phase 16 actual 200% zoom, larger system text and screen-reader speech remain pending: PHASE_16_TESTING.md.
-- Next development phase: Phase 18 session recovery and navigation safety, only once requested.
+- Phase 19 error handling is implemented and locally verified; deployment confirmation follows successful CI.
+- Phase 18 session recovery/navigation safety remains pending: the student explicitly requested Phase 19 after Phase 17. Do not mark Phase 18 completed or start another phase automatically.
+- Final check:all passed in the normal host environment: 315 unit/component + 143 browser + 20 Pages tests = 478 passed, plus formatting, lint, types and both builds.
+- Supported saves recover valid answers from damaged sessions, deduplicate identities and rebuild totals. Malformed record categories preserve valid settings and independent mistake/review evidence. Reads do not rewrite saves; unknown versions/unreadable JSON remain protected.
+- Question display uses bounded validation/retries and deterministic fallbacks matching configuration and original review identity. Development warnings contain codes/counts only.
+- Missing-session navigation explains the problem and offers safe Home/setup actions. Render failures preserve layout/navigation and restore heading focus/title after retry.
+- One independent review found a layout/focus issue; it was fixed and re-reviewed. The remaining minor retry-title issue was also fixed and tested. Gemma remains paused.
+- Manual Phase 19 review: PHASE_19_TESTING.md. Phase 17 physical-device review and Phase 16 actual zoom, system text and screen-reader checks remain pending.
 
 ## Current workflow
 
