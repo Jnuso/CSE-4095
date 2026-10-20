@@ -1,6 +1,6 @@
 # Phase 15: Advanced statistics review guide
 
-Live app after verified deployment: https://jnuso.github.io/CSE-4095/#/statistics
+Live app: https://jnuso.github.io/CSE-4095/#/statistics
 
 This phase adds Mistakes and review to the existing Statistics page. The original newest-100-session totals, operation/difficulty breakdowns, history and reset controls remain. Phase 16 accessibility work is not marked complete by these automated scans.
 
