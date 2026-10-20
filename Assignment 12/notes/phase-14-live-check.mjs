@@ -91,6 +91,7 @@ try {
       await page.screenshot({
         path: fileURLToPath(new URL(`${viewport}-review-setup.png`, output)),
         fullPage: true,
+        animations: "disabled",
       });
       await page
         .getByRole("button", { name: "Start Session", exact: true })
@@ -110,6 +111,7 @@ try {
       await page.screenshot({
         path: fileURLToPath(new URL(`${viewport}-review-card.png`, output)),
         fullPage: true,
+        animations: "disabled",
       });
       for (let i = 0; i < 3; i++) await report(true);
       await expect(
@@ -131,6 +133,7 @@ try {
       await page.screenshot({
         path: fileURLToPath(new URL(`${viewport}-review-summary.png`, output)),
         fullPage: true,
+        animations: "disabled",
       });
       await page.reload();
       assert.deepEqual(

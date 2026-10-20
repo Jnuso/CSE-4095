@@ -1,6 +1,6 @@
 # Phase 14: Mistake review mode
 
-Live app after verified deployment: https://jnuso.github.io/CSE-4095/
+Live app: https://jnuso.github.io/CSE-4095/
 
 Use a private window for a clean review without changing your usual saved progress. This phase adds mistake review to setup, related-question sessions and saved mastery. Advanced mistake dashboards remain Phase 15.
 
