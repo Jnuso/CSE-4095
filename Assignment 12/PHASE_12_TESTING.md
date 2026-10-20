@@ -1,6 +1,6 @@
 # Phase 12: Mistake tracking review guide
 
-Live app after deployment: https://jnuso.github.io/CSE-4095/
+Live app: https://jnuso.github.io/CSE-4095/
 
 This phase adds saved tracking behind the existing practice screens. Similar-question generation, the Practice Mistakes mode, mastery gains, and detailed mistake dashboards are later phases. Marking a regular answer right does not yet add similar-review progress.
 

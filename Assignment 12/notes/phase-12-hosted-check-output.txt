@@ -1,0 +1,33 @@
+{
+  "address": "https://jnuso.github.io/CSE-4095/",
+  "results": [
+    {
+      "viewport": "desktop",
+      "routesAndRefreshes": "passed",
+      "session": "5 attempts, 3 right, 2 wrong, 60%",
+      "persistedReload": "passed",
+      "skipLink": "passed",
+      "statistics": "5 attempts, 3 right, 2 wrong, 60%",
+      "rememberedMisses": 2,
+      "distinctFacts": 2,
+      "patternFieldsAndReload": "passed",
+      "resetAndClearForgetMistakes": "passed",
+      "resetCancelConfirmReloadAndPreferences": "passed",
+      "browserErrors": []
+    },
+    {
+      "viewport": "mobile",
+      "routesAndRefreshes": "passed",
+      "session": "5 attempts, 3 right, 2 wrong, 60%",
+      "persistedReload": "passed",
+      "skipLink": "passed",
+      "statistics": "5 attempts, 3 right, 2 wrong, 60%",
+      "rememberedMisses": 2,
+      "distinctFacts": 2,
+      "patternFieldsAndReload": "passed",
+      "resetAndClearForgetMistakes": "passed",
+      "resetCancelConfirmReloadAndPreferences": "passed",
+      "browserErrors": []
+    }
+  ]
+}

@@ -538,3 +538,11 @@ PHASE_12_TESTING.md explains the mostly behind-the-scenes phase, normal practice
 ### Completed local verification
 
 The final npm.cmd run check:all exited 0: formatting, ESLint, 222 unit/component tests across 20 files, strict app/browser-test types, production build, 101 regression browser executions, Pages build and 20 strict-hosting executions passed (343 total). Evidence: notes/phase-12-final-check-output.txt. Only the 17 verified checklist items in Phase 12 tasks 51-53 were checked. Final independent documentation/helper review found no issues. Publication and actual live checks follow.
+
+### Published and hosted verification
+
+Verified app commit 45d39037ad5eb0c4ce253bad42bf32a34b385e83 was published to main. GitHub Actions verification and deployment succeeded in run 39372708115 (https://github.com/Jnuso/CSE-4095/actions/runs/39372708115), completed 2026-10-20T05:06:18Z. Metadata: notes/phase-12-remote-deployment.json.
+
+The actual hosted site passed notes/phase-12-live-check.mjs in disposable desktop and mobile Chromium contexts (exit 0). Both verified routes/refreshes, five attempts with three right/two wrong/60%, two saved missed reports and their pattern fields, reload idempotence, reset cancellation and confirmation with preferences retained, fresh post-reset tracking, Clear All erasure, and keyboard skip-link focus. No runtime, console or HTTP errors were observed. Desktop/mobile Statistics screenshots were visually reviewed and fit their layouts. Evidence: notes/phase-12-hosted-check-output.txt; images/results remain ignored under output/playwright/phase-12-live. The student profile was not used.
+
+Only documentation and hosted evidence changed after the verified app commit. Phase 12 is complete; Phase 13 similar-question generation remains next and unimplemented. Gemma provided no verdict because of its recorded timeout.
