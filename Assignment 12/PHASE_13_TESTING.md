@@ -1,6 +1,6 @@
 # Phase 13: Similar question generator review guide
 
-Live app after verified deployment: https://jnuso.github.io/CSE-4095/
+Live app: https://jnuso.github.io/CSE-4095/
 
 This phase implements the service used by the next phase. There is no new review-mode button yet. Regular practice and stored mistakes should behave as before. Similar-question sessions, prioritization and mastery gains remain Phase 14 work.
 
