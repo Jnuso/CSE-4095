@@ -1,0 +1,257 @@
+
+> math-practice-app@0.1.0 check:all
+> npm run check && node scripts/browser-tests.mjs test && npm run test:pages
+
+
+> math-practice-app@0.1.0 check
+> npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build
+
+
+> math-practice-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> math-practice-app@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> math-practice-app@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+
+ Test Files  25 passed (25)
+      Tests  304 passed (304)
+   Start at  16:25:26
+   Duration  24.51s (environment 55%, tests 27%, setup 12%, import 5%, transform 1%)
+
+Environment  jsdom was created 25 times · 24.15s total, 55% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+> math-practice-app@0.1.0 typecheck
+> tsc -b && tsc -p tsconfig.e2e.json
+
+
+> math-practice-app@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 133 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.60 kB │ gzip:  0.36 kB
+dist/assets/index-Djj4QeRI.css   12.21 kB │ gzip:  3.42 kB
+dist/assets/index-BxNVdxVP.js   321.81 kB │ gzip: 98.27 kB
+
+✓ built in 234ms
+[WebServer] (node:15272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 125 tests using 2 workers
+
+(node:2796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   1 [desktop] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work (2.9s)
+  ok   2 [desktop] › e2e\accessibility-phase16.spec.ts:80:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions (3.6s)
+  ok   3 [desktop] › e2e\accessibility-phase16.spec.ts:124:1 › phase16: reduced motion and saved animation preference keep content clear (2.5s)
+  ok   4 [desktop] › e2e\accessibility-phase16.spec.ts:147:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap (5.8s)
+  ok   6 [desktop] › e2e\accessibility.spec.ts:24:1 › accessibility: scanner detects an intentionally unlabeled control (917ms)
+  ok   5 [desktop] › e2e\accessibility-phase16.spec.ts:162:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog (5.1s)
+  ok   7 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route / (1.3s)
+  ok   8 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /practice/setup (1.4s)
+  ok   9 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /practice/summary (1.2s)
+  ok  10 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /statistics (1.7s)
+  ok  11 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /settings (1.4s)
+  ok  12 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /unknown-page (1.3s)
+  ok  13 [desktop] › e2e\accessibility.spec.ts:56:1 › accessibility: setup validation and selected configuration (2.3s)
+  ok  15 [desktop] › e2e\accessibility.spec.ts:82:1 › accessibility: continuous practice with reduced motion (1.8s)
+  ok  14 [desktop] › e2e\accessibility.spec.ts:67:1 › accessibility: card front, selection, reveal, and next question (4.3s)
+  ok  17 [desktop] › e2e\accessibility.spec.ts:99:1 › accessibility: zero-attempt summary (1.5s)
+  ok  18 [desktop] › e2e\accessibility.spec.ts:105:1 › accessibility: saved-data warning (1.3s)
+  ok  16 [desktop] › e2e\accessibility.spec.ts:89:1 › accessibility: completed summary (4.9s)
+  ok  20 [desktop] › e2e\mistake-statistics.spec.ts:70:1 › ties, sorted details and pagination preserve matching counts on narrow screens (2.3s)
+  ok  19 [desktop] › e2e\mistake-statistics.spec.ts:25:1 › remembered statistics outlast session history, show mastered separately, and browsing is read-only (4.3s)
+  ok  22 [desktop] › e2e\mistakes.spec.ts:6:1 › misses persist immediately without double counting snapshots, refresh, or preferences (3.0s)
+  ok  21 [desktop] › e2e\mistake-statistics.spec.ts:111:1 › real practice and review immediately update dashboard mastery and review counts (8.1s)
+  ok  23 [desktop] › e2e\mistakes.spec.ts:48:1 › two tabs preserve unique misses and a reset stops stale mistake restoration (4.2s)
+  ok  25 [desktop] › e2e\navigation.spec.ts:12:3 › direct route / and refresh (720ms)
+  ok  26 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /practice/setup and refresh (951ms)
+  ok  27 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /practice/session and refresh (646ms)
+  ok  24 [desktop] › e2e\mistakes.spec.ts:75:1 › invalid mistake data warns accessibly while valid history is recovered and saved (2.5s)
+  ok  28 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /practice/summary and refresh (708ms)
+  ok  29 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /statistics and refresh (839ms)
+  ok  30 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /settings and refresh (820ms)
+  ok  31 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /unknown-page and refresh (874ms)
+  ok  32 [desktop] › e2e\navigation.spec.ts:28:1 › home actions, active navigation, and destination focus (1.2s)
+  ok  33 [desktop] › e2e\navigation.spec.ts:42:1 › setup validation, multi-selection, exclusive controls, and edit round trip (1.4s)
+  ok  34 [desktop] › e2e\practice.spec.ts:3:1 › selection, flip, keyboard controls, focus, and independent self-report (1.0s)
+  ok  35 [desktop] › e2e\practice.spec.ts:34:3 › fixed 5-question session stops exactly at the limit (4.4s)
+  ok  36 [desktop] › e2e\practice.spec.ts:34:3 › fixed 10-question session stops exactly at the limit (7.7s)
+  ok  37 [desktop] › e2e\practice.spec.ts:34:3 › fixed 20-question session stops exactly at the limit (15.0s)
+  ok  39 [desktop] › e2e\practice.spec.ts:79:1 › animation switch and reduced-motion preference (1.6s)
+  ok  38 [desktop] › e2e\practice.spec.ts:64:1 › continuous practice passes 20 attempts and handles cancel/accept ending (15.6s)
+  ok  40 [desktop] › e2e\review.spec.ts:89:1 › review eligibility, durable success, early mastery, and reload without double counting (6.9s)
+  ok  41 [desktop] › e2e\review.spec.ts:135:1 › mixed review targets original patterns, wrong resets success, summary counts and actions stay usable (5.7s)
+  ok  43 [desktop] › e2e\review.spec.ts:188:1 › quota failure preserves pending success and a later save retries without counting twice (2.0s)
+  ok  42 [desktop] › e2e\review.spec.ts:155:1 › review progress merges across tabs and stale review cannot restore an erased pattern (4.2s)
+  ok  44 [desktop] › e2e\settings.spec.ts:13:1 › settings save, reload, session overrides, explanations and animation (2.5s)
+  ok  46 [desktop] › e2e\settings.spec.ts:115:1 › failed clear-all preserves data; explicit confirmation can recover protected storage (2.2s)
+  ok  45 [desktop] › e2e\settings.spec.ts:53:1 › clear-all confirmation is accessible, cancellable, and restores only app data (4.8s)
+  ok  47 [desktop] › e2e\settings.spec.ts:146:1 › clear-all in another tab resets live preferences and blocks stale practice saves (3.2s)
+  ok  49 [desktop] › e2e\statistics.spec.ts:53:1 › statistics: newest-first history, pagination and failed-reset preservation (1.0s)
+  ok  48 [desktop] › e2e\statistics.spec.ts:6:1 › statistics: incomplete attempts, accessible reset and preferences (5.1s)
+  ok  50 [desktop] › e2e\statistics.spec.ts:95:1 › statistics: cross-tab reset blocks stale saves and permits fresh practice (3.2s)
+  ok  51 [desktop] › e2e\storage.spec.ts:18:1 › every report persists full attempt data and a fresh recap works after reload (2.3s)
+  ok  52 [desktop] › e2e\storage.spec.ts:46:1 › saved setup and animation reload, and newest completed recap loads without history state (1.2s)
+  ok  53 [desktop] › e2e\storage.spec.ts:72:3 › corrupt JSON is protected while practice continues (1.6s)
+  ok  54 [desktop] › e2e\storage.spec.ts:72:3 › future schema is protected while practice continues (1.4s)
+  ok  55 [desktop] › e2e\storage.spec.ts:85:1 › invalid settings recover without discarding valid history (902ms)
+  ok  56 [desktop] › e2e\storage.spec.ts:97:3 › legacy schema undefined migrates on the next successful save (979ms)
+  ok  57 [desktop] › e2e\storage.spec.ts:97:3 › legacy schema 0 migrates on the next successful save (991ms)
+  ok  58 [desktop] › e2e\storage.spec.ts:116:1 › quota failure warns, keeps the previous save, and lets the session advance (1.6s)
+  ok  59 [desktop] › e2e\storage.spec.ts:138:1 › blocked storage shows a warning and keeps practice usable (1.5s)
+  ok  61 [desktop] › e2e\summary-layout.spec.ts:38:1 › empty ending has zero totals and no invented practiced operations (1.2s)
+  x   62 [desktop] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens (1.3s)
+(node:7964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  60 [desktop] › e2e\summary-layout.spec.ts:3:1 › summary actions preserve setup and reset replay without replaying the completed card (5.2s)
+(node:21256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  63 [mobile] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work (3.6s)
+  ok  65 [mobile] › e2e\accessibility-phase16.spec.ts:124:1 › phase16: reduced motion and saved animation preference keep content clear (3.8s)
+  ok  64 [mobile] › e2e\accessibility-phase16.spec.ts:80:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions (4.8s)
+  ok  66 [mobile] › e2e\accessibility-phase16.spec.ts:147:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap (7.5s)
+  ok  67 [mobile] › e2e\accessibility-phase16.spec.ts:162:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog (8.4s)
+  ok  68 [mobile] › e2e\accessibility.spec.ts:24:1 › accessibility: scanner detects an intentionally unlabeled control (1.5s)
+  ok  69 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route / (2.3s)
+  ok  70 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /practice/setup (2.6s)
+  ok  71 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /practice/summary (1.9s)
+  ok  72 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /statistics (2.8s)
+  ok  73 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /settings (2.4s)
+  ok  74 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /unknown-page (2.1s)
+  ok  75 [mobile] › e2e\accessibility.spec.ts:56:1 › accessibility: setup validation and selected configuration (3.6s)
+  ok  77 [mobile] › e2e\accessibility.spec.ts:82:1 › accessibility: continuous practice with reduced motion (2.1s)
+  ok  76 [mobile] › e2e\accessibility.spec.ts:67:1 › accessibility: card front, selection, reveal, and next question (5.7s)
+  ok  79 [mobile] › e2e\accessibility.spec.ts:99:1 › accessibility: zero-attempt summary (2.0s)
+  ok  80 [mobile] › e2e\accessibility.spec.ts:105:1 › accessibility: saved-data warning (2.1s)
+  ok  78 [mobile] › e2e\accessibility.spec.ts:89:1 › accessibility: completed summary (5.4s)
+  ok  82 [mobile] › e2e\mistake-statistics.spec.ts:70:1 › ties, sorted details and pagination preserve matching counts on narrow screens (3.1s)
+  ok  81 [mobile] › e2e\mistake-statistics.spec.ts:25:1 › remembered statistics outlast session history, show mastered separately, and browsing is read-only (5.5s)
+  ok  84 [mobile] › e2e\mistakes.spec.ts:6:1 › misses persist immediately without double counting snapshots, refresh, or preferences (3.4s)
+  ok  83 [mobile] › e2e\mistake-statistics.spec.ts:111:1 › real practice and review immediately update dashboard mastery and review counts (8.6s)
+  ok  85 [mobile] › e2e\mistakes.spec.ts:48:1 › two tabs preserve unique misses and a reset stops stale mistake restoration (4.6s)
+  ok  87 [mobile] › e2e\navigation.spec.ts:12:3 › direct route / and refresh (749ms)
+  ok  88 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /practice/setup and refresh (933ms)
+  ok  86 [mobile] › e2e\mistakes.spec.ts:75:1 › invalid mistake data warns accessibly while valid history is recovered and saved (3.6s)
+  ok  89 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /practice/session and refresh (1.0s)
+  ok  90 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /practice/summary and refresh (958ms)
+  ok  91 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /statistics and refresh (1.1s)
+  ok  92 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /settings and refresh (1.1s)
+  ok  93 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /unknown-page and refresh (1.1s)
+  ok  94 [mobile] › e2e\navigation.spec.ts:28:1 › home actions, active navigation, and destination focus (1.6s)
+  ok  95 [mobile] › e2e\navigation.spec.ts:42:1 › setup validation, multi-selection, exclusive controls, and edit round trip (1.9s)
+  ok  96 [mobile] › e2e\practice.spec.ts:3:1 › selection, flip, keyboard controls, focus, and independent self-report (1.5s)
+  ok  97 [mobile] › e2e\practice.spec.ts:34:3 › fixed 5-question session stops exactly at the limit (4.6s)
+  ok  98 [mobile] › e2e\practice.spec.ts:34:3 › fixed 10-question session stops exactly at the limit (7.9s)
+  ok  99 [mobile] › e2e\practice.spec.ts:34:3 › fixed 20-question session stops exactly at the limit (15.2s)
+  ok 101 [mobile] › e2e\practice.spec.ts:79:1 › animation switch and reduced-motion preference (1.6s)
+  ok 100 [mobile] › e2e\practice.spec.ts:64:1 › continuous practice passes 20 attempts and handles cancel/accept ending (16.0s)
+  ok 102 [mobile] › e2e\review.spec.ts:89:1 › review eligibility, durable success, early mastery, and reload without double counting (8.1s)
+  ok 103 [mobile] › e2e\review.spec.ts:135:1 › mixed review targets original patterns, wrong resets success, summary counts and actions stay usable (5.8s)
+  ok 105 [mobile] › e2e\review.spec.ts:188:1 › quota failure preserves pending success and a later save retries without counting twice (1.8s)
+  ok 104 [mobile] › e2e\review.spec.ts:155:1 › review progress merges across tabs and stale review cannot restore an erased pattern (4.0s)
+  ok 106 [mobile] › e2e\settings.spec.ts:13:1 › settings save, reload, session overrides, explanations and animation (2.5s)
+  ok 108 [mobile] › e2e\settings.spec.ts:115:1 › failed clear-all preserves data; explicit confirmation can recover protected storage (2.2s)
+  ok 107 [mobile] › e2e\settings.spec.ts:53:1 › clear-all confirmation is accessible, cancellable, and restores only app data (4.8s)
+  ok 109 [mobile] › e2e\settings.spec.ts:146:1 › clear-all in another tab resets live preferences and blocks stale practice saves (3.2s)
+  ok 111 [mobile] › e2e\statistics.spec.ts:53:1 › statistics: newest-first history, pagination and failed-reset preservation (1.1s)
+  ok 110 [mobile] › e2e\statistics.spec.ts:6:1 › statistics: incomplete attempts, accessible reset and preferences (5.2s)
+  ok 112 [mobile] › e2e\statistics.spec.ts:95:1 › statistics: cross-tab reset blocks stale saves and permits fresh practice (3.4s)
+  ok 114 [mobile] › e2e\storage.spec.ts:46:1 › saved setup and animation reload, and newest completed recap loads without history state (1.1s)
+  ok 113 [mobile] › e2e\storage.spec.ts:18:1 › every report persists full attempt data and a fresh recap works after reload (2.4s)
+  ok 115 [mobile] › e2e\storage.spec.ts:72:3 › corrupt JSON is protected while practice continues (1.6s)
+  ok 116 [mobile] › e2e\storage.spec.ts:72:3 › future schema is protected while practice continues (1.5s)
+  ok 117 [mobile] › e2e\storage.spec.ts:85:1 › invalid settings recover without discarding valid history (1.0s)
+  ok 118 [mobile] › e2e\storage.spec.ts:97:3 › legacy schema undefined migrates on the next successful save (1.1s)
+  ok 119 [mobile] › e2e\storage.spec.ts:97:3 › legacy schema 0 migrates on the next successful save (1.1s)
+  ok 120 [mobile] › e2e\storage.spec.ts:116:1 › quota failure warns, keeps the previous save, and lets the session advance (1.6s)
+  ok 121 [mobile] › e2e\storage.spec.ts:138:1 › blocked storage shows a warning and keeps practice usable (1.5s)
+  ok 123 [mobile] › e2e\summary-layout.spec.ts:38:1 › empty ending has zero totals and no invented practiced operations (1.0s)
+  x  124 [mobile] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens (1.1s)
+  ok 122 [mobile] › e2e\summary-layout.spec.ts:3:1 › summary actions preserve setup and reset replay without replaying the completed card (4.8s)
+
+
+  1) [desktop] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 621
+    Received: 480
+
+      56 |   const before = await page.locator('.card-face').evaluate((el) => el.clientHeight)
+      57 |   await page.getByRole('button', { name: 'Flip Card', exact: true }).click()
+    > 58 |   expect(await page.locator('.card-face').evaluate((el) => el.clientHeight)).toBe(before)
+         |                                                                              ^
+      59 |   for (const width of [320, 390]) {
+      60 |     await page.setViewportSize({ width, height: 844 })
+      61 |     await noOverflow(page)
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\summary-layout.spec.ts:58:78
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\summary-layout-front-back--78054--390--and-320-pixel-screens-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\summary-layout-front-back--78054--390--and-320-pixel-screens-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\summary-layout-front-back--78054--390--and-320-pixel-screens-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\summary-layout-front-back--78054--390--and-320-pixel-screens-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [mobile] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 621
+    Received: 480
+
+      56 |   const before = await page.locator('.card-face').evaluate((el) => el.clientHeight)
+      57 |   await page.getByRole('button', { name: 'Flip Card', exact: true }).click()
+    > 58 |   expect(await page.locator('.card-face').evaluate((el) => el.clientHeight)).toBe(before)
+         |                                                                              ^
+      59 |   for (const width of [320, 390]) {
+      60 |     await page.setViewportSize({ width, height: 844 })
+      61 |     await noOverflow(page)
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\summary-layout.spec.ts:58:78
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\summary-layout-front-back--78054--390--and-320-pixel-screens-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\summary-layout-front-back--78054--390--and-320-pixel-screens-mobile\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\summary-layout-front-back--78054--390--and-320-pixel-screens-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\summary-layout-front-back--78054--390--and-320-pixel-screens-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens
+    [mobile] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens
+  1 did not run
+  122 passed (3.5m)

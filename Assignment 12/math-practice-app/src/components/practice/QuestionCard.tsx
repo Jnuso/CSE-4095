@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import type { Question } from '../../types/question'
 import AnswerChoice from './AnswerChoice'
 import { explainQuestion } from '../../services/questionExplanation'
@@ -22,8 +22,32 @@ interface QuestionCardProps {
 }
 
 export default function QuestionCard(props: QuestionCardProps) {
-  // A new question ID creates fresh state before the new question is painted.
-  return <QuestionCardContent key={props.question.id} {...props} />
+  const initialAnnouncement = useRef<HTMLParagraphElement>(null)
+  useEffect(() => {
+    // Later cards are announced by focus on their question heading and progress description.
+    // The first card keeps page-title focus, so announce its question after the live region mounts.
+    if (initialAnnouncement.current)
+      initialAnnouncement.current.textContent = props.focusOnMount
+        ? ''
+        : `Question ${props.questionNumber}${props.totalQuestions === undefined ? '' : ` of ${props.totalQuestions}`}. ${props.question.displayText}. Tab to the answer choices. Number keys 1 to 4 work while focus is inside the card.`
+  }, [
+    props.question.id,
+    props.question.displayText,
+    props.questionNumber,
+    props.totalQuestions,
+    props.focusOnMount,
+  ])
+  return (
+    <>
+      <p
+        className="visually-hidden"
+        aria-live="polite"
+        aria-atomic="true"
+        ref={initialAnnouncement}
+      />
+      <QuestionCardContent key={props.question.id} {...props} />
+    </>
+  )
 }
 
 function QuestionCardContent({
@@ -36,6 +60,7 @@ function QuestionCardContent({
   focusOnMount = false,
   onResult,
 }: QuestionCardProps) {
+  const progressId = useId()
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isCardFlipped, setIsCardFlipped] = useState(false)
   const [reported, setReported] = useState<boolean | null>(null)
@@ -51,6 +76,35 @@ function QuestionCardContent({
     if (isCardFlipped) answerHeading.current?.focus()
   }, [isCardFlipped])
 
+  function selectByNumber(event: KeyboardEvent<HTMLElement>) {
+    if (
+      isCardFlipped ||
+      event.defaultPrevented ||
+      event.repeat ||
+      event.nativeEvent.isComposing ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      !/^[1-4]$/.test(event.key)
+    )
+      return
+    const target = event.target
+    if (
+      !(target instanceof Element) ||
+      target.closest(
+        'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"], [role="spinbutton"]',
+      )
+    )
+      return
+    const index = Number(event.key) - 1
+    const value = question.choices[index]
+    if (value === undefined) return
+    event.preventDefault()
+    setSelectedAnswer(value)
+    event.currentTarget.querySelectorAll<HTMLButtonElement>('.answer-choice')[index]?.focus()
+  }
+
   function report(selfReportedCorrect: boolean) {
     if (!isCardFlipped || selectedAnswer === null || resultLocked.current) return
     resultLocked.current = true
@@ -59,8 +113,8 @@ function QuestionCardContent({
   }
 
   return (
-    <section className="question-card" aria-label="Math question card">
-      <p className="question-progress">
+    <section className="question-card" aria-label="Math question card" onKeyDown={selectByNumber}>
+      <p className="question-progress" id={progressId}>
         Question {questionNumber}
         {totalQuestions !== undefined ? ` of ${totalQuestions}` : ''}
       </p>
@@ -75,6 +129,7 @@ function QuestionCardContent({
               tabIndex={-1}
               ref={answerHeading}
               aria-label={`Correct answer: ${question.correctAnswer}`}
+              aria-describedby={progressId}
             >
               {question.displayText.replace('?', String(question.correctAnswer))}
             </h2>
@@ -110,14 +165,20 @@ function QuestionCardContent({
         ) : (
           <>
             <p className="eyebrow">PICK YOUR ANSWER</p>
-            <h2 className="card-math" tabIndex={-1} ref={questionHeading}>
+            <h2
+              className="card-math"
+              tabIndex={-1}
+              ref={questionHeading}
+              aria-describedby={progressId}
+            >
               {question.displayText}
             </h2>
             <div className="answer-grid" role="group" aria-label="Answer choices">
-              {question.choices.map((value) => (
+              {question.choices.map((value, index) => (
                 <AnswerChoice
                   key={value}
                   value={value}
+                  shortcut={index + 1}
                   selected={selectedAnswer === value}
                   onSelect={(value) => {
                     if (!isCardFlipped) setSelectedAnswer(value)
@@ -138,7 +199,10 @@ function QuestionCardContent({
             >
               Flip Card
             </button>
-            <p className="card-hint">Choose an answer, then flip to check it.</p>
+            <p className="card-hint">
+              Choose an answer, then flip to check it. While focus is inside this card, use number
+              keys 1–4 to select a choice.
+            </p>
           </>
         )}
       </div>

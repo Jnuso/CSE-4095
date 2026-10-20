@@ -84,7 +84,7 @@ export default function PracticeSessionPanel({
         Reported answers are saved in this browser when storage is available. Refreshing starts a
         new session.
       </p>
-      <p className="session-totals" role="status" aria-label="Session totals">
+      <p className="session-totals" role="status" aria-label="Session totals" aria-atomic="true">
         Completed: {session.attempted} · Right: {session.correct} · Wrong: {session.incorrect}
       </p>
       {

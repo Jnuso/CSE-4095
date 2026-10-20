@@ -1,0 +1,43 @@
+
+> math-practice-app@0.1.0 test:e2e
+> npm run build && node scripts/browser-tests.mjs test accessibility-phase16.spec.ts
+
+
+> math-practice-app@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 133 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.60 kB │ gzip:  0.36 kB
+dist/assets/index-Djj4QeRI.css   12.21 kB │ gzip:  3.42 kB
+dist/assets/index-BxNVdxVP.js   321.81 kB │ gzip: 98.27 kB
+
+✓ built in 180ms
+[WebServer] (node:12940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 2 workers
+
+(node:4252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work (2.6s)
+  ok  2 [desktop] › e2e\accessibility-phase16.spec.ts:78:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions (3.2s)
+  ok  3 [desktop] › e2e\accessibility-phase16.spec.ts:122:1 › phase16: reduced motion and saved animation preference keep content clear (2.3s)
+  ok  4 [desktop] › e2e\accessibility-phase16.spec.ts:145:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap (5.4s)
+  ok  5 [desktop] › e2e\accessibility-phase16.spec.ts:160:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog (4.4s)
+(node:5356) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:4628) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 [mobile] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work (2.5s)
+  ok  7 [mobile] › e2e\accessibility-phase16.spec.ts:78:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions (3.2s)
+  ok  8 [mobile] › e2e\accessibility-phase16.spec.ts:122:1 › phase16: reduced motion and saved animation preference keep content clear (2.4s)
+  ok 10 [mobile] › e2e\accessibility-phase16.spec.ts:160:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog (4.9s)
+  ok  9 [mobile] › e2e\accessibility-phase16.spec.ts:145:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap (5.9s)
+
+  10 passed (22.5s)

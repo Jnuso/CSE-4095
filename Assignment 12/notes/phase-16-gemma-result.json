@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"error\": {\n    \"code\": \"docker_unavailable\",\n    \"message\": \"Cannot access Docker's Linux engine. Start Docker Desktop and check your account's engine permissions.\",\n    \"retryable\": true\n  }\n}"
+    }
+  ],
+  "isError": false
+}

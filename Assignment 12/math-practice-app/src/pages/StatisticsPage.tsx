@@ -1,3 +1,4 @@
+import { cycleDialogFocus } from '../utils/cycleDialogFocus'
 import MistakeStatistics from '../components/statistics/MistakeStatistics'
 import { useRef, useState } from 'react'
 import { Link } from 'react-router'
@@ -158,6 +159,7 @@ export default function StatisticsPage() {
         <p role="status">{notice}</p>
       </section>
       <dialog
+        onKeyDown={cycleDialogFocus}
         ref={dialog}
         className="reset-dialog"
         aria-labelledby="reset-dialog-title"

@@ -1,3 +1,4 @@
+import { cycleDialogFocus } from '../utils/cycleDialogFocus'
 import { useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { usePracticeStorage } from '../components/storage/PracticeStorageProvider'
@@ -138,6 +139,7 @@ export default function SettingsPage() {
         </button>
       </section>
       <dialog
+        onKeyDown={cycleDialogFocus}
         ref={dialog}
         className="reset-dialog"
         aria-labelledby="clear-dialog-title"

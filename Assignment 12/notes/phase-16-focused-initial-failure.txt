@@ -1,0 +1,937 @@
+
+> math-practice-app@0.1.0 test:e2e
+> npm run build && node scripts/browser-tests.mjs test accessibility-phase16.spec.ts
+
+
+> math-practice-app@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 132 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.60 kB │ gzip:  0.36 kB
+dist/assets/index-Djj4QeRI.css   12.21 kB │ gzip:  3.42 kB
+dist/assets/index-BDxFQsob.js   321.60 kB │ gzip: 98.24 kB
+
+✓ built in 169ms
+[WebServer] (node:13128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 2 workers
+
+(node:23276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7524) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   2 [desktop] › e2e\accessibility-phase16.spec.ts:78:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions (3.1s)
+(node:23184) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  3 [desktop] › e2e\accessibility-phase16.spec.ts:122:1 › phase16: reduced motion and saved animation preference keep content clear (2.0s)
+  x   4 [desktop] › e2e\accessibility-phase16.spec.ts:145:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap (1.6s)
+(node:9884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   1 [desktop] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work (10.2s)
+(node:22744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   5 [desktop] › e2e\accessibility-phase16.spec.ts:160:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog (4.5s)
+(node:19336) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   7 [mobile] › e2e\accessibility-phase16.spec.ts:78:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions (2.8s)
+(node:24520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  8 [mobile] › e2e\accessibility-phase16.spec.ts:122:1 › phase16: reduced motion and saved animation preference keep content clear (2.0s)
+  x   6 [mobile] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work (9.8s)
+(node:2316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   9 [mobile] › e2e\accessibility-phase16.spec.ts:145:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap (1.7s)
+  x  10 [mobile] › e2e\accessibility-phase16.spec.ts:160:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog (3.9s)
+
+
+  1) [desktop] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('button', { name: 'Keep my data', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  8000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('button', { name: 'Keep my data', exact: true }) with timeout 8000ms
+      - waiting for getByRole('button', { name: 'Keep my data', exact: true })
+        20 × locator resolved to <button type="button" class="button button-secondary">Keep my data</button>
+           - unexpected value "inactive"
+
+
+      70 |   await expect(page.getByRole('button', { name: 'Erase all app data', exact: true })).toBeFocused()
+      71 |   await page.keyboard.press('Tab')
+    > 72 |   await expect(page.getByRole('button', { name: 'Keep my data', exact: true })).toBeFocused()
+         |                                                                                 ^
+      73 |   await scan(page, info, 'keyboard-modal')
+      74 |   await page.keyboard.press('Escape')
+      75 |   await expect(clear).toBeFocused()
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:72:81
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-45c80-d-modal-keyboard-focus-work-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\accessibility-phase16-phas-45c80-d-modal-keyboard-focus-work-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-45c80-d-modal-keyboard-focus-work-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\accessibility-phase16-phas-45c80-d-modal-keyboard-focus-work-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop] › e2e\accessibility-phase16.spec.ts:78:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 100
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+    +     "help": "Elements must have their visible text as part of their accessible name",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+    +     "id": "label-content-name-mismatch",
+    +     "impact": "serious",
+    +     "nodes": Array [
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 16\" aria-pressed=\"false\" aria-keyshortcuts=\"1\"><span class=\"answer-shortcut\" aria-hidden=\"true\">1.</span><span>16</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 16\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 17\" aria-pressed=\"false\" aria-keyshortcuts=\"2\"><span class=\"answer-shortcut\" aria-hidden=\"true\">2.</span><span>17</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 17\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 28\" aria-pressed=\"false\" aria-keyshortcuts=\"3\"><span class=\"answer-shortcut\" aria-hidden=\"true\">3.</span><span>28</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 28\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 18\" aria-pressed=\"false\" aria-keyshortcuts=\"4\"><span class=\"answer-shortcut\" aria-hidden=\"true\">4.</span><span>18</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 18\"]",
+    +         ],
+    +       },
+    +     ],
+    +     "tags": Array [
+    +       "cat.semantics",
+    +       "wcag21a",
+    +       "wcag253",
+    +       "EN-301-549",
+    +       "EN-9.2.5.3",
+    +       "RGAAv4",
+    +       "RGAA-6.1.5",
+    +     ],
+    +   },
+    + ]
+
+      19 |     contentType: 'application/json',
+      20 |   })
+    > 21 |   expect(result.violations).toEqual([])
+         |                             ^
+      22 |   await noOverflow(page)
+      23 | }
+      24 | async function tabAudit(page: Page) {
+        at scan (C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:21:29)
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:119:3
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-2627b-s-and-progress-descriptions-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\accessibility-phase16-phas-2627b-s-and-progress-descriptions-desktop\error-context.md
+
+    attachment #5: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-2627b-s-and-progress-descriptions-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\accessibility-phase16-phas-2627b-s-and-progress-descriptions-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [desktop] › e2e\accessibility-phase16.spec.ts:145:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 100
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+    +     "help": "Elements must have their visible text as part of their accessible name",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+    +     "id": "label-content-name-mismatch",
+    +     "impact": "serious",
+    +     "nodes": Array [
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 12\" aria-pressed=\"false\" aria-keyshortcuts=\"1\"><span class=\"answer-shortcut\" aria-hidden=\"true\">1.</span><span>12</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 12\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 2\" aria-pressed=\"false\" aria-keyshortcuts=\"2\"><span class=\"answer-shortcut\" aria-hidden=\"true\">2.</span><span>2</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 2\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 15\" aria-pressed=\"false\" aria-keyshortcuts=\"3\"><span class=\"answer-shortcut\" aria-hidden=\"true\">3.</span><span>15</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 15\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 22\" aria-pressed=\"false\" aria-keyshortcuts=\"4\"><span class=\"answer-shortcut\" aria-hidden=\"true\">4.</span><span>22</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 22\"]",
+    +         ],
+    +       },
+    +     ],
+    +     "tags": Array [
+    +       "cat.semantics",
+    +       "wcag21a",
+    +       "wcag253",
+    +       "EN-301-549",
+    +       "EN-9.2.5.3",
+    +       "RGAAv4",
+    +       "RGAA-6.1.5",
+    +     ],
+    +   },
+    + ]
+
+      19 |     contentType: 'application/json',
+      20 |   })
+    > 21 |   expect(result.violations).toEqual([])
+         |                             ^
+      22 |   await noOverflow(page)
+      23 | }
+      24 | async function tabAudit(page: Page) {
+        at scan (C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:21:29)
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:155:3
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-6c012-erves-pages-cards-and-recap-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\accessibility-phase16-phas-6c012-erves-pages-cards-and-recap-desktop\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-6c012-erves-pages-cards-and-recap-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\accessibility-phase16-phas-6c012-erves-pages-cards-and-recap-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [desktop] › e2e\accessibility-phase16.spec.ts:160:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 100
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+    +     "help": "Elements must have their visible text as part of their accessible name",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+    +     "id": "label-content-name-mismatch",
+    +     "impact": "serious",
+    +     "nodes": Array [
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 12\" aria-pressed=\"false\" aria-keyshortcuts=\"1\"><span class=\"answer-shortcut\" aria-hidden=\"true\">1.</span><span>12</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 12\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 13\" aria-pressed=\"false\" aria-keyshortcuts=\"2\"><span class=\"answer-shortcut\" aria-hidden=\"true\">2.</span><span>13</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 13\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 5\" aria-pressed=\"false\" aria-keyshortcuts=\"3\"><span class=\"answer-shortcut\" aria-hidden=\"true\">3.</span><span>5</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 5\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 14\" aria-pressed=\"false\" aria-keyshortcuts=\"4\"><span class=\"answer-shortcut\" aria-hidden=\"true\">4.</span><span>14</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 14\"]",
+    +         ],
+    +       },
+    +     ],
+    +     "tags": Array [
+    +       "cat.semantics",
+    +       "wcag21a",
+    +       "wcag253",
+    +       "EN-301-549",
+    +       "EN-9.2.5.3",
+    +       "RGAAv4",
+    +       "RGAA-6.1.5",
+    +     ],
+    +   },
+    + ]
+
+      19 |     contentType: 'application/json',
+      20 |   })
+    > 21 |   expect(result.violations).toEqual([])
+         |                             ^
+      22 |   await noOverflow(page)
+      23 | }
+      24 | async function tabAudit(page: Page) {
+        at scan (C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:21:29)
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:180:3
+
+    attachment #5: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-a024b-statistics-cards-and-dialog-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\accessibility-phase16-phas-a024b-statistics-cards-and-dialog-desktop\error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-a024b-statistics-cards-and-dialog-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\accessibility-phase16-phas-a024b-statistics-cards-and-dialog-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [mobile] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('button', { name: 'Keep my data', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  8000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('button', { name: 'Keep my data', exact: true }) with timeout 8000ms
+      - waiting for getByRole('button', { name: 'Keep my data', exact: true })
+        20 × locator resolved to <button type="button" class="button button-secondary">Keep my data</button>
+           - unexpected value "inactive"
+
+
+      70 |   await expect(page.getByRole('button', { name: 'Erase all app data', exact: true })).toBeFocused()
+      71 |   await page.keyboard.press('Tab')
+    > 72 |   await expect(page.getByRole('button', { name: 'Keep my data', exact: true })).toBeFocused()
+         |                                                                                 ^
+      73 |   await scan(page, info, 'keyboard-modal')
+      74 |   await page.keyboard.press('Escape')
+      75 |   await expect(clear).toBeFocused()
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:72:81
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-45c80-d-modal-keyboard-focus-work-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\accessibility-phase16-phas-45c80-d-modal-keyboard-focus-work-mobile\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-45c80-d-modal-keyboard-focus-work-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\accessibility-phase16-phas-45c80-d-modal-keyboard-focus-work-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [mobile] › e2e\accessibility-phase16.spec.ts:78:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 100
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+    +     "help": "Elements must have their visible text as part of their accessible name",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+    +     "id": "label-content-name-mismatch",
+    +     "impact": "serious",
+    +     "nodes": Array [
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 8\" aria-pressed=\"false\" aria-keyshortcuts=\"1\"><span class=\"answer-shortcut\" aria-hidden=\"true\">1.</span><span>8</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 8\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 16\" aria-pressed=\"false\" aria-keyshortcuts=\"2\"><span class=\"answer-shortcut\" aria-hidden=\"true\">2.</span><span>16</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 16\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 6\" aria-pressed=\"false\" aria-keyshortcuts=\"3\"><span class=\"answer-shortcut\" aria-hidden=\"true\">3.</span><span>6</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 6\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 5\" aria-pressed=\"false\" aria-keyshortcuts=\"4\"><span class=\"answer-shortcut\" aria-hidden=\"true\">4.</span><span>5</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 5\"]",
+    +         ],
+    +       },
+    +     ],
+    +     "tags": Array [
+    +       "cat.semantics",
+    +       "wcag21a",
+    +       "wcag253",
+    +       "EN-301-549",
+    +       "EN-9.2.5.3",
+    +       "RGAAv4",
+    +       "RGAA-6.1.5",
+    +     ],
+    +   },
+    + ]
+
+      19 |     contentType: 'application/json',
+      20 |   })
+    > 21 |   expect(result.violations).toEqual([])
+         |                             ^
+      22 |   await noOverflow(page)
+      23 | }
+      24 | async function tabAudit(page: Page) {
+        at scan (C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:21:29)
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:119:3
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-2627b-s-and-progress-descriptions-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\accessibility-phase16-phas-2627b-s-and-progress-descriptions-mobile\error-context.md
+
+    attachment #5: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-2627b-s-and-progress-descriptions-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\accessibility-phase16-phas-2627b-s-and-progress-descriptions-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [mobile] › e2e\accessibility-phase16.spec.ts:145:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 100
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+    +     "help": "Elements must have their visible text as part of their accessible name",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+    +     "id": "label-content-name-mismatch",
+    +     "impact": "serious",
+    +     "nodes": Array [
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 8\" aria-pressed=\"false\" aria-keyshortcuts=\"1\"><span class=\"answer-shortcut\" aria-hidden=\"true\">1.</span><span>8</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 8\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 10\" aria-pressed=\"false\" aria-keyshortcuts=\"2\"><span class=\"answer-shortcut\" aria-hidden=\"true\">2.</span><span>10</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 10\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 11\" aria-pressed=\"false\" aria-keyshortcuts=\"3\"><span class=\"answer-shortcut\" aria-hidden=\"true\">3.</span><span>11</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 11\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 12\" aria-pressed=\"false\" aria-keyshortcuts=\"4\"><span class=\"answer-shortcut\" aria-hidden=\"true\">4.</span><span>12</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 12\"]",
+    +         ],
+    +       },
+    +     ],
+    +     "tags": Array [
+    +       "cat.semantics",
+    +       "wcag21a",
+    +       "wcag253",
+    +       "EN-301-549",
+    +       "EN-9.2.5.3",
+    +       "RGAAv4",
+    +       "RGAA-6.1.5",
+    +     ],
+    +   },
+    + ]
+
+      19 |     contentType: 'application/json',
+      20 |   })
+    > 21 |   expect(result.violations).toEqual([])
+         |                             ^
+      22 |   await noOverflow(page)
+      23 | }
+      24 | async function tabAudit(page: Page) {
+        at scan (C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:21:29)
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:155:3
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-6c012-erves-pages-cards-and-recap-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\accessibility-phase16-phas-6c012-erves-pages-cards-and-recap-mobile\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-6c012-erves-pages-cards-and-recap-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\accessibility-phase16-phas-6c012-erves-pages-cards-and-recap-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [mobile] › e2e\accessibility-phase16.spec.ts:160:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 100
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+    +     "help": "Elements must have their visible text as part of their accessible name",
+    +     "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/label-content-name-mismatch?application=playwright",
+    +     "id": "label-content-name-mismatch",
+    +     "impact": "serious",
+    +     "nodes": Array [
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 12\" aria-pressed=\"false\" aria-keyshortcuts=\"1\"><span class=\"answer-shortcut\" aria-hidden=\"true\">1.</span><span>12</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 12\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 8\" aria-pressed=\"false\" aria-keyshortcuts=\"2\"><span class=\"answer-shortcut\" aria-hidden=\"true\">2.</span><span>8</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 8\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 1\" aria-pressed=\"false\" aria-keyshortcuts=\"3\"><span class=\"answer-shortcut\" aria-hidden=\"true\">3.</span><span>1</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 1\"]",
+    +         ],
+    +       },
+    +       Object {
+    +         "all": Array [],
+    +         "any": Array [
+    +           Object {
+    +             "data": null,
+    +             "id": "label-content-name-mismatch",
+    +             "impact": "serious",
+    +             "message": "Text inside the element is not included in the accessible name",
+    +             "relatedNodes": Array [],
+    +           },
+    +         ],
+    +         "failureSummary": "Fix any of the following:
+    +   Text inside the element is not included in the accessible name",
+    +         "html": "<button type=\"button\" class=\"answer-choice\" aria-label=\"Answer 10\" aria-pressed=\"false\" aria-keyshortcuts=\"4\"><span class=\"answer-shortcut\" aria-hidden=\"true\">4.</span><span>10</span><span class=\"answer-marker\" aria-hidden=\"true\"></span></button>",
+    +         "impact": "serious",
+    +         "none": Array [],
+    +         "target": Array [
+    +           "button[aria-label=\"Answer 10\"]",
+    +         ],
+    +       },
+    +     ],
+    +     "tags": Array [
+    +       "cat.semantics",
+    +       "wcag21a",
+    +       "wcag253",
+    +       "EN-301-549",
+    +       "EN-9.2.5.3",
+    +       "RGAAv4",
+    +       "RGAA-6.1.5",
+    +     ],
+    +   },
+    + ]
+
+      19 |     contentType: 'application/json',
+      20 |   })
+    > 21 |   expect(result.violations).toEqual([])
+         |                             ^
+      22 |   await noOverflow(page)
+      23 | }
+      24 | async function tabAudit(page: Page) {
+        at scan (C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:21:29)
+        at C:\Users\Jnuso\OneDrive\Documents\UCONN FALL 2026\CSE4095\Assignment 12\math-practice-app\e2e\accessibility-phase16.spec.ts:180:3
+
+    attachment #5: screenshot (image/png) ──────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-a024b-statistics-cards-and-dialog-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: output\playwright\regression-results\accessibility-phase16-phas-a024b-statistics-cards-and-dialog-mobile\error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    output\playwright\regression-results\accessibility-phase16-phas-a024b-statistics-cards-and-dialog-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace output\playwright\regression-results\accessibility-phase16-phas-a024b-statistics-cards-and-dialog-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8 failed
+    [desktop] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work
+    [desktop] › e2e\accessibility-phase16.spec.ts:78:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions
+    [desktop] › e2e\accessibility-phase16.spec.ts:145:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap
+    [desktop] › e2e\accessibility-phase16.spec.ts:160:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog
+    [mobile] › e2e\accessibility-phase16.spec.ts:55:1 › phase16: Tab reaches controls, native radio arrows and modal keyboard focus work
+    [mobile] › e2e\accessibility-phase16.spec.ts:78:1 › phase16: number shortcuts are scoped, reveal/next retain focus and progress descriptions
+    [mobile] › e2e\accessibility-phase16.spec.ts:145:1 › phase16: zoom-equivalent 640px reflow preserves pages, cards and recap
+    [mobile] › e2e\accessibility-phase16.spec.ts:160:1 › phase16: doubled base text reflows setup, populated statistics, cards and dialog
+  2 passed (29.3s)
