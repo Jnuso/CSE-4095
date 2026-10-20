@@ -1,0 +1,2 @@
+{"width":1440,"shortcuts":true,"focusProgress":true,"reducedMotion":true,"largeTextSimulation":true,"dialogKeyboard":true,"pageErrors":[]}
+{"width":390,"shortcuts":true,"focusProgress":true,"reducedMotion":true,"largeTextSimulation":true,"dialogKeyboard":true,"pageErrors":[]}
