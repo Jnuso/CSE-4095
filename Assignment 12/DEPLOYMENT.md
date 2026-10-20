@@ -8,7 +8,7 @@ The student explicitly chose to make the whole Jnuso/CSE-4095 repository and its
 
 The repository-root `.github/workflows/math-practice-pages.yml` runs on relevant main-branch pushes, pull requests, and manual dispatch. It installs locked dependencies/browser support and runs `npm run check:all`. Only a successful main-branch run uploads `math-practice-app/dist-pages` and deploys it. Pull requests run verification without deploying. The deployment job has Pages/OIDC permissions; verification has read-only repository permissions. Action versions are pinned to the upstream SHAs referenced by Vite's official Pages guide.
 
-The first deployment was started manually after GitHub indexed the new workflow. If a future eligible push does not create a run, open Actions, select Math Practice Pages, and use Run workflow on main. Verification still runs before publishing.
+The first deployment was started manually after GitHub indexed the new workflow. If a future eligible push does not create a run, open Actions, select Math Practice checks and Pages deployment, and use Run workflow on main. Verification still runs before publishing.
 
 Future authorized development phases follow: explanation and useful clarifications, implementation, tests, independent and focused Gemma review, verified commit/push, deployment confirmation, then student review steps. A failed check blocks publishing that version. Gemma requests keep their one-call job cap and one-minute spacing; they are not run inside public CI and no Google API key is required there.
 
