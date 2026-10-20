@@ -1,0 +1,22 @@
+
+> math-practice-app@0.1.0 check:all
+> npm run check && node scripts/browser-tests.mjs test && npm run test:pages
+
+
+> math-practice-app@0.1.0 check
+> npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build
+
+
+> math-practice-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+[error] output/phase-15-ci-job-page.html: SyntaxError: Unexpected closing tag "p". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags (686:1)
+[error]   684 | </h3>
+[error]   685 |       <p data-view-component="true" class="blankslate-description">        <p class="color-fg-muted my-2 mb-2 ws-normal">There was an error while loading. <a class="Link--inTextBlock" data-turbo="false" href="" aria-label="Please reload this page">Please reload this page</a>.</p>
+[error] > 686 | </p>
+[error]       | ^^^^
+[error]   687 |
+[error]   688 | </div>  </div>
+[error]   689 | </div>  </div>
+Error occurred when checking code style in the above file.

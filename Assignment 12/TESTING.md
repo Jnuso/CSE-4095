@@ -123,3 +123,5 @@ The mistakeReview unit suite covers priority/mixing/filtering, durable consecuti
 ## Phase 15 advanced statistics
 
 The mistakeStatistics service/component suites cover active/mastered counts, source-review totals (including legacy/incomplete attempts), journal/record identity deduplication, retained-vs-remembered coverage, original-operation attribution, ties, stable immutable sorting, reset cutoff, detail dates/progress and pagination. mistake-statistics.spec.ts adds three flows on desktop/mobile for actual practice into mastery, journal-only data and read-only switching/reload, reset and empty states, ties/pagination, 320-pixel overflow checks and full-page axe scans preserving all rules. See PHASE_15_TESTING.md.
+
+On GitHub Actions, the regression and Pages configurations add the built-in GitHub reporter alongside list/html so browser failures appear as check annotations, including file/line and the failed assertion. Local output is unchanged. This changes diagnostics only, not retries, deadlines, browser choices, accessibility rules or the deploy-success requirement.

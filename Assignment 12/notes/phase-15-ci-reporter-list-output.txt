@@ -1,0 +1,141 @@
+Listing tests:
+  [desktop] › accessibility.spec.ts:24:1 › accessibility: scanner detects an intentionally unlabeled control
+  [desktop] › accessibility.spec.ts:49:3 › accessibility: route /
+  [desktop] › accessibility.spec.ts:49:3 › accessibility: route /practice/setup
+  [desktop] › accessibility.spec.ts:49:3 › accessibility: route /practice/summary
+  [desktop] › accessibility.spec.ts:49:3 › accessibility: route /statistics
+  [desktop] › accessibility.spec.ts:49:3 › accessibility: route /settings
+  [desktop] › accessibility.spec.ts:49:3 › accessibility: route /unknown-page
+  [desktop] › accessibility.spec.ts:56:1 › accessibility: setup validation and selected configuration
+  [desktop] › accessibility.spec.ts:67:1 › accessibility: card front, selection, reveal, and next question
+  [desktop] › accessibility.spec.ts:82:1 › accessibility: continuous practice with reduced motion
+  [desktop] › accessibility.spec.ts:89:1 › accessibility: completed summary
+  [desktop] › accessibility.spec.ts:99:1 › accessibility: zero-attempt summary
+  [desktop] › accessibility.spec.ts:105:1 › accessibility: saved-data warning
+  [desktop] › mistake-statistics.spec.ts:25:1 › remembered statistics outlast session history, show mastered separately, and browsing is read-only
+  [desktop] › mistake-statistics.spec.ts:70:1 › ties, sorted details and pagination preserve matching counts on narrow screens
+  [desktop] › mistake-statistics.spec.ts:111:1 › real practice and review immediately update dashboard mastery and review counts
+  [desktop] › mistakes.spec.ts:6:1 › misses persist immediately without double counting snapshots, refresh, or preferences
+  [desktop] › mistakes.spec.ts:48:1 › two tabs preserve unique misses and a reset stops stale mistake restoration
+  [desktop] › mistakes.spec.ts:75:1 › invalid mistake data warns accessibly while valid history is recovered and saved
+  [desktop] › navigation.spec.ts:12:3 › direct route / and refresh
+  [desktop] › navigation.spec.ts:12:3 › direct route /practice/setup and refresh
+  [desktop] › navigation.spec.ts:12:3 › direct route /practice/session and refresh
+  [desktop] › navigation.spec.ts:12:3 › direct route /practice/summary and refresh
+  [desktop] › navigation.spec.ts:12:3 › direct route /statistics and refresh
+  [desktop] › navigation.spec.ts:12:3 › direct route /settings and refresh
+  [desktop] › navigation.spec.ts:12:3 › direct route /unknown-page and refresh
+  [desktop] › navigation.spec.ts:28:1 › home actions, active navigation, and destination focus
+  [desktop] › navigation.spec.ts:42:1 › setup validation, multi-selection, exclusive controls, and edit round trip
+  [desktop] › practice.spec.ts:3:1 › selection, flip, keyboard controls, focus, and independent self-report
+  [desktop] › practice.spec.ts:34:3 › fixed 5-question session stops exactly at the limit
+  [desktop] › practice.spec.ts:34:3 › fixed 10-question session stops exactly at the limit
+  [desktop] › practice.spec.ts:34:3 › fixed 20-question session stops exactly at the limit
+  [desktop] › practice.spec.ts:64:1 › continuous practice passes 20 attempts and handles cancel/accept ending
+  [desktop] › practice.spec.ts:79:1 › animation switch and reduced-motion preference
+  [desktop] › review.spec.ts:89:1 › review eligibility, durable success, early mastery, and reload without double counting
+  [desktop] › review.spec.ts:135:1 › mixed review targets original patterns, wrong resets success, summary counts and actions stay usable
+  [desktop] › review.spec.ts:155:1 › review progress merges across tabs and stale review cannot restore an erased pattern
+  [desktop] › review.spec.ts:188:1 › quota failure preserves pending success and a later save retries without counting twice
+  [desktop] › settings.spec.ts:13:1 › settings save, reload, session overrides, explanations and animation
+  [desktop] › settings.spec.ts:53:1 › clear-all confirmation is accessible, cancellable, and restores only app data
+  [desktop] › settings.spec.ts:115:1 › failed clear-all preserves data; explicit confirmation can recover protected storage
+  [desktop] › settings.spec.ts:146:1 › clear-all in another tab resets live preferences and blocks stale practice saves
+  [desktop] › statistics.spec.ts:6:1 › statistics: incomplete attempts, accessible reset and preferences
+  [desktop] › statistics.spec.ts:53:1 › statistics: newest-first history, pagination and failed-reset preservation
+  [desktop] › statistics.spec.ts:95:1 › statistics: cross-tab reset blocks stale saves and permits fresh practice
+  [desktop] › storage.spec.ts:18:1 › every report persists full attempt data and a fresh recap works after reload
+  [desktop] › storage.spec.ts:46:1 › saved setup and animation reload, and newest completed recap loads without history state
+  [desktop] › storage.spec.ts:72:3 › corrupt JSON is protected while practice continues
+  [desktop] › storage.spec.ts:72:3 › future schema is protected while practice continues
+  [desktop] › storage.spec.ts:85:1 › invalid settings recover without discarding valid history
+  [desktop] › storage.spec.ts:97:3 › legacy schema undefined migrates on the next successful save
+  [desktop] › storage.spec.ts:97:3 › legacy schema 0 migrates on the next successful save
+  [desktop] › storage.spec.ts:116:1 › quota failure warns, keeps the previous save, and lets the session advance
+  [desktop] › storage.spec.ts:138:1 › blocked storage shows a warning and keeps practice usable
+  [desktop] › summary-layout.spec.ts:3:1 › summary actions preserve setup and reset replay without replaying the completed card
+  [desktop] › summary-layout.spec.ts:38:1 › empty ending has zero totals and no invented practiced operations
+  [desktop] › summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens
+  [mobile] › accessibility.spec.ts:24:1 › accessibility: scanner detects an intentionally unlabeled control
+  [mobile] › accessibility.spec.ts:49:3 › accessibility: route /
+  [mobile] › accessibility.spec.ts:49:3 › accessibility: route /practice/setup
+  [mobile] › accessibility.spec.ts:49:3 › accessibility: route /practice/summary
+  [mobile] › accessibility.spec.ts:49:3 › accessibility: route /statistics
+  [mobile] › accessibility.spec.ts:49:3 › accessibility: route /settings
+  [mobile] › accessibility.spec.ts:49:3 › accessibility: route /unknown-page
+  [mobile] › accessibility.spec.ts:56:1 › accessibility: setup validation and selected configuration
+  [mobile] › accessibility.spec.ts:67:1 › accessibility: card front, selection, reveal, and next question
+  [mobile] › accessibility.spec.ts:82:1 › accessibility: continuous practice with reduced motion
+  [mobile] › accessibility.spec.ts:89:1 › accessibility: completed summary
+  [mobile] › accessibility.spec.ts:99:1 › accessibility: zero-attempt summary
+  [mobile] › accessibility.spec.ts:105:1 › accessibility: saved-data warning
+  [mobile] › mistake-statistics.spec.ts:25:1 › remembered statistics outlast session history, show mastered separately, and browsing is read-only
+  [mobile] › mistake-statistics.spec.ts:70:1 › ties, sorted details and pagination preserve matching counts on narrow screens
+  [mobile] › mistake-statistics.spec.ts:111:1 › real practice and review immediately update dashboard mastery and review counts
+  [mobile] › mistakes.spec.ts:6:1 › misses persist immediately without double counting snapshots, refresh, or preferences
+  [mobile] › mistakes.spec.ts:48:1 › two tabs preserve unique misses and a reset stops stale mistake restoration
+  [mobile] › mistakes.spec.ts:75:1 › invalid mistake data warns accessibly while valid history is recovered and saved
+  [mobile] › navigation.spec.ts:12:3 › direct route / and refresh
+  [mobile] › navigation.spec.ts:12:3 › direct route /practice/setup and refresh
+  [mobile] › navigation.spec.ts:12:3 › direct route /practice/session and refresh
+  [mobile] › navigation.spec.ts:12:3 › direct route /practice/summary and refresh
+  [mobile] › navigation.spec.ts:12:3 › direct route /statistics and refresh
+  [mobile] › navigation.spec.ts:12:3 › direct route /settings and refresh
+  [mobile] › navigation.spec.ts:12:3 › direct route /unknown-page and refresh
+  [mobile] › navigation.spec.ts:28:1 › home actions, active navigation, and destination focus
+  [mobile] › navigation.spec.ts:42:1 › setup validation, multi-selection, exclusive controls, and edit round trip
+  [mobile] › practice.spec.ts:3:1 › selection, flip, keyboard controls, focus, and independent self-report
+  [mobile] › practice.spec.ts:34:3 › fixed 5-question session stops exactly at the limit
+  [mobile] › practice.spec.ts:34:3 › fixed 10-question session stops exactly at the limit
+  [mobile] › practice.spec.ts:34:3 › fixed 20-question session stops exactly at the limit
+  [mobile] › practice.spec.ts:64:1 › continuous practice passes 20 attempts and handles cancel/accept ending
+  [mobile] › practice.spec.ts:79:1 › animation switch and reduced-motion preference
+  [mobile] › review.spec.ts:89:1 › review eligibility, durable success, early mastery, and reload without double counting
+  [mobile] › review.spec.ts:135:1 › mixed review targets original patterns, wrong resets success, summary counts and actions stay usable
+  [mobile] › review.spec.ts:155:1 › review progress merges across tabs and stale review cannot restore an erased pattern
+  [mobile] › review.spec.ts:188:1 › quota failure preserves pending success and a later save retries without counting twice
+  [mobile] › settings.spec.ts:13:1 › settings save, reload, session overrides, explanations and animation
+  [mobile] › settings.spec.ts:53:1 › clear-all confirmation is accessible, cancellable, and restores only app data
+  [mobile] › settings.spec.ts:115:1 › failed clear-all preserves data; explicit confirmation can recover protected storage
+  [mobile] › settings.spec.ts:146:1 › clear-all in another tab resets live preferences and blocks stale practice saves
+  [mobile] › statistics.spec.ts:6:1 › statistics: incomplete attempts, accessible reset and preferences
+  [mobile] › statistics.spec.ts:53:1 › statistics: newest-first history, pagination and failed-reset preservation
+  [mobile] › statistics.spec.ts:95:1 › statistics: cross-tab reset blocks stale saves and permits fresh practice
+  [mobile] › storage.spec.ts:18:1 › every report persists full attempt data and a fresh recap works after reload
+  [mobile] › storage.spec.ts:46:1 › saved setup and animation reload, and newest completed recap loads without history state
+  [mobile] › storage.spec.ts:72:3 › corrupt JSON is protected while practice continues
+  [mobile] › storage.spec.ts:72:3 › future schema is protected while practice continues
+  [mobile] › storage.spec.ts:85:1 › invalid settings recover without discarding valid history
+  [mobile] › storage.spec.ts:97:3 › legacy schema undefined migrates on the next successful save
+  [mobile] › storage.spec.ts:97:3 › legacy schema 0 migrates on the next successful save
+  [mobile] › storage.spec.ts:116:1 › quota failure warns, keeps the previous save, and lets the session advance
+  [mobile] › storage.spec.ts:138:1 › blocked storage shows a warning and keeps practice usable
+  [mobile] › summary-layout.spec.ts:3:1 › summary actions preserve setup and reset replay without replaying the completed card
+  [mobile] › summary-layout.spec.ts:38:1 › empty ending has zero totals and no invented practiced operations
+  [mobile] › summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens
+  [restart] › restart.spec.ts:7:1 › saved attempts and settings survive closing and reopening a real browser
+Total: 115 tests in 11 files
+::notice title=🎭 Playwright Run Summary::  115 did not run
+Listing tests:
+  [pages-desktop] › pages.spec.ts:13:3 › Pages direct hash route / survives refresh
+  [pages-desktop] › pages.spec.ts:13:3 › Pages direct hash route /practice/setup survives refresh
+  [pages-desktop] › pages.spec.ts:13:3 › Pages direct hash route /practice/session survives refresh
+  [pages-desktop] › pages.spec.ts:13:3 › Pages direct hash route /practice/summary survives refresh
+  [pages-desktop] › pages.spec.ts:13:3 › Pages direct hash route /statistics survives refresh
+  [pages-desktop] › pages.spec.ts:13:3 › Pages direct hash route /settings survives refresh
+  [pages-desktop] › pages.spec.ts:13:3 › Pages direct hash route /unknown-page survives refresh
+  [pages-desktop] › pages.spec.ts:21:1 › Pages hosting has no history fallback
+  [pages-desktop] › pages.spec.ts:26:1 › Pages skip link preserves route and focuses main content
+  [pages-desktop] › pages.spec.ts:37:1 › Pages session, summary persistence, navigation, and accessibility
+  [pages-mobile] › pages.spec.ts:13:3 › Pages direct hash route / survives refresh
+  [pages-mobile] › pages.spec.ts:13:3 › Pages direct hash route /practice/setup survives refresh
+  [pages-mobile] › pages.spec.ts:13:3 › Pages direct hash route /practice/session survives refresh
+  [pages-mobile] › pages.spec.ts:13:3 › Pages direct hash route /practice/summary survives refresh
+  [pages-mobile] › pages.spec.ts:13:3 › Pages direct hash route /statistics survives refresh
+  [pages-mobile] › pages.spec.ts:13:3 › Pages direct hash route /settings survives refresh
+  [pages-mobile] › pages.spec.ts:13:3 › Pages direct hash route /unknown-page survives refresh
+  [pages-mobile] › pages.spec.ts:21:1 › Pages hosting has no history fallback
+  [pages-mobile] › pages.spec.ts:26:1 › Pages skip link preserves route and focuses main content
+  [pages-mobile] › pages.spec.ts:37:1 › Pages session, summary persistence, navigation, and accessibility
+Total: 20 tests in 1 file
+::notice title=🎭 Playwright Run Summary::  20 did not run

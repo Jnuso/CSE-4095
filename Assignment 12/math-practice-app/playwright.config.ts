@@ -12,6 +12,7 @@ export default defineConfig({
   outputDir: 'output/playwright/regression-results',
   reporter: [
     ['list'],
+    ...(process.env.GITHUB_ACTIONS ? [['github'] as const] : []),
     ['html', { outputFolder: 'output/playwright/regression-report', open: 'never' }],
   ],
   use: {

@@ -10,7 +10,11 @@ export default defineConfig({
   timeout: 45_000,
   expect: { timeout: 8_000 },
   outputDir: 'output/playwright/pages-results',
-  reporter: [['list'], ['html', { outputFolder: 'output/playwright/pages-report', open: 'never' }]],
+  reporter: [
+    ['list'],
+    ...(process.env.GITHUB_ACTIONS ? [['github'] as const] : []),
+    ['html', { outputFolder: 'output/playwright/pages-report', open: 'never' }],
+  ],
   use: {
     channel: 'chromium',
     baseURL: 'http://127.0.0.1:4373/CSE-4095/',
