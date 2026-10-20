@@ -15,3 +15,5 @@ Use a private/incognito window for an empty history, or your usual browser to in
 Statistics cover the newest 100 retained sessions on this browser, including unfinished sessions. Percentages round to whole numbers and use the child's self-report, not whether the selected choice was mathematically correct. These are saved-history totals, not an unlimited lifetime archive. Mistake-pattern statistics and settings controls belong to later phases.
 
 From math-practice-app, run `npm.cmd run check:all` for formatting, lint, unit/component checks, type checking, both builds, regression/accessibility browser tests, and Pages hosting checks. See TESTING.md for reports and isolation details. Actual results and review limitations are recorded in DEVELOPMENT_LOG.md.
+
+To repeat the focused hosted check from the course repository root, run `node "Assignment 12/notes/phase-10-live-check.mjs"`. It uses disposable desktop/mobile data, verifies statistics and reset behavior, and saves ignored screenshots/results under math-practice-app/output/playwright/phase-10-live. It complements the full local gate rather than replacing it.
