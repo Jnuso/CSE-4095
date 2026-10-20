@@ -36,3 +36,5 @@ output/playwright/phase-12-live/
 *.sw?
 
 /output/playwright/phase-13-live/
+
+/output/playwright/phase-14-live/

@@ -19,10 +19,10 @@ function whole(value: unknown, minimum = 0): value is number {
 function date(value: unknown): value is string {
   return typeof value === 'string' && Number.isFinite(Date.parse(value))
 }
-export function isMistakeEvent(value: unknown): value is MistakeEvent {
+export function isAttemptEvent(value: unknown): value is MistakeEvent {
   if (!object(value) || !object(value.attempt) || !date(value.sessionStartedAt)) return false
   const attempt = value.attempt
-  if (attempt.selfReportedCorrect !== false || !date(attempt.attemptedAt)) return false
+  if (!date(attempt.attemptedAt)) return false
   return isCompletedSession({
     session: {
       id: attempt.sessionId,
@@ -34,11 +34,22 @@ export function isMistakeEvent(value: unknown): value is MistakeEvent {
         Math.max(Date.parse(value.sessionStartedAt), Date.parse(attempt.attemptedAt)),
       ).toISOString(),
       attempted: 1,
-      correct: 0,
-      incorrect: 1,
+      correct: Number(attempt.selfReportedCorrect === true),
+      incorrect: Number(attempt.selfReportedCorrect === false),
     },
     attempts: [attempt],
   })
+}
+export function isMistakeEvent(value: unknown): value is MistakeEvent {
+  return isAttemptEvent(value) && !value.attempt.selfReportedCorrect
+}
+export function isReviewEvent(value: unknown): value is MistakeEvent {
+  return (
+    isAttemptEvent(value) &&
+    value.attempt.source === 'mistake-review' &&
+    typeof value.attempt.mistakePatternId === 'string' &&
+    !!value.attempt.mistakePatternId.trim()
+  )
 }
 export function isMistakePattern(value: unknown): value is MistakePattern {
   if (
@@ -71,14 +82,13 @@ export function isMistakePattern(value: unknown): value is MistakePattern {
   return Number.isSafeInteger(answer) && answer === value.correctAnswer
 }
 // Both identities must be unique: retries and duplicate callbacks represent one reported question.
-export function mergeMistakeEvents(
+export function mergeAttemptEvents(
   events: readonly MistakeEvent[],
   cutoff?: number,
 ): MistakeEvent[] {
   const ids = new Set<string>(),
     questions = new Set<string>()
   return events.filter((event) => {
-    if (event.attempt.selfReportedCorrect) return false
     if (cutoff !== undefined && Date.parse(event.sessionStartedAt) <= cutoff) return false
     const id = JSON.stringify([event.attempt.sessionId, event.attempt.id])
     const question = JSON.stringify([event.attempt.sessionId, event.attempt.questionId])
@@ -87,6 +97,15 @@ export function mergeMistakeEvents(
     questions.add(question)
     return true
   })
+}
+export function mergeMistakeEvents(
+  events: readonly MistakeEvent[],
+  cutoff?: number,
+): MistakeEvent[] {
+  return mergeAttemptEvents(
+    events.filter((e) => !e.attempt.selfReportedCorrect),
+    cutoff,
+  )
 }
 export function buildMistakePatterns(
   events: readonly MistakeEvent[],

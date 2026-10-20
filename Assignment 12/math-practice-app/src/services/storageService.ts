@@ -1,11 +1,12 @@
 import type { MistakePattern } from '../types/mistake'
 import {
-  buildMistakePatterns,
+  isReviewEvent,
+  mergeAttemptEvents,
   isMistakeEvent,
   isMistakePattern,
-  mergeMistakeEvents,
   type MistakeEvent,
 } from './mistakeService'
+import { buildReviewedPatterns } from './mistakeReview'
 import type { AppSettings } from '../types/settings'
 import type { CompletedSession } from './sessionSummary'
 import { isCompletedSession } from './sessionSummary'
@@ -19,6 +20,7 @@ export interface SavedData {
   version: 1
   settings: AppSettings
   records: StoredSession[]
+  reviewEvents?: MistakeEvent[]
   mistakeEvents?: MistakeEvent[]
   mistakePatterns?: MistakePattern[]
   historyResetAt?: number
@@ -98,20 +100,41 @@ export function recentRecords(records: readonly StoredSession[]): StoredSession[
 export function trackMistakes(data: SavedData): SavedData {
   const fromRecords = data.records.flatMap((record) =>
     record.attempts
-      .filter((attempt) => !attempt.selfReportedCorrect)
+      .filter(
+        (attempt) =>
+          !attempt.selfReportedCorrect ||
+          (attempt.source === 'mistake-review' && attempt.mistakePatternId),
+      )
       .map((attempt) => ({ attempt, sessionStartedAt: record.session.startedAt })),
   )
-  if (!data.mistakeEvents && !data.mistakePatterns && fromRecords.length === 0)
+  if (
+    !data.mistakeEvents &&
+    !data.mistakePatterns &&
+    !data.reviewEvents &&
+    fromRecords.length === 0
+  )
     return { ...data, records: recentRecords(data.records) }
-  const mistakeEvents = mergeMistakeEvents(
-    [...(data.mistakeEvents ?? []), ...fromRecords],
+  const all = mergeAttemptEvents(
+    [...(data.mistakeEvents ?? []), ...(data.reviewEvents ?? []), ...fromRecords],
     data.historyResetAt,
+  )
+  const reviewEvents = all.filter(isReviewEvent)
+  const mistakeEvents = all.filter(
+    (e) =>
+      !e.attempt.selfReportedCorrect &&
+      !(e.attempt.source === 'mistake-review' && e.attempt.mistakePatternId),
   )
   return {
     ...data,
     records: recentRecords(data.records),
     mistakeEvents,
-    mistakePatterns: buildMistakePatterns(mistakeEvents, data.mistakePatterns),
+    ...(reviewEvents.length || data.reviewEvents ? { reviewEvents } : {}),
+    mistakePatterns: buildReviewedPatterns(
+      mistakeEvents,
+      reviewEvents,
+      data.reviewEvents === undefined ? (data.mistakePatterns ?? []) : [],
+      data.settings.masteryThreshold,
+    ),
   }
 }
 
@@ -177,6 +200,16 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
     typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : undefined
   const historyResetAt = marker(migrated.historyResetAt)
   const appResetAt = marker(migrated.appResetAt)
+  const reviews = Array.isArray(migrated.reviewEvents)
+    ? migrated.reviewEvents.filter(isReviewEvent)
+    : []
+  if (
+    migrated.reviewEvents !== undefined &&
+    (!Array.isArray(migrated.reviewEvents) || reviews.length !== migrated.reviewEvents.length)
+  )
+    warnings.push(
+      'Some saved review progress could not be read. Valid answers and mistake history are still available.',
+    )
   const hasMistakes = migrated.mistakeEvents !== undefined || migrated.mistakePatterns !== undefined
   const events = Array.isArray(migrated.mistakeEvents)
     ? migrated.mistakeEvents.filter(isMistakeEvent)
@@ -204,6 +237,7 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
     ...(historyResetAt === undefined ? {} : { historyResetAt }),
     ...(appResetAt === undefined ? {} : { appResetAt }),
     ...(hasMistakes ? { mistakeEvents: events, mistakePatterns: patterns } : {}),
+    ...(migrated.reviewEvents === undefined ? {} : { reviewEvents: reviews }),
   })
   return { data: { ...data, records: recentRecords(data.records) }, warnings, canWrite: true }
 }
@@ -218,6 +252,7 @@ export function writeSavedData(
     data.version !== SCHEMA_VERSION ||
     !isAppSettings(data.settings) ||
     !data.records.every(isStoredSession) ||
+    (data.reviewEvents !== undefined && !data.reviewEvents.every(isReviewEvent)) ||
     (data.mistakeEvents !== undefined && !data.mistakeEvents.every(isMistakeEvent)) ||
     (data.mistakePatterns !== undefined && !data.mistakePatterns.every(isMistakePattern))
   )

@@ -47,7 +47,19 @@ export function isCompletedSession(value: unknown): value is CompletedSession {
       !identifier(attempt.questionId) ||
       questionIds.has(attempt.questionId) ||
       attempt.sessionId !== session.id ||
-      !session.operations.includes(attempt.operation as PracticeAttempt['operation']) ||
+      !['addition', 'subtraction', 'multiplication', 'division'].includes(
+        attempt.operation as string,
+      ) ||
+      (!session.operations.includes(attempt.operation as PracticeAttempt['operation']) &&
+        !(
+          session.reviewMode === 'mistake-review' &&
+          attempt.source === 'mistake-review' &&
+          identifier(attempt.mistakePatternId)
+        )) ||
+      (attempt.mistakePatternId !== undefined &&
+        (!identifier(attempt.mistakePatternId) || attempt.source !== 'mistake-review')) ||
+      (session.reviewMode === 'mistake-review' &&
+        (attempt.source !== 'mistake-review' || !identifier(attempt.mistakePatternId))) ||
       attempt.difficulty !== session.difficulty ||
       !count(attempt.firstOperand) ||
       !count(attempt.secondOperand) ||
@@ -86,8 +98,8 @@ export function summarize({ session, attempts }: CompletedSession) {
     correct: session.correct,
     incorrect: session.incorrect,
     accuracy: session.attempted === 0 ? 0 : Math.round((session.correct / session.attempted) * 100),
-    operations: session.operations.filter((operation) =>
-      attempts.some((attempt) => attempt.operation === operation),
+    operations: (['addition', 'subtraction', 'multiplication', 'division'] as const).filter(
+      (operation) => attempts.some((attempt) => attempt.operation === operation),
     ),
     reviewCount: attempts.filter((attempt) => attempt.source === 'mistake-review').length,
   }

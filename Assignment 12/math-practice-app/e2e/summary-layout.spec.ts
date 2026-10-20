@@ -12,7 +12,7 @@ test('summary actions preserve setup and reset replay without replaying the comp
   await expect(
     page.getByRole('heading', { name: 'Your practice recap', exact: true }),
   ).toBeFocused()
-  await expect(page.getByRole('button', { name: 'Practice Mistakes', exact: true })).toBeDisabled()
+  await expect(page.getByRole('link', { name: 'Practice Mistakes', exact: true })).toBeVisible()
   await page.getByRole('link', { name: 'Practice Again', exact: true }).click()
   await expect(page.getByText('Question 1 of 5', { exact: true })).toBeVisible()
   await expect(page.getByRole('status', { name: 'Session totals' })).toContainText('Completed: 0')

@@ -1,3 +1,4 @@
+import { activeReviewPatterns } from '../services/mistakeReview'
 import FeaturePlaceholder from '../components/common/FeaturePlaceholder'
 import { Link, useLocation } from 'react-router'
 import { summaryFromState, summarize } from '../services/sessionSummary'
@@ -8,6 +9,7 @@ import { latestCompletedSession, MAX_SAVED_SESSIONS } from '../services/storageS
 export default function SessionSummaryPage() {
   const { state } = useLocation()
   const { data } = usePracticeStorage()
+  const activeCount = activeReviewPatterns(data.mistakePatterns ?? []).length
   const candidate = summaryFromState(state) ?? (state == null ? latestCompletedSession(data) : null)
   const completed =
     candidate && Date.parse(candidate.session.startedAt) > (data.historyResetAt ?? 0)
@@ -17,6 +19,7 @@ export default function SessionSummaryPage() {
     const results = summarize(completed)
     const { session } = completed
     const practiceConfig = {
+      reviewMode: session.reviewMode,
       operations: session.operations,
       difficulty: session.difficulty,
       sessionLength: session.sessionLength,
@@ -81,19 +84,29 @@ export default function SessionSummaryPage() {
           <div className="summary-actions" aria-label="Summary actions">
             <Link
               className="button button-primary"
-              to="/practice/session"
+              to={session.reviewMode === 'mistake-review' ? '/practice/setup' : '/practice/session'}
               state={{ practiceConfig }}
             >
               Practice Again
             </Link>
-            <button
-              className="button button-secondary"
-              type="button"
-              disabled
-              aria-describedby="mistake-review-note"
-            >
-              Practice Mistakes
-            </button>
+            {activeCount > 0 ? (
+              <Link
+                className="button button-secondary"
+                to="/practice/setup"
+                state={{ practiceConfig: { ...practiceConfig, reviewMode: 'mistake-review' } }}
+              >
+                Practice Mistakes
+              </Link>
+            ) : (
+              <button
+                className="button button-secondary"
+                type="button"
+                disabled
+                aria-describedby="mistake-review-note"
+              >
+                Practice Mistakes
+              </button>
+            )}
             <Link
               className="button button-secondary"
               to="/practice/setup"
@@ -109,7 +122,9 @@ export default function SessionSummaryPage() {
             </Link>
           </div>
           <p id="mistake-review-note" className="field-help">
-            Practice Mistakes will be available when mistake review is added.
+            {activeCount > 0
+              ? `${activeCount} active mistake patterns are ready to strengthen. Choose the matching operations and difficulty on setup.`
+              : 'No active mistakes need review. Mark a regular answer wrong to remember a new mistake.'}
           </p>
           <p className="field-help">
             Reported answers are saved on this browser when storage is available. The newest{' '}

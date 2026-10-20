@@ -17,7 +17,9 @@ describe('Practice configuration', () => {
   it('provides all options with addition, Beginner, and 10 questions selected by default', () => {
     setup()
     expect(screen.getAllByRole('checkbox')).toHaveLength(4)
-    expect(screen.getAllByRole('radio')).toHaveLength(8)
+    expect(screen.getAllByRole('radio')).toHaveLength(10)
+    expect(screen.getByRole('radio', { name: 'Regular practice' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Mistake review' })).toBeDisabled()
     expect(screen.getByRole('checkbox', { name: 'Addition' })).toBeChecked()
     expect(screen.getByRole('radio', { name: /^Beginner/ })).toBeChecked()
     expect(screen.getByRole('radio', { name: '10 questions' })).toBeChecked()

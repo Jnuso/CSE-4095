@@ -15,15 +15,32 @@ export default function PracticeSessionPanel({
 }: {
   configuration: PracticeConfiguration
 }) {
-  const [state, setState] = useState(() => startSession(configuration))
-  const latest = useRef(state)
   const { data, saveSession, saveSettings } = usePracticeStorage()
+  const [state, setState] = useState(() =>
+    startSession(configuration, undefined, data.mistakePatterns, data.settings.masteryThreshold),
+  )
+  const latest = useRef(state)
   const animationEnabled = data.settings.cardAnimationEnabled
   useEffect(() => {
     saveSession({ session: state.session, attempts: state.attempts })
   }, [state.session, state.attempts, saveSession])
   function report(result: CardResult) {
-    const next = recordResult(latest.current, result)
+    const current = latest.current
+    const activeIds = new Set(
+      (data.mistakePatterns ?? []).filter((p) => !p.mastered).map((p) => p.id),
+    )
+    const next = recordResult(
+      current.reviewPatterns
+        ? {
+            ...current,
+            masteryThreshold: data.settings.masteryThreshold,
+            reviewPatterns: current.reviewPatterns
+              .filter((p) => activeIds.has(p.id))
+              .map((p) => data.mistakePatterns?.find((saved) => saved.id === p.id) ?? p),
+          }
+        : current,
+      result,
+    )
     latest.current = next
     setState(next)
   }
@@ -57,6 +74,12 @@ export default function PracticeSessionPanel({
     )
   return (
     <div className="session-panel">
+      {configuration.reviewMode === 'mistake-review' && (
+        <p className="field-help">
+          Mistake review: related questions help you strengthen remembered facts. The session ends
+          when its question limit is reached or all selected mistakes are mastered.
+        </p>
+      )}
       <p className="preview-note">
         Reported answers are saved in this browser when storage is available. Refreshing starts a
         new session.

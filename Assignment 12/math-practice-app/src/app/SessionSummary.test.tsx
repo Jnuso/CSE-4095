@@ -30,7 +30,7 @@ describe('session summary page', () => {
     }
     expect(screen.getByRole('button', { name: 'Practice Mistakes' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Practice Mistakes' })).toHaveAccessibleDescription(
-      'Practice Mistakes will be available when mistake review is added.',
+      'No active mistakes need review. Mark a regular answer wrong to remember a new mistake.',
     )
     expect(screen.getByText(/Accuracy is based on how you marked/)).toBeInTheDocument()
   })

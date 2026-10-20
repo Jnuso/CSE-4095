@@ -1,3 +1,5 @@
+import type { MistakePattern } from '../types/mistake'
+import { activeReviewPatterns, applyReviewResult, nextReviewQuestion } from './mistakeReview'
 import type { PracticeConfiguration } from '../types/practice'
 import type { PracticeAttempt, PracticeSession } from '../types/session'
 import type { Question } from '../types/question'
@@ -6,6 +8,9 @@ import { generateQuestion } from './questionGenerator'
 import { uniqueId } from '../utils/uniqueId'
 
 export interface SessionState {
+  reviewPatterns?: MistakePattern[]
+  reviewQuestions?: Question[]
+  masteryThreshold?: number
   session: PracticeSession
   attempts: PracticeAttempt[]
   question: Question | null
@@ -45,6 +50,7 @@ export function nextQuestion(
 
 function configuration(state: SessionState): PracticeConfiguration {
   return {
+    reviewMode: state.session.reviewMode,
     operations: state.session.operations,
     difficulty: state.session.difficulty,
     sessionLength: state.session.sessionLength,
@@ -57,9 +63,23 @@ export function retryQuestion(
 ): SessionState {
   if (!state.isActive || state.question) return state
   try {
+    if (
+      state.session.reviewMode === 'mistake-review' &&
+      !activeReviewPatterns(state.reviewPatterns ?? []).length
+    )
+      return endSession(state)
+    const question =
+      state.session.reviewMode === 'mistake-review'
+        ? nextReviewQuestion(
+            state.reviewPatterns ?? [],
+            state.reviewQuestions ?? [],
+            Math.random,
+            state.attempts.flatMap((a) => (a.mistakePatternId ? [a.mistakePatternId] : [])),
+          )
+        : nextQuestion(configuration(state), state.previousQuestion, generator)
     return {
       ...state,
-      question: nextQuestion(configuration(state), state.previousQuestion, generator),
+      question,
       error: null,
     }
   } catch {
@@ -74,8 +94,17 @@ export function retryQuestion(
 export function startSession(
   config: PracticeConfiguration,
   generator: Generator = generateQuestion,
+  reviewPatterns: readonly MistakePattern[] = [],
+  masteryThreshold = 3,
 ): SessionState {
   const initial: SessionState = {
+    ...(config.reviewMode === 'mistake-review'
+      ? {
+          reviewPatterns: activeReviewPatterns(reviewPatterns, config).map((p) => ({ ...p })),
+          reviewQuestions: [],
+          masteryThreshold,
+        }
+      : {}),
     session: {
       id: uniqueId(),
       startedAt: new Date().toISOString(),
@@ -132,11 +161,33 @@ export function recordResult(
     selfReportedCorrect: result.selfReportedCorrect,
     difficulty: question.difficulty,
     source: question.source,
-    attemptedAt: new Date().toISOString(),
+    ...(question.mistakePatternId ? { mistakePatternId: question.mistakePatternId } : {}),
+    attemptedAt: new Date(
+      Math.max(
+        Date.now(),
+        Date.parse(state.session.startedAt),
+        state.attempts.at(-1) ? Date.parse(state.attempts.at(-1)!.attemptedAt) + 1 : 0,
+      ),
+    ).toISOString(),
     sessionId: state.session.id,
   }
   const updated: SessionState = {
     ...state,
+    ...(state.reviewPatterns
+      ? {
+          reviewPatterns: state.reviewPatterns.map((p) =>
+            p.id === question.mistakePatternId
+              ? applyReviewResult(
+                  p,
+                  result.selfReportedCorrect,
+                  attempt.attemptedAt,
+                  state.masteryThreshold ?? 3,
+                )
+              : p,
+          ),
+          reviewQuestions: [...(state.reviewQuestions ?? []).slice(-9), question],
+        }
+      : {}),
     attempts: [...state.attempts, attempt],
     question: null,
     previousQuestion: question,

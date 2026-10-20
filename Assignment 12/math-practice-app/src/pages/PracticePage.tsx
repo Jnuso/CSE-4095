@@ -12,7 +12,9 @@ export default function PracticePage() {
         <div className="feature-card">
           <p className="eyebrow">YOUR CHOICES</p>
           <h1 id="session-title" tabIndex={-1}>
-            Your practice space
+            {configuration.reviewMode === 'mistake-review'
+              ? 'Your mistake review'
+              : 'Your practice space'}
           </h1>
           <dl className="configuration-summary">
             <div>

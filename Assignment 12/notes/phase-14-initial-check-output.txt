@@ -1,0 +1,516 @@
+
+> math-practice-app@0.1.0 check
+> npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build
+
+
+> math-practice-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> math-practice-app@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> math-practice-app@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+ ❯ src/app/PracticeConfiguration.test.tsx (7 tests | 2 failed) 1402ms
+   ❯ Practice configuration (7)
+     × provides all options with addition, Beginner, and 10 questions selected by default 186ms
+     × disables starting with no operations and recovers when one is selected 98ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/PracticeConfiguration.test.tsx > Practice configuration > provides all options with addition, Beginner, and 10 questions selected by default
+AssertionError: expected [ …(10) ] to have a length of 8 but got 10
+
+- Expected
++ Received
+
+- 8
++ 10
+
+ ❯ src/app/PracticeConfiguration.test.tsx:20:42
+     18|     setup()
+     19|     expect(screen.getAllByRole('checkbox')).toHaveLength(4)
+     20|     expect(screen.getAllByRole('radio')).toHaveLength(8)
+       |                                          ^
+     21|     expect(screen.getByRole('checkbox', { name: 'Addition' })).toBeChe…
+     22|     expect(screen.getByRole('radio', { name: /^Beginner/ })).toBeCheck…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/app/PracticeConfiguration.test.tsx > Practice configuration > disables starting with no operations and recovers when one is selected
+TestingLibraryElementError: Found multiple elements with the role "status"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+<p
+  class="field-help"
+  id="review-help"
+  role="status"
+>
+  0
+   active mistake patterns available.
+
+  Mark a practice answer wrong to remember a mistake. Mastered mistakes do not need review.
+</p>
+
+Ignored nodes: comments, script, style
+<p
+  class="validation-message"
+  id="setup-validation"
+  role="status"
+>
+  Choose at least one operation to start.
+</p>
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="app-shell"
+    >
+      <a
+        class="skip-link"
+        href="#main-content"
+      >
+        Skip to content
+      </a>
+      <header
+        class="site-header"
+      >
+        <div
+          class="page-container header-content"
+        >
+          <a
+            aria-label="Math Practice home"
+            class="brand"
+            data-discover="true"
+            href="/"
+          >
+            <span
+              aria-hidden="true"
+              class="brand-mark"
+            >
+              +
+            </span>
+            <span>
+              Math Practice
+            </span>
+          </a>
+          <nav
+            aria-label="Main navigation"
+            class="navigation"
+          >
+            <a
+              class="navigation-link"
+              data-discover="true"
+              href="/"
+            >
+              Home
+            </a>
+            <a
+              aria-current="page"
+              class="navigation-link active"
+              data-discover="true"
+              href="/practice/setup"
+            >
+              Practice
+            </a>
+            <a
+              class="navigation-link"
+              data-discover="true"
+              href="/statistics"
+            >
+              Statistics
+            </a>
+            <a
+              class="navigation-link"
+              data-discover="true"
+              href="/settings"
+            >
+              Settings
+            </a>
+          </nav>
+        </div>
+      </header>
+      <main
+        class="page-content"
+        id="main-content"
+        tabindex="-1"
+      >
+        <div
+          class="page-container"
+        >
+          <section
+            aria-labelledby="setup-title"
+            class="setup-page"
+          >
+            <p
+              class="eyebrow"
+            >
+              YOUR PRACTICE, YOUR PACE
+            </p>
+            <h1
+              id="setup-title"
+              tabindex="-1"
+            >
+              Choose your practice
+            </h1>
+            <p
+              class="setup-introduction"
+            >
+              A quick warm-up or a bigger challenge? Changes here apply to this session. Save your usual choices in Settings.
+            </p>
+            <form
+              class="setup-form"
+            >
+              <fieldset
+                aria-describedby="review-help"
+                class="setup-fieldset"
+              >
+                <legend>
+                  Practice mode
+                </legend>
+                <div
+                  class="preference-options"
+                >
+                  <label
+                    class="choice-card"
+                  >
+                    <input
+                      checked=""
+                      name="practice-mode"
+                      type="radio"
+                    />
+                    Regular practice
+                  </label>
+                  <label
+                    class="choice-card"
+                  >
+                    <input
+                      disabled=""
+                      name="practice-mode"
+                      type="radio"
+                    />
+                    Mistake review
+                  </label>
+                </div>
+                <p
+                  class="field-help"
+                  id="review-help"
+                  role="status"
+                >
+                  0
+                   active mistake patterns available.
+
+                  Mark a practice answer wrong to remember a mistake. Mastered mistakes do not need review.
+                </p>
+              </fieldset>
+              <fieldset
+                aria-describedby="operation-help"
+                class="setup-fieldset"
+              >
+                <legend>
+                  1. What would you like to practice?
+                </legend>
+                <p
+                  class="field-help"
+                  id="operation-help"
+                >
+                  Choose one or mix a few together.
+                </p>
+                <div
+                  class="choice-grid operations-grid"
+                >
+                  <label
+                    class="choice-card"
+                  >
+                    <input
+                      checked=""
+                      type="checkbox"
+                    />
+                    <span
+                      aria-hidden="true"
+                      class="choice-symbol"
+                    >
+                      +
+                    </span>
+                    <span>
+                      Addition
+                    </span>
+                  </label>
+                  <label
+                    class="choice-card"
+                  >
+                    <input
+                      type="checkbox"
+                    />
+                    <span
+                      aria-hidden="true"
+                      class="choice-symbol"
+                    >
+                      −
+                    </span>
+                    <span>
+                      Subtraction
+                    </span>
+                  </label>
+                  <label
+                    class="choice-card"
+                  >
+                    <input
+                      type="checkbox"
+                    />
+                    <span
+                      aria-hidden="true"
+                      class="choice-symbol"
+                    >
+                      ×
+                    </span>
+                    <span>
+                      Multiplication
+                    </span>
+                  </label>
+                  <label
+                    class="choice-card"
+                  >
+                    <input
+                      type="checkbox"
+                    />
+                    <span
+                      aria-hidden="true"
+                      class="choice-symbol"
+                    >
+                      ÷
+                    </span>
+                    <span>
+                      Division
+                    </span>
+                  </label>
+                </div>
+                <div
+                  class="selection-shortcuts"
+                >
+                  <button
+                    class="text-button"
+                    type="button"
+                  >
+                    Select all operations
+                  </button>
+                  <button
+                    class="text-button"
+                    type="button"
+                  >
+                    Clear selection
+                  </button>
+                </div>
+              </fieldset>
+              <fieldset
+                class="setup-fieldset"
+              >
+                <legend>
+                  2. Pick your challenge
+                </legend>
+                <div
+                  class="choice-grid difficulty-grid"
+                >
+                  <label
+                    class="choice-card difficulty-choice selected"
+                  >
+                    <input
+                      checked=""
+                      name="difficulty"
+                      type="radio"
+                    />
+                    <span>
+                      <strong>
+                        Beginner
+                      </strong>
+                      <span
+                        class="choice-description"
+                      >
+                        Small numbers and early math facts.
+                      </span>
+                    </span>
+                  </label>
+                  <label
+                    class="choice-card difficulty-choice"
+                  >
+                    <input
+                      name="difficulty"
+                      type="radio"
+                    />
+                    <span>
+                      <strong>
+                        Easy
+                      </strong>
+                      <span
+                        class="choice-description"
+                      >
+                        Bigger numbers and familiar times tables.
+                      </span>
+                    </span>
+                  </label>
+                  <label
+                    class="choice-card difficulty-choice"
+                  >
+                    <input
+                      name="difficulty"
+                      type="radio"
+                    />
+                    <span>
+                      <strong>
+                        Intermediate
+                      </strong>
+                      <span
+                        class="choice-description"
+                      >
+                        Carrying, borrowing, and trickier number facts.
+                      </span>
+                    </span>
+                  </label>
+                  <label
+                    class="choice-card difficulty-choice"
+                  >
+                    <input
+                      name="difficulty"
+                      type="radio"
+                    />
+                    <span>
+                      <strong>
+                        Advanced
+                      </strong>
+                      <span
+                        class="choice-description"
+                      >
+                        Larger numbers and a bigger challenge.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </fieldset>
+              <fieldset
+                class="setup-fieldset"
+              >
+                <legend>
+                  3. How long would you like to practice?
+                </legend>
+                <div
+                  class="choice-grid length-grid"
+                >
+                  <label
+                    class="choice-card"
+                  >
+                    <input
+                      name="session-length"
+                      type="radio"
+                    />
+                    <span>
+                      5 questions
+                    </span>
+                  </label>
+                  <label
+                    class="choice-card selected"
+                  >
+                    <input
+                      checked=""
+                      name="session-length"
+                      type="radio"
+                    />
+                    <span>
+                      10 questions
+                    </span>
+                  </label>
+                  <label
+                    class="choice-card"
+                  >
+                    <input
+                      name="session-length"
+                      type="radio"
+                    />
+                    <span>
+                      20 questions
+                    </span>
+                  </label>
+                  <label
+                    class="choice-card"
+                  >
+                    <input
+                      name="session-length"
+                      type="radio"
+                    />
+                    <span>
+                      Continuous practice
+                    </span>
+                  </label>
+                </div>
+              </fieldset>
+              <div
+                class="setup-submit"
+              >
+                <p
+                  class="validation-message"
+                  id="setup-validation"
+                  role="status"
+                >
+                  Choose at least one operation to start.
+                </p>
+                <button
+                  aria-describedby="setup-validation"
+                  class="button button-primary"
+                  disabled=""
+                  type="submit"
+                >
+                  Start Session
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </main>
+      <footer
+        class="site-footer"
+      >
+        <div
+          class="page-container"
+        >
+          A little practice goes a long way.
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/app/PracticeConfiguration.test.tsx:43:19
+     41|     await user.click(screen.getByRole('button', { name: 'Clear selecti…
+     42|     expect(screen.getByRole('button', { name: 'Start Session' })).toBe…
+     43|     expect(screen.getByRole('status')).toHaveTextContent('Choose at le…
+       |                   ^
+     44|     await user.click(screen.getByRole('checkbox', { name: 'Division' }…
+     45|     expect(screen.getByRole('button', { name: 'Start Session' })).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 20 passed (21)
+      Tests  2 failed | 264 passed (266)
+   Start at  13:03:27
+   Duration  50.59s (environment 66%, setup 15%, tests 11%, import 7%, transform 1%)
+
+Environment  jsdom was created 21 times · 62.80s total, 66% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments

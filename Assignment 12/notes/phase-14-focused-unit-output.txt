@@ -1,0 +1,12 @@
+
+> math-practice-app@0.1.0 test
+> vitest run src/services/mistakeReview.test.ts
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
+   Start at  13:07:56
+   Duration  1.88s (environment 72%, setup 17%, transform 7%, import 2%, tests 1%, worker 1%)

@@ -1,0 +1,55 @@
+
+> math-practice-app@0.1.0 check
+> npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build
+
+
+> math-practice-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> math-practice-app@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> math-practice-app@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+ ❯ src/app/PracticeConfiguration.test.tsx (7 tests | 1 failed) 1318ms
+   ❯ Practice configuration (7)
+     × provides all options with addition, Beginner, and 10 questions selected by default 179ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/PracticeConfiguration.test.tsx > Practice configuration > provides all options with addition, Beginner, and 10 questions selected by default
+AssertionError: expected [ …(10) ] to have a length of 8 but got 10
+
+- Expected
++ Received
+
+- 8
++ 10
+
+ ❯ src/app/PracticeConfiguration.test.tsx:20:42
+     18|     setup()
+     19|     expect(screen.getAllByRole('checkbox')).toHaveLength(4)
+     20|     expect(screen.getAllByRole('radio')).toHaveLength(8)
+       |                                          ^
+     21|     expect(screen.getByRole('checkbox', { name: 'Addition' })).toBeChe…
+     22|     expect(screen.getByRole('radio', { name: /^Beginner/ })).toBeCheck…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 21 passed (22)
+      Tests  1 failed | 279 passed (280)
+   Start at  13:06:00
+   Duration  29.28s (environment 58%, tests 20%, setup 15%, import 5%, transform 2%)
+
+Environment  jsdom was created 22 times · 31.69s total, 58% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments

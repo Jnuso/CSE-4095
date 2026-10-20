@@ -6,6 +6,8 @@ export function isPracticeConfiguration(value: unknown): value is PracticeConfig
   const candidate = value as Record<string, unknown>
   const operations = candidate.operations
   return (
+    (candidate.reviewMode === undefined ||
+      ['regular', 'mistake-review'].includes(candidate.reviewMode as string)) &&
     Array.isArray(operations) &&
     operations.length > 0 &&
     operations.length <= OPERATIONS.length &&

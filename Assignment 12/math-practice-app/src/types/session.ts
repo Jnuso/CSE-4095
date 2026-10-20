@@ -13,12 +13,14 @@ export interface PracticeAttempt {
   selectedAnswer: number
   selfReportedCorrect: boolean
   difficulty: DifficultyLevel
+  mistakePatternId?: string
   source: QuestionSource
   attemptedAt: string
   sessionId: string
 }
 
 export interface PracticeSession {
+  reviewMode?: ReviewMode
   id: string
   startedAt: string
   completedAt?: string

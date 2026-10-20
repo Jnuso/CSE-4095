@@ -115,3 +115,7 @@ PHASE_12_TESTING.md gives the student walkthrough and optional read-only storage
 ## Phase 13 generator checks
 
 src/services/similarQuestionGenerator.test.ts checks nearby/reversed/inverse strategies across all operations and levels, explicit endpoints with independent numeric bounds, invalid/zero facts, complete review metadata/choices, strategy selection and bounded recent-fact avoidance without changing saved patterns. No review-mode UI is introduced yet; existing full browser/accessibility/Pages tests remain required. See PHASE_13_TESTING.md for the student walkthrough.
+
+## Phase 14 review mode
+
+The mistakeReview unit suite covers priority/mixing/filtering, durable consecutive mastery, wrong-review updates on the original pattern, regular-miss reopening, configurable thresholds, idempotent journal replay, ordering/ties, stale reset, serialization/recovery/retention and session transitions. review.spec.ts adds desktop/mobile eligibility, matching choices, card/reveal/summary full-page accessibility, mastery after reload, mixed targets, two-tab merging/reset, and storage-full retry. Existing tests keep all prior checks; setup radio count and summary action expectations change because review mode now exists. See PHASE_14_TESTING.md.

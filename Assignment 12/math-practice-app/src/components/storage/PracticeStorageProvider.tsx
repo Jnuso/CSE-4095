@@ -47,6 +47,12 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
           ? latest.current.data
           : trackMistakes({
               ...disk.data,
+              reviewEvents: [
+                ...(disk.data.reviewEvents ?? []),
+                ...(disk.data.historyResetAt === latest.current.data.historyResetAt
+                  ? (latest.current.data.reviewEvents ?? [])
+                  : []),
+              ],
               mistakeEvents: [
                 ...(disk.data.mistakeEvents ?? []),
                 ...(disk.data.historyResetAt === latest.current.data.historyResetAt
@@ -78,6 +84,12 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
       version: 1,
       historyResetAt: disk.data.historyResetAt ?? memory.data.historyResetAt,
       appResetAt: disk.data.appResetAt ?? memory.data.appResetAt,
+      reviewEvents: [
+        ...(disk.data.reviewEvents ?? []),
+        ...(!disk.canWrite || disk.data.historyResetAt === memory.data.historyResetAt
+          ? (memory.data.reviewEvents ?? [])
+          : []),
+      ],
       mistakeEvents: [
         ...(disk.data.mistakeEvents ?? []),
         ...(!disk.canWrite || disk.data.historyResetAt === memory.data.historyResetAt

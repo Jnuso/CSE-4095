@@ -1,3 +1,4 @@
+import { activeReviewPatterns } from '../services/mistakeReview'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
@@ -20,11 +21,14 @@ export default function PracticeSetupPage() {
         sessionLength: data.settings.defaultSessionLength,
       },
   )
-  const valid = isPracticeConfiguration(configuration)
+  const allActive = activeReviewPatterns(data.mistakePatterns ?? [])
+  const eligible = activeReviewPatterns(allActive, configuration)
+  const review = configuration.reviewMode === 'mistake-review'
+  const valid = isPracticeConfiguration(configuration) && (!review || eligible.length > 0)
 
   function startSession(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (isPracticeConfiguration(configuration)) {
+    if (valid) {
       navigate('/practice/session', { state: { practiceConfig: configuration } })
     }
   }
@@ -40,6 +44,43 @@ export default function PracticeSetupPage() {
         choices in Settings.
       </p>
       <form className="setup-form" onSubmit={startSession}>
+        <fieldset className="setup-fieldset" aria-describedby="review-help">
+          <legend>Practice mode</legend>
+          <div className="preference-options">
+            <label className="choice-card">
+              <input
+                type="radio"
+                name="practice-mode"
+                checked={!review}
+                onChange={() => setConfiguration((p) => ({ ...p, reviewMode: 'regular' }))}
+              />
+              Regular practice
+            </label>
+            <label className="choice-card">
+              <input
+                type="radio"
+                name="practice-mode"
+                checked={review}
+                disabled={!allActive.length}
+                onChange={() => setConfiguration((p) => ({ ...p, reviewMode: 'mistake-review' }))}
+              />
+              Mistake review
+            </label>
+          </div>
+          <p id="review-help" className="field-help" aria-live="polite">
+            {allActive.length} active mistake patterns available.{' '}
+            {allActive.length
+              ? 'Choose the operations and difficulty of mistakes you want to strengthen. Related questions may use an inverse operation.'
+              : 'Mark a practice answer wrong to remember a mistake. Mastered mistakes do not need review.'}
+          </p>
+          {review && (
+            <p className="field-help" aria-live="polite">
+              {eligible.length} active mistake patterns match these choices.{' '}
+              {data.settings.masteryThreshold} correct review answers in a row master a pattern. A
+              miss resets its progress.
+            </p>
+          )}
+        </fieldset>
         <OperationSelector
           value={configuration.operations}
           onChange={(operations) => setConfiguration((previous) => ({ ...previous, operations }))}
@@ -60,7 +101,11 @@ export default function PracticeSetupPage() {
             className={valid ? 'field-help' : 'validation-message'}
             role="status"
           >
-            {valid ? 'Your choices are ready.' : 'Choose at least one operation to start.'}
+            {valid
+              ? 'Your choices are ready.'
+              : review && eligible.length === 0
+                ? 'No active mistakes match these choices. Change the operations or difficulty, or choose regular practice.'
+                : 'Choose at least one operation to start.'}
           </p>
           <button
             className="button button-primary"
