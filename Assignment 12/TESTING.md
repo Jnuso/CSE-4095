@@ -129,3 +129,8 @@ On GitHub Actions, the regression and Pages configurations add the built-in GitH
 ## Phase 16 accessibility
 
 See [PHASE_16_TESTING.md](PHASE_16_TESTING.md) for keyboard, reduced-motion, actual zoom, larger text and screen-reader review. New isolated browser coverage includes keyboard/dialog boundaries, scoped shortcuts, focus/progress semantics, full-page axe scans, 640px reflow and doubled base-text simulation. Literal zoom, actual system-font settings and screen-reader speech remain manual checks.
+
+
+## Phase 17 responsive design and feedback
+
+See PHASE_17_TESTING.md. The responsive browser suite covers five phone/tablet portrait and landscape sizes in both desktop and mobile contexts, 44px answer targets, single-column answers on narrow screens, populated statistics within viewport bounds, saved feedback opt-out and encouragement on the final recap. Existing card-height, keyboard, full-page axe and Pages tests remain intact. practiceFeedback.test.ts covers varied messages and optional-setting compatibility. Feedback uses the student's report and adds no sound or animation.

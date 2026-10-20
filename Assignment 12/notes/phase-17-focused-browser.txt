@@ -1,0 +1,25 @@
+[WebServer] (node:2136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 2 workers
+
+(node:16492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [desktop] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 320x568 (5.5s)
+  ok  1 [desktop] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 390x844 (5.6s)
+  ok  3 [desktop] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 768x1024 (3.6s)
+  ok  4 [desktop] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 1024x768 (3.6s)
+  ok  6 [desktop] › e2e\responsive.spec.ts:41:1 › feedback preference survives reload and disables encouragement (3.1s)
+  ok  5 [desktop] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 844x390 (4.0s)
+(node:23164) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [mobile] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 320x568 (6.9s)
+  ok  8 [mobile] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 390x844 (6.1s)
+  ok  9 [mobile] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 768x1024 (3.5s)
+  ok 10 [mobile] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 1024x768 (3.5s)
+  ok 12 [mobile] › e2e\responsive.spec.ts:41:1 › feedback preference survives reload and disables encouragement (2.6s)
+  ok 11 [mobile] › e2e\responsive.spec.ts:10:3 › responsive practice and populated history 844x390 (3.4s)

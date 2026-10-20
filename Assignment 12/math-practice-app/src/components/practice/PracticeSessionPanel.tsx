@@ -1,3 +1,4 @@
+import { chooseFeedback } from '../../services/practiceFeedback'
 import { useEffect, useRef, useState } from 'react'
 import { Navigate } from 'react-router'
 import type { PracticeConfiguration } from '../../types/practice'
@@ -19,6 +20,7 @@ export default function PracticeSessionPanel({
   const [state, setState] = useState(() =>
     startSession(configuration, undefined, data.mistakePatterns, data.settings.masteryThreshold),
   )
+  const [feedback, setFeedback] = useState('')
   const latest = useRef(state)
   const animationEnabled = data.settings.cardAnimationEnabled
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function PracticeSessionPanel({
         : current,
       result,
     )
+    if (next !== current) setFeedback(chooseFeedback(result.selfReportedCorrect))
     latest.current = next
     setState(next)
   }
@@ -69,7 +72,10 @@ export default function PracticeSessionPanel({
       <Navigate
         to="/practice/summary"
         replace
-        state={{ completedSession: { session, attempts: state.attempts } }}
+        state={{
+          completedSession: { session, attempts: state.attempts },
+          practiceFeedback: feedback,
+        }}
       />
     )
   return (
@@ -83,6 +89,14 @@ export default function PracticeSessionPanel({
       <p className="preview-note">
         Reported answers are saved in this browser when storage is available. Refreshing starts a
         new session.
+      </p>
+      <p
+        className="practice-feedback"
+        role="status"
+        aria-label="Practice encouragement"
+        aria-atomic="true"
+      >
+        {data.settings.feedbackEnabled !== false ? feedback : ''}
       </p>
       <p className="session-totals" role="status" aria-label="Session totals" aria-atomic="true">
         Completed: {session.attempted} · Right: {session.correct} · Wrong: {session.incorrect}

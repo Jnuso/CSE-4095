@@ -842,3 +842,65 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
+
+/* Keep each grid item shrinkable, including long saved session labels. */
+.page-container > *,
+.statistics-grid > *,
+.session-history > *,
+.mistake-history > * {
+  min-width: 0;
+}
+.session-history h3,
+.session-history p,
+.mistake-detail,
+.practice-feedback {
+  overflow-wrap: anywhere;
+}
+.practice-feedback {
+  min-height: 1.6em;
+  color: #35583f;
+  font-weight: 650;
+  line-height: 1.6;
+}
+@media (max-width: 720px) {
+  .navigation {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .navigation-link {
+    justify-content: center;
+    padding-inline: 4px;
+    overflow-wrap: anywhere;
+  }
+  .statistics-page .feature-card {
+    padding: 24px 20px;
+  }
+}
+@media (max-width: 420px) {
+  .page-container {
+    width: calc(100% - 24px);
+  }
+  .feature-card {
+    padding: 24px 16px;
+  }
+  .answer-grid {
+    grid-template-columns: 1fr;
+  }
+  .question-card {
+    padding: 16px 12px;
+  }
+  .card-face {
+    min-height: 0;
+    padding-block: 16px;
+  }
+}
+@media (max-height: 600px) and (min-width: 421px) {
+  .feature-page {
+    padding-block: 24px;
+  }
+  .card-face {
+    min-height: 0;
+    padding-block: 12px;
+  }
+}

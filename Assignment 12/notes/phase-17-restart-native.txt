@@ -1,0 +1,10 @@
+[WebServer] (node:10036) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:12420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [restart] › e2e\restart.spec.ts:7:1 › saved attempts and settings survive closing and reopening a real browser (4.6s)
+
+  1 passed (7.6s)

@@ -36,6 +36,12 @@ export default function SessionSummaryPage() {
               ? 'No questions attempted this time. You can start again whenever you’re ready.'
               : 'Thanks for practicing! Every question is a step forward.'}
           </p>
+          {data.settings.feedbackEnabled !== false &&
+            typeof state?.practiceFeedback === 'string' && (
+              <p className="practice-feedback" role="status" aria-label="Practice encouragement">
+                {state.practiceFeedback}
+              </p>
+            )}
           <dl className="summary-metrics" aria-label="Session results">
             <div>
               <dt>Questions attempted</dt>

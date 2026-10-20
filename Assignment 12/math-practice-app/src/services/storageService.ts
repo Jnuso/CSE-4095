@@ -36,6 +36,7 @@ const browserStorage: StorageAccess = () => window.localStorage
 
 export function defaultSettings(): AppSettings {
   return {
+    feedbackEnabled: true,
     soundEffectsEnabled: false,
     cardAnimationEnabled: true,
     showExplanations: true,
@@ -54,6 +55,7 @@ function object(value: unknown): value is Record<string, unknown> {
 export function isAppSettings(value: unknown): value is AppSettings {
   if (!object(value)) return false
   return (
+    (value.feedbackEnabled === undefined || typeof value.feedbackEnabled === 'boolean') &&
     ['soundEffectsEnabled', 'cardAnimationEnabled', 'showExplanations'].every(
       (key) => typeof value[key] === 'boolean',
     ) &&

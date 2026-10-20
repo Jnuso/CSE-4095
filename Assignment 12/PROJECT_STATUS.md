@@ -6,12 +6,14 @@ Read AGENTS.md, the relevant TODO phase and specification sections. Read DECISIO
 
 ## Current milestone
 
-- Phase 16 accessibility implementation is deployed at https://jnuso.github.io/CSE-4095/.
-- Deployed app commit: e34a0f57af0e400a0aee80e653600eed76a4388c.
-- Successful verification/deployment: https://github.com/Jnuso/CSE-4095/actions/runs/39494733877.
-- Last application gate: 304 unit/component + 125 browser + 20 Pages tests = 449 passed; formatting, lint, types and builds passed. Isolated live desktop/mobile smoke checks passed.
-- Phase 16 pending manual checks: actual 200% browser zoom, larger system text settings and actual screen-reader speech. Do not mark these verified from simulated reflow/text or DOM tests. Guide: PHASE_16_TESTING.md.
-- Next development phase is Phase 17 responsive design and polish, once requested. Do not start it merely because the workflow was updated.
+- Phase 17 responsive design and supportive feedback is implemented and locally verified; deployment confirmation will be recorded after CI succeeds.
+- Full final gate passed outside the sandbox: 306 unit/component + 139 browser + 20 Pages tests = 465 passed; formatting, lint, types and both builds passed.
+- Narrow phones use stacked answers and compact navigation; statistics cards wrap within the viewport. Revealing a card preserves its front height.
+- Encouraging feedback follows self-reported results, varies between short supportive phrases and has a saved Settings opt-out. Legacy settings remain valid.
+- One independent read-only review found no concrete defects. Gemma remains paused.
+- The sandbox lost the temporary restart-test profile on browser relaunch; the unchanged isolated test and complete gate passed outside it. Use the normal host environment if that sandbox behavior recurs; never weaken the persistence assertion.
+- Phase 17 physical-device review remains for the student: PHASE_17_TESTING.md. Phase 16 actual 200% zoom, larger system text and screen-reader speech remain pending: PHASE_16_TESTING.md.
+- Next development phase: Phase 18 session recovery and navigation safety, only once requested.
 
 ## Current workflow
 

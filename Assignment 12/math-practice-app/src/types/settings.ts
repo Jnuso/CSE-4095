@@ -2,6 +2,7 @@ import type { DifficultyLevel, MathOperation } from './question'
 import type { SessionLength } from './session'
 
 export interface AppSettings {
+  feedbackEnabled?: boolean
   soundEffectsEnabled: boolean
   cardAnimationEnabled: boolean
   showExplanations: boolean

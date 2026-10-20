@@ -64,6 +64,8 @@ function QuestionCardContent({
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isCardFlipped, setIsCardFlipped] = useState(false)
   const [reported, setReported] = useState<boolean | null>(null)
+  const [revealedHeight, setRevealedHeight] = useState<number>()
+  const cardFace = useRef<HTMLDivElement>(null)
   const resultLocked = useRef(false)
   const answerHeading = useRef<HTMLHeadingElement>(null)
   const questionHeading = useRef<HTMLHeadingElement>(null)
@@ -119,6 +121,8 @@ function QuestionCardContent({
         {totalQuestions !== undefined ? ` of ${totalQuestions}` : ''}
       </p>
       <div
+        ref={cardFace}
+        style={revealedHeight === undefined ? undefined : { minHeight: revealedHeight }}
         className={`card-face ${isCardFlipped ? 'card-back' : 'card-front'} ${isCardFlipped && animationEnabled ? 'card-flip' : ''} ${!isCardFlipped && focusOnMount && animationEnabled ? 'card-next' : ''}`}
       >
         {isCardFlipped ? (
@@ -192,6 +196,7 @@ function QuestionCardContent({
               disabled={selectedAnswer === null}
               onClick={() => {
                 if (selectedAnswer !== null) {
+                  setRevealedHeight(cardFace.current?.getBoundingClientRect().height)
                   setIsCardFlipped(true)
                   if (soundEnabled) void playFlipSound()
                 }

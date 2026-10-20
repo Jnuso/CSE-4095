@@ -58,6 +58,20 @@ export default function SettingsPage() {
             <label className="choice-card">
               <input
                 type="checkbox"
+                checked={settings.feedbackEnabled !== false}
+                onChange={(event) => change({ feedbackEnabled: event.target.checked })}
+              />
+              <span>
+                Encouraging feedback
+                <span className="choice-description">
+                  Show a short, supportive message after each reported answer. Turn off for quieter
+                  practice.
+                </span>
+              </span>
+            </label>
+            <label className="choice-card">
+              <input
+                type="checkbox"
                 checked={settings.soundEffectsEnabled}
                 onChange={(event) => change({ soundEffectsEnabled: event.target.checked })}
               />
