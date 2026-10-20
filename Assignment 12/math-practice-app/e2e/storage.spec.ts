@@ -106,7 +106,8 @@ for (const version of [undefined, 0]) {
       'Older saved data',
     )
     await page.getByRole('button', { name: 'Start Session', exact: true }).click()
-    expect((await saved(page)).version).toBe(1)
+    // Session persistence runs in a React effect after navigation; wait for its actual write.
+    await expect.poll(async () => (await saved(page)).version).toBe(1)
     expect((await saved(page)).records.some((record) => record.session.id === 'session-1')).toBe(
       true,
     )
