@@ -10,6 +10,8 @@ import {
 import type { AppSettings } from '../../types/settings'
 import {
   readSavedData,
+  clearSavedData,
+  isAppSettings,
   writeSavedData,
   recentRecords,
   STORAGE_KEY,
@@ -20,9 +22,10 @@ import {
 interface StorageContextValue {
   data: SavedData
   warnings: string[]
-  saveSettings: (patch: Partial<AppSettings>) => void
+  saveSettings: (patch: Partial<AppSettings>) => string | null
   saveSession: (record: StoredSession) => void
   resetHistory: () => string | null
+  clearAllData: () => string | null
 }
 const StorageContext = createContext<StorageContextValue | null>(null)
 
@@ -35,6 +38,8 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
     function reload(event: StorageEvent) {
       if (event.key !== STORAGE_KEY && event.key !== null) return
       const disk = readSavedData()
+      if (disk.canWrite && disk.data.appResetAt !== latest.current.data.appResetAt)
+        pendingSettings.current = {}
       // Keep unsaved attempts in memory when another tab updates storage.
       const next = {
         ...disk,
@@ -58,12 +63,15 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
   }, [])
 
   const commit = useCallback((patch: Partial<AppSettings>, record?: StoredSession) => {
-    pendingSettings.current = { ...pendingSettings.current, ...patch }
     const disk = readSavedData()
     const memory = latest.current
+    if (disk.canWrite && disk.data.appResetAt !== memory.data.appResetAt)
+      pendingSettings.current = {}
+    pendingSettings.current = { ...pendingSettings.current, ...patch }
     const data: SavedData = {
       version: 1,
       historyResetAt: disk.data.historyResetAt ?? memory.data.historyResetAt,
+      appResetAt: disk.data.appResetAt ?? memory.data.appResetAt,
       settings: {
         ...(disk.canWrite ? disk.data.settings : memory.data.settings),
         ...pendingSettings.current,
@@ -80,6 +88,8 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
           : []),
       ]),
     }
+    if (!isAppSettings(data.settings))
+      return 'Choose at least one operation and valid practice options before saving.'
     const error = disk.canWrite ? writeSavedData(data) : null
     if (disk.canWrite && !error) pendingSettings.current = {}
     const next = {
@@ -89,6 +99,7 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
     }
     latest.current = next
     setLoaded(next)
+    return error ?? (disk.canWrite ? null : disk.warnings.join(' '))
   }, [])
   const saveSettings = useCallback((patch: Partial<AppSettings>) => commit(patch), [commit])
   const saveSession = useCallback((record: StoredSession) => commit({}, record), [commit])
@@ -97,13 +108,25 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
     const disk = readSavedData()
     if (!disk.canWrite)
       return 'History could not be reset because browser storage is unavailable or protected.'
+    if (disk.data.appResetAt !== latest.current.data.appResetAt) pendingSettings.current = {}
     const data: SavedData = {
       version: 1,
       settings: { ...disk.data.settings, ...pendingSettings.current },
       records: [],
       historyResetAt: Math.max(Date.now(), (disk.data.historyResetAt ?? 0) + 1),
+      appResetAt: disk.data.appResetAt,
     }
     const error = writeSavedData(data)
+    if (error) return error
+    pendingSettings.current = {}
+    const next = { data, canWrite: true, warnings: [] }
+    latest.current = next
+    setLoaded(next)
+    return null
+  }, [])
+
+  const clearAllData = useCallback((): string | null => {
+    const { data, error } = clearSavedData()
     if (error) return error
     pendingSettings.current = {}
     const next = { data, canWrite: true, warnings: [] }
@@ -120,6 +143,7 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
         saveSettings,
         saveSession,
         resetHistory,
+        clearAllData,
       }}
     >
       {children}

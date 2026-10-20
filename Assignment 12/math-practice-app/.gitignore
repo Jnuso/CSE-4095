@@ -21,6 +21,7 @@ output/playwright/pages-results/
 output/playwright/pages-report/
 output/playwright/pages-live/
 output/playwright/phase-10-live/
+output/playwright/phase-11-live/
 
 # Editor directories and files
 .vscode/*

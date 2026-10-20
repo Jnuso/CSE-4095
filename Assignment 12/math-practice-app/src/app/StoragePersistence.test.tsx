@@ -29,8 +29,13 @@ async function report(user: ReturnType<typeof userEvent.setup>, right = false) {
 }
 
 describe('storage integration', () => {
-  it('persists setup, animation, completed session and attempts across a fresh app mount', async () => {
+  it('persists saved defaults, animation, completed session and attempts across a fresh app mount', async () => {
     const user = userEvent.setup()
+    const initial = emptySavedData()
+    initial.settings.defaultOperations = ['division']
+    initial.settings.defaultDifficulty = 4
+    initial.settings.defaultSessionLength = 5
+    writeSavedData(initial)
     const first = renderPage()
     await user.click(screen.getByRole('button', { name: 'Clear selection' }))
     await user.click(screen.getByRole('checkbox', { name: 'Division' }))

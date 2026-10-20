@@ -1,0 +1,218 @@
+
+> math-practice-app@0.1.0 check:all
+> npm run check && node scripts/browser-tests.mjs test && npm run test:pages
+
+
+> math-practice-app@0.1.0 check
+> npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build
+
+
+> math-practice-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> math-practice-app@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> math-practice-app@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+
+ Test Files  17 passed (17)
+      Tests  191 passed (191)
+   Start at  00:23:13
+   Duration  54.15s (environment 60%, tests 22%, setup 12%, import 5%, transform 1%)
+
+Environment  jsdom was created 17 times · 57.36s total, 60% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+> math-practice-app@0.1.0 typecheck
+> tsc -b && tsc -p tsconfig.e2e.json
+
+
+> math-practice-app@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 127 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.60 kB │ gzip:  0.35 kB
+dist/assets/index-DEv3Hkkn.css   11.19 kB │ gzip:  3.16 kB
+dist/assets/index-8eriuNRd.js   301.47 kB │ gzip: 93.28 kB
+
+✓ built in 712ms
+[WebServer] (node:66688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 95 tests using 2 workers
+
+(node:3944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:55200) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [desktop] › e2e\accessibility.spec.ts:24:1 › accessibility: scanner detects an intentionally unlabeled control (8.8s)
+  ok  1 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route / (12.1s)
+  ok  3 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /practice/setup (6.3s)
+  ok  4 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /practice/summary (4.9s)
+  ok  5 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /statistics (6.9s)
+  ok  6 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /settings (6.2s)
+  ok  7 [desktop] › e2e\accessibility.spec.ts:49:3 › accessibility: route /unknown-page (6.1s)
+  ok  8 [desktop] › e2e\accessibility.spec.ts:56:1 › accessibility: setup validation and selected configuration (11.9s)
+  ok 10 [desktop] › e2e\accessibility.spec.ts:82:1 › accessibility: continuous practice with reduced motion (7.1s)
+  ok  9 [desktop] › e2e\accessibility.spec.ts:67:1 › accessibility: card front, selection, reveal, and next question (15.9s)
+  ok 12 [desktop] › e2e\accessibility.spec.ts:99:1 › accessibility: zero-attempt summary (7.3s)
+  ok 11 [desktop] › e2e\accessibility.spec.ts:89:1 › accessibility: completed summary (11.2s)
+  ok 14 [desktop] › e2e\navigation.spec.ts:12:3 › direct route / and refresh (2.1s)
+  ok 15 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /practice/setup and refresh (2.3s)
+  ok 13 [desktop] › e2e\accessibility.spec.ts:105:1 › accessibility: saved-data warning (7.1s)
+  ok 17 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /practice/summary and refresh (2.0s)
+  ok 16 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /practice/session and refresh (3.1s)
+  ok 18 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /statistics and refresh (2.3s)
+  ok 19 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /settings and refresh (3.5s)
+  ok 20 [desktop] › e2e\navigation.spec.ts:12:3 › direct route /unknown-page and refresh (2.9s)
+  ok 21 [desktop] › e2e\navigation.spec.ts:28:1 › home actions, active navigation, and destination focus (3.6s)
+  ok 22 [desktop] › e2e\navigation.spec.ts:42:1 › setup validation, multi-selection, exclusive controls, and edit round trip (3.7s)
+  ok 23 [desktop] › e2e\practice.spec.ts:3:1 › selection, flip, keyboard controls, focus, and independent self-report (4.1s)
+  ok 24 [desktop] › e2e\practice.spec.ts:34:3 › fixed 5-question session stops exactly at the limit (7.7s)
+  ok 25 [desktop] › e2e\practice.spec.ts:34:3 › fixed 10-question session stops exactly at the limit (15.2s)
+  ok 26 [desktop] › e2e\practice.spec.ts:34:3 › fixed 20-question session stops exactly at the limit (20.5s)
+  ok 28 [desktop] › e2e\practice.spec.ts:79:1 › animation switch and reduced-motion preference (5.1s)
+  ok 27 [desktop] › e2e\practice.spec.ts:64:1 › continuous practice passes 20 attempts and handles cancel/accept ending (21.7s)
+  ok 29 [desktop] › e2e\settings.spec.ts:13:1 › settings save, reload, session overrides, explanations and animation (7.8s)
+  ok 31 [desktop] › e2e\settings.spec.ts:115:1 › failed clear-all preserves data; explicit confirmation can recover protected storage (6.3s)
+  ok 32 [desktop] › e2e\settings.spec.ts:146:1 › clear-all in another tab resets live preferences and blocks stale practice saves (7.0s)
+  ok 30 [desktop] › e2e\settings.spec.ts:53:1 › clear-all confirmation is accessible, cancellable, and restores only app data (24.8s)
+  ok 34 [desktop] › e2e\statistics.spec.ts:53:1 › statistics: newest-first history, pagination and failed-reset preservation (3.2s)
+  ok 33 [desktop] › e2e\statistics.spec.ts:6:1 › statistics: incomplete attempts, accessible reset and preferences (19.0s)
+  ok 36 [desktop] › e2e\storage.spec.ts:18:1 › every report persists full attempt data and a fresh recap works after reload (5.9s)
+  ok 37 [desktop] › e2e\storage.spec.ts:46:1 › saved setup and animation reload, and newest completed recap loads without history state (3.0s)
+  ok 35 [desktop] › e2e\statistics.spec.ts:95:1 › statistics: cross-tab reset blocks stale saves and permits fresh practice (15.0s)
+  ok 38 [desktop] › e2e\storage.spec.ts:72:3 › corrupt JSON is protected while practice continues (3.0s)
+  ok 39 [desktop] › e2e\storage.spec.ts:72:3 › future schema is protected while practice continues (3.5s)
+  ok 40 [desktop] › e2e\storage.spec.ts:85:1 › invalid settings recover without discarding valid history (2.4s)
+  ok 41 [desktop] › e2e\storage.spec.ts:97:3 › legacy schema undefined migrates on the next successful save (4.1s)
+  ok 42 [desktop] › e2e\storage.spec.ts:97:3 › legacy schema 0 migrates on the next successful save (2.8s)
+  ok 43 [desktop] › e2e\storage.spec.ts:116:1 › quota failure warns, keeps the previous save, and lets the session advance (3.7s)
+  ok 44 [desktop] › e2e\storage.spec.ts:138:1 › blocked storage shows a warning and keeps practice usable (3.5s)
+  ok 46 [desktop] › e2e\summary-layout.spec.ts:38:1 › empty ending has zero totals and no invented practiced operations (3.0s)
+  ok 47 [desktop] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens (5.1s)
+  ok 45 [desktop] › e2e\summary-layout.spec.ts:3:1 › summary actions preserve setup and reset replay without replaying the completed card (10.0s)
+(node:31892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:74524) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 48 [mobile] › e2e\accessibility.spec.ts:24:1 › accessibility: scanner detects an intentionally unlabeled control (5.6s)
+  ok 49 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route / (6.5s)
+  ok 50 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /practice/setup (5.3s)
+  ok 51 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /practice/summary (4.6s)
+  ok 53 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /settings (5.7s)
+  ok 52 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /statistics (6.5s)
+  ok 54 [mobile] › e2e\accessibility.spec.ts:49:3 › accessibility: route /unknown-page (4.5s)
+  ok 55 [mobile] › e2e\accessibility.spec.ts:56:1 › accessibility: setup validation and selected configuration (10.1s)
+  ok 57 [mobile] › e2e\accessibility.spec.ts:82:1 › accessibility: continuous practice with reduced motion (6.0s)
+  ok 56 [mobile] › e2e\accessibility.spec.ts:67:1 › accessibility: card front, selection, reveal, and next question (18.5s)
+  ok 58 [mobile] › e2e\accessibility.spec.ts:89:1 › accessibility: completed summary (10.3s)
+  ok 59 [mobile] › e2e\accessibility.spec.ts:99:1 › accessibility: zero-attempt summary (5.6s)
+  ok 61 [mobile] › e2e\navigation.spec.ts:12:3 › direct route / and refresh (1.7s)
+  ok 60 [mobile] › e2e\accessibility.spec.ts:105:1 › accessibility: saved-data warning (5.5s)
+  ok 62 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /practice/setup and refresh (2.0s)
+  ok 63 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /practice/summary and refresh (1.9s)
+  ok 64 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /practice/session and refresh (1.9s)
+  ok 65 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /statistics and refresh (2.0s)
+  ok 66 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /settings and refresh (2.1s)
+  ok 67 [mobile] › e2e\navigation.spec.ts:12:3 › direct route /unknown-page and refresh (2.3s)
+  ok 68 [mobile] › e2e\navigation.spec.ts:28:1 › home actions, active navigation, and destination focus (2.9s)
+  ok 70 [mobile] › e2e\practice.spec.ts:3:1 › selection, flip, keyboard controls, focus, and independent self-report (2.9s)
+  ok 69 [mobile] › e2e\navigation.spec.ts:42:1 › setup validation, multi-selection, exclusive controls, and edit round trip (3.9s)
+  ok 71 [mobile] › e2e\practice.spec.ts:34:3 › fixed 5-question session stops exactly at the limit (7.1s)
+  ok 72 [mobile] › e2e\practice.spec.ts:34:3 › fixed 10-question session stops exactly at the limit (11.0s)
+  ok 73 [mobile] › e2e\practice.spec.ts:34:3 › fixed 20-question session stops exactly at the limit (19.0s)
+  ok 75 [mobile] › e2e\practice.spec.ts:79:1 › animation switch and reduced-motion preference (3.6s)
+  ok 74 [mobile] › e2e\practice.spec.ts:64:1 › continuous practice passes 20 attempts and handles cancel/accept ending (18.7s)
+  ok 76 [mobile] › e2e\settings.spec.ts:13:1 › settings save, reload, session overrides, explanations and animation (5.3s)
+  ok 78 [mobile] › e2e\settings.spec.ts:115:1 › failed clear-all preserves data; explicit confirmation can recover protected storage (3.7s)
+  ok 77 [mobile] › e2e\settings.spec.ts:53:1 › clear-all confirmation is accessible, cancellable, and restores only app data (10.0s)
+  ok 79 [mobile] › e2e\settings.spec.ts:146:1 › clear-all in another tab resets live preferences and blocks stale practice saves (6.1s)
+  ok 81 [mobile] › e2e\statistics.spec.ts:53:1 › statistics: newest-first history, pagination and failed-reset preservation (2.4s)
+  ok 80 [mobile] › e2e\statistics.spec.ts:6:1 › statistics: incomplete attempts, accessible reset and preferences (12.3s)
+  ok 82 [mobile] › e2e\statistics.spec.ts:95:1 › statistics: cross-tab reset blocks stale saves and permits fresh practice (6.0s)
+  ok 83 [mobile] › e2e\storage.spec.ts:18:1 › every report persists full attempt data and a fresh recap works after reload (3.7s)
+  ok 84 [mobile] › e2e\storage.spec.ts:46:1 › saved setup and animation reload, and newest completed recap loads without history state (2.3s)
+  ok 85 [mobile] › e2e\storage.spec.ts:72:3 › corrupt JSON is protected while practice continues (3.6s)
+  ok 86 [mobile] › e2e\storage.spec.ts:72:3 › future schema is protected while practice continues (4.6s)
+  ok 87 [mobile] › e2e\storage.spec.ts:85:1 › invalid settings recover without discarding valid history (2.1s)
+  ok 88 [mobile] › e2e\storage.spec.ts:97:3 › legacy schema undefined migrates on the next successful save (2.2s)
+  ok 89 [mobile] › e2e\storage.spec.ts:97:3 › legacy schema 0 migrates on the next successful save (1.9s)
+  ok 91 [mobile] › e2e\storage.spec.ts:138:1 › blocked storage shows a warning and keeps practice usable (3.3s)
+  ok 90 [mobile] › e2e\storage.spec.ts:116:1 › quota failure warns, keeps the previous save, and lets the session advance (4.2s)
+  ok 93 [mobile] › e2e\summary-layout.spec.ts:38:1 › empty ending has zero totals and no invented practiced operations (2.3s)
+  ok 94 [mobile] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens (3.2s)
+  ok 92 [mobile] › e2e\summary-layout.spec.ts:3:1 › summary actions preserve setup and reset replay without replaying the completed card (6.8s)
+(node:69388) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 95 [restart] › e2e\restart.spec.ts:7:1 › saved attempts and settings survive closing and reopening a real browser (10.4s)
+
+  95 passed (5.8m)
+
+> math-practice-app@0.1.0 test:pages
+> npm run build:pages && node scripts/browser-tests.mjs test --config playwright.pages.config.ts
+
+
+> math-practice-app@0.1.0 build:pages
+> tsc -b && vite build --mode pages --base=./ --outDir dist-pages
+
+vite v8.3.4 building client environment for pages...
+transforming...
+✓ 127 modules transformed.
+rendering chunks...
+computing gzip size...
+dist-pages/index.html                   0.60 kB │ gzip:  0.36 kB
+dist-pages/assets/index-DEv3Hkkn.css   11.19 kB │ gzip:  3.16 kB
+dist-pages/assets/index-B1b9E57Y.js   301.74 kB │ gzip: 93.36 kB
+
+✓ built in 538ms
+[WebServer] (node:51960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 20 tests using 2 workers
+
+(node:21264) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:74800) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route / survives refresh (2.6s)
+  ok  2 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/setup survives refresh (2.8s)
+  ok  3 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/session survives refresh (2.0s)
+  ok  4 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/summary survives refresh (1.9s)
+  ok  5 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /statistics survives refresh (1.8s)
+  ok  6 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /settings survives refresh (1.9s)
+  ok  8 [pages-desktop] › e2e\pages.spec.ts:21:1 › Pages hosting has no history fallback (117ms)
+  ok  7 [pages-desktop] › e2e\pages.spec.ts:13:3 › Pages direct hash route /unknown-page survives refresh (1.8s)
+  ok  9 [pages-desktop] › e2e\pages.spec.ts:26:1 › Pages skip link preserves route and focuses main content (1.8s)
+  ok 10 [pages-desktop] › e2e\pages.spec.ts:37:1 › Pages session, summary persistence, navigation, and accessibility (8.8s)
+(node:69440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 11 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route / survives refresh (2.1s)
+  ok 13 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/session survives refresh (1.6s)
+  ok 12 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/setup survives refresh (2.4s)
+  ok 14 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /practice/summary survives refresh (2.1s)
+  ok 15 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /statistics survives refresh (2.1s)
+  ok 16 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /settings survives refresh (2.3s)
+  ok 18 [pages-mobile] › e2e\pages.spec.ts:21:1 › Pages hosting has no history fallback (182ms)
+  ok 17 [pages-mobile] › e2e\pages.spec.ts:13:3 › Pages direct hash route /unknown-page survives refresh (1.6s)
+  ok 19 [pages-mobile] › e2e\pages.spec.ts:26:1 › Pages skip link preserves route and focuses main content (1.6s)
+  ok 20 [pages-mobile] › e2e\pages.spec.ts:37:1 › Pages session, summary persistence, navigation, and accessibility (7.6s)
+
+  20 passed (43.1s)

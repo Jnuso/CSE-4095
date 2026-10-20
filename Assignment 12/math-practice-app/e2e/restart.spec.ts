@@ -31,11 +31,13 @@ test('saved attempts and settings survive closing and reopening a real browser',
   try {
     const first = await open()
     try {
-      await first.page.goto('/practice/setup')
+      await first.page.goto('/settings')
       await first.page.getByRole('button', { name: 'Clear selection', exact: true }).click()
       await first.page.getByRole('checkbox', { name: 'Division', exact: true }).check()
       await first.page.getByRole('radio', { name: /^Advanced/ }).check()
       await first.page.getByRole('radio', { name: '5 questions', exact: true }).check()
+      await first.page.getByRole('button', { name: 'Save Settings', exact: true }).click()
+      await first.page.getByRole('link', { name: 'Practice', exact: true }).click()
       await first.page.getByRole('button', { name: 'Start Session', exact: true }).click()
       await first.page.getByRole('checkbox', { name: 'Animate card flips', exact: true }).uncheck()
       for (const right of [true, true, true, false, false]) await report(first.page, right)

@@ -69,7 +69,7 @@ The existing unit/component tests complement this with all operation/difficulty 
 - The HTML report is under `math-practice-app/output/playwright/regression-report/index.html`. Failing tests retain screenshots and traces under `regression-results`; the report links to them. These generated files are ignored by Git. The next run replaces the last report/results.
 - Playwright manages browser/server cleanup. Stop an interactive run with Ctrl+C. Do not kill unrelated browser or server processes to resolve a test-port conflict.
 
-The reporter groups results by desktop/mobile and shows the exact passed/failed count. New tests should be added as later phases add mistakes and settings features; those unfinished features are not claimed as covered now.
+The reporter groups results by desktop/mobile and shows the exact passed/failed count. New tests should be added as later phases add mistake-tracking features; those unfinished features are not claimed as covered now.
 
 ## Automated accessibility checks and independent review
 
@@ -80,7 +80,7 @@ npm.cmd run test:a11y
 npm.cmd run test:report
 ```
 
-The axe scans cover Home, setup, missing-summary results, empty Statistics and the current Settings placeholder, unknown-route recovery, setup validation and selected options, card front/selection/reveal/next question, continuous practice with reduced motion, completed/zero-attempt summaries, and a saved-data warning. Scans run on both desktop and mobile-sized Chromium in isolated contexts. Future features need scans of their populated and interactive states; placeholders do not establish accessibility of unimplemented features.
+The axe scans cover Home, setup, missing-summary results, empty Statistics and default Settings, unknown-route recovery, setup validation and selected options, card front/selection/reveal/next question, continuous practice with reduced motion, completed/zero-attempt summaries, and a saved-data warning. Scans run on both desktop and mobile-sized Chromium in isolated contexts. Future features need scans of their populated and interactive states; placeholders do not establish accessibility of unimplemented features.
 
 A separate scanner-confidence test deliberately inserts an unnamed button into its own isolated page and requires axe to detect it. Its attachment intentionally contains that violation; the application scans still require zero detected violations. Card scans wait for actual animations to finish before checking the settled state.
 
@@ -103,3 +103,7 @@ This checks hosted routes/refreshes, a five-question session and saved recap, an
 The suite verifies behavior and specified layout constraints. It does not judge every visual design change, educational wording, screen-reader experience, real mobile hardware, or every browser engine. There are no pixel-baseline screenshots to approve blindly. A brief visual review remains useful after layout changes, alongside the automatic checks.
 
 Configuration follows the official [Playwright web-server guide](https://playwright.dev/docs/test-webserver) and [recording options](https://playwright.dev/docs/test-use-options#recording-options). See DEVELOPMENT_LOG.md for the actual verified run and any repaired test-harness issues.
+
+## Settings and clear-all checks
+
+PHASE_11_TESTING.md provides the live review walkthrough. New component/service checks verify saved defaults versus session overrides, real preference behavior, quiet sound construction/cleanup and blocked audio, actual arithmetic explanations, invalid-operation validation, protected-data clearing, failed writes, and the pending-preference cross-tab reset race. Four browser scenarios run on desktop/mobile, covering saved preference reload, actual explanations/animation, clear confirmation/cancellation/Home/defaults, unrelated-data preservation, corruption recovery, write failures and stale tabs. Full-page axe scans include saved Settings and its confirmation dialog with the existing rules unchanged. The restart scenario saves preferences through Settings before closing/reopening Chromium. Hearing the tone and judging its volume remain manual checks.

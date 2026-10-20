@@ -12,6 +12,7 @@ export interface SavedData {
   settings: AppSettings
   records: StoredSession[]
   historyResetAt?: number
+  appResetAt?: number
 }
 export interface LoadResult {
   data: SavedData
@@ -142,27 +143,26 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
     warnings.push(
       'Some saved session records could not be read. Valid session records are still available.',
     )
+  const marker = (value: unknown): number | undefined =>
+    typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : undefined
+  const historyResetAt = marker(migrated.historyResetAt)
+  const appResetAt = marker(migrated.appResetAt)
   return {
     data: {
       version: SCHEMA_VERSION,
       settings,
       records: recentRecords(records).filter(
         (record) =>
-          typeof migrated.historyResetAt !== 'number' ||
-          !Number.isSafeInteger(migrated.historyResetAt) ||
-          migrated.historyResetAt < 0 ||
-          Date.parse(record.session.startedAt) > migrated.historyResetAt,
+          historyResetAt === undefined || Date.parse(record.session.startedAt) > historyResetAt,
       ),
-      ...(typeof migrated.historyResetAt === 'number' &&
-      Number.isSafeInteger(migrated.historyResetAt) &&
-      migrated.historyResetAt >= 0
-        ? { historyResetAt: migrated.historyResetAt }
-        : {}),
+      ...(historyResetAt === undefined ? {} : { historyResetAt }),
+      ...(appResetAt === undefined ? {} : { appResetAt }),
     },
     warnings,
     canWrite: true,
   }
 }
+
 export function writeSavedData(
   data: SavedData,
   access: StorageAccess = browserStorage,
@@ -186,4 +186,24 @@ export function writeSavedData(
 }
 export function latestCompletedSession(data: SavedData): CompletedSession | null {
   return data.records.find((record) => record.session.completedAt !== undefined) ?? null
+}
+
+// Used only after explicit clear-all confirmation; may replace an unreadable/unsupported save.
+export function clearSavedData(access: StorageAccess = browserStorage): {
+  data: SavedData
+  error: string | null
+} {
+  const old = readSavedData(access).data
+  const cutoff = Math.max(Date.now(), (old.historyResetAt ?? 0) + 1, (old.appResetAt ?? 0) + 1)
+  const data: SavedData = { ...emptySavedData(), historyResetAt: cutoff, appResetAt: cutoff }
+  try {
+    access().setItem(STORAGE_KEY, JSON.stringify(data))
+    return { data, error: null }
+  } catch {
+    return {
+      data,
+      error:
+        'Application data could not be cleared because browser storage is unavailable or full. Existing saved data is unchanged.',
+    }
+  }
 }

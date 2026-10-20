@@ -11,7 +11,7 @@ import { usePracticeStorage } from '../components/storage/PracticeStorageProvide
 export default function PracticeSetupPage() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { data, saveSettings } = usePracticeStorage()
+  const { data } = usePracticeStorage()
   const [configuration, setConfiguration] = useState<PracticeConfiguration>(
     () =>
       configurationFromState(location.state) ?? {
@@ -25,11 +25,6 @@ export default function PracticeSetupPage() {
   function startSession(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (isPracticeConfiguration(configuration)) {
-      saveSettings({
-        defaultOperations: configuration.operations,
-        defaultDifficulty: configuration.difficulty,
-        defaultSessionLength: configuration.sessionLength,
-      })
       navigate('/practice/session', { state: { practiceConfig: configuration } })
     }
   }
@@ -40,7 +35,10 @@ export default function PracticeSetupPage() {
       <h1 id="setup-title" tabIndex={-1}>
         Choose your practice
       </h1>
-      <p className="setup-introduction">A quick warm-up or a bigger challenge? Make it yours.</p>
+      <p className="setup-introduction">
+        A quick warm-up or a bigger challenge? Changes here apply to this session. Save your usual
+        choices in Settings.
+      </p>
       <form className="setup-form" onSubmit={startSession}>
         <OperationSelector
           value={configuration.operations}

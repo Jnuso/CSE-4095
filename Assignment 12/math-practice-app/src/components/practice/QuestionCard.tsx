@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Question } from '../../types/question'
 import AnswerChoice from './AnswerChoice'
+import { explainQuestion } from '../../services/questionExplanation'
+import { playFlipSound } from '../../services/soundEffects'
 
 export interface CardResult {
   questionId: string
@@ -13,6 +15,8 @@ interface QuestionCardProps {
   questionNumber: number
   totalQuestions?: number
   animationEnabled?: boolean
+  soundEnabled?: boolean
+  showExplanations?: boolean
   focusOnMount?: boolean
   onResult?: (result: CardResult) => void
 }
@@ -27,6 +31,8 @@ function QuestionCardContent({
   questionNumber,
   totalQuestions,
   animationEnabled = true,
+  soundEnabled = false,
+  showExplanations = true,
   focusOnMount = false,
   onResult,
 }: QuestionCardProps) {
@@ -75,6 +81,7 @@ function QuestionCardContent({
             <p className="student-answer">
               Your answer: <strong>{selectedAnswer}</strong>
             </p>
+            {showExplanations && <p className="answer-explanation">{explainQuestion(question)}</p>}
             <p>How did you do?</p>
             <div className="card-actions">
               <button
@@ -123,7 +130,10 @@ function QuestionCardContent({
               className="button button-primary flip-button"
               disabled={selectedAnswer === null}
               onClick={() => {
-                if (selectedAnswer !== null) setIsCardFlipped(true)
+                if (selectedAnswer !== null) {
+                  setIsCardFlipped(true)
+                  if (soundEnabled) void playFlipSound()
+                }
               }}
             >
               Flip Card

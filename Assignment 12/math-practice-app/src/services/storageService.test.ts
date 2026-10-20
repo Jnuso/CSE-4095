@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { completedFixture } from '../test/summaryFixture'
 import {
   defaultSettings,
+  clearSavedData,
   emptySavedData,
   isAppSettings,
   isStoredSession,
@@ -187,5 +188,33 @@ describe('history reset marker protection', () => {
       }),
     )
     expect(readSavedData().data.records.map((record) => record.session.id)).toEqual(['fresh'])
+  })
+})
+
+describe('explicit clear all', () => {
+  it.each([
+    '{broken',
+    JSON.stringify({ version: 99, settings: {}, records: [], mistakePatterns: ['old'] }),
+  ])('can deliberately replace protected data after confirmation', (raw) => {
+    localStorage.setItem(STORAGE_KEY, raw)
+    localStorage.setItem('unrelated', 'keep')
+    const { data, error } = clearSavedData()
+    expect(error).toBeNull()
+    expect(readSavedData().data).toEqual(data)
+    expect(data.settings).toEqual(defaultSettings())
+    expect(data.records).toEqual([])
+    expect(data.appResetAt).toBe(data.historyResetAt)
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!)).not.toHaveProperty('mistakePatterns')
+    expect(localStorage.getItem('unrelated')).toBe('keep')
+  })
+  it('does not claim success or change saved bytes when clear fails', () => {
+    const store = {
+      getItem: () => 'original bytes',
+      setItem: () => {
+        throw new DOMException('full', 'QuotaExceededError')
+      },
+    }
+    expect(clearSavedData(() => store).error).toContain('could not be cleared')
+    expect(store.getItem()).toBe('original bytes')
   })
 })

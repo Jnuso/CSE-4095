@@ -14,3 +14,6 @@
 - The student also authorized ongoing focused Gemma reviews through the existing coding-workers setup. Follow REVIEW.md: compact text-only TypeScript review requests, max_calls=1 per job, no overlapping requests, at least 60 seconds after the previous request finishes before another, and no automatic retries. Locally verify findings and keep static-review results distinct from passing application tests.
 - Accessibility scans are part of check:all. Extend them for new pages and interactive states; preserve full-page scans and existing rules. Do not suppress violations just to obtain a passing result. Automated scans do not complete the professor's full accessibility phase.
 - For documentation-only changes, use the relevant formatting/link checks rather than rerunning unrelated browser flows.
+
+- Phase 11 defaults are saved explicitly through Settings; individual session setup overrides must not rewrite them. Sound defaults off; animation and explanations default on. Keep browser audio failures from interrupting practice.
+- Clear All Application Data requires explicit destructive confirmation and restores preferences as well as history. It may deliberately replace protected app data, but must touch only the app's storage key, preserve unrelated data, report write failures honestly, and prevent stale tabs restoring erased records/pending preferences.

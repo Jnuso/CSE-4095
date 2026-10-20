@@ -1,0 +1,47 @@
+
+> math-practice-app@0.1.0 test:e2e
+> npm run build && node scripts/browser-tests.mjs test settings.spec.ts summary-layout.spec.ts
+
+
+> math-practice-app@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 127 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.60 kB │ gzip:  0.35 kB
+dist/assets/index-DEv3Hkkn.css   11.19 kB │ gzip:  3.16 kB
+dist/assets/index-8eriuNRd.js   301.47 kB │ gzip: 93.28 kB
+
+✓ built in 589ms
+[WebServer] (node:15568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 14 tests using 2 workers
+
+(node:11588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop] › e2e\settings.spec.ts:13:1 › settings save, reload, session overrides, explanations and animation (12.3s)
+  ok  3 [desktop] › e2e\settings.spec.ts:115:1 › failed clear-all preserves data; explicit confirmation can recover protected storage (4.3s)
+  ok  2 [desktop] › e2e\settings.spec.ts:53:1 › clear-all confirmation is accessible, cancellable, and restores only app data (18.6s)
+  ok  4 [desktop] › e2e\settings.spec.ts:146:1 › clear-all in another tab resets live preferences and blocks stale practice saves (8.5s)
+  ok  5 [desktop] › e2e\summary-layout.spec.ts:3:1 › summary actions preserve setup and reset replay without replaying the completed card (8.1s)
+  ok  6 [desktop] › e2e\summary-layout.spec.ts:38:1 › empty ending has zero totals and no invented practiced operations (2.5s)
+  ok  7 [desktop] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens (3.1s)
+(node:85304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:79152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  8 [mobile] › e2e\settings.spec.ts:13:1 › settings save, reload, session overrides, explanations and animation (10.6s)
+  ok 10 [mobile] › e2e\settings.spec.ts:115:1 › failed clear-all preserves data; explicit confirmation can recover protected storage (5.7s)
+  ok 11 [mobile] › e2e\settings.spec.ts:146:1 › clear-all in another tab resets live preferences and blocks stale practice saves (7.2s)
+  ok  9 [mobile] › e2e\settings.spec.ts:53:1 › clear-all confirmation is accessible, cancellable, and restores only app data (24.1s)
+  ok 13 [mobile] › e2e\summary-layout.spec.ts:38:1 › empty ending has zero totals and no invented practiced operations (3.1s)
+  ok 14 [mobile] › e2e\summary-layout.spec.ts:46:1 › front, back, summary, and touch targets fit 390- and 320-pixel screens (3.7s)
+  ok 12 [mobile] › e2e\summary-layout.spec.ts:3:1 › summary actions preserve setup and reset replay without replaying the completed card (9.2s)
+
+  14 passed (1.4m)

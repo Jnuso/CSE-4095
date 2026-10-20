@@ -47,7 +47,7 @@ Normal reports remain in regression-report; Pages reports/results are separate a
 
 1. Open the stable address and select Start Practice. Choose 5 questions and complete them, marking three right and two wrong. The recap should show 5 attempts, 3 right, 2 wrong, and 60% accuracy.
 2. Refresh the recap. Its saved results should remain. Open setup via `#/practice/setup`, refresh, and confirm the page still loads without a hosting 404.
-3. Navigate through Home, Statistics, and Settings. Statistics shows your saved progress; Settings remains a placeholder until its feature phase. Use browser Back to check navigation.
+3. Navigate through Home, Statistics, and Settings. Statistics shows saved progress; Settings saves preferences and offers explicit-confirmation clearing. Use browser Back to check navigation.
 4. On setup, focus Skip to content with Tab and activate it. Focus should move to main content while the setup route remains intact.
 5. Try the URL on your phone and check that controls fit and can be tapped. Phone and computer histories are independent.
 

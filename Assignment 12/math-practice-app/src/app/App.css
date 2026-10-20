@@ -765,3 +765,20 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+.preference-options {
+  display: grid;
+  gap: 12px;
+}
+.preference-options .choice-card {
+  justify-content: flex-start;
+  gap: 16px;
+}
+.settings-clear {
+  margin-top: 32px;
+}
+.answer-explanation {
+  max-width: 36ch;
+  margin: 12px auto;
+  line-height: 1.5;
+}

@@ -1,0 +1,54 @@
+{
+  "status": {
+    "id": "657165fc97fd4557b47ec8339c12657c",
+    "state": "failed",
+    "phase": "failed",
+    "profile": "review",
+    "model": "gemma-4-26b-a4b-it",
+    "calls": 1,
+    "max_calls": 1,
+    "created": 1792469903.8692186,
+    "updated": 1792470040.2359393,
+    "heartbeat": 1792470040.1988068,
+    "cancel_requested": false,
+    "error": {
+      "code": "provider_timeout",
+      "message": "Google request failed (TimeoutError). Resume to retry.",
+      "retryable": true
+    }
+  },
+  "ready": true,
+  "result": {
+    "job_id": "657165fc97fd4557b47ec8339c12657c",
+    "profile": "review",
+    "model": "gemma-4-26b-a4b-it",
+    "report": "",
+    "verified": false,
+    "tests": {},
+    "baseline_tests": {
+      "exit_code": 5,
+      "output": "\nno tests ran in 0.04s\n\n__CODING_AGENT_TEST_REPORT__={\"exit_code\": 5, \"collected\": 0, \"tests_run\": 0, \"passed_count\": 0, \"failed_count\": 0, \"errors\": 0, \"skipped\": 0}\n",
+      "output_truncated": false,
+      "duration_seconds": 6.42,
+      "collected": 0,
+      "tests_run": 0,
+      "passed_count": 0,
+      "failed_count": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": false
+    },
+    "remaining_problems": [
+      "Google request failed (TimeoutError). Resume to retry.",
+      "Fresh tests are not passing."
+    ],
+    "project_path": "C:\\Users\\Jnuso\\Codex\\Codex\\Codex\\agents\\.state\\jobs\\657165fc97fd4557b47ec8339c12657c\\project",
+    "activity_path": "C:\\Users\\Jnuso\\Codex\\Codex\\Codex\\agents\\.state\\jobs\\657165fc97fd4557b47ec8339c12657c\\activity.jsonl",
+    "changes": [],
+    "diff_path": "C:\\Users\\Jnuso\\Codex\\Codex\\Codex\\agents\\.state\\jobs\\657165fc97fd4557b47ec8339c12657c\\changes.diff",
+    "manifest_path": "C:\\Users\\Jnuso\\Codex\\Codex\\Codex\\agents\\.state\\jobs\\657165fc97fd4557b47ec8339c12657c\\changes.json",
+    "source_conflicts": [],
+    "can_apply": true,
+    "omitted_outputs": []
+  }
+}

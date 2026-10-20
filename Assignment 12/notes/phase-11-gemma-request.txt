@@ -1,0 +1,52 @@
+Read-only static TypeScript review, text only, no tools/edits/test execution claims. Return only concrete bugs with scenarios, max250words. Contracts: explicit Clear All Application Data restores defaults, clears all records and any extra mistake-pattern fields, preserves unrelated browser keys; it can replace corrupt/unknown-version app data only after strong confirmation. Failure must keep existing bytes and not navigate Home. Normal saves refuse corrupt/unknown data. Settings saved explicitly; individual session overrides do not overwrite defaults. Cross-tab stale history/pending settings must not return after clear. SavedData v1 has settings,records, optional safeinteger>=0 historyResetAt and appResetAt; reader filters records startedAt<=historyResetAt. Provider commit reads disk,memory; clears pendingSettings when writable disk.appResetAt differs from memory; sets settings from writable disk elsememory plus pending; merges memory records only unreadable disk or equalhistorymarker; incoming record only if startedAt>(disk.historyResetAt??memory.historyResetAt??0). ClearSettings UI calls clearAllData only on Erase all confirmation; error shown without navigating; success Home. readSavedData never throws, returns defaults/canWritefalse for protected data. STORAGE_KEY='mathPractice.data', access returns getItem/setItem. Review actual focused code below:
+
+// Used only after explicit clear-all confirmation; may replace an unreadable/unsupported save.
+export function clearSavedData(access: StorageAccess = browserStorage): {
+  data: SavedData
+  error: string | null
+} {
+  const old = readSavedData(access).data
+  const cutoff = Math.max(Date.now(), (old.historyResetAt ?? 0) + 1, (old.appResetAt ?? 0) + 1)
+  const data: SavedData = { ...emptySavedData(), historyResetAt: cutoff, appResetAt: cutoff }
+  try {
+    access().setItem(STORAGE_KEY, JSON.stringify(data))
+    return { data, error: null }
+  } catch {
+    return {
+      data,
+      error:
+        'Application data could not be cleared because browser storage is unavailable or full. Existing saved data is unchanged.',
+    }
+  }
+}
+
+  const resetHistory = useCallback((): string | null => {
+    const disk = readSavedData()
+    if (!disk.canWrite)
+      return 'History could not be reset because browser storage is unavailable or protected.'
+    if (disk.data.appResetAt !== latest.current.data.appResetAt) pendingSettings.current = {}
+    const data: SavedData = {
+      version: 1,
+      settings: { ...disk.data.settings, ...pendingSettings.current },
+      records: [],
+      historyResetAt: Math.max(Date.now(), (disk.data.historyResetAt ?? 0) + 1),
+      appResetAt: disk.data.appResetAt,
+    }
+    const error = writeSavedData(data)
+    if (error) return error
+    pendingSettings.current = {}
+    const next = { data, canWrite: true, warnings: [] }
+    latest.current = next
+    setLoaded(next)
+    return null
+  }, [])
+
+  const clearAllData = useCallback((): string | null => {
+    const { data, error } = clearSavedData()
+    if (error) return error
+    pendingSettings.current = {}
+    const next = { data, canWrite: true, warnings: [] }
+    latest.current = next
+    setLoaded(next)
+    return null
+  }, [])

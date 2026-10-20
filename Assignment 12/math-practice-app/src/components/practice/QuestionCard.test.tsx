@@ -5,6 +5,7 @@ import type { Question } from '../../types/question'
 import AnswerChoice from './AnswerChoice'
 import QuestionCard from './QuestionCard'
 import CardPreview from './CardPreview'
+import * as sounds from '../../services/soundEffects'
 
 const question: Question = {
   id: 'card-1',
@@ -170,4 +171,24 @@ describe('card preview', () => {
     expect(screen.getByRole('heading', { name: /= \?/ })).toHaveFocus()
     expect(screen.getByRole('checkbox', { name: 'Animate card flips' })).not.toBeChecked()
   })
+})
+
+it.each([true, false])('honors explanation and sound preferences (%s)', async (enabled) => {
+  const play = vi.spyOn(sounds, 'playFlipSound').mockResolvedValue(undefined)
+  const user = userEvent.setup()
+  render(
+    <QuestionCard
+      question={question}
+      questionNumber={1}
+      showExplanations={enabled}
+      soundEnabled={enabled}
+    />,
+  )
+  expect(screen.queryByText('7 groups of 8 make 56.')).not.toBeInTheDocument()
+  expect(play).not.toHaveBeenCalled()
+  await user.click(screen.getByRole('button', { name: 'Answer 48' }))
+  await user.click(screen.getByRole('button', { name: 'Flip Card' }))
+  if (enabled) expect(screen.getByText('7 groups of 8 make 56.')).toBeInTheDocument()
+  else expect(screen.queryByText('7 groups of 8 make 56.')).not.toBeInTheDocument()
+  expect(play).toHaveBeenCalledTimes(enabled ? 1 : 0)
 })

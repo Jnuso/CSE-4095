@@ -18,7 +18,7 @@ export default function PracticeSessionPanel({
   const [state, setState] = useState(() => startSession(configuration))
   const latest = useRef(state)
   const { data, saveSession, saveSettings } = usePracticeStorage()
-  const [animationEnabled, setAnimationEnabled] = useState(data.settings.cardAnimationEnabled)
+  const animationEnabled = data.settings.cardAnimationEnabled
   useEffect(() => {
     saveSession({ session: state.session, attempts: state.attempts })
   }, [state.session, state.attempts, saveSession])
@@ -84,7 +84,6 @@ export default function PracticeSessionPanel({
               type="checkbox"
               checked={animationEnabled}
               onChange={(event) => {
-                setAnimationEnabled(event.target.checked)
                 saveSettings({ cardAnimationEnabled: event.target.checked })
               }}
             />{' '}
@@ -98,6 +97,8 @@ export default function PracticeSessionPanel({
                 session.sessionLength === 'continuous' ? undefined : session.sessionLength
               }
               animationEnabled={animationEnabled}
+              soundEnabled={data.settings.soundEffectsEnabled}
+              showExplanations={data.settings.showExplanations}
               focusOnMount={state.questionIndex > 0}
               onResult={report}
             />
