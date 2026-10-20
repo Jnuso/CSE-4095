@@ -1,6 +1,6 @@
 # Phase 11: Settings review guide
 
-Live page after deployment: https://jnuso.github.io/CSE-4095/#/settings
+Live page: https://jnuso.github.io/CSE-4095/#/settings
 
 Use a private/incognito window to test from a clean start without erasing the progress in your usual browser. Automated tests use their own browser contexts and never clear your profile.
 
@@ -16,3 +16,5 @@ Use a private/incognito window to test from a clean start without erasing the pr
 Statistics reset keeps preferences. Clear All Application Data restores preferences as well as erasing practice history. Both are limited to the app's saved data on this browser/device; they do not synchronize other devices. If saving or clearing fails, the app must show a clear message and must not claim that the write succeeded. Clear All can deliberately recover unreadable/unsupported app data after explicit confirmation; ordinary saves continue protecting it.
 
 From math-practice-app, run `npm.cmd run check:all`. This includes unit/component, browser/accessibility, real browser restart, normal build, and strict Pages hosting checks. TESTING.md explains reports; DEVELOPMENT_LOG.md records actual verification and review results. TODO items are checked only after the full gate passes.
+
+To repeat the focused hosted check from the course repository root, run `node "Assignment 12/notes/phase-11-live-check.mjs"`. It uses disposable desktop/mobile data and saves ignored screenshots/results under math-practice-app/output/playwright/phase-11-live. This complements the full local gate; it does not test your saved profile or prove audible sound quality.
