@@ -90,6 +90,14 @@ Implementation follows the official [Playwright accessibility guide](https://pla
 
 ## What still needs human review
 
+For a focused check of the deployed URL, run this from the course repository root after installing the app's dependencies and bundled browser:
+
+```powershell
+node "Assignment 12/notes/pages-live-check.mjs"
+```
+
+This checks hosted routes/refreshes, a five-question session and saved recap, and skip-link focus at desktop/mobile sizes using disposable browser contexts. It does not use your browser profile or saved progress. Generated screenshots and results go to the ignored math-practice-app/output/playwright/pages-live folder. This is a focused hosting check; the full local regression gate remains check:all.
+
 The suite verifies behavior and specified layout constraints. It does not judge every visual design change, educational wording, screen-reader experience, real mobile hardware, or every browser engine. There are no pixel-baseline screenshots to approve blindly. A brief visual review remains useful after layout changes, alongside the automatic checks.
 
 Configuration follows the official [Playwright web-server guide](https://playwright.dev/docs/test-webserver) and [recording options](https://playwright.dev/docs/test-use-options#recording-options). See DEVELOPMENT_LOG.md for the actual verified run and any repaired test-harness issues.

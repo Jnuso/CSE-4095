@@ -6,13 +6,13 @@ import { fileURLToPath } from "node:url";
 const require = createRequire(
   new URL("../math-practice-app/package.json", import.meta.url),
 );
-const { chromium } = require("@playwright/test");
 process.env.PLAYWRIGHT_BROWSERS_PATH = fileURLToPath(
   new URL(
     "../math-practice-app/node_modules/.cache/playwright-browsers/",
     import.meta.url,
   ),
 );
+const { chromium } = require("@playwright/test");
 const address = "https://jnuso.github.io/CSE-4095/";
 const output = new URL(
   "../math-practice-app/output/playwright/pages-live/",

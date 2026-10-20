@@ -36,20 +36,20 @@ Verified on October 16, 2026, on Windows, with Node.js 24.19.0 and npm 11.17.0.
 
 Installed versions from `npm ls --depth=0`: React/React DOM 19.3.1, TypeScript 6.0.3, Vite 8.3.4, ESLint 10.13.0, Prettier 3.9.10, Vitest 5.0.5, React Testing Library 16.3.3, user-event 14.6.8, jest-dom 7.0.1, and jsdom 30.1.3. The exact dependency graph is recorded in `math-practice-app/package-lock.json`.
 
-| Check | Observed result |
-| --- | --- |
+| Check                                  | Observed result                                                                                            |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Installation and dependency inspection | Completed successfully; npm reported zero vulnerabilities and `npm ls --depth=0` showed the required tools |
-| Formatting | `npm run format:check` passed |
-| ESLint | `npm run lint` passed with zero warnings permitted |
-| Component tests | `npm run test`: 1 file, 2 tests passed (initial render and greeting activation) |
-| TypeScript and production build | `npm run build` passed; `tsc -b` checked source and all shared types, then Vite produced `dist` |
-| Development server | Started on `http://127.0.0.1:5173/`; HTTP 200 and the correct page title |
-| Desktop browser | Isolated Chrome, 1440 x 960: correct content and click greeting confirmed |
-| Keyboard | Tab focused Say hello with a visible focus indicator; Enter activated the greeting |
-| Refresh | Reload reset the temporary greeting to Ready when you are, as expected before persistence work |
-| Narrow layout | Chrome viewport 390 x 844: document width 390, no horizontal overflow; screenshot visually inspected |
-| Built preview | `http://127.0.0.1:4173/` loaded; greeting click and refresh reset worked |
-| Browser errors | Zero errors or warnings reported by the error-level console check in the isolated browser session |
+| Formatting                             | `npm run format:check` passed                                                                              |
+| ESLint                                 | `npm run lint` passed with zero warnings permitted                                                         |
+| Component tests                        | `npm run test`: 1 file, 2 tests passed (initial render and greeting activation)                            |
+| TypeScript and production build        | `npm run build` passed; `tsc -b` checked source and all shared types, then Vite produced `dist`            |
+| Development server                     | Started on `http://127.0.0.1:5173/`; HTTP 200 and the correct page title                                   |
+| Desktop browser                        | Isolated Chrome, 1440 x 960: correct content and click greeting confirmed                                  |
+| Keyboard                               | Tab focused Say hello with a visible focus indicator; Enter activated the greeting                         |
+| Refresh                                | Reload reset the temporary greeting to Ready when you are, as expected before persistence work             |
+| Narrow layout                          | Chrome viewport 390 x 844: document width 390, no horizontal overflow; screenshot visually inspected       |
+| Built preview                          | `http://127.0.0.1:4173/` loaded; greeting click and refresh reset worked                                   |
+| Browser errors                         | Zero errors or warnings reported by the error-level console check in the isolated browser session          |
 
 The combined `npm.cmd run check` command exited successfully. Its captured output is saved in `notes/phase-1-check-output.txt`. Desktop and mobile screenshots are in `math-practice-app/output/playwright/phase-1-desktop.png` and `phase-1-mobile.png`.
 
@@ -86,17 +86,17 @@ The student asked to complete Phase 2 in the same way as Phase 1: explain the wo
 
 The combined `npm.cmd run check` command passed: formatting, ESLint, 12 component tests in one file, TypeScript compilation, and the Vite production build. The test suite now checks the routed interface rather than the removed Phase 1 greeting. The output is saved in `notes/phase-2-check-output.txt`. npm reported zero vulnerabilities when installing React Router.
 
-| Check | Observed result |
-| --- | --- |
-| Required URLs | Home, setup, session, summary, statistics, and settings each render the correct heading and shared header |
-| Unknown URL | Friendly fallback appears, and Back home returns to the home page |
-| Home actions | All three actions open the expected URL, highlight the correct navigation item, and focus the new heading |
-| Browser history | Back returns to practice setup and Forward returns to statistics in the tested flow |
-| Keyboard | Skip to content is first in the tab order and focuses main content; Tab reaches navigation, visible focus appears, and Enter opens Practice |
-| Direct loading and refresh | All six routes plus the fallback passed on both port 5173 (development) and port 4173 (built preview) |
-| Screen sizes | Desktop 1440 x 960 visually inspected; widths 320, 390, and 768 had no horizontal overflow and all navigation links remained within the viewport |
-| Screenshots | Desktop home, mobile home, and desktop statistics placeholder captured and visually inspected |
-| Browser errors | No runtime errors, console errors, or warnings were collected during the route and layout checks |
+| Check                      | Observed result                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Required URLs              | Home, setup, session, summary, statistics, and settings each render the correct heading and shared header                                        |
+| Unknown URL                | Friendly fallback appears, and Back home returns to the home page                                                                                |
+| Home actions               | All three actions open the expected URL, highlight the correct navigation item, and focus the new heading                                        |
+| Browser history            | Back returns to practice setup and Forward returns to statistics in the tested flow                                                              |
+| Keyboard                   | Skip to content is first in the tab order and focuses main content; Tab reaches navigation, visible focus appears, and Enter opens Practice      |
+| Direct loading and refresh | All six routes plus the fallback passed on both port 5173 (development) and port 4173 (built preview)                                            |
+| Screen sizes               | Desktop 1440 x 960 visually inspected; widths 320, 390, and 768 had no horizontal overflow and all navigation links remained within the viewport |
+| Screenshots                | Desktop home, mobile home, and desktop statistics placeholder captured and visually inspected                                                    |
+| Browser errors             | No runtime errors, console errors, or warnings were collected during the route and layout checks                                                 |
 
 Browser interaction and route-check transcripts are saved in `notes/phase-2-browser-interactions.txt` and `notes/phase-2-browser-routes.txt`. Screenshot evidence is in `math-practice-app/output/playwright/phase-2-home-desktop.png`, `phase-2-home-mobile.png`, and `phase-2-statistics-desktop.png`.
 
@@ -439,6 +439,10 @@ Independent read-only review found no blocking application/deployment defects; i
 
 The final npm.cmd run check:all completed with exit code 0: formatting, ESLint, 161 unit/component tests, strict app/browser-test type checking, normal production build, all 81 regression browser executions, Pages build, and all 20 strict-hosting browser executions passed (262 total automated test executions). The isolated restart passed in 10.5 seconds within its unchanged 45-second deadline; the normal browser suite took about 4.8 minutes and Pages about one minute on this host. Both report last-run files say passed with no failed tests. Documentation/YAML formatting and git diff --check passed. Evidence: notes/pages-local-check-output.txt, pages-restart-check.txt, and pages-focused-check.txt. Failed attempts remain separately recorded above.
 
-The verified deployment commit will now be published after the explicitly authorized visibility change. Actual GitHub Actions and hosted browser results remain to be recorded. The stable target is https://jnuso.github.io/CSE-4095/.
+After the explicitly authorized visibility change, Jnuso/CSE-4095 is public and commit 72c4793feaeaf5dee4f4134829f63d8706af4f7e was pushed to main. Pages is configured to deploy through Actions. The first push did not create a run; after GitHub indexed the workflow, a manual main-branch dispatch ran the same verification/deployment pipeline. Both jobs succeeded in run 39345095373: https://github.com/Jnuso/CSE-4095/actions/runs/39345095373. It completed October 19 local time (2026-10-20T00:03:40Z). The live address is https://jnuso.github.io/CSE-4095/. Repository, Pages, run, and job metadata are saved in notes/pages-remote-deployment.json.
+
+The live-site helper in notes/pages-live-check.mjs uses fresh disposable Chromium contexts at desktop and mobile sizes. Its initial launch could not locate the bundled browser because the cache environment was set after importing Playwright; setting it before loading Playwright repaired the helper. The completed hosted run passed six routes and refreshes, a five-question session with three self-reported right/two wrong and 60% accuracy, persisted recap reload, and skip-link focus without losing the route. Neither viewport reported runtime, console, or hosted HTTP errors. Output is saved in notes/pages-hosted-check-output.txt. Desktop/mobile recap screenshots were visually reviewed and showed readable controls and no overlap; generated screenshots/results remain ignored under output/playwright/pages-live. These isolated checks do not change the student's saved progress.
+
+Final independent review found no further issues in the routing, workflow, browser-test separation, safe temporary profile cleanup, or live-check helper. Gemma's timeout remains recorded above; no successful external verdict is claimed. Only documentation, the live-check helper repair, and actual deployment evidence were added after the tested app commit, so the unchanged application gate was not rerun for those records. The professor specification/TODO were unchanged; Phase 10 statistics remains the next feature phase.
 
 Staging the previously untracked review artifacts exposed expected whitespace in exact unified-diff payloads (single-space context lines and header tabs). Narrow .gitattributes exceptions cover only those three raw evidence files so their original submitted contents remain intact; source/configuration whitespace checks remain enabled.

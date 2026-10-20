@@ -1,0 +1,35 @@
+{
+  "repository": {
+    "full_name": "Jnuso/CSE-4095",
+    "visibility": "public",
+    "html_url": "https://github.com/Jnuso/CSE-4095"
+  },
+  "pages": {
+    "html_url": "https://jnuso.github.io/CSE-4095/",
+    "build_type": "workflow",
+    "status": null,
+    "public": true,
+    "https_enforced": true
+  },
+  "run": {
+    "id": 39345095373,
+    "html_url": "https://github.com/Jnuso/CSE-4095/actions/runs/39345095373",
+    "head_sha": "72c4793feaeaf5dee4f4134829f63d8706af4f7e",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-10-20T00:01:06Z",
+    "updated_at": "2026-10-20T00:03:40Z"
+  },
+  "jobs": [
+    {
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "deploy",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

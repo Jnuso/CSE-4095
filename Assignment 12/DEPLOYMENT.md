@@ -2,11 +2,13 @@
 
 ## Hosting and updates
 
-Planned stable address: https://jnuso.github.io/CSE-4095/. Deployment status and actual verification are recorded in DEVELOPMENT_LOG.md.
+Live address: https://jnuso.github.io/CSE-4095/. The first deployment passed both verification and deployment in [GitHub Actions run 39345095373](https://github.com/Jnuso/CSE-4095/actions/runs/39345095373), publishing commit 72c4793. Desktop and mobile-sized browser checks of the live site also passed. Actual verification details are recorded in DEVELOPMENT_LOG.md.
 
 The student explicitly chose to make the whole Jnuso/CSE-4095 repository and its Git history public after GitHub rejected Pages for the private repository on the current plan. GitHub Pages publishes only the built math app; the existing Cloudflare showcase still uses base/ and its existing configuration.
 
 The repository-root `.github/workflows/math-practice-pages.yml` runs on relevant main-branch pushes, pull requests, and manual dispatch. It installs locked dependencies/browser support and runs `npm run check:all`. Only a successful main-branch run uploads `math-practice-app/dist-pages` and deploys it. Pull requests run verification without deploying. The deployment job has Pages/OIDC permissions; verification has read-only repository permissions. Action versions are pinned to the upstream SHAs referenced by Vite's official Pages guide.
+
+The first deployment was started manually after GitHub indexed the new workflow. If a future eligible push does not create a run, open Actions, select Math Practice Pages, and use Run workflow on main. Verification still runs before publishing.
 
 Future authorized development phases follow: explanation and useful clarifications, implementation, tests, independent and focused Gemma review, verified commit/push, deployment confirmation, then student review steps. A failed check blocks publishing that version. Gemma requests keep their one-call job cap and one-minute spacing; they are not run inside public CI and no Google API key is required there.
 
