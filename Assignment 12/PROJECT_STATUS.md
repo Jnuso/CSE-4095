@@ -6,7 +6,10 @@ Read AGENTS.md, the relevant TODO phase and specification sections. Read DECISIO
 
 ## Current milestone
 
-- Phase 17 responsive design and supportive feedback is implemented and locally verified; deployment confirmation will be recorded after CI succeeds.
+- Phase 17 is deployed at https://jnuso.github.io/CSE-4095/.
+- Deployed app commit: 162985cf14793e24d92da65f32fe9cec16df7985.
+- Successful CI and Pages deployment: https://github.com/Jnuso/CSE-4095/actions/runs/39510013849.
+- Isolated hosted phone (320px) and tablet (1024px) checks passed: practice, final feedback, statistics overflow and saved feedback opt-out.
 - Full final gate passed outside the sandbox: 306 unit/component + 139 browser + 20 Pages tests = 465 passed; formatting, lint, types and both builds passed.
 - Narrow phones use stacked answers and compact navigation; statistics cards wrap within the viewport. Revealing a card preserves its front height.
 - Encouraging feedback follows self-reported results, varies between short supportive phrases and has a saved Settings opt-out. Legacy settings remain valid.
