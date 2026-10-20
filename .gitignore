@@ -11,3 +11,6 @@ pytest-cache-files-*/
 
 # Preserved pre-refactor workspace; the assignment files now live at the root.
 Assignment 1/CSE-4095/
+
+# Local browser screenshots from Phase 16 hosted verification.
+Assignment 12/math-practice-app/output/playwright/phase-16-live/
