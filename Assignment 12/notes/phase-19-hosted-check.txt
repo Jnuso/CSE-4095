@@ -1,0 +1,2 @@
+mobile: hosted missing-session explanation, Home, valid-answer recovery, preserved preferences and save/reload passed
+desktop: hosted missing-session explanation, Home, valid-answer recovery, preserved preferences and save/reload passed

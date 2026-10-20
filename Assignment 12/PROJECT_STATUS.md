@@ -6,7 +6,10 @@ Read AGENTS.md, the relevant TODO phase and specification sections. Read DECISIO
 
 ## Current milestone
 
-- Phase 19 error handling is implemented and locally verified; deployment confirmation follows successful CI.
+- Phase 19 is deployed at https://jnuso.github.io/CSE-4095/.
+- Deployed commit: f05707b3ef852bfe0fe40cee08ee29069e3c3d85. Successful CI/Pages deployment: https://github.com/Jnuso/CSE-4095/actions/runs/39514009612.
+- Final hosted desktop/mobile checks passed missing-session explanation, safe Home navigation, valid-answer recovery, preserved preferences and save/reload.
+- CI initially caught an existing asynchronous migration assertion race. The test now waits for the actual save effect, preserving its expected version/history checks; full final local and CI gates passed.
 - Phase 18 session recovery/navigation safety remains pending: the student explicitly requested Phase 19 after Phase 17. Do not mark Phase 18 completed or start another phase automatically.
 - Final check:all passed in the normal host environment: 315 unit/component + 143 browser + 20 Pages tests = 478 passed, plus formatting, lint, types and both builds.
 - Supported saves recover valid answers from damaged sessions, deduplicate identities and rebuild totals. Malformed record categories preserve valid settings and independent mistake/review evidence. Reads do not rewrite saves; unknown versions/unreadable JSON remain protected.
