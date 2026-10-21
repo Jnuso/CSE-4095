@@ -774,3 +774,8 @@ Added a sticky left-side section menu on wide screens and a two-column menu abov
 Focused verification: eight Statistics desktop/mobile browser checks passed, including existing reset/history behavior and new jump/scroll/focus/read-only/320px/accessibility coverage. Eight existing Statistics/MistakeStatistics component tests passed using Vitest thread workers after fork workers timed out before executing tests. Production build and changed-file ESLint passed. Confirmed the sidebar and By operation jump visually in the Codex browser. The complete suite was not rerun; this local update is not yet deployed.
 
 The additional focused Firefox section-navigation browser check passed (1/1). Final focused totals: 8 component tests and 9 browser checks; build, types, changed-file lint and formatting passed. Full-suite rerun and publication remain deferred.
+
+
+## 2026-10-21 — Deployment selector correction
+
+The first deployment gate for the Statistics menu stopped at two desktop/mobile performance checks: an unqualified navigation locator became ambiguous after adding the second labelled navigation landmark. Scoped performance checks to Main navigation, preserving their visibility, lazy-loading and focus assertions. The failed gate did not publish the change. A follow-up push reruns the release gate.

@@ -21,7 +21,10 @@ test('loads secondary pages on demand and restores heading focus after a slow ch
     ['Statistics', 'Your statistics'],
     ['Settings', 'Make it your own'],
   ]) {
-    await page.getByRole('navigation').getByRole('link', { name: link, exact: true }).click()
+    await page
+      .getByRole('navigation', { name: 'Main navigation', exact: true })
+      .getByRole('link', { name: link, exact: true })
+      .click()
     await expect
       .poll(() =>
         chunks.some((url) =>
@@ -29,7 +32,9 @@ test('loads secondary pages on demand and restores heading focus after a slow ch
         ),
       )
       .toBe(true)
-    await expect(page.getByRole('navigation')).toBeVisible()
+    await expect(
+      page.getByRole('navigation', { name: 'Main navigation', exact: true }),
+    ).toBeVisible()
     releaseChunk!()
     await expect(page.getByRole('heading', { level: 1, name: title })).toBeFocused()
     await expect(page).toHaveTitle(`${title} | Math Practice`)
@@ -58,7 +63,10 @@ recoveryTest(
     await page.route(chunk, (route) =>
       route.fulfill({ status: 503, body: 'Temporarily unavailable' }),
     )
-    await page.getByRole('navigation').getByRole('link', { name: 'Settings', exact: true }).click()
+    await page
+      .getByRole('navigation', { name: 'Main navigation', exact: true })
+      .getByRole('link', { name: 'Settings', exact: true })
+      .click()
     await expect(page.getByRole('heading', { name: 'Let’s try a fresh start' })).toBeFocused()
     await page.unroute(chunk)
     await page.getByRole('button', { name: 'Try again', exact: true }).click()
@@ -87,7 +95,10 @@ test('practice remains usable with simulated 4x CPU slowdown and sends no practi
     for (const correct of [true, false, true, false, true]) await report(page, correct)
     await expect(page.getByRole('heading', { name: 'Your practice recap' })).toBeVisible()
     await expect(page.getByText('Accuracy', { exact: true }).locator('..')).toContainText('60%')
-    await page.getByRole('navigation').getByRole('link', { name: 'Settings', exact: true }).click()
+    await page
+      .getByRole('navigation', { name: 'Main navigation', exact: true })
+      .getByRole('link', { name: 'Settings', exact: true })
+      .click()
     await expect(page.getByRole('heading', { name: 'Your practice stays here' })).toBeVisible()
     expect(requests.length).toBeGreaterThan(0)
     const origin = new URL(page.url()).origin
