@@ -7,10 +7,10 @@ import os
 from pathlib import Path
 
 import pytest
-from selenium.webdriver import Chrome
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver as Chrome
 
 
 @pytest.fixture(scope="session")
@@ -42,8 +42,7 @@ def browser():
     driver_path = os.environ.get("SELENIUM_DRIVER_PATH")
     service = Service(executable_path=driver_path) if driver_path else Service()
     try:
-        # Pylint misclassifies Selenium's re-exported Chrome class as a module.
-        driver = Chrome(service=service, options=options)  # pylint: disable=not-callable
+        driver = Chrome(service=service, options=options)
     except (OSError, WebDriverException) as error:
         summary = str(error).splitlines()[0] or type(error).__name__
         message = f"Chrome WebDriver could not start: {summary}"
