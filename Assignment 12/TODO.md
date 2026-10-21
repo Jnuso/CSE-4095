@@ -1,4 +1,4 @@
-> Final completion order and all remaining work: see [FINAL_TODO.md](FINAL_TODO.md). Run focused checks during implementation; defer the full suite until the final gate.
+> Final completion order and all remaining work: see [FINAL_TODO.md](docs/FINAL_TODO.md). Run focused checks during implementation; defer the full suite until the final gate.
 
 # Math Practice App — Implementation Todo List
 

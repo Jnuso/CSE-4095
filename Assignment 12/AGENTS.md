@@ -1,13 +1,13 @@
 # Assignment 12: lean development workflow
 
-- Follow the professor specification and TODO; implement only the requested phase. Start with PROJECT_STATUS.md and the relevant TODO section. Read relevant DECISIONS.md contracts when changing existing behavior; avoid loading the entire historical log.
+- Follow the professor specification and TODO; implement only the requested phase. Start with docs/PROJECT_STATUS.md and the relevant TODO section. Read relevant docs/DECISIONS.md contracts when changing existing behavior; avoid loading the entire historical log.
 - Explain the phase briefly, ask only useful unresolved questions, implement, verify, then give the deployed URL and concise manual review steps. Do not start another phase without authorization.
-- During implementation, run focused tests for changed behavior. When the patch is ready, use one final independent review for substantial changes per REVIEW.md; fix findings and rerun affected checks.
+- During implementation, run focused tests for changed behavior. When the patch is ready, use one final independent review for substantial changes per docs/REVIEW.md; fix findings and rerun affected checks.
 - Student instruction (2026-10-20): run only checks relevant to the current step; defer the full npm.cmd run check:all gate until the end. Label interim results as focused verification. Do not push application changes that automatically trigger the full CI gate before that final pass; keep them local. At the end, run formatting, lint, units, types, builds, browser/accessibility/Pages/Firefox gates before publishing.
 - Keep meaningful existing tests and full-page axe rules. Never suppress failures, weaken assertions or add retries merely to pass. Automated accessibility checks do not replace actual zoom, system-font or screen-reader review.
 - Browser tests use isolated contexts and the test-owned servers (4273 normal, 4373 Pages). Never modify the student's saved browser profile/history. Install a missing browser once; report checks that cannot run honestly.
 - Keep full logs in files; read concise summaries and relevant errors. Batch independent reads. Monitor long-running tests/deployment with a bounded script or process wait, rather than frequent model-driven polls; inspect detailed logs only for failures. Keep progress updates brief and meaningful.
-- Update TODO only for completed, verified work. Add one concise phase entry to DEVELOPMENT_LOG.md, update TESTING.md/manual steps as needed, and refresh PROJECT_STATUS.md for future chats.
-- GitHub Pages publishing is authorized for Jnuso/CSE-4095. Follow DEPLOYMENT.md, keep the Cloudflare base site intact, require successful CI before declaring deployment live, and perform a brief isolated hosted smoke check of changed behavior.
+- Update TODO only for completed, verified work. Add one concise phase entry to docs/DEVELOPMENT_LOG.md, update docs/TESTING.md/manual steps as needed, and refresh docs/PROJECT_STATUS.md for future chats.
+- GitHub Pages publishing is authorized for Jnuso/CSE-4095. Follow docs/DEPLOYMENT.md, keep the Cloudflare base site intact, require successful CI before declaring deployment live, and perform a brief isolated hosted smoke check of changed behavior.
 - Gemma reviews are paused until the student asks to resume; do not probe Docker each phase. Routine/documentation-only changes need no separate reviewer or browser reruns.
-- Do not change model settings, disable connectors, or create new chats automatically. A future chat can use PROJECT_STATUS.md as its handoff.
+- Do not change model settings, disable connectors, or create new chats automatically. A future chat can use docs/PROJECT_STATUS.md as its handoff.

@@ -10,7 +10,7 @@ One confirmed defect was fixed: body min-width320px created15px horizontal overf
 
 **Browser controls restored:** User cleared the native popup. Pagination, full keyboard session, Edit choices/Back/Forward, reset/Clear All cancellation and confirmation, cross-tab invalidation, mobile active-card layout and interactive Pages hash navigation now pass. User explicitly approved erasing disposable test data. Native End Session handling and active reload remain unverified in IAB. Normal-origin statistics were cleared to zero; Pages56899 completed5 reports (4right/1wrong/80%).
 
-Evidence screenshots: [before320px fix](math-practice-app/output/in-codex-browser/statistics-320.jpg), [fixed mobile statistics](math-practice-app/output/in-codex-browser/statistics-mobile-fixed.jpg). Build logs: output/in-codex-overflow-build.txt and output/in-codex-pages-build.txt.
+Evidence screenshots: [before320px fix](../math-practice-app/output/in-codex-browser/statistics-320.jpg), [fixed mobile statistics](../math-practice-app/output/in-codex-browser/statistics-mobile-fixed.jpg). Build logs: output/in-codex-overflow-build.txt and output/in-codex-pages-build.txt.
 
 - [x] **Home and setup navigation** — Fresh Home rendered shared navigation; Start Practice focused Choose your practice. Default Addition/Beginner/10; Mistake review disabled with zero active patterns.
 - [x] **Empty statistics** — Zero overall/mistake results, empty sessions, operation/difficulty sections and reset action rendered.

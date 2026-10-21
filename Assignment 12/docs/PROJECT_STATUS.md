@@ -1,3 +1,7 @@
+> **Current local change — Statistics section menu:** Added a sticky desktop sidebar and a compact menu above content on narrow screens. Overview, operation, difficulty, mistakes/review, recent sessions and reset sections support immediate jumps with heading focus; scrolling updates the active indicator. This change is not yet published. Focused verification is being recorded in TESTING.md. The previous 628-pass CI result applies to the published revision, not this later change.
+
+> **Documentation layout:** Supporting guides now live in `docs/`. Start with [the project README](../README.md) and [documentation index](README.md). The professor specification and TODO remain at the Assignment 12 root. Paths in historical prose may describe the earlier layout.
+
 > **Release verified 2026-10-21:** Application commit `450b094` passed the full GitHub Actions gate: **628 passed, 1 expected Firefox skip, 0 failures**, and deployed successfully. [CI evidence](https://github.com/Jnuso/CSE-4095/actions/runs/39676377754). Hosted Firefox smoke passed in a fresh disposable profile: deep-link refresh, complete five-question session, 60% recap persistence and Statistics. Live Settings also exposes the new mastery threshold. See [RELEASE_SIGNOFF.md](RELEASE_SIGNOFF.md). Earlier results below are historical.
 
 # Math Practice project status

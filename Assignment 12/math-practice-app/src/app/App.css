@@ -929,3 +929,62 @@ h2 {
   border: 2px solid #52658a;
   border-radius: 0.5rem;
 }
+
+.statistics-layout {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.statistics-navigation {
+  position: sticky;
+  top: 24px;
+  margin-top: 40px;
+  padding: 16px;
+  border: 1px solid #b6c9b9;
+  border-radius: 16px;
+  background: #fffdf7;
+}
+.statistics-navigation ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+.statistics-navigation button {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 0;
+  border-left: 4px solid transparent;
+  background: transparent;
+  color: #243d2c;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.statistics-navigation button[aria-current='location'] {
+  border-left-color: #35583f;
+  background: #e7f0e5;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.statistics-page h1,
+.statistics-page h2 {
+  scroll-margin-top: 24px;
+}
+@media (max-width: 900px) {
+  .statistics-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .statistics-navigation {
+    position: static;
+    margin-top: 24px;
+  }
+  .statistics-navigation ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

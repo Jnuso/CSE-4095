@@ -1,89 +1,39 @@
-# Math Practice
+# Math Practice application
 
-A math practice app for children ages 7-12, developed incrementally for Assignment 12.
+React, TypeScript and Vite application for Assignment 12. See the [project README](../README.md) for features, submission requirements and repository layout.
 
-## Current milestone: Phase 9
+## Run locally
 
-The project foundation, navigation, and practice configuration are implemented. Choose one or more operations, one of four difficulties, and 5, 10, 20, or continuous practice. Start Session validates these choices and carries them to the practice page, which displays the configuration and offers Edit choices. Arithmetic generation now supports all four operations and difficulty levels, with validated question data and automated boundary tests. The main generator now attaches four shuffled, distinct choices with exactly one correct answer. The practice page now runs sessions: choose an answer, flip, and self-report to count the attempt and automatically advance. Fixed sessions show progress and stop at 5/10/20 attempts; continuous sessions continue until End Session. Early ending requires confirmation. Completed sessions now navigate to a dedicated recap with attempted/right/wrong counts, rounded accuracy, actual practiced operations, difficulty, and review count. Practice Again starts fresh with the same configuration; Change Settings restores setup choices. Duplicate reports and immediate identical arithmetic are prevented. Animation can be disabled and respects reduced motion. Reported attempts, session details, completion records, setup defaults, and animation preference now save in versioned browser localStorage. A fresh summary URL loads the latest saved completed session. Active question state resets on refresh, while reported attempts remain in history. The newest 100 active/completed session records and their attempts are retained. Validation, legacy migration, and storage warnings protect saved data and keep practice usable during failures. Practice Mistakes is visibly disabled until mistake review is implemented. Statistics and settings are still honest placeholders. The arithmetic symbols on the home page are decorative.
-
-The requirements are in [the professor's specification](../specification.md), and progress is tracked in [the professor's TODO list](../TODO.md). Implementation choices and evidence belong in [the development log](../DEVELOPMENT_LOG.md), rather than changes to the specification.
-
-## Requirements
-
-Use Node.js 24 LTS (the version selected in `.nvmrc`) and npm. The package declares Node.js 22.12 or newer as the minimum. The verified environment is recorded in the development log.
-
-## Run locally on Windows
-
-Open a PowerShell terminal in this `math-practice-app` folder. The `.cmd` commands work even when PowerShell blocks the `npm.ps1` launcher.
+Use Node.js 24 LTS and npm. From this folder:
 
 ```powershell
-npm.cmd install
+npm.cmd ci
 npm.cmd run dev
 ```
 
-Open the exact URL printed by the server, normally <http://127.0.0.1:5173/>. Keep that terminal open while using the app. Press Ctrl+C to stop the server.
+Open the address printed by Vite (normally http://127.0.0.1:5173/). Stop with Ctrl+C. Other shells can use `npm` instead of `npm.cmd`.
 
-The development server uses a fixed local address and strict port checking. If port 5173 is occupied, it reports an error instead of silently serving on another port. Reuse an existing server for this project, stop your own old server, or explicitly choose a different port with `npm.cmd run dev -- --port 5174` and use that printed URL. Do not stop an unrelated application.
+## Production build
 
-After cloning the project with its committed lockfile, use `npm.cmd ci` for a clean, reproducible installation. It replaces the dependency installation, so stop the dev server before using it.
+```powershell
+npm.cmd run build
+npm.cmd run preview
+```
+
+The build writes `dist/`. Preview normally serves http://127.0.0.1:4173/. The GitHub Pages variant uses `npm.cmd run build:pages` and writes `dist-pages/`; see [deployment instructions](../docs/DEPLOYMENT.md).
 
 ## Checks
 
-GitHub Pages deployment and URL-based review are documented in [DEPLOYMENT.md](../DEPLOYMENT.md). The Pages build uses hash routes and separate output; ordinary local development keeps its existing URLs.
+Install Chromium and Firefox once with `npm.cmd run test:install`. Run `npm.cmd run check:all` for formatting, lint, unit/component tests, TypeScript, production builds, Chromium desktop/mobile, accessibility, Pages and Firefox coverage. `npm.cmd run check` is the smaller non-browser gate.
 
-```powershell
-npm.cmd run check:all
-```
+[Testing guide](../docs/TESTING.md) · [Latest release evidence](../docs/RELEASE_SIGNOFF.md) · [Remaining manual review](../docs/FINAL_TODO.md)
 
-Use `npm.cmd run check:all` as the standard regression gate: formatting, ESLint, 161 unit/component checks, app/browser-test type checking, a production build, and desktop/mobile browser flows. On a fresh install, run `npm.cmd run test:install` once first. The complete commands, coverage map, isolation rules, reports, and limitations are in [TESTING.md](../TESTING.md). `npm.cmd run check` remains the quicker non-browser gate.
+## Source layout
 
-| Command                    | Purpose                                            |
-| -------------------------- | -------------------------------------------------- |
-| `npm.cmd run dev`          | Start local development with live updates          |
-| `npm.cmd run test`         | Run automated component tests once                 |
-| `npm.cmd run test:watch`   | Keep tests running as source changes               |
-| `npm.cmd run typecheck`    | Check TypeScript definitions and source            |
-| `npm.cmd run lint`         | Check TypeScript and React code with ESLint        |
-| `npm.cmd run format:check` | Check formatting without editing files             |
-| `npm.cmd run format`       | Format project source and configuration            |
-| `npm.cmd run build`        | Type-check and create the `dist` production output |
-| `npm.cmd run preview`      | Serve the existing production build on port 4173   |
+- `src/`: application routes, pages, components, services, types and unit/component tests.
+- `e2e/`: browser regression and accessibility tests.
+- `scripts/`: browser test tooling.
+- `public/`: static application assets.
+- Root configuration files: Vite, TypeScript, ESLint, Prettier and Playwright settings.
 
-Run `npm.cmd run build` before `npm.cmd run preview`, then open <http://127.0.0.1:4173/>. Preview verifies the production output locally; it does not publish a website.
-
-The main automated testing guide is [TESTING.md](../TESTING.md). The current manual checklist and expected results are in [PHASE_9_TESTING.md](../PHASE_9_TESTING.md). The Phase 1 and Phase 2 guides preserve historical milestone checks; their temporary greeting and setup placeholder have been replaced.
-
-Browser regression tests live in `e2e/`, configured by `playwright.config.ts`. The test runner owns port 4273 and isolated browser data. Run `npm.cmd run test:e2e:headed` to watch it, or `npm.cmd run test:report` for the latest HTML results.
-
-## Main components
-
-- `src/main.tsx`: attaches React to the browser page.
-- `src/app/App.tsx`: starts browser-based routing.
-- `src/app/AppRoutes.tsx`: maps URLs to pages, with a shared layout and fallback.
-- `src/components/layout/`: reusable page container, header, navigation, and layout.
-- `src/components/common/`: shared navigation-action styling and honest future-feature screens.
-- `src/pages/`: the home page, five destination pages, and unknown-page fallback.
-- `src/components/practice/`: accessible selectors, AnswerChoice buttons, the stateful QuestionCard, and PracticeSessionPanel for session interaction. CardPreview remains an isolated Phase 6 example; the application uses the session panel.
-- `src/constants/practice.ts`: shared operation labels, difficulty descriptions, and session-length options.
-- `src/services/practiceConfiguration.ts`: validates configuration received through navigation state.
-- `src/types/`: shared descriptions of questions, attempts, sessions, mistake patterns, statistics, settings, and application state.
-- `src/services/storageService.ts`: versioned localStorage reads/writes, validation/migration, defaults, and bounded recent session records.
-- `src/components/storage/`: shared saved-data provider and friendly storage notices.
-- `src/services/sessionSummary.ts`: runtime validation of completed sessions and summary calculations.
-- `src/services/practiceSession.ts`: session/attempt state transitions, duplicate guards, repeat avoidance, recovery, and completion.
-- `src/services/questionGenerator.ts`: operation-specific arithmetic drafts, mixed selection, validated arithmetic, and integration of complete answer choices.
-- `src/services/answerChoices.ts`: plausible operation-specific distractors, bounded selection with fallback, shuffling, and choice validation.
-- `src/utils/`: inclusive random integers, non-mutating shuffle, unique IDs, and utility tests. `src/hooks/` is reserved for later phases.
-- `src/app/AppRoutes.test.tsx`: checks all routes, home actions, keyboard navigation, focus, and fallback recovery.
-- `src/app/PracticeConfiguration.test.tsx`: checks defaults, multiple selections, validation, exclusive options, and the configuration handoff/edit flow.
-- `src/test/setup.ts`: browser-like test setup and cleanup between tests.
-- `vite.config.ts`: development server, production preview, and Vitest settings.
-- `eslint.config.js` and `.prettierrc.json`: code-quality and formatting rules.
-- `package.json` and `package-lock.json`: commands and the dependency versions needed to reproduce the setup.
-
-## Implementation references
-
-- [Vite getting started](https://vite.dev/guide/)
-- [Vitest getting started](https://vitest.dev/guide/)
-- [React introduction](https://react.dev/learn)
-- [React Router declarative routing](https://reactrouter.com/start/declarative/routing)
+Generated builds, browser profiles and test artifacts are not submission source. Dependencies are reproducible from the committed package lockfile.

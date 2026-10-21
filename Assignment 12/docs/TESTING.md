@@ -154,3 +154,14 @@ See PHASE_19_TESTING.md. errorRecovery.test.ts checks isolated category recovery
 PHASE_20_TESTING.md maps each requested unit/component/integration/accessibility area to concrete existing or new tests. phase20.spec.ts adds a reproducible mixed-operation session and a complete keyboard-only setup/session/recap. The full gate now also runs Firefox regressions (playwright.firefox.config.ts) and a Firefox Pages project. The existing desktop/mobile Chromium and real-process restart checks remain. npm.cmd run test:firefox builds before testing current source; check:all reuses its already-built normal output. Install both browsers with npm.cmd run test:install. Firefox reports/results are separate and ignored. CI installs both browsers before the complete gate.
 
 Actual Firefox browser zoom and screen-reader speech remain manual items. Native Windows Firefox control was stopped because the tool does not support URL-policy enforcement for that browser. Reflow, text simulation, focus assertions and axe do not establish those results. Phase 20 remains partially pending until the manual evidence is provided; Phase 18 remains pending too.
+
+
+## 2026-10-21 — Statistics section navigation
+
+Added a sticky left-side section menu on wide screens and a two-column menu above Statistics at 900px and below. Overview, operation, difficulty, mistakes/review, recent sessions and reset history jump immediately to focused headings. Bold/underline/background/border and aria-current identify the current section; scrolling updates it. Navigation does not alter route hashes or stored practice data.
+
+Focused verification: eight Statistics desktop/mobile browser checks passed, including existing reset/history behavior and new jump/scroll/focus/read-only/320px/accessibility coverage. Eight existing Statistics/MistakeStatistics component tests passed using Vitest thread workers after fork workers timed out before executing tests. Production build and changed-file ESLint passed. Confirmed the sidebar and By operation jump visually in the Codex browser. The complete suite was not rerun; this local update is not yet deployed.
+
+Final changed-file TypeScript and Prettier checks also passed. Local preview: http://127.0.0.1:51139/statistics . Screenshot: math-practice-app/output/statistics-section-menu.jpg.
+
+The additional focused Firefox section-navigation browser check passed (1/1). Final focused totals: 8 component tests and 9 browser checks; build, types, changed-file lint and formatting passed. Full-suite rerun and publication remain deferred.

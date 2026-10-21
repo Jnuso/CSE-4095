@@ -760,3 +760,17 @@ Reproduced/fixed backward-clock completion invalidation, backward-clock fresh st
 ## 2026-10-21 — Final push, full CI and deployment
 
 Pushed application commit 450b094. GitHub Actions run 39676377754 passed formatting, lint, types, production builds and 628 tests with one expected Firefox CPU-emulation skip, then deployed Pages. A fresh-profile hosted Firefox smoke passed deep links/reload, a complete session, persisted recap and Statistics. Live Settings inspection confirmed the mastery threshold. Follow-up commit 50ebcf2 fixed the separate base-site Selenium Chrome import for lint; its browser suite reported 243 passed and five older-demo failures. Manual speech, actual zoom/fonts and physical-device/installed-browser coverage remain pending. See RELEASE_SIGNOFF.md.
+
+
+## 2026-10-21 — Documentation cleanup
+
+Moved 34 supporting Markdown documents into docs/, rebased Markdown links and updated AGENTS.md entry points. Kept the professor specification and TODO at the assignment root, added a submission-oriented README and replaced the stale Phase 9 app README. Preserved the full assignment instructions in docs/ASSIGNMENT_INSTRUCTIONS.txt. Supporting scripts and experiments remain in place to preserve their relative paths. No application code changed and no tests were run, as requested.
+
+
+## 2026-10-21 — Statistics section navigation
+
+Added a sticky left-side section menu on wide screens and a two-column menu above Statistics at 900px and below. Overview, operation, difficulty, mistakes/review, recent sessions and reset history jump immediately to focused headings. Bold/underline/background/border and aria-current identify the current section; scrolling updates it. Navigation does not alter route hashes or stored practice data.
+
+Focused verification: eight Statistics desktop/mobile browser checks passed, including existing reset/history behavior and new jump/scroll/focus/read-only/320px/accessibility coverage. Eight existing Statistics/MistakeStatistics component tests passed using Vitest thread workers after fork workers timed out before executing tests. Production build and changed-file ESLint passed. Confirmed the sidebar and By operation jump visually in the Codex browser. The complete suite was not rerun; this local update is not yet deployed.
+
+The additional focused Firefox section-navigation browser check passed (1/1). Final focused totals: 8 component tests and 9 browser checks; build, types, changed-file lint and formatting passed. Full-suite rerun and publication remain deferred.

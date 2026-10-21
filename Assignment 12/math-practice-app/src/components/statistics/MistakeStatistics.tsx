@@ -60,7 +60,9 @@ function MistakeStatistics({ data }: { data: SavedData }) {
   return (
     <section aria-labelledby="mistake-statistics-title" className="mistake-statistics">
       <div className="feature-card">
-        <h2 id="mistake-statistics-title">Mistakes and review</h2>
+        <h2 id="mistake-statistics-title" tabIndex={-1}>
+          Mistakes and review
+        </h2>
         <p>
           Remembered facts and available review answers on this browser, including unfinished
           sessions. These can outlast the newest 100 session details above. Older review answers
