@@ -1,3 +1,5 @@
+> **Statistics menu published — 2026-10-21:** Application commit `5edc6d2` passed the complete release gate (**631 passed, 1 expected Firefox skip**) and deployed successfully. [CI and deployment](https://github.com/Jnuso/CSE-4095/actions/runs/39693837598). The hosted Codex-browser check confirmed the section menu and Recent sessions jump/focus. Earlier local-only statements below are historical.
+
 > **Release verified 2026-10-21:** Application commit `450b094` passed the full GitHub Actions gate: **628 passed, 1 expected Firefox skip, 0 failures**, and deployed successfully. [CI evidence](https://github.com/Jnuso/CSE-4095/actions/runs/39676377754). Hosted Firefox smoke passed in a fresh disposable profile: deep-link refresh, complete five-question session, 60% recap persistence and Statistics. Live Settings also exposes the new mastery threshold. See [RELEASE_SIGNOFF.md](RELEASE_SIGNOFF.md). Earlier results below are historical.
 
 # Automated regression tests

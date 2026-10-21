@@ -1,3 +1,5 @@
+> **Statistics menu published — 2026-10-21:** Application commit `5edc6d2` passed the complete release gate (**631 passed, 1 expected Firefox skip**) and deployed successfully. [CI and deployment](https://github.com/Jnuso/CSE-4095/actions/runs/39693837598). The hosted Codex-browser check confirmed the section menu and Recent sessions jump/focus. Earlier local-only statements below are historical.
+
 # Release verification — 2026-10-21
 
 Application revision: `450b09455b41beddbc6a3e70928d7809d870f2a5`.

@@ -51,7 +51,7 @@ Practice data stays in the browser; clearing its saved data removes progress.
 
 ## Verification and submission
 
-The published application revision passed **628 automated tests with one expected Firefox skip**. See [release evidence and limitations](docs/RELEASE_SIGNOFF.md) and the [remaining review checklist](docs/FINAL_TODO.md). Actual speech, browser zoom and physical-device review remain pending; the broader repository has separate older-demo failures.
+The published application revision passed **631 automated tests with one expected Firefox skip**. See [release evidence and limitations](docs/RELEASE_SIGNOFF.md) and the [remaining review checklist](docs/FINAL_TODO.md). Actual speech, browser zoom and physical-device review remain pending; the broader repository has separate older-demo failures.
 
 To run the full suite later, install the test browsers once with `npm.cmd run test:install`, then use `npm.cmd run check:all`. See [testing details](docs/TESTING.md).
 

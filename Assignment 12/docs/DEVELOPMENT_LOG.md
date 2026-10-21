@@ -779,3 +779,6 @@ The additional focused Firefox section-navigation browser check passed (1/1). Fi
 ## 2026-10-21 — Deployment selector correction
 
 The first deployment gate for the Statistics menu stopped at two desktop/mobile performance checks: an unqualified navigation locator became ambiguous after adding the second labelled navigation landmark. Scoped performance checks to Main navigation, preserving their visibility, lazy-loading and focus assertions. The failed gate did not publish the change. A follow-up push reruns the release gate.
+
+
+Statistics navigation release: application commit 5edc6d2 passed GitHub Actions run 39693837598 and deployed. Counts: 331 unit/component, 179 Chromium/restart, 33 Pages, 88 Firefox; total 631 passed and one expected Firefox skip. Hosted menu and Recent sessions jump/focus verified in Codex. Saved history was not reset.

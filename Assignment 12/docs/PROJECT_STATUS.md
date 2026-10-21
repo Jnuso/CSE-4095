@@ -1,3 +1,5 @@
+> **Statistics menu published — 2026-10-21:** Application commit `5edc6d2` passed the complete release gate (**631 passed, 1 expected Firefox skip**) and deployed successfully. [CI and deployment](https://github.com/Jnuso/CSE-4095/actions/runs/39693837598). The hosted Codex-browser check confirmed the section menu and Recent sessions jump/focus. Earlier local-only statements below are historical.
+
 > **Current local change — Statistics section menu:** Added a sticky desktop sidebar and a compact menu above content on narrow screens. Overview, operation, difficulty, mistakes/review, recent sessions and reset sections support immediate jumps with heading focus; scrolling updates the active indicator. This change is not yet published. Focused verification is being recorded in TESTING.md. The previous 628-pass CI result applies to the published revision, not this later change.
 
 > **Documentation layout:** Supporting guides now live in `docs/`. Start with [the project README](../README.md) and [documentation index](README.md). The professor specification and TODO remain at the Assignment 12 root. Paths in historical prose may describe the earlier layout.
