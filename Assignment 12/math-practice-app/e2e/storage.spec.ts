@@ -1,3 +1,4 @@
+import { refresh } from './helpers'
 import { completedFixture } from '../src/test/summaryFixture'
 import { defaultSettings } from '../src/services/storageService'
 import { test, expect, start, report, saved, metric, storageKey } from './helpers'
@@ -33,12 +34,13 @@ test('every report persists full attempt data and a fresh recap works after relo
     expect(attempt.selfReportedCorrect).toBe(index === 0)
     expect(Number.isNaN(Date.parse(attempt.attemptedAt))).toBe(false)
   }
-  await page.reload()
-  await expect(page.getByText('Question 1 of 5', { exact: true })).toBeVisible()
+  await refresh(page)
+  await expect(page.getByText('Question 3 of 5', { exact: true })).toBeVisible()
   expect(
     (await saved(page)).records.find((record) => record.session.id === data.records[0].session.id)
       ?.attempts,
   ).toHaveLength(2)
+  page.once('dialog', (dialog) => dialog.accept())
   await page.goto('/practice/summary')
   await expect(page.getByRole('link', { name: 'Go to practice setup', exact: true })).toBeVisible()
 })
@@ -58,9 +60,10 @@ test('saved setup and animation reload, and newest completed recap loads without
   await expect(
     page.getByRole('checkbox', { name: 'Animate card flips', exact: true }),
   ).not.toBeChecked()
+  page.once('dialog', (dialog) => dialog.accept())
   await page.goto('/practice/summary')
   await expect(metric(page, 'Accuracy')).toHaveText('67%')
-  await page.reload()
+  await refresh(page)
   await expect(metric(page, 'Accuracy')).toHaveText('67%')
   expect(await page.evaluate(() => localStorage.getItem('e2e.unrelated'))).toBe('keep')
 })

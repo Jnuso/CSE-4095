@@ -60,3 +60,28 @@ test('Pages session, summary persistence, navigation, and accessibility', async 
   await page.goBack()
   await expect(metric(page, 'Accuracy')).toHaveText('60%')
 })
+
+test('Pages active session recovery and leave confirmation work with hash routing', async ({
+  page,
+}) => {
+  await page.goto('./#/practice/setup')
+  await page.getByRole('radio', { name: '5 questions', exact: true }).check()
+  await page.getByRole('button', { name: 'Start Session', exact: true }).click()
+  await report(page, true)
+  const question = await page.locator('.card-math').textContent()
+  page.once('dialog', (dialog) => dialog.accept())
+  await page.reload()
+  await expect(page.locator('.card-math')).toHaveText(question!)
+  await expect(page.getByRole('status', { name: 'Session totals' })).toContainText('Completed: 1')
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: 'Home', exact: true })
+    .click({ noWaitAfter: true })
+  const dialog = page.getByRole('dialog', { name: 'Leave this session?' })
+  await expect(dialog).toBeVisible()
+  await dialog.getByRole('button', { name: 'End session and leave' }).click()
+  await expect(page).toHaveURL(/\/CSE-4095\/#\/$/)
+  await expect(
+    page.getByRole('heading', { name: 'Big ideas start with small steps.' }),
+  ).toBeVisible()
+})

@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter } from '../test/MemoryRouter'
 import { describe, expect, it, vi } from 'vitest'
 import AppRoutes from './AppRoutes'
 import PracticeStorageProvider, {
@@ -16,19 +16,39 @@ import {
 } from '../services/storageService'
 import { completedFixture } from '../test/summaryFixture'
 
-function mount() {
-  return render(
+async function mount() {
+  const view = render(
     <MemoryRouter initialEntries={['/settings']}>
       <AppRoutes />
     </MemoryRouter>,
   )
+  await screen.findByRole('heading', { level: 1, name: 'Make it your own' })
+  return view
 }
 describe('settings', () => {
+  it('validates and explicitly saves a mastery threshold across a fresh mount', async () => {
+    const user = userEvent.setup()
+    const view = await mount()
+    const threshold = screen.getByRole('spinbutton', { name: 'Mastery threshold' })
+    expect(threshold).toHaveValue(3)
+    for (const value of ['', '0', '101', '1.5']) {
+      fireEvent.change(threshold, { target: { value } })
+      expect(screen.getByRole('button', { name: 'Save Settings' })).toBeDisabled()
+      expect(readSavedData().data.settings.masteryThreshold).toBe(3)
+    }
+    fireEvent.change(threshold, { target: { value: '2' } })
+    expect(readSavedData().data.settings.masteryThreshold).toBe(3)
+    await user.click(screen.getByRole('button', { name: 'Save Settings' }))
+    expect(readSavedData().data.settings.masteryThreshold).toBe(2)
+    view.unmount()
+    await mount()
+    expect(screen.getByRole('spinbutton', { name: 'Mastery threshold' })).toHaveValue(2)
+  })
   it('requires a valid explicit save and loads defaults without overwriting practice history', async () => {
     const data = { ...emptySavedData(), records: [completedFixture()] }
     writeSavedData(data)
     const user = userEvent.setup()
-    mount()
+    await mount()
     await user.click(screen.getByRole('button', { name: 'Clear selection' }))
     expect(screen.getByRole('button', { name: 'Save Settings' })).toBeDisabled()
     expect(readSavedData().data.settings).toEqual(defaultSettings())
@@ -59,7 +79,7 @@ describe('settings', () => {
   })
   it('shows save failure honestly while keeping the current choices in memory', async () => {
     const user = userEvent.setup()
-    mount()
+    await mount()
     await user.click(screen.getByRole('checkbox', { name: /^Show explanations/ }))
     const fail = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new DOMException('full', 'QuotaExceededError')
@@ -73,15 +93,41 @@ describe('settings', () => {
   })
   it('drops an unsaved draft after clear-all in another tab', async () => {
     const user = userEvent.setup()
-    mount()
+    await mount()
+    sessionStorage.setItem(STORAGE_KEY, 'old recovery snapshot')
     await user.click(screen.getByRole('checkbox', { name: /^Sound effects/ }))
     clearSavedData()
     act(() => window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY })))
     expect(screen.getByRole('checkbox', { name: /^Sound effects/ })).not.toBeChecked()
+    expect(sessionStorage.getItem(STORAGE_KEY)).toBeNull()
   })
 })
 
-it('does not restore pending preferences when another tab clears before a local history reset', () => {
+it.each(['history', 'all'])(
+  'erases this tab’s recovery data after a successful %s reset while preserving unrelated data',
+  (kind) => {
+    function Harness() {
+      const { resetHistory, clearAllData } = usePracticeStorage()
+      return (
+        <button onClick={() => (kind === 'history' ? resetHistory() : clearAllData())}>
+          Erase
+        </button>
+      )
+    }
+    render(
+      <PracticeStorageProvider>
+        <Harness />
+      </PracticeStorageProvider>,
+    )
+    sessionStorage.setItem(STORAGE_KEY, 'old recovery snapshot')
+    sessionStorage.setItem('unrelated', 'keep')
+    fireEvent.click(screen.getByRole('button', { name: 'Erase' }))
+    expect(sessionStorage.getItem(STORAGE_KEY)).toBeNull()
+    expect(sessionStorage.getItem('unrelated')).toBe('keep')
+  },
+)
+
+it('does not restore pending preferences when another tab clears before a local history reset', async () => {
   function Harness() {
     const { saveSettings, resetHistory } = usePracticeStorage()
     return (

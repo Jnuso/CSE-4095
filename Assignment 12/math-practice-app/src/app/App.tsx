@@ -1,12 +1,11 @@
-import { BrowserRouter, HashRouter } from 'react-router'
+import { createBrowserRouter, createHashRouter, RouterProvider } from 'react-router'
 import AppRoutes from './AppRoutes'
 import './App.css'
 
+const createRouter =
+  import.meta.env.VITE_ROUTER_MODE === 'hash' ? createHashRouter : createBrowserRouter
+const router = createRouter([{ path: '*', element: <AppRoutes /> }])
+
 export default function App() {
-  const Router = import.meta.env.VITE_ROUTER_MODE === 'hash' ? HashRouter : BrowserRouter
-  return (
-    <Router>
-      <AppRoutes />
-    </Router>
-  )
+  return <RouterProvider router={router} />
 }

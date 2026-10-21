@@ -20,6 +20,16 @@ const question: Question = {
 }
 
 describe('question card', () => {
+  it('ignores a repeated pointer click on a newly displayed answer but accepts keyboard activation', () => {
+    const onSelect = vi.fn()
+    render(<AnswerChoice value={56} selected={false} onSelect={onSelect} />)
+    const answer = screen.getByRole('button', { name: 'Answer 56' })
+    fireEvent.click(answer, { detail: 2 })
+    expect(onSelect).not.toHaveBeenCalled()
+    fireEvent.click(answer, { detail: 0 })
+    fireEvent.click(answer, { detail: 1 })
+    expect(onSelect.mock.calls).toEqual([[56], [56]])
+  })
   it('shows the question, four choices and progress without revealing the answer', () => {
     render(<QuestionCard question={question} questionNumber={3} totalQuestions={10} />)
     expect(screen.getByText('Question 3 of 10')).toBeInTheDocument()

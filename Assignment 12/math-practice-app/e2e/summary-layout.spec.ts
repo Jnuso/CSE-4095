@@ -17,6 +17,9 @@ test('summary actions preserve setup and reset replay without replaying the comp
   await expect(page.getByText('Question 1 of 5', { exact: true })).toBeVisible()
   await expect(page.getByRole('status', { name: 'Session totals' })).toContainText('Completed: 0')
   await page.goBack()
+  const leave = page.getByRole('dialog', { name: 'Leave this session?', exact: true })
+  await expect(leave).toBeVisible()
+  await leave.getByRole('button', { name: 'End session and leave', exact: true }).click()
   await expect(metric(page, 'Accuracy')).toHaveText('60%')
   for (const [action, heading] of [
     ['View Statistics', 'Your statistics'],

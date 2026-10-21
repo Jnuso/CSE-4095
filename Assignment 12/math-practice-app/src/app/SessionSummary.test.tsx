@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter } from '../test/MemoryRouter'
 import { describe, expect, it } from 'vitest'
 import { completedFixture } from '../test/summaryFixture'
 import AppRoutes from './AppRoutes'
@@ -58,7 +58,7 @@ describe('session summary page', () => {
   ])('navigates through %s', async (action, heading) => {
     const user = setup()
     await user.click(screen.getByRole('link', { name: action }))
-    expect(screen.getByRole('heading', { name: heading })).toHaveFocus()
+    expect(await screen.findByRole('heading', { name: heading })).toHaveFocus()
   })
   it('shows zero-attempt results without NaN or invented practiced operations', () => {
     const completed = completedFixture()

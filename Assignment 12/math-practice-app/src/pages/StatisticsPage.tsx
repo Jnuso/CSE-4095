@@ -1,6 +1,6 @@
 import { cycleDialogFocus } from '../utils/cycleDialogFocus'
 import MistakeStatistics from '../components/statistics/MistakeStatistics'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { usePracticeStorage } from '../components/storage/PracticeStorageProvider'
 import { DIFFICULTIES, OPERATIONS } from '../constants/practice'
@@ -35,8 +35,8 @@ export default function StatisticsPage() {
   const [visible, setVisible] = useState(10)
   const [notice, setNotice] = useState('')
   const dialog = useRef<HTMLDialogElement>(null)
-  const records = recentRecords(data.records)
-  const totals = calculateStatistics(records)
+  const records = useMemo(() => recentRecords(data.records), [data.records])
+  const totals = useMemo(() => calculateStatistics(records), [records])
   function confirmReset() {
     const error = resetHistory()
     setNotice(

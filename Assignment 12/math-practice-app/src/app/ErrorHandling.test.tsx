@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter } from '../test/MemoryRouter'
 import { expect, it, vi } from 'vitest'
 import AppRoutes from './AppRoutes'
 import ErrorBoundary from '../components/common/ErrorBoundary'
@@ -61,7 +61,7 @@ it('keeps navigation mounted and restores heading focus through a route crash, r
   await user.click(screen.getByRole('link', { name: 'Statistics' }))
   expect(screen.getByRole('banner')).toBeVisible()
   expect(screen.getByRole('link', { name: 'Skip to content' })).toBeInTheDocument()
-  expect(screen.getByRole('heading', { name: 'Let’s try a fresh start' })).toHaveFocus()
+  expect(await screen.findByRole('heading', { name: 'Let’s try a fresh start' })).toHaveFocus()
   crash.enabled = false
   await user.click(screen.getByRole('button', { name: 'Try again' }))
   expect(screen.getByRole('heading', { name: 'Statistics recovered' })).toHaveFocus()

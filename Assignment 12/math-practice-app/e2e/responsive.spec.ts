@@ -1,3 +1,4 @@
+import { navigateTo, refresh } from './helpers'
 import { test, expect, start, report, noOverflow, finish } from './helpers'
 
 for (const size of [
@@ -27,7 +28,7 @@ for (const size of [
     await expect(page.getByRole('status', { name: 'Practice encouragement' })).not.toBeEmpty()
     await noOverflow(page)
     await finish(page)
-    await page.getByRole('link', { name: 'Statistics', exact: true }).click()
+    await navigateTo(page, 'Statistics')
     await expect(page.locator('.session-history > li')).toHaveCount(1)
     await noOverflow(page)
     for (const card of await page.locator('.statistics-grid .feature-card').all()) {
@@ -42,7 +43,7 @@ test('feedback preference survives reload and disables encouragement', async ({ 
   await page.goto('/settings')
   await page.getByRole('checkbox', { name: /^Encouraging feedback/ }).uncheck()
   await page.getByRole('button', { name: 'Save Settings', exact: true }).click()
-  await page.reload()
+  await refresh(page)
   await expect(page.getByRole('checkbox', { name: /^Encouraging feedback/ })).not.toBeChecked()
   await start(page)
   await report(page, true)

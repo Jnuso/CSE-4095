@@ -1,3 +1,4 @@
+import { navigateTo, refresh } from './helpers'
 import AxeBuilder from '@axe-core/playwright'
 import { completedFixture } from '../src/test/summaryFixture'
 import { emptySavedData } from '../src/services/storageService'
@@ -10,7 +11,8 @@ test('statistics: incomplete attempts, accessible reset and preferences', async 
   await page.getByRole('checkbox', { name: 'Animate card flips' }).uncheck()
   for (const right of [true, false, true]) await report(page, right)
   const before = await saved(page)
-  await page.getByRole('link', { name: 'Statistics', exact: true }).click()
+  page.once('dialog', (dialog) => dialog.accept())
+  await page.goto('/statistics')
   await expect(page.getByLabel('Overall results', { exact: true })).toContainText('67%')
   await expect(page.locator('.session-history')).toContainText('Incomplete')
   await noOverflow(page)
@@ -41,11 +43,11 @@ test('statistics: incomplete attempts, accessible reset and preferences', async 
   await expect(page.getByRole('button', { name: 'Reset Statistics', exact: true })).toBeFocused()
   expect((await saved(page)).settings).toEqual(before.settings)
   expect((await saved(page)).records).toEqual([])
-  await page.reload()
+  await refresh(page)
   await expect(page.getByText(/No sessions yet/)).toBeVisible()
   await start(page)
   await report(page, true)
-  await page.getByRole('link', { name: 'Statistics', exact: true }).click()
+  await navigateTo(page, 'Statistics')
   await expect(page.getByLabel('Overall results', { exact: true })).toContainText('100%')
   expect((await saved(page)).records).toHaveLength(1)
 })
@@ -105,11 +107,13 @@ test('statistics: cross-tab reset blocks stale saves and permits fresh practice'
   await statistics.getByRole('button', { name: 'Erase history', exact: true }).click()
   await expect(statistics.getByText(/No sessions yet/)).toBeVisible()
   await page.bringToFront()
-  await report(page, true)
+  await expect(
+    page.getByRole('heading', { name: 'Choose your practice', exact: true }),
+  ).toBeVisible()
   expect((await saved(page)).records).toEqual([])
   await start(page)
   await report(page, true)
-  await page.getByRole('link', { name: 'Statistics', exact: true }).click()
+  await navigateTo(page, 'Statistics')
   await expect(page.getByLabel('Overall results', { exact: true })).toContainText('100%')
   expect((await saved(page)).records).toHaveLength(1)
   await expect(statistics.getByLabel('Overall results', { exact: true })).toContainText('100%')

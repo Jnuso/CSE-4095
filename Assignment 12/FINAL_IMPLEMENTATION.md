@@ -1,0 +1,34 @@
+# Final implementation handoff
+
+Implementation checklist sections 1–4 are complete locally. The full release gate, browser/device matrix and publication in FINAL_TODO.md sections 5–6 are still pending. Only affected checks were run during this work, as requested. Do not describe the application as finally tested or newly deployed.
+
+## What changed
+
+- **Session recovery:** the app saves a versioned per-tab snapshot under its own sessionStorage key. Refresh restores the current question and choice order, selection, revealed face, session configuration, attempts and review source identity. Recovery validates its data and respects durable reset markers, completed records and history-entry identity. Invalid or closed entries return to safe setup. The recovery notice reports storage failures rather than promising success.
+- **Leave protection:** normal and Pages builds use React Router data routers. An accessible modal blocks router links and Back/Forward while active, offering Keep practicing or End session and leave. Leaving finalizes only reported answers and removes recovery question state. Reload/tab close uses native beforeunload support; browsers can suppress that prompt, so persistence remains the recovery mechanism. A completed session does not retain a leave blocker.
+- **Reset cleanup:** successful history reset/Clear All removes only the app recovery key from this tab. Other tabs remove recovery on observing changed reset markers. Unrelated keys are preserved. A failed removal is reported, while the durable reset fence still prevents erased history from returning.
+- **History storage:** large saves use lossless version-2 tuple encoding for journals and cached patterns when the plain save exceeds 512 Ki characters and packing makes it smaller. Every answer identity, timestamp, source, target and aggregate field survives. Legacy/small version-1 saves remain readable; unknown versions/encodings are protected. Existing category validation repairs individual malformed known tuples. Reads never rewrite. No old journal evidence is discarded, and newest-100-session overall statistics remain unchanged. Measured UTF-16 save sizes are 2,550,286 bytes for 3000 distinct misses and 3,986,626 for 6000; the latter was 8,006,572 before compaction (about 50% smaller). These are serialized-size observations, not browser-quota guarantees.
+- **Privacy:** source audit found no analytics, ads, identity/contact collection or result-upload code. Settings explains browser-only data and data clearing. A simulated practice flow observed only same-origin GET requests. This describes application behavior; ordinary static hosting requests still occur.
+- **Existing performance work:** memoized statistics/context, indexed mastery replay and lazy Settings/Statistics remain. A labelled 4x CPU slowdown simulation completed practice and opened Settings successfully. This is not physical-device evidence.
+
+## Focused verification
+
+- 54 storage/review/recovery checks passed, including the large-history round-trip/quota cases.
+- Ten affected component/service files subsequently passed 57 checks with original deadlines: routes, page errors, setup, sessions, recaps, settings, statistics, persistence, recovery and compact encoding.
+- Three Firefox scenarios passed: exact selected/revealed-card refresh; links and Back stay/end/closed-entry behavior; another-tab reset fencing.
+- Two Pages Firefox checks passed: complete session/summary persistence/accessibility and active-session refresh/leave under hash routing.
+- One Chromium 4x simulated-CPU/privacy-request check passed.
+- All 35 affected Firefox compatibility checks passed: navigation/edit round trips, incomplete-history statistics/reset, review mastery and reload, migrations, quota/blocked storage, preferences and cross-tab reset/Clear All.
+- Final cleanup/recovery/large-history checks passed all 13 cases in isolation, retaining original deadlines. The 6000-fact track/write/read observation was about 701 ms on this host; no timing promise is asserted. Earlier overlapping runs hit the original deadline in the Settings save and 6000-fact cases; both failures remain in output/final-cleanup-focused.txt, and the isolated passing run is output/final-cleanup-isolated.txt.
+- Final normal and Pages production builds passed after the last source changes, along with TypeScript and changed-file lint. Normal initial JS is 375.49 kB / 115.79 kB gzip; Pages is 375.80 / 115.89. Supported data-router blocking and recovery increase the initial payload compared with the earlier Phase 21 checkpoint; Settings/Statistics remain separate lazy chunks. The CPU simulation passed, but this is not a physical-device performance guarantee. Logs: output/final-build.txt, final-pages-build.txt, final-implementation-types.txt and final-cleanup-lint.txt.
+- One independent read-only review found no concrete defects. Its narrow follow-up confirmed successful-reset cleanup preserves unrelated data and surfaces removal failures. No reviewer edited files or claimed runtime tests.
+
+Raw evidence: math-practice-app/output/final-*.txt. First failures are not release passes: jsdom needed a native-dialog shim; new tests were corrected for selected-answer checkmarks and unique review identities; blocked-click checks use noWaitAfter so the test can answer the leave dialog. Existing tests now explicitly confirm intentional leave, accept only native beforeunload on refresh, expect recovered progress rather than a restarted session, and expect reset to leave safe setup. Existing assertions, per-test deadlines, retries and full-page axe rules were not weakened. A persistence case hit its original deadline under contention, then passed isolated; a later ten-file scoped run passed all 57 checks.
+
+## Remaining final pass
+
+Run the full check:all gate when ready for final testing, then the final browser/device/manual matrix and hosted release smoke. Do not trigger automatic full CI before that point by pushing application changes. Actual Safari/device checks, literal 200% browser zoom, enlarged system fonts and actual screen-reader speech are still separate; the student explicitly left speech pending. Do not label WebKit, viewport, focus, axe or CPU simulation as those manual checks.
+
+The live site remains https://jnuso.github.io/CSE-4095/ at the previously verified Phase 20 revision. No push, final CI, new publication or full-regression success is claimed for this local implementation.
+
+Router behavior follows the official [React Router useBlocker documentation](https://reactrouter.com/api/hooks/useBlocker); hard reloads require separate native beforeunload handling. CPU emulation uses Chromium-only CDP sessions, as documented by [Playwright](https://playwright.dev/docs/api/class-browsercontext#browser-context-new-cdp-session).

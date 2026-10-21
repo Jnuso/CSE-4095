@@ -1,6 +1,6 @@
 import ErrorMessage from '../common/ErrorMessage'
 import { chooseFeedback } from '../../services/practiceFeedback'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Navigate } from 'react-router'
 import type { PracticeConfiguration } from '../../types/practice'
 import {
@@ -11,15 +11,50 @@ import {
 } from '../../services/practiceSession'
 import QuestionCard, { type CardResult } from './QuestionCard'
 import { usePracticeStorage } from '../storage/PracticeStorageProvider'
+import {
+  closeActiveSession,
+  saveActiveSession,
+  type ActiveSnapshot,
+  type CardSnapshot,
+} from '../../services/activeSession'
+import SessionNavigationGuard from './SessionNavigationGuard'
+import { cycleDialogFocus } from '../../utils/cycleDialogFocus'
 
 export default function PracticeSessionPanel({
   configuration,
+  recovery,
+  entryKey,
 }: {
   configuration: PracticeConfiguration
+  recovery: ActiveSnapshot | null
+  entryKey: string
 }) {
   const { data, saveSession, saveSettings } = usePracticeStorage()
-  const [state, setState] = useState(() =>
-    startSession(configuration, undefined, data.mistakePatterns, data.settings.masteryThreshold),
+  const [state, setState] = useState(
+    () =>
+      recovery?.state ??
+      startSession(
+        configuration,
+        undefined,
+        data.mistakePatterns,
+        data.settings.masteryThreshold,
+        data.historyResetAt,
+      ),
+  )
+  const [card, setCard] = useState<CardSnapshot | null>(recovery?.card ?? null)
+  const recoveryNotice = useRef<HTMLParagraphElement>(null)
+  const endDialog = useRef<HTMLDialogElement>(null)
+  const keepPracticing = useRef<HTMLButtonElement>(null)
+  const updateCard = useCallback(
+    (next: CardSnapshot) =>
+      setCard((old) =>
+        old?.questionId === next.questionId &&
+        old.selectedAnswer === next.selectedAnswer &&
+        old.flipped === next.flipped
+          ? old
+          : next,
+      ),
+    [],
   )
   const [feedback, setFeedback] = useState('')
   const latest = useRef(state)
@@ -27,6 +62,42 @@ export default function PracticeSessionPanel({
   useEffect(() => {
     saveSession({ session: state.session, attempts: state.attempts })
   }, [state.session, state.attempts, saveSession])
+  useEffect(() => {
+    if (!state.isActive) {
+      closeActiveSession(entryKey)
+      return
+    }
+    const error = saveActiveSession({
+      version: 1,
+      entryKey,
+      state,
+      card: card?.questionId === state.question?.id ? card : null,
+    })
+    if (recoveryNotice.current) {
+      recoveryNotice.current.textContent = error ?? ''
+      recoveryNotice.current.hidden = !error
+    }
+  }, [state, card, entryKey])
+  useEffect(() => {
+    if (!state.isActive) return
+    function warn(event: BeforeUnloadEvent) {
+      if (!latest.current.isActive) return
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [state.isActive])
+  const erased = Date.parse(state.session.startedAt) <= (data.historyResetAt ?? 0)
+  useEffect(() => {
+    if (erased) closeActiveSession(entryKey)
+  }, [erased, entryKey])
+  function leave() {
+    const next = endSession(latest.current)
+    latest.current = next
+    saveSession({ session: next.session, attempts: next.attempts })
+    closeActiveSession(entryKey)
+  }
   function report(result: CardResult) {
     const current = latest.current
     const activeIds = new Set(
@@ -46,16 +117,12 @@ export default function PracticeSessionPanel({
     )
     if (next !== current) setFeedback(chooseFeedback(result.selfReportedCorrect))
     latest.current = next
+    if (!next.isActive) closeActiveSession(entryKey)
     setState(next)
   }
 
   function finish() {
-    if (
-      !window.confirm(
-        'End this session? Completed answers will appear in your recap. The current unreported question will not count.',
-      )
-    )
-      return
+    endDialog.current?.close()
     const next = endSession(latest.current)
     latest.current = next
     setState(next)
@@ -68,6 +135,7 @@ export default function PracticeSessionPanel({
   }
 
   const { session } = state
+  if (erased) return <Navigate to="/practice/setup" replace state={{ sessionMissing: true }} />
   if (!state.isActive)
     return (
       <Navigate
@@ -81,6 +149,7 @@ export default function PracticeSessionPanel({
     )
   return (
     <div className="session-panel">
+      <SessionNavigationGuard active={state.isActive && !erased} onLeave={leave} />
       {configuration.reviewMode === 'mistake-review' && (
         <p className="field-help">
           Mistake review: related questions help you strengthen remembered facts. The session ends
@@ -88,9 +157,10 @@ export default function PracticeSessionPanel({
         </p>
       )}
       <p className="preview-note">
-        Reported answers are saved in this browser when storage is available. Refreshing starts a
-        new session.
+        Reported answers are saved in this browser when storage is available. Refreshing restores
+        this session in this tab.
       </p>
+      <p role="status" aria-label="Session recovery notice" ref={recoveryNotice} hidden />
       <p
         className="practice-feedback"
         role="status"
@@ -139,15 +209,51 @@ export default function PracticeSessionPanel({
               showExplanations={data.settings.showExplanations}
               focusOnMount={state.questionIndex > 0}
               onResult={report}
+              initialCard={card}
+              onCardChange={updateCard}
             />
           ) : (
             <ErrorMessage title="Let’s try another question" onRetry={retry}>
               <p>{state.error}</p>
             </ErrorMessage>
           )}
-          <button type="button" className="button button-secondary" onClick={finish}>
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() => {
+              endDialog.current?.showModal()
+              keepPracticing.current?.focus()
+            }}
+          >
             End Session
           </button>
+          <dialog
+            ref={endDialog}
+            className="reset-dialog"
+            aria-labelledby="end-session-title"
+            aria-describedby="end-session-description"
+            onKeyDown={cycleDialogFocus}
+          >
+            <h2 id="end-session-title">End this session?</h2>
+            <p id="end-session-description">
+              Completed answers will appear in your recap. The current unreported question will not
+              count.
+            </p>
+            <div className="summary-actions">
+              <button
+                type="button"
+                className="button button-secondary"
+                autoFocus
+                ref={keepPracticing}
+                onClick={() => endDialog.current?.close()}
+              >
+                Keep practicing
+              </button>
+              <button type="button" className="button button-primary" onClick={finish}>
+                End session and view recap
+              </button>
+            </div>
+          </dialog>
         </>
       }
     </div>

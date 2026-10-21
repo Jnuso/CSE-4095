@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter } from '../test/MemoryRouter'
 import { describe, expect, it } from 'vitest'
 import AppRoutes from './AppRoutes'
 
@@ -70,6 +70,8 @@ describe('Practice configuration', () => {
     expect(screen.getByText('Advanced')).toBeInTheDocument()
     expect(screen.getByText('20 questions')).toBeInTheDocument()
     await user.click(screen.getByRole('link', { name: 'Edit choices' }))
+    expect(screen.getByRole('dialog', { name: 'Leave this session?' })).toBeVisible()
+    await user.click(screen.getByRole('button', { name: 'End session and leave' }))
     expect(screen.getByRole('checkbox', { name: 'Addition' })).not.toBeChecked()
     expect(screen.getByRole('checkbox', { name: 'Multiplication' })).toBeChecked()
     expect(screen.getByRole('checkbox', { name: 'Division' })).toBeChecked()

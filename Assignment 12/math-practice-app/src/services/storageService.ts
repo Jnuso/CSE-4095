@@ -11,6 +11,7 @@ import type { AppSettings } from '../types/settings'
 import type { CompletedSession } from './sessionSummary'
 import { isCompletedSession } from './sessionSummary'
 import { isPracticeConfiguration } from './practiceConfiguration'
+import { packEvent, unpackEvent, packPattern, unpackPattern } from './compactStorage'
 
 export const STORAGE_KEY = 'mathPractice.data'
 export const SCHEMA_VERSION = 1
@@ -184,6 +185,33 @@ export function trackMistakes(data: SavedData): SavedData {
 // Only these documented legacy layouts are supported; unknown versions are read-only.
 function migrate(value: Record<string, unknown>): Record<string, unknown> | null {
   if (value.version === SCHEMA_VERSION) return value
+  if (value.version === 2 && value.journalFormat === 'tuple-v1') {
+    return {
+      ...value,
+      version: SCHEMA_VERSION,
+      ...(value.mistakeEvents === undefined
+        ? {}
+        : {
+            mistakeEvents: Array.isArray(value.mistakeEvents)
+              ? value.mistakeEvents.map(unpackEvent)
+              : value.mistakeEvents,
+          }),
+      ...(value.reviewEvents === undefined
+        ? {}
+        : {
+            reviewEvents: Array.isArray(value.reviewEvents)
+              ? value.reviewEvents.map(unpackEvent)
+              : value.reviewEvents,
+          }),
+      ...(value.mistakePatterns === undefined
+        ? {}
+        : {
+            mistakePatterns: Array.isArray(value.mistakePatterns)
+              ? value.mistakePatterns.map(unpackPattern)
+              : value.mistakePatterns,
+          }),
+    }
+  }
   if (value.version === undefined || value.version === 0) {
     const records = value.records ?? value.sessions
     if (Array.isArray(records) && 'settings' in value)
@@ -227,7 +255,7 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
       canWrite: false,
     }
   const warnings: string[] = []
-  if (object(parsed) && parsed.version !== SCHEMA_VERSION)
+  if (object(parsed) && (parsed.version === undefined || parsed.version === 0))
     warnings.push('Older saved data was loaded. It will be updated the next time you save.')
   const settings = isAppSettings(migrated.settings) ? migrated.settings : defaultSettings()
   if (!isAppSettings(migrated.settings))
@@ -306,10 +334,28 @@ export function writeSavedData(
     return 'Practice data was not saved because it failed validation.'
   try {
     const tracked = trackMistakes(data)
-    access().setItem(
-      STORAGE_KEY,
-      JSON.stringify({ ...tracked, records: recentRecords(tracked.records) }),
-    )
+    const payload = { ...tracked, records: recentRecords(tracked.records) }
+    let serialized = JSON.stringify(payload)
+    // Small saves retain their readable legacy layout. Large journals shed repeated JSON keys,
+    // never evidence, identities or cached legacy progress. Reads do not rewrite either format.
+    if (serialized.length > 512 * 1024) {
+      const compact = JSON.stringify({
+        ...payload,
+        version: 2,
+        journalFormat: 'tuple-v1',
+        ...(tracked.mistakeEvents === undefined
+          ? {}
+          : { mistakeEvents: tracked.mistakeEvents.map(packEvent) }),
+        ...(tracked.reviewEvents === undefined
+          ? {}
+          : { reviewEvents: tracked.reviewEvents.map(packEvent) }),
+        ...(tracked.mistakePatterns === undefined
+          ? {}
+          : { mistakePatterns: tracked.mistakePatterns.map(packPattern) }),
+      })
+      if (compact.length < serialized.length) serialized = compact
+    }
+    access().setItem(STORAGE_KEY, serialized)
     return null
   } catch (error) {
     return error instanceof DOMException && error.name === 'QuotaExceededError'

@@ -3,6 +3,7 @@ import type { Question } from '../../types/question'
 import AnswerChoice from './AnswerChoice'
 import { explainQuestion } from '../../services/questionExplanation'
 import { playFlipSound } from '../../services/soundEffects'
+import type { CardSnapshot } from '../../services/activeSession'
 
 export interface CardResult {
   questionId: string
@@ -19,6 +20,8 @@ interface QuestionCardProps {
   showExplanations?: boolean
   focusOnMount?: boolean
   onResult?: (result: CardResult) => void
+  initialCard?: CardSnapshot | null
+  onCardChange?: (card: CardSnapshot) => void
 }
 
 export default function QuestionCard(props: QuestionCardProps) {
@@ -59,16 +62,26 @@ function QuestionCardContent({
   showExplanations = true,
   focusOnMount = false,
   onResult,
+  initialCard,
+  onCardChange,
 }: QuestionCardProps) {
   const progressId = useId()
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
-  const [isCardFlipped, setIsCardFlipped] = useState(false)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(() =>
+    initialCard?.questionId === question.id ? initialCard.selectedAnswer : null,
+  )
+  const [isCardFlipped, setIsCardFlipped] = useState(
+    () => initialCard?.questionId === question.id && initialCard.flipped,
+  )
   const [reported, setReported] = useState<boolean | null>(null)
   const [revealedHeight, setRevealedHeight] = useState<number>()
   const cardFace = useRef<HTMLDivElement>(null)
   const resultLocked = useRef(false)
   const answerHeading = useRef<HTMLHeadingElement>(null)
   const questionHeading = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    onCardChange?.({ questionId: question.id, selectedAnswer, flipped: isCardFlipped })
+  }, [question.id, selectedAnswer, isCardFlipped, onCardChange])
 
   useEffect(() => {
     if (focusOnMount) questionHeading.current?.focus()

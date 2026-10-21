@@ -1,3 +1,4 @@
+import { navigateTo, refresh } from './helpers'
 import AxeBuilder from '@axe-core/playwright'
 import { completedFixture } from '../src/test/summaryFixture'
 import { emptySavedData } from '../src/services/storageService'
@@ -28,10 +29,10 @@ test('damaged answers recover independently, warn accessibly and save without lo
         .analyze()
     ).violations,
   ).toEqual([])
-  await page.getByRole('link', { name: 'Settings', exact: true }).click()
+  await navigateTo(page, 'Settings')
   await expect(page.getByRole('checkbox', { name: /^Show explanations/ })).not.toBeChecked()
   await page.getByRole('button', { name: 'Save Settings', exact: true }).click()
-  await page.reload()
+  await refresh(page)
   await expect(page.getByRole('status', { name: 'Saved data notice' })).toHaveCount(0)
   const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)!), storageKey)
   expect(saved.records[0].attempts).toHaveLength(2)

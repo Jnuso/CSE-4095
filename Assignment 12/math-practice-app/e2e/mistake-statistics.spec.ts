@@ -1,3 +1,4 @@
+import { navigateTo, refresh } from './helpers'
 import AxeBuilder from '@axe-core/playwright'
 import type { Page, TestInfo } from '@playwright/test'
 import { mistakeStatisticsFixture, wrongFact } from '../src/test/mistakeStatisticsFixture'
@@ -30,7 +31,7 @@ test('remembered statistics outlast session history, show mastered separately, a
     key: storageKey,
     data: mistakeStatisticsFixture(),
   })
-  await page.reload()
+  await refresh(page)
   const before = await page.evaluate((key) => localStorage.getItem(key), storageKey)
   await expect(total(page, 'Active mistake patterns')).toHaveText('1')
   await expect(total(page, 'Mastered mistake patterns')).toHaveText('1')
@@ -55,7 +56,7 @@ test('remembered statistics outlast session history, show mastered separately, a
   await expect(mastered.locator('time')).toHaveAttribute('datetime', '2026-10-19T00:00:00.000Z')
   await scan(page, testInfo, 'mastered')
   expect(await page.evaluate((key) => localStorage.getItem(key), storageKey)).toBe(before)
-  await page.reload()
+  await refresh(page)
   await expect(total(page, 'Similar questions practiced')).toHaveText('4')
   await page.getByRole('button', { name: 'Reset Statistics', exact: true }).click()
   await page.getByRole('button', { name: 'Keep my history', exact: true }).click()
@@ -90,7 +91,7 @@ test('ties, sorted details and pagination preserve matching counts on narrow scr
     key: storageKey,
     data,
   })
-  await page.reload()
+  await refresh(page)
   await expect(
     page.getByText('Addition, Subtraction — 12 misses each (tied).', { exact: true }),
   ).toBeVisible()
@@ -113,7 +114,7 @@ test('real practice and review immediately update dashboard mastery and review c
 }, testInfo) => {
   await start(page)
   for (const right of [false, true, true, true, true]) await report(page, right)
-  await page.getByRole('link', { name: 'Statistics', exact: true }).click()
+  await navigateTo(page, 'Statistics')
   await expect(total(page, 'Active mistake patterns')).toHaveText('1')
   await expect(total(page, 'Similar questions practiced')).toHaveText('0')
   await page.getByRole('link', { name: 'Start Practice', exact: true }).click()
@@ -127,7 +128,7 @@ test('real practice and review immediately update dashboard mastery and review c
   await expect(total(page, 'Similar questions practiced')).toHaveText('3')
   await expect(total(page, 'Review questions marked right')).toHaveText('3')
   const before = await saved(page)
-  await page.reload()
+  await refresh(page)
   expect((await saved(page)).mistakePatterns).toEqual(before.mistakePatterns)
   await page.getByRole('radio', { name: 'Mastered mistakes (1)', exact: true }).check()
   await scan(page, testInfo, 'real-mastery')

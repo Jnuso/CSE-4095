@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter } from '../test/MemoryRouter'
 import { describe, expect, it, vi } from 'vitest'
 import { completedFixture } from '../test/summaryFixture'
 import {
@@ -46,6 +46,7 @@ describe('storage integration', () => {
     await report(user)
     vi.spyOn(window, 'confirm').mockReturnValue(true)
     await user.click(screen.getByRole('button', { name: 'End Session' }))
+    await user.click(screen.getByRole('button', { name: 'End session and view recap' }))
     const saved = readSavedData().data
     expect(saved.records).toHaveLength(1)
     expect(saved.records[0].session).toMatchObject({ attempted: 1, incorrect: 1 })
@@ -97,6 +98,7 @@ describe('storage integration', () => {
     expect(localStorage.getItem(STORAGE_KEY)).toBe(before)
     vi.spyOn(window, 'confirm').mockReturnValue(true)
     await user.click(screen.getByRole('button', { name: 'End Session' }))
+    await user.click(screen.getByRole('button', { name: 'End session and view recap' }))
     expect(screen.getByText('Questions attempted').parentElement).toHaveTextContent('1')
   })
   it('uses defaults and keeps corrupt stored bytes intact while practice continues', async () => {

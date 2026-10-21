@@ -1,3 +1,4 @@
+import { navigateTo, refresh } from './helpers'
 import { test, expect } from './helpers'
 
 for (const [route, heading] of [
@@ -16,7 +17,7 @@ for (const [route, heading] of [
     await expect(page.getByRole('main')).toBeVisible()
     await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible()
     await expect(page).toHaveTitle(route === '/' ? 'Math Practice' : `${heading} | Math Practice`)
-    await page.reload()
+    await refresh(page)
     await expect(page.getByRole('heading', { name: heading, level: 1, exact: true })).toBeVisible()
     if (route === '/unknown-page') {
       await page.getByRole('link', { name: 'Back home', exact: true }).click()
@@ -62,7 +63,7 @@ test('setup validation, multi-selection, exclusive controls, and edit round trip
   await page.getByRole('button', { name: 'Start Session', exact: true }).click()
   await expect(page.getByText('Multiplication, Division', { exact: true })).toBeVisible()
   await expect(page.getByText('Question 1 of 20', { exact: true })).toBeVisible()
-  await page.getByRole('link', { name: 'Edit choices', exact: true }).click()
+  await navigateTo(page, 'Edit choices')
   await expect(page.getByRole('checkbox', { name: 'Addition', exact: true })).not.toBeChecked()
   for (const name of ['Multiplication', 'Division'])
     await expect(page.getByRole('checkbox', { name, exact: true })).toBeChecked()

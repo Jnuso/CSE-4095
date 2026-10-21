@@ -1,3 +1,4 @@
+import { refresh } from './helpers'
 import AxeBuilder from '@axe-core/playwright'
 import { test, expect, report, saved, metric } from './helpers'
 
@@ -47,7 +48,7 @@ test('phase20: a reproducible mixed-operation session saves coherent arithmetic 
     expect(record.session.operations).toContain(attempt.operation)
     expect(attempt.difficulty).toBe(1)
   }
-  await page.reload()
+  await refresh(page)
   await expect(metric(page, 'Questions attempted')).toHaveText('5')
   await expect(metric(page, 'Marked right')).toHaveText('3')
   await expect(metric(page, 'Marked wrong')).toHaveText('2')

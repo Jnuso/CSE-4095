@@ -15,6 +15,26 @@ export const test = base.extend({
 export { expect }
 export const storageKey = 'mathPractice.data'
 
+/** Intentional navigation now ends an active session through the same confirmation as a user. */
+export async function navigateTo(page: Page, name: string) {
+  const active = await page.getByRole('button', { name: 'End Session', exact: true }).isVisible()
+  await page.getByRole('link', { name, exact: true }).click({ noWaitAfter: active })
+  if (active) {
+    const dialog = page.getByRole('dialog', { name: 'Leave this session?' })
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('button', { name: 'End session and leave' }).click()
+  }
+}
+
+export async function refresh(page: Page) {
+  if (await page.getByRole('button', { name: 'End Session', exact: true }).isVisible())
+    page.once('dialog', async (dialog) => {
+      expect(dialog.type()).toBe('beforeunload')
+      await dialog.accept()
+    })
+  await page.reload()
+}
+
 export async function start(page: Page, length: 5 | 10 | 20 | 'continuous' = 5) {
   await page.goto('/practice/setup')
   await page
@@ -39,18 +59,27 @@ export async function report(page: Page, right: boolean) {
     .click()
 }
 export async function finish(page: Page, accept = true) {
-  const dialog = page.waitForEvent('dialog')
-  const click = page.getByRole('button', { name: 'End Session', exact: true }).click()
-  const confirmation = await dialog
-  expect(confirmation.type()).toBe('confirm')
-  if (accept) await confirmation.accept()
-  else await confirmation.dismiss()
-  await click
+  await page.getByRole('button', { name: 'End Session', exact: true }).click()
+  const confirmation = page.getByRole('dialog', { name: 'End this session?', exact: true })
+  await expect(confirmation).toBeVisible()
+  await expect(
+    confirmation.getByRole('button', { name: 'Keep practicing', exact: true }),
+  ).toBeFocused()
+  await confirmation
+    .getByRole('button', {
+      name: accept ? 'End session and view recap' : 'Keep practicing',
+      exact: true,
+    })
+    .click()
   if (accept) await expect(page).toHaveURL('/practice/summary')
 }
 export async function saved(page: Page): Promise<SavedData> {
   return page.evaluate((key) => JSON.parse(localStorage.getItem(key)!), storageKey)
 }
 export async function noOverflow(page: Page) {
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+    ),
+  ).toBe(true)
 }

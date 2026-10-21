@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter } from '../test/MemoryRouter'
 import { describe, expect, it, vi } from 'vitest'
 import AppRoutes from './AppRoutes'
 import PracticeStorageProvider, {
@@ -13,27 +13,29 @@ import {
   writeSavedData,
 } from '../services/storageService'
 
-function mount() {
-  return render(
+async function mount() {
+  const view = render(
     <MemoryRouter initialEntries={['/statistics']}>
       <AppRoutes />
     </MemoryRouter>,
   )
+  await screen.findByRole('heading', { level: 1, name: 'Your statistics' })
+  return view
 }
 describe('statistics dashboard', () => {
-  it('renders empty totals and all operation/level cards', () => {
-    mount()
+  it('renders empty totals and all operation/level cards', async () => {
+    await mount()
     expect(screen.getByText(/No questions attempted yet/)).toBeInTheDocument()
     expect(screen.getByText(/No sessions yet/)).toBeInTheDocument()
     expect(screen.getByLabelText('Overall results')).toHaveTextContent('0%')
     expect(screen.getByRole('heading', { name: 'Division' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Level 4: Advanced' })).toBeInTheDocument()
   })
-  it('shows saved totals and incomplete sessions with actual practiced operations', () => {
+  it('shows saved totals and incomplete sessions with actual practiced operations', async () => {
     const record = completedFixture()
     delete record.session.completedAt
     writeSavedData({ ...emptySavedData(), records: [record] })
-    mount()
+    await mount()
     expect(screen.getByRole('list', { name: 'Recent sessions' })).toHaveTextContent('Incomplete')
     const totals = screen.getByLabelText('Overall results')
     expect(totals).toHaveTextContent('3')
@@ -41,19 +43,19 @@ describe('statistics dashboard', () => {
       screen.getByText('Operations practiced: Addition, Subtraction, Multiplication'),
     ).toBeInTheDocument()
   })
-  it('updates after another tab resets history and keeps disk preferences', () => {
+  it('updates after another tab resets history and keeps disk preferences', async () => {
     const data = { ...emptySavedData(), records: [completedFixture()] }
     writeSavedData(data)
-    mount()
+    await mount()
     data.settings.cardAnimationEnabled = false
     writeSavedData({ ...data, records: [], historyResetAt: Date.now() })
     act(() => window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY })))
     expect(screen.getByText(/No sessions yet/)).toBeInTheDocument()
     expect(readSavedData().data.settings.cardAnimationEnabled).toBe(false)
   })
-  it('preserves malformed data instead of overwriting it', () => {
+  it('preserves malformed data instead of overwriting it', async () => {
     localStorage.setItem(STORAGE_KEY, '{broken')
-    mount()
+    await mount()
     expect(screen.getByRole('status', { name: 'Saved data notice' })).toHaveTextContent(
       'left unchanged',
     )
@@ -62,7 +64,7 @@ describe('statistics dashboard', () => {
   })
 })
 
-it('keeps post-reset memory records when storage becomes unreadable', () => {
+it('keeps post-reset memory records when storage becomes unreadable', async () => {
   function Harness() {
     const { data, resetHistory, saveSession } = usePracticeStorage()
     return (

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import Header from './Header'
 import PageContainer from './PageContainer'
@@ -11,11 +11,22 @@ export default function AppLayout() {
   const previousPath = useRef(pathname)
 
   useEffect(() => {
-    const heading = mainRef.current?.querySelector('h1')
-    document.title =
-      pathname === '/' ? 'Math Practice' : `${heading?.textContent ?? 'Page'} | Math Practice`
-    if (previousPath.current !== pathname) heading?.focus()
+    const changed = previousPath.current !== pathname
     previousPath.current = pathname
+    function updateHeading() {
+      const heading = mainRef.current?.querySelector('h1')
+      if (!heading) return false
+      document.title = pathname === '/' ? 'Math Practice' : `${heading.textContent} | Math Practice`
+      if (changed) heading.focus()
+      return true
+    }
+    if (updateHeading()) return
+    document.title = 'Loading | Math Practice'
+    const observer = new MutationObserver(() => {
+      if (updateHeading()) observer.disconnect()
+    })
+    if (mainRef.current) observer.observe(mainRef.current, { childList: true, subtree: true })
+    return () => observer.disconnect()
   }, [pathname])
 
   return (
@@ -46,7 +57,9 @@ export default function AppLayout() {
               heading?.focus()
             }}
           >
-            <Outlet />
+            <Suspense fallback={<p role="status">Loading page...</p>}>
+              <Outlet />
+            </Suspense>
           </ErrorBoundary>
         </PageContainer>
       </main>

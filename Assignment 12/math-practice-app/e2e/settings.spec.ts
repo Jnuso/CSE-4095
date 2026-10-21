@@ -1,3 +1,4 @@
+import { navigateTo, refresh } from './helpers'
 import AxeBuilder from '@axe-core/playwright'
 import {
   test,
@@ -23,9 +24,9 @@ test('settings save, reload, session overrides, explanations and animation', asy
   await expect(page.getByRole('status', { name: 'Settings update' })).toContainText(
     'Settings saved',
   )
-  await page.reload()
+  await refresh(page)
   await expect(page.getByRole('checkbox', { name: /^Card animation/ })).not.toBeChecked()
-  await page.getByRole('link', { name: 'Practice', exact: true }).click()
+  await navigateTo(page, 'Practice')
   await expect(page.getByRole('checkbox', { name: 'Division', exact: true })).toBeChecked()
   await expect(page.getByRole('radio', { name: /^Advanced/ })).toBeChecked()
   await expect(page.getByRole('radio', { name: '5 questions', exact: true })).toBeChecked()
@@ -36,13 +37,13 @@ test('settings save, reload, session overrides, explanations and animation', asy
   await expect(page.locator('.answer-explanation')).toHaveCount(0)
   await expect(page.locator('.card-face')).not.toHaveClass(/card-flip/)
   expect((await saved(page)).settings.defaultDifficulty).toBe(4)
-  await page.getByRole('link', { name: 'Practice', exact: true }).click()
+  await navigateTo(page, 'Practice')
   await expect(page.getByRole('radio', { name: /^Advanced/ })).toBeChecked()
-  await page.getByRole('link', { name: 'Settings', exact: true }).click()
+  await navigateTo(page, 'Settings')
   await page.getByRole('checkbox', { name: /^Show explanations/ }).check()
   await page.getByRole('checkbox', { name: /^Sound effects/ }).check()
   await page.getByRole('button', { name: 'Save Settings', exact: true }).click()
-  await page.getByRole('link', { name: 'Practice', exact: true }).click()
+  await navigateTo(page, 'Practice')
   await page.getByRole('button', { name: 'Start Session', exact: true }).click()
   await answerButtons(page).first().click()
   await page.getByRole('button', { name: 'Flip Card', exact: true }).click()
@@ -55,7 +56,7 @@ test('clear-all confirmation is accessible, cancellable, and restores only app d
 }, testInfo) => {
   await start(page)
   await report(page, true)
-  await page.getByRole('link', { name: 'Settings', exact: true }).click()
+  await navigateTo(page, 'Settings')
   await page.getByRole('checkbox', { name: /^Sound effects/ }).check()
   await page.getByRole('button', { name: 'Save Settings', exact: true }).click()
   await page.evaluate((key) => {
@@ -108,7 +109,7 @@ test('clear-all confirmation is accessible, cancellable, and restores only app d
   expect(data).not.toHaveProperty('mistakePatterns')
   expect(await page.evaluate(() => localStorage.getItem('e2e.unrelated'))).toBe('keep')
   await page.goto('/settings')
-  await page.reload()
+  await refresh(page)
   await expect(page.getByRole('checkbox', { name: /^Sound effects/ })).not.toBeChecked()
 })
 
@@ -117,7 +118,7 @@ test('failed clear-all preserves data; explicit confirmation can recover protect
 }) => {
   await start(page)
   await report(page, false)
-  await page.getByRole('link', { name: 'Settings', exact: true }).click()
+  await navigateTo(page, 'Settings')
   const before = await page.evaluate((key) => localStorage.getItem(key), storageKey)
   await page.evaluate(() => {
     Storage.prototype.setItem = () => {
@@ -131,9 +132,9 @@ test('failed clear-all preserves data; explicit confirmation can recover protect
   )
   await expect(page).toHaveURL('/settings')
   expect(await page.evaluate((key) => localStorage.getItem(key), storageKey)).toBe(before)
-  await page.reload()
+  await refresh(page)
   await page.evaluate((key) => localStorage.setItem(key, '{broken'), storageKey)
-  await page.reload()
+  await refresh(page)
   await expect(page.getByRole('status', { name: 'Saved data notice' })).toContainText(
     'left unchanged',
   )
@@ -157,9 +158,10 @@ test('clear-all in another tab resets live preferences and blocks stale practice
   await expect(other).toHaveURL('/')
   await page.bringToFront()
   await expect(
-    page.getByRole('checkbox', { name: 'Animate card flips', exact: true }),
-  ).toBeChecked()
-  await report(page, true)
+    page.getByRole('heading', { name: 'Choose your practice', exact: true }),
+  ).toBeVisible()
+  expect((await saved(page)).settings.cardAnimationEnabled).toBe(true)
+  await expect(page.getByRole('checkbox', { name: 'Addition', exact: true })).toBeChecked()
   expect((await saved(page)).records).toEqual([])
   await start(page)
   await report(page, true)

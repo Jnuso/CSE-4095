@@ -124,6 +124,7 @@ export function startSession(
   generator: Generator = generateQuestion,
   reviewPatterns: readonly MistakePattern[] = [],
   masteryThreshold = 3,
+  historyResetAt = 0,
 ): SessionState {
   const initial: SessionState = {
     ...(config.reviewMode === 'mistake-review'
@@ -135,8 +136,11 @@ export function startSession(
       : {}),
     session: {
       id: uniqueId(),
-      startedAt: new Date().toISOString(),
-      ...config,
+      // A new session must be newer than the reset fence even after a clock adjustment.
+      startedAt: new Date(Math.max(Date.now(), historyResetAt + 1)).toISOString(),
+      reviewMode: config.reviewMode,
+      difficulty: config.difficulty,
+      sessionLength: config.sessionLength,
       operations: [...config.operations],
       attempted: 0,
       correct: 0,
@@ -159,7 +163,16 @@ export function endSession(state: SessionState): SessionState {
     isActive: false,
     question: null,
     error: null,
-    session: { ...state.session, completedAt: new Date().toISOString() },
+    session: {
+      ...state.session,
+      completedAt: new Date(
+        Math.max(
+          Date.now(),
+          Date.parse(state.session.startedAt),
+          state.attempts.at(-1) ? Date.parse(state.attempts.at(-1)!.attemptedAt) : 0,
+        ),
+      ).toISOString(),
+    },
   }
 }
 

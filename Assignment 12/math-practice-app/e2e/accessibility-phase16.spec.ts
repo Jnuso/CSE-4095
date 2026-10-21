@@ -1,3 +1,4 @@
+import { navigateTo, refresh } from './helpers'
 import AxeBuilder from '@axe-core/playwright'
 import type { Page, TestInfo } from '@playwright/test'
 import { mistakeStatisticsFixture } from '../src/test/mistakeStatisticsFixture'
@@ -167,7 +168,7 @@ test('phase16: doubled base text reflows setup, populated statistics, cards and 
     key: storageKey,
     data: mistakeStatisticsFixture(),
   })
-  await page.reload()
+  await refresh(page)
   // Simulate a larger browser base font. Actual OS/browser text-size settings remain a manual check.
   await page.addStyleTag({ content: ':root { font-size: 32px !important; }' })
   await page.setViewportSize({ width: 390, height: 844 })
@@ -175,12 +176,12 @@ test('phase16: doubled base text reflows setup, populated statistics, cards and 
   await scan(page, info, 'double-text-statistics')
   await page.getByRole('radio', { name: 'Mastered mistakes (1)', exact: true }).check()
   await scan(page, info, 'double-text-mastered')
-  await page.getByRole('link', { name: 'Practice', exact: true }).click()
+  await navigateTo(page, 'Practice')
   await scan(page, info, 'double-text-setup')
   await page.getByRole('radio', { name: '5 questions', exact: true }).check()
   await page.getByRole('button', { name: 'Start Session', exact: true }).click()
   await scan(page, info, 'double-text-card')
-  await page.getByRole('link', { name: 'Settings', exact: true }).click()
+  await navigateTo(page, 'Settings')
   await page.getByRole('button', { name: 'Clear All Application Data', exact: true }).click()
   await scan(page, info, 'double-text-dialog')
   await page.getByRole('button', { name: 'Keep my data', exact: true }).click()

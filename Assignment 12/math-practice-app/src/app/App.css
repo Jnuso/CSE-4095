@@ -918,3 +918,14 @@ h2 {
 .error-message .summary-actions {
   margin-bottom: 0;
 }
+.mastery-threshold-input {
+  min-height: 44px;
+  width: 8rem;
+  max-width: 100%;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: inherit;
+  background: white;
+  border: 2px solid #52658a;
+  border-radius: 0.5rem;
+}

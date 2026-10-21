@@ -1,3 +1,5 @@
+> Final completion order and all remaining work: see [FINAL_TODO.md](FINAL_TODO.md). Run focused checks during implementation; defer the full suite until the final gate.
+
 # Math Practice App — Implementation Todo List
 
 ## Phase 1: Project Setup
@@ -1053,27 +1055,27 @@ Initial routes:
 
 ### 74\. Persist an Active Session
 
-- [ ] Save the active session.
+- [x] Save the active session.
 
-- [ ] Save the current question.
+- [x] Save the current question.
 
-- [ ] Save the selected answer when appropriate.
+- [x] Save the selected answer when appropriate.
 
-- [ ] Restore the session after a page refresh.
+- [x] Restore the session after a page refresh.
 
-- [ ] Clear restored state when the session ends.
+- [x] Clear restored state when the session ends.
 
 ### 75\. Protect Against Accidental Navigation
 
-- [ ] Detect attempts to leave an active session.
+- [x] Detect attempts to leave an active session.
 
-- [ ] Display a confirmation prompt.
+- [x] Display a confirmation prompt.
 
-- [ ] Allow the user to continue the session.
+- [x] Allow the user to continue the session.
 
-- [ ] Allow the user to end and leave the session.
+- [x] Allow the user to end and leave the session.
 
-- [ ] Avoid showing warnings after session completion.
+- [x] Avoid showing warnings after session completion.
 
 ---
 
@@ -1197,39 +1199,41 @@ Initial routes:
 
 ## Phase 21: Performance and Data Management
 
+Focused implementation/checks only; final full gate deferred by student request. See PHASE_21_TESTING.md. Lossless compaction and a labelled CPU simulation are implemented; final release and actual-device/manual review remain pending.
+
 ### 83\. Optimize React Rendering
 
-- [ ] Identify unnecessary component re-renders.
+- [x] Identify unnecessary component re-renders.
 
-- [ ] Memoize expensive statistics calculations.
+- [x] Memoize expensive statistics calculations.
 
-- [ ] Keep question generation outside render logic.
+- [x] Keep question generation outside render logic.
 
-- [ ] Avoid unnecessary global state updates.
+- [x] Avoid unnecessary global state updates.
 
 ### 84\. Manage Large Practice Histories
 
-- [ ] Test with several thousand attempts.
+- [x] Test with several thousand attempts.
 
-- [ ] Measure local-storage usage.
+- [x] Measure local-storage usage.
 
-- [ ] Limit the number of detailed recent sessions.
+- [x] Limit the number of detailed recent sessions.
 
-- [ ] Summarize older attempt records if necessary.
+- [x] Summarize older attempt records if necessary. (Lossless versioned journal compaction; no evidence discarded.)
 
-- [ ] Preserve aggregate statistics when archiving details.
+- [x] Preserve aggregate statistics when archiving details. (Round-trip and mastery preservation checked.)
 
 ### 85\. Improve Loading Performance
 
-- [ ] Measure the initial bundle size.
+- [x] Measure the initial bundle size.
 
-- [ ] Lazy-load statistics and settings pages.
+- [x] Lazy-load statistics and settings pages.
 
-- [ ] Remove unused dependencies.
+- [x] Remove unused dependencies. (Audited: no unused direct dependencies.)
 
-- [ ] Optimize fonts and images.
+- [x] Optimize fonts and images. (System fonts; no downloaded content images.)
 
-- [ ] Test on slower devices.
+- [x] Test on slower devices. (4x CPU simulation passed; actual physical-device review remains pending.)
 
 ---
 
@@ -1237,15 +1241,15 @@ Initial routes:
 
 ### 86\. Complete Privacy Review
 
-- [ ] Confirm that no personal information is collected.
+- [x] Confirm that no personal information is collected.
 
-- [ ] Confirm that practice data remains in the browser.
+- [x] Confirm that practice data remains in the browser.
 
-- [ ] Remove unnecessary tracking services.
+- [x] Remove unnecessary tracking services.
 
-- [ ] Avoid child-facing advertisements.
+- [x] Avoid child-facing advertisements.
 
-- [ ] Explain that clearing browser data removes progress.
+- [x] Explain that clearing browser data removes progress.
 
 ### 87\. Complete Browser Testing
 
@@ -1253,7 +1257,7 @@ Initial routes:
 
 - [ ] Test in Safari.
 
-- [ ] Test in Firefox.
+- [x] Test in Firefox. —Automated Firefox and Pages Firefox passed in final gate; physical/manual matrix remains separate.
 
 - [ ] Test in Microsoft Edge.
 
@@ -1263,7 +1267,7 @@ Initial routes:
 
 ### 88\. Prepare the Production Build
 
-- [ ] Run all tests.
+- [ ] Run all tests. —Previous603-pass gate recorded in FINAL_RELEASE_TESTING.md; subsequent EDGE_CASE_REVIEW.md repairs have63focused passes and need the final full rerun before publication.
 
 - [ ] Resolve linting errors.
 
@@ -1271,13 +1275,13 @@ Initial routes:
 
 - [ ] Create the production build.
 
-- [ ] Test the production build locally.
+- [x] Test the production build locally. —Normal and Pages builds tested in the full release gate.
 
-- [ ] Configure deployment routing for React Router.
+- [x] Configure deployment routing for React Router. (Browser and Pages hash data routers; focused Pages verification.)
 
 ### 89\. Deploy the Application
 
-- [ ] Select a hosting service.
+- [x] Select a hosting service. (Existing GitHub Pages.)
 
 - [ ] Deploy the production build.
 

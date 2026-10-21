@@ -8,10 +8,51 @@ import {
   startSession,
 } from './practiceSession'
 import { generateQuestion } from './questionGenerator'
+import { isCompletedSession } from './sessionSummary'
 
 const config: PracticeConfiguration = { operations: ['addition'], difficulty: 1, sessionLength: 5 }
 
 describe('practice session transitions', () => {
+  it('does not reuse identity or completion metadata from a recovered session configuration', () => {
+    const cutoff = Date.parse('2026-10-21T12:00:00Z')
+    const recovered = {
+      ...config,
+      id: 'old-session',
+      startedAt: '2026-10-18T12:00:00Z',
+      completedAt: '2026-10-18T13:00:00Z',
+    }
+    const state = startSession(recovered, undefined, [], 3, cutoff)
+    expect(state.session.id).not.toBe(recovered.id)
+    expect(state.session.completedAt).toBeUndefined()
+    expect(Date.parse(state.session.startedAt)).toBeGreaterThan(cutoff)
+  })
+  it('starts a fresh session strictly after a reset fence despite a backwards clock', () => {
+    const cutoff = Date.parse('2026-10-21T12:00:00Z')
+    vi.spyOn(Date, 'now').mockReturnValue(cutoff - 3600000)
+    const state = startSession(config, undefined, [], 3, cutoff)
+    expect(Date.parse(state.session.startedAt)).toBe(cutoff + 1)
+  })
+  it('keeps a completed session valid if the system clock moves backwards', () => {
+    vi.useFakeTimers()
+    try {
+      vi.setSystemTime(new Date('2026-10-21T12:00:00Z'))
+      const initial = startSession(config)
+      vi.setSystemTime(new Date('2026-10-21T11:00:00Z'))
+      const question = initial.question!
+      const reported = recordResult(initial, {
+        questionId: question.id,
+        selectedAnswer: question.correctAnswer,
+        selfReportedCorrect: true,
+      })
+      const ended = endSession(reported)
+      expect(isCompletedSession(ended)).toBe(true)
+      expect(Date.parse(ended.session.completedAt!)).toBeGreaterThanOrEqual(
+        Date.parse(ended.attempts.at(-1)!.attemptedAt),
+      )
+    } finally {
+      vi.useRealTimers()
+    }
+  })
   it('creates an active session with configuration, ID, timestamp, and first question', () => {
     const state = startSession(config)
     expect(state).toMatchObject({ isActive: true, questionIndex: 0, attempts: [], error: null })

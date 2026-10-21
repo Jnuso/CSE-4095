@@ -21,7 +21,11 @@ export default function AnswerChoice({
       aria-pressed={selected}
       aria-keyshortcuts={shortcut === undefined ? undefined : String(shortcut)}
       disabled={disabled}
-      onClick={() => onSelect(value)}
+      onClick={(event) => {
+        // A report can replace the old button beneath a pointer between double-clicks.
+        // Accept ordinary clicks and keyboard activation, but not the repeated click.
+        if (event.detail <= 1) onSelect(value)
+      }}
     >
       <span>{value}</span>
       <span className="answer-marker" aria-hidden="true">

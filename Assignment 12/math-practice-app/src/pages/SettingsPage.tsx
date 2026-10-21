@@ -107,6 +107,22 @@ export default function SettingsPage() {
               </span>
             </label>
           </div>
+          <label htmlFor="mastery-threshold">Mastery threshold</label>
+          <p id="mastery-threshold-help" className="field-help">
+            Choose 1–100 consecutive review answers marked right to master a mistake pattern. A
+            wrong review answer resets its progress. Changes apply to remembered mistakes too.
+          </p>
+          <input
+            id="mastery-threshold"
+            className="mastery-threshold-input"
+            type="number"
+            min={1}
+            max={100}
+            step={1}
+            value={Number.isNaN(settings.masteryThreshold) ? '' : settings.masteryThreshold}
+            aria-describedby="mastery-threshold-help"
+            onChange={(event) => change({ masteryThreshold: event.target.valueAsNumber })}
+          />
         </fieldset>
         <h2>Default practice choices</h2>
         <OperationSelector
@@ -123,7 +139,8 @@ export default function SettingsPage() {
         />
         {!valid && (
           <p className="validation-message" id="settings-validation">
-            Choose at least one default operation before saving.
+            Choose at least one default operation and a whole-number mastery threshold from 1 to 100
+            before saving.
           </p>
         )}
         <button
@@ -138,6 +155,17 @@ export default function SettingsPage() {
           {notice}
         </p>
       </form>
+      <section className="feature-card" aria-labelledby="privacy-title">
+        <h2 id="privacy-title">Your practice stays here</h2>
+        <p>
+          This app keeps your answers, progress, and preferences in this browser. It does not ask
+          for your name or contact details, or send your practice results to a server.
+        </p>
+        <p>
+          Clearing browser data removes saved progress and preferences. Refreshing can restore an
+          unfinished session in the same tab when browser storage is available.
+        </p>
+      </section>
       <section className="feature-card settings-clear" aria-labelledby="clear-data-title">
         <h2 id="clear-data-title">Start fresh</h2>
         <p>

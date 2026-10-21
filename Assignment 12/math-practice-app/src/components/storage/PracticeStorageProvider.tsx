@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -29,6 +30,17 @@ interface StorageContextValue {
 }
 const StorageContext = createContext<StorageContextValue | null>(null)
 
+function eraseTabRecovery(): string[] {
+  try {
+    sessionStorage.removeItem(STORAGE_KEY)
+    return []
+  } catch {
+    return [
+      'Practice history was erased, but this tab’s recovery data could not be removed. It cannot restore erased progress. Clearing browser data removes it.',
+    ]
+  }
+}
+
 export default function PracticeStorageProvider({ children }: { children: ReactNode }) {
   const [loaded, setLoaded] = useState(() => readSavedData())
   const latest = useRef(loaded)
@@ -38,11 +50,16 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
     function reload(event: StorageEvent) {
       if (event.key !== STORAGE_KEY && event.key !== null) return
       const disk = readSavedData()
+      const recoveryWarnings =
+        disk.canWrite && disk.data.historyResetAt !== latest.current.data.historyResetAt
+          ? eraseTabRecovery()
+          : []
       if (disk.canWrite && disk.data.appResetAt !== latest.current.data.appResetAt)
         pendingSettings.current = {}
       // Keep unsaved attempts in memory when another tab updates storage.
       const next = {
         ...disk,
+        warnings: [...disk.warnings, ...recoveryWarnings],
         data: !disk.canWrite
           ? latest.current.data
           : trackMistakes({
@@ -147,7 +164,7 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
     const error = writeSavedData(data)
     if (error) return error
     pendingSettings.current = {}
-    const next = { data, canWrite: true, warnings: [] }
+    const next = { data, canWrite: true, warnings: eraseTabRecovery() }
     latest.current = next
     setLoaded(next)
     return null
@@ -157,26 +174,24 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
     const { data, error } = clearSavedData()
     if (error) return error
     pendingSettings.current = {}
-    const next = { data, canWrite: true, warnings: [] }
+    const next = { data, canWrite: true, warnings: eraseTabRecovery() }
     latest.current = next
     setLoaded(next)
     return null
   }, [])
 
-  return (
-    <StorageContext
-      value={{
-        data: loaded.data,
-        warnings: loaded.warnings,
-        saveSettings,
-        saveSession,
-        resetHistory,
-        clearAllData,
-      }}
-    >
-      {children}
-    </StorageContext>
+  const value = useMemo(
+    () => ({
+      data: loaded.data,
+      warnings: loaded.warnings,
+      saveSettings,
+      saveSession,
+      resetHistory,
+      clearAllData,
+    }),
+    [loaded.data, loaded.warnings, saveSettings, saveSession, resetHistory, clearAllData],
   )
+  return <StorageContext value={value}>{children}</StorageContext>
 }
 
 // Kept beside the provider so consumers share the same context.

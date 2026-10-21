@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { memo, useId, useMemo, useState } from 'react'
 import { DIFFICULTIES } from '../../constants/practice'
 import type { MistakePattern } from '../../types/mistake'
 import type { SavedData } from '../../services/storageService'
@@ -52,8 +52,8 @@ function PatternDetails({ pattern, threshold }: { pattern: MistakePattern; thres
   )
 }
 
-export default function MistakeStatistics({ data }: { data: SavedData }) {
-  const results = calculateMistakeStatistics(data)
+function MistakeStatistics({ data }: { data: SavedData }) {
+  const results = useMemo(() => calculateMistakeStatistics(data), [data])
   const [view, setView] = useState<'active' | 'mastered'>('active')
   const [visible, setVisible] = useState(10)
   const patterns = results[view]
@@ -179,3 +179,5 @@ export default function MistakeStatistics({ data }: { data: SavedData }) {
     </section>
   )
 }
+
+export default memo(MistakeStatistics)

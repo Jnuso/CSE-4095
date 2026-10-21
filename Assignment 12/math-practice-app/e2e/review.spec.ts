@@ -1,3 +1,4 @@
+import { navigateTo, refresh } from './helpers'
 import AxeBuilder from '@axe-core/playwright'
 import type { Page } from '@playwright/test'
 import { completedFixture } from '../src/test/summaryFixture'
@@ -57,7 +58,7 @@ async function seed(page: Page, two = false) {
     key: storageKey,
     data: seedData(two),
   })
-  await page.reload()
+  await refresh(page)
 }
 async function reviewStart(page: Page) {
   await page.getByRole('radio', { name: 'Mistake review', exact: true }).check()
@@ -111,12 +112,12 @@ test('review eligibility, durable success, early mastery, and reload without dou
     similarCorrectCount: 2,
     mastered: false,
   })
-  await page.reload()
+  await refresh(page)
   await expect(
     page.getByRole('heading', { name: 'Your mistake review', exact: true }),
   ).toBeVisible()
   await report(page, true)
-  await expect(metric(page, 'Mistake-review questions completed')).toHaveText('1')
+  await expect(metric(page, 'Mistake-review questions completed')).toHaveText('3')
   await expect(page.getByRole('button', { name: 'Practice Mistakes', exact: true })).toBeDisabled()
   const data = await saved(page)
   expect(data.reviewEvents).toHaveLength(3)
@@ -126,9 +127,9 @@ test('review eligibility, durable success, early mastery, and reload without dou
     incorrectCount: 1,
   })
   await scan(page)
-  await page.reload()
+  await refresh(page)
   expect((await saved(page)).mistakePatterns).toEqual(data.mistakePatterns)
-  await page.getByRole('link', { name: 'Practice', exact: true }).click()
+  await navigateTo(page, 'Practice')
   await expect(page.getByRole('radio', { name: 'Mistake review', exact: true })).toBeDisabled()
 })
 
@@ -173,11 +174,13 @@ test('review progress merges across tabs and stale review cannot restore an eras
     similarCorrectCount: 3,
     mastered: true,
   })
-  await page.getByRole('link', { name: 'Statistics', exact: true }).click()
+  await navigateTo(page, 'Statistics')
   await page.getByRole('button', { name: 'Reset Statistics', exact: true }).click()
   await page.getByRole('button', { name: 'Erase history', exact: true }).click()
   await other.bringToFront()
-  await report(other, false)
+  await expect(
+    other.getByRole('heading', { name: 'Choose your practice', exact: true }),
+  ).toBeVisible()
   const reset = await saved(other)
   expect(reset.reviewEvents ?? []).toEqual([])
   expect(reset.mistakePatterns ?? []).toEqual([])

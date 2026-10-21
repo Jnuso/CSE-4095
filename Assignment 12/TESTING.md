@@ -1,6 +1,12 @@
 # Automated regression tests
 
+Latest follow-up: EDGE_CASE_REVIEW.md records four reproduced/fixed edge cases after the full gate below. Final42unit/component and21browseredgechecks passed. Repeat check:all before publishing these newer sources; retain actual manual-accessibility/device limitations.
+
+The complete2026-10-21 automated release gate passed:327unit/component/service +163Chromium/restart +33Pages +80Firefox =603passed, with1expected Firefox skip for Chromium-only CPU simulation. Formatting/lint/types/builds passed; process exit0. See FINAL_RELEASE_TESTING.md for logs, initial sandbox failures and remaining manual limitations. Historical Codex UI observations remain separate in IN_CODEX_BROWSER_TESTING.md.
+
 The app now has two complementary suites: Vitest checks arithmetic, data validation, storage, and React components; Playwright runs real browser flows on desktop and mobile-sized Chromium. Future application changes should pass both before being marked verified.
+
+The student requested focused checks per step on 2026-10-20, with the full gate deferred until the end. Do not run the commands below automatically after each phase. Historical Phase 21 evidence is in PHASE_21_TESTING.md. Current recovery/navigation, lossless storage, privacy and focused verification evidence are in FINAL_IMPLEMENTATION.md; FINAL_TODO.md separates completed implementation from final release testing.
 
 ## Run everything
 

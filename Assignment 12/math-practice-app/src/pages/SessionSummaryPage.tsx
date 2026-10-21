@@ -69,6 +69,20 @@ export default function SessionSummaryPage() {
           </p>
           <dl className="configuration-summary">
             <div>
+              <dt>Practice mode</dt>
+              <dd>
+                {session.reviewMode === 'mistake-review' ? 'Mistake review' : 'Regular practice'}
+              </dd>
+            </div>
+            <div>
+              <dt>Session length</dt>
+              <dd>
+                {session.sessionLength === 'continuous'
+                  ? 'Continuous practice'
+                  : `${session.sessionLength} questions`}
+              </dd>
+            </div>
+            <div>
               <dt>Operations practiced</dt>
               <dd>
                 {results.operations.length

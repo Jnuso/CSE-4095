@@ -104,12 +104,27 @@ export function buildReviewedPatterns(
   previous: readonly MistakePattern[],
   threshold: number,
 ): MistakePattern[] {
+  // Index once instead of scanning both full journals for every remembered fact.
+  const regularByFact = new Map<string, MistakeEvent[]>()
+  const reviewsByFact = new Map<string, MistakeEvent[]>()
+  for (const event of events) {
+    const key = mistakeKey(event.attempt)
+    const group = regularByFact.get(key) ?? []
+    group.push(event)
+    regularByFact.set(key, group)
+  }
+  for (const event of reviews) {
+    const key = event.attempt.mistakePatternId!
+    const group = reviewsByFact.get(key) ?? []
+    group.push(event)
+    reviewsByFact.set(key, group)
+  }
   return buildMistakePatterns(events, previous).map((base) => {
-    const targeted = reviews.filter(
-      (e) => e.attempt.mistakePatternId === base.id && e.attempt.difficulty === base.difficulty,
+    const targeted = (reviewsByFact.get(base.id) ?? []).filter(
+      (event) => event.attempt.difficulty === base.difficulty,
     )
     if (!targeted.length) return base
-    const regular = events.filter((e) => mistakeKey(e.attempt) === base.id)
+    const regular = regularByFact.get(base.id) ?? []
     const origin = [...regular].sort(
       (a, b) =>
         Date.parse(a.attempt.attemptedAt) - Date.parse(b.attempt.attemptedAt) ||

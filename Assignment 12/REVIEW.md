@@ -8,7 +8,7 @@ The student approved this lower-overhead workflow after Phase 16. It supersedes 
 - Give the reviewer a compact task: authorized scope, relevant specification/TODO and behavior contracts, changed files/diff, and verification summary. Prefer relevant files over full conversation-history inheritance when possible.
 - Ask for concrete defects with file/line evidence and a failure scenario. The reviewer must not edit files, weaken tests, or flag explicitly future phases as missing work. A clean review is valid.
 - Investigate findings, fix confirmed issues, and rerun affected checks. Re-contact the reviewer only for a significant finding or a substantial repair that needs another independent look; do not request a new review for every minor fix.
-- Run the required final check:all gate before declaring application/test changes verified. Review never substitutes for tests, student acceptance or assistive-technology checks.
+- Per the student’s 2026-10-20 instruction, use focused checks for each current step and defer check:all until the end. Report focused verification honestly. Review never substitutes for tests, student acceptance or assistive-technology checks.
 - Record the result and limitations once in the phase log. If no reviewer ran, say so. Small routine fixes and documentation-only work can use self-review and relevant checks.
 
 ## Gemma: paused

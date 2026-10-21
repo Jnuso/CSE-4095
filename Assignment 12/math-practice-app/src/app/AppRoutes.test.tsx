@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter } from '../test/MemoryRouter'
 import { describe, expect, it } from 'vitest'
 import AppRoutes from './AppRoutes'
 
@@ -21,9 +21,9 @@ describe('Phase 2 pages and navigation', () => {
     ['/statistics', 'Your statistics'],
     ['/settings', 'Make it your own'],
     ['/not-a-real-page', "Let's find your way back."],
-  ])('renders %s within the shared page layout', (path, heading) => {
+  ])('renders %s within the shared page layout', async (path, heading) => {
     renderRoute(path)
-    expect(screen.getByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
     expect(screen.getByRole('banner')).toBeInTheDocument()
     expect(screen.getByRole('main')).toBeInTheDocument()
     expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeInTheDocument()
@@ -38,7 +38,7 @@ describe('Phase 2 pages and navigation', () => {
     const user = userEvent.setup()
     renderRoute()
     await user.click(within(screen.getByRole('main')).getByRole('link', { name: action }))
-    expect(screen.getByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1 })).toHaveFocus()
   })
 

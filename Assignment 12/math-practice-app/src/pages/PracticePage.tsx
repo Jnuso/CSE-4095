@@ -1,11 +1,21 @@
 import { Link, Navigate, useLocation } from 'react-router'
+import { useState } from 'react'
+import { readActiveSession } from '../services/activeSession'
 import { DIFFICULTIES, OPERATIONS, SESSION_LENGTHS } from '../constants/practice'
 import { configurationFromState } from '../services/practiceConfiguration'
 import PracticeSessionPanel from '../components/practice/PracticeSessionPanel'
 
 export default function PracticePage() {
   const location = useLocation()
-  const configuration = configurationFromState(location.state)
+  return <PracticeEntry key={location.key} />
+}
+
+function PracticeEntry() {
+  const location = useLocation()
+  const [recovery] = useState(() => readActiveSession(location.key))
+  const configuration = recovery.snapshot?.state.session ?? configurationFromState(location.state)
+  if (recovery.unavailable)
+    return <Navigate to="/practice/setup" replace state={{ sessionMissing: true }} />
   if (configuration)
     return (
       <section className="feature-page" aria-labelledby="session-title">
@@ -48,7 +58,12 @@ export default function PracticePage() {
           >
             Edit choices
           </Link>
-          <PracticeSessionPanel key={location.key} configuration={configuration} />
+          <PracticeSessionPanel
+            key={location.key}
+            configuration={configuration}
+            recovery={recovery.snapshot}
+            entryKey={location.key}
+          />
         </div>
       </section>
     )

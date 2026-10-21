@@ -1,5 +1,6 @@
+import { navigateTo } from './helpers'
 import { chromium } from '@playwright/test'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, readdir, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { test, expect, report, metric, saved } from './helpers'
@@ -37,19 +38,34 @@ test('saved attempts and settings survive closing and reopening a real browser',
       await first.page.getByRole('radio', { name: /^Advanced/ }).check()
       await first.page.getByRole('radio', { name: '5 questions', exact: true }).check()
       await first.page.getByRole('button', { name: 'Save Settings', exact: true }).click()
-      await first.page.getByRole('link', { name: 'Practice', exact: true }).click()
+      await navigateTo(first.page, 'Practice')
       await first.page.getByRole('button', { name: 'Start Session', exact: true }).click()
       await first.page.getByRole('checkbox', { name: 'Animate card flips', exact: true }).uncheck()
       for (const right of [true, true, true, false, false]) await report(first.page, right)
       await expect(metric(first.page, 'Accuracy')).toHaveText('60%')
       expect((await saved(first.page)).records[0].attempts).toHaveLength(5)
       expect((await saved(first.page)).mistakeEvents).toHaveLength(2)
+      await first.page.evaluate(() => localStorage.setItem('restart-control', 'persistent-profile'))
     } finally {
       await test.step('Close first browser process', () => first.context.close())
     }
+    await test.info().attach('closed-profile-files', {
+      body: JSON.stringify(await readdir(profile, { recursive: true })),
+      contentType: 'application/json',
+    })
     const second = await open()
     try {
       await second.page.goto('/practice/summary')
+      await test.info().attach('reopened-browser-storage', {
+        body: JSON.stringify(
+          await second.page.evaluate(() => ({
+            saved: localStorage.getItem('mathPractice.data'),
+            control: localStorage.getItem('restart-control'),
+            state: history.state,
+          })),
+        ),
+        contentType: 'application/json',
+      })
       await expect(metric(second.page, 'Questions attempted')).toHaveText('5')
       await expect(metric(second.page, 'Accuracy')).toHaveText('60%')
       expect((await saved(second.page)).mistakeEvents).toHaveLength(2)

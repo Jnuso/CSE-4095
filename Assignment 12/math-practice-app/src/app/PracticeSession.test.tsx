@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router'
-import { describe, expect, it, vi } from 'vitest'
+import { MemoryRouter } from '../test/MemoryRouter'
+import { describe, expect, it } from 'vitest'
 import AppRoutes from './AppRoutes'
 
 function setup(length: 5 | 'continuous' = 5) {
@@ -71,17 +71,22 @@ describe('practice session page', () => {
   })
   it('supports canceling and confirming an early end without counting the current card', async () => {
     const user = setup('continuous')
-    const confirmation = vi.spyOn(window, 'confirm').mockReturnValue(false)
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
     expect(screen.getByText('Question 1')).toBeInTheDocument()
     await answer(user, true)
     await user.click(screen.getByRole('button', { name: 'End Session' }))
+    expect(screen.getByRole('dialog', { name: 'End this session?' })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Keep practicing' })).toHaveFocus()
+    await user.click(screen.getByRole('button', { name: 'Keep practicing' }))
     expect(screen.getByText('Question 2')).toBeInTheDocument()
-    confirmation.mockReturnValue(true)
     await user.click(screen.getByRole('button', { name: 'End Session' }))
+    await user.click(screen.getByRole('button', { name: 'End session and view recap' }))
     expect(screen.getByRole('heading', { name: 'Your practice recap' })).toBeInTheDocument()
     expect(screen.getByText('Questions attempted').parentElement).toHaveTextContent('1')
     expect(screen.getByText('Accuracy').parentElement).toHaveTextContent('100%')
-    expect(confirmation).toHaveBeenCalledTimes(2)
+    expect(screen.getByText('Practice mode').parentElement).toHaveTextContent('Regular practice')
+    expect(screen.getByText('Session length').parentElement).toHaveTextContent(
+      'Continuous practice',
+    )
   })
 })
