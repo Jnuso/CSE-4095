@@ -1,3 +1,5 @@
+> **Release verified 2026-10-21:** Application commit `450b094` passed the full GitHub Actions gate: **628 passed, 1 expected Firefox skip, 0 failures**, and deployed successfully. [CI evidence](https://github.com/Jnuso/CSE-4095/actions/runs/39676377754). Hosted Firefox smoke passed in a fresh disposable profile: deep-link refresh, complete five-question session, 60% recap persistence and Statistics. Live Settings also exposes the new mastery threshold. See [RELEASE_SIGNOFF.md](RELEASE_SIGNOFF.md). Earlier results below are historical.
+
 # Final project completion checklist
 
 Use this checklist to finish implementation before the final testing pass. It consolidates outstanding work from Phases 16–22; TODO.md remains the original phase checklist. Completed prototype instructions at the bottom of TODO.md are examples, not additional unfinished work.
@@ -46,7 +48,7 @@ GitHub Pages hosting, hash routing and deployment infrastructure already exist. 
 
 Historical in-Codex UI observations are in [IN_CODEX_BROWSER_TESTING.md](IN_CODEX_BROWSER_TESTING.md). The previous automated gate passed603tests/1expectedskip/exit0. Subsequent edge-case repairs passed42focusedunit/component +21browserchecks; repeat the full gate on the final sources before publication (EDGE_CASE_REVIEW.md). See [FINAL_RELEASE_TESTING.md](FINAL_RELEASE_TESTING.md) for full evidence and sandbox diagnostics.
 
-- [ ] Run the complete check:all gate: formatting, lint, unit/component tests, app/browser TypeScript, production builds, Chromium, Firefox, accessibility and Pages checks. Fix failures and repeat affected checks; rerun the complete gate when final changes invalidate its result.
+- [x] Run the complete check:all gate: formatting, lint, unit/component tests, app/browser TypeScript, production builds, Chromium, Firefox, accessibility and Pages checks. Fix failures and repeat affected checks; rerun the complete gate when final changes invalidate its result.
 - [x] Confirm recovery/navigation behavior: selected and revealed cards, refresh, Back/Forward, leave/stay, completion, reset, invalid snapshots, duplicate callbacks and multiple tabs.
 - [x] Confirm large-history migration, compaction, aggregate preservation, storage size and quota failure on isolated data.
 - [ ] Check final production behavior in Chrome, Firefox and Edge; test actual Safari when available and label WebKit emulation accurately.
@@ -58,11 +60,11 @@ Historical in-Codex UI observations are in [IN_CODEX_BROWSER_TESTING.md](IN_CODE
 
 ## 6. Publish and sign off — after the final gate
 
-- [ ] Publish the final revision through the existing GitHub Pages workflow and confirm successful CI/deployment for that exact revision.
+- [x] Publish the final revision through the existing GitHub Pages workflow and confirm successful CI/deployment for that exact revision.
 - [ ] Smoke-test every hosted route, refresh/deep links, practice/review/recap, statistics/settings and local-storage persistence in an isolated browser context.
 - [ ] Verify responsive behavior and absence of unexpected browser-console/runtime errors.
-- [ ] Record the published revision, deployment URL, final test evidence and any outstanding manual limitations.
+- [x] Record the published revision, deployment URL, final test evidence and any outstanding manual limitations.
 
-Implementation sections 1–4 are complete locally with focused evidence in FINAL_IMPLEMENTATION.md. The earlier automated gate passed; its rerun after edge-case repairs, the explicitly listed actual-device/accessibility checks and publication in section6 remain pending. Actual speech remains explicitly deferred.
+Implementation sections 1–4 are complete locally with focused evidence in FINAL_IMPLEMENTATION.md. The final CI gate and publication passed for application commit 450b094 (628 passed, one expected skip). The explicitly listed manual checks remain pending. Hosted Firefox covered deep links/reload, practice, recap persistence and Statistics; a separate live Settings inspection confirmed the mastery control. The broader hosted route/review/responsive checklist remains unchecked until each item is observed. Actual speech remains explicitly deferred.
 
-Current live site: https://jnuso.github.io/CSE-4095/ . Local Phase 21 changes have not yet been published. No new application phase is implemented merely by creating this checklist.
+Current live site: https://jnuso.github.io/CSE-4095/ . The final application revision 450b094 is published. No new application phase is implemented merely by creating this checklist.

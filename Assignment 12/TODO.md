@@ -1267,7 +1267,7 @@ Focused implementation/checks only; final full gate deferred by student request.
 
 ### 88\. Prepare the Production Build
 
-- [ ] Run all tests. —Previous603-pass gate recorded in FINAL_RELEASE_TESTING.md; subsequent EDGE_CASE_REVIEW.md repairs have63focused passes and need the final full rerun before publication.
+- [x] Run all tests. —Final CI on application commit 450b094 passed 628 tests with one expected Firefox skip; see RELEASE_SIGNOFF.md.
 
 - [ ] Resolve linting errors.
 

@@ -755,3 +755,8 @@ At student request, ran complete check:all. Initial formatting repaired four sav
 
 ### 2026-10-21 — Extra edge-case hunting and repairs
 Reproduced/fixed backward-clock completion invalidation, backward-clock fresh start rejected after reset, recovered Edit choices overriding new session identity, and mobile report double-click preselecting next answer. Added7browseredgecases plus3service/1component regressions. Final42focusedunits +14Chromium +7Firefox passed; build/types/lint passed. Initial storage5secondtimeout during concurrent browser work retained; non-overlapping repeat passed. Independentreview identified recoveredconfigidentityissue and confirmed the repair; clean finalfollowup. EDGE_CASE_REVIEW.md records evidence. Earlier603-pass full gate predates these repairs, so finalcheck:all marked pendingagain beforepublication. No push/deployment.
+
+
+## 2026-10-21 — Final push, full CI and deployment
+
+Pushed application commit 450b094. GitHub Actions run 39676377754 passed formatting, lint, types, production builds and 628 tests with one expected Firefox CPU-emulation skip, then deployed Pages. A fresh-profile hosted Firefox smoke passed deep links/reload, a complete session, persisted recap and Statistics. Live Settings inspection confirmed the mastery threshold. Follow-up commit 50ebcf2 fixed the separate base-site Selenium Chrome import for lint; its browser suite reported 243 passed and five older-demo failures. Manual speech, actual zoom/fonts and physical-device/installed-browser coverage remain pending. See RELEASE_SIGNOFF.md.

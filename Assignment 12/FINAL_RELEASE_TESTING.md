@@ -1,3 +1,5 @@
+> **Release verified 2026-10-21:** Application commit `450b094` passed the full GitHub Actions gate: **628 passed, 1 expected Firefox skip, 0 failures**, and deployed successfully. [CI evidence](https://github.com/Jnuso/CSE-4095/actions/runs/39676377754). Hosted Firefox smoke passed in a fresh disposable profile: deep-link refresh, complete five-question session, 60% recap persistence and Statistics. Live Settings also exposes the new mastery threshold. See [RELEASE_SIGNOFF.md](RELEASE_SIGNOFF.md). Earlier results below are historical.
+
 # Final automated release testing — 2026-10-21
 
 **Later-source note:** EDGE_CASE_REVIEW.md records repairs made after this successful gate. Those patches have63focused passes; this603-pass result does not claim a full rerun of the later sources.
