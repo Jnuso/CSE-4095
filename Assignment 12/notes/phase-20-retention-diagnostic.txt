@@ -1,0 +1,13 @@
+
+> math-practice-app@0.1.0 test
+> vitest run src/app/MistakeTracking.test.tsx
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  19:56:58
+   Duration  11.10s (environment 70%, tests 12%, setup 12%, transform 4%, import 2%, worker 1%)
+

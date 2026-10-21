@@ -1,0 +1,1 @@
+Firefox hosted smoke passed: Pages deep route/reload, full addition session, 60% recap persistence and Statistics; fresh disposable context.

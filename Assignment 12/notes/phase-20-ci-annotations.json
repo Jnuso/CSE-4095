@@ -1,0 +1,50 @@
+[
+  {
+    "path": ".github",
+    "blob_href": "https://github.com/Jnuso/CSE-4095/blob/2b868291b262ed0bfe48b54761b4efb3748fcb9c/.github",
+    "start_line": 385,
+    "start_column": null,
+    "end_line": 385,
+    "end_column": null,
+    "annotation_level": "notice",
+    "title": "🎭 Playwright Run Summary",
+    "message": "  73 passed (2.1m)",
+    "raw_details": ""
+  },
+  {
+    "path": ".github",
+    "blob_href": "https://github.com/Jnuso/CSE-4095/blob/2b868291b262ed0bfe48b54761b4efb3748fcb9c/.github",
+    "start_line": 306,
+    "start_column": null,
+    "end_line": 306,
+    "end_column": null,
+    "annotation_level": "notice",
+    "title": "🎭 Playwright Run Summary",
+    "message": "  30 passed (25.6s)",
+    "raw_details": ""
+  },
+  {
+    "path": ".github",
+    "blob_href": "https://github.com/Jnuso/CSE-4095/blob/2b868291b262ed0bfe48b54761b4efb3748fcb9c/.github",
+    "start_line": 252,
+    "start_column": null,
+    "end_line": 252,
+    "end_column": null,
+    "annotation_level": "notice",
+    "title": "🎭 Playwright Run Summary",
+    "message": "  147 passed (3.6m)",
+    "raw_details": ""
+  },
+  {
+    "path": ".github",
+    "blob_href": "https://github.com/Jnuso/CSE-4095/blob/2b868291b262ed0bfe48b54761b4efb3748fcb9c/.github",
+    "start_line": 1,
+    "start_column": null,
+    "end_line": 1,
+    "end_column": null,
+    "annotation_level": "notice",
+    "title": "",
+    "message": "\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\"",
+    "raw_details": ""
+  }
+]

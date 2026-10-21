@@ -1,0 +1,53 @@
+
+> math-practice-app@0.1.0 check:all
+> npm run check && node scripts/browser-tests.mjs test && npm run test:pages && node scripts/browser-tests.mjs test --config playwright.firefox.config.ts
+
+
+> math-practice-app@0.1.0 check
+> npm run format:check && npm run lint && npm run test && npm run typecheck && npm run build
+
+
+> math-practice-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> math-practice-app@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> math-practice-app@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/Jnuso/OneDrive/Documents/UCONN FALL 2026/CSE4095/Assignment 12/math-practice-app
+
+ ❯ src/app/MistakeTracking.test.tsx (2 tests | 1 failed) 10265ms
+   × retains a delayed missed fact even when the corresponding session is outside newest100 9834ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/MistakeTracking.test.tsx > retains a delayed missed fact even when the corresponding session is outside newest100
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/MistakeTracking.test.tsx:22:1
+     20|   return record
+     21| }
+     22| it('retains a delayed missed fact even when the corresponding session …
+       | ^
+     23|   const records = Array.from({ length: 100 }, (_, index) => {
+     24|     const record = fixture(`newer-${index}`)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 27 passed (28)
+      Tests  1 failed | 314 passed (315)
+   Start at  19:52:41
+   Duration  210.05s (environment 65%, setup 15%, tests 13%, import 6%, transform 1%)
+
+Environment  jsdom was created 28 times · 253.13s total, 65% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

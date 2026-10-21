@@ -22,7 +22,7 @@ This phase audits existing coverage and adds the missing complete keyboard-only 
 | Answer selection, flip, right/wrong buttons | components/practice/QuestionCard.test.tsx and QuestionAccessibility.test.tsx: disabled flip, selection, reveal, self-report, keyboard and duplicate-callback protection |
 | Progress and session completion | app/PracticeSession.test.tsx and SessionSummary.test.tsx: exact limits, counts, focused next question, empty/early endings and recap actions |
 | Statistics display | app/Statistics.test.tsx and MistakeStatistics.test.tsx: totals, groups, pagination, facts, mastery and empty states |
-| Confirmation dialogs | app/Statistics.test.tsx, Settings.test.tsx and ErrorHandling.test.tsx: cancel/confirm, failure recovery, preserved preferences and safe navigation |
+| Confirmation dialogs | app/Statistics.test.tsx and Settings.test.tsx: cancel/confirm, failure recovery and preserved preferences |
 
 ## Integration coverage (TODO 81)
 
@@ -45,7 +45,7 @@ This phase audits existing coverage and adds the missing complete keyboard-only 
 | Reduced motion | accessibility-phase16.spec.ts and practice.spec.ts check reduced-motion media and saved animation opt-out |
 | Actual browser zoom | PENDING. Native Firefox computer control was stopped by the tool because URL-policy enforcement is unsupported for that Windows browser. Existing reflow/text simulations are retained but do not count as actual browser zoom. |
 | Automated accessibility checker | Full-page axe checks remain enabled across routes, cards, review, storage recovery, dialogs, populated statistics and keyboard recap |
-| Human review of issues | Automated findings will be reviewed after the gate; final screen-reader/zoom assessment still needs a human. Do not mark Phase 20 entirely complete while these checks are pending. |
+| Human review of issues | Reviewed automated findings, including the Firefox focus-visible test assumption; the corrected real-Tab check and all full-page axe scans passed CI. Actual screen-reader/zoom assessment still needs a human. Do not mark Phase 20 entirely complete while those checks are pending. |
 
 For manual Firefox zoom review, open a private window, set actual browser zoom to 200%, and inspect Home, Practice setup, a card front/back, populated Statistics, Settings and a confirmation dialog. Check for clipped text, horizontal page scrolling and unreachable controls. Restore zoom afterward. With Narrator/NVDA, listen to a five-question session and note duplicate, missing or confusing announcements. Existing Phase 16 system-text checks also remain pending.
 
@@ -66,3 +66,10 @@ Final gate evidence: notes/phase-20-check-all.txt. Focused evidence: notes/phase
 A complete five-question session passed on a fresh temporary local origin: setup, selection, reveal, reports, 3 right/2 wrong/60% recap, recap reload and populated Statistics. Screenshot: output/playwright/phase-20-live/internal-browser-recap.jpg; evidence: notes/phase-20-internal-browser-check.txt. The internal browser's zoom shortcut did not change observed scale/viewport metrics, so it does not complete actual zoom review. The student explicitly chose to leave speech review pending.
 
 CI also exercised all Firefox flows and found a focus-test setup assumption: programmatic focus did not establish keyboard focus-visible modality in Firefox. The test now reaches the answer with real Tab input, explicitly checks focus and retains the original visible-outline assertion. The focused repaired test passed; no whole-test retries or deadline increases were introduced.
+
+
+## Final verification and limits
+
+CI run https://github.com/Jnuso/CSE-4095/actions/runs/39517767620 passed the full 565-check gate and deployed revision 2b868291b262ed0bfe48b54761b4efb3748fcb9c. Hosted Firefox smoke passed. notes/phase-20-check-all.txt is the final verification summary, with CI metadata/browser annotations and separately named local console logs. An existing local unit test exceeded its deadline during a parallel Windows run; it passed in isolation and in the complete 315-test one-worker unit run. The repeated local browser pass was stopped once CI had verified the entire gate; a complete local Windows gate pass is not claimed. Deadlines, assertions and whole-test retry policy remain intact.
+
+TODO 79-81 and the verified keyboard/reduced-motion/axe/report-review items in 82 are checked. Actual browser zoom and actual speech remain unchecked. The student explicitly selected Leave the speech check pending.
