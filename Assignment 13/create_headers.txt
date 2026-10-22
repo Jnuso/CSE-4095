@@ -1,0 +1,13 @@
+HTTP/1.1 201 Created
+Date: Thu, 22 Oct 2026 21:11:22 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+rndr-id: 62d0c100-72d9-493c
+Server: cloudflare
+vary: Accept-Encoding
+x-render-origin-server: gunicorn
+cf-cache-status: DYNAMIC
+CF-RAY: a4eb7e7fba8f9063-BOS
+alt-svc: h3=":443"; ma=86400
+

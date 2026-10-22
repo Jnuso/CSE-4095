@@ -1,0 +1,44 @@
+python hangman_lab/hangman_client.py
+Game: eb311b9f9325 (easy)
+
+Word: _ _ _ _
+Remaining attempts: 6
+Enter a letter: a
+
+Word: _ a _ _
+Remaining attempts: 6
+Enter a letter: e
+
+Word: _ a _ e
+Remaining attempts: 6
+Enter a letter: m
+
+Word: _ a _ e
+Remaining attempts: 5
+Enter a letter: d
+
+Word: _ a _ e
+Remaining attempts: 4
+Enter a letter: f
+
+Word: f a _ e
+Remaining attempts: 4
+Enter a letter: t
+
+Word: f a _ e
+Remaining attempts: 3
+Enter a letter: m
+You already guessed that letter.
+Enter a letter: w
+
+Word: f a _ e
+Remaining attempts: 2
+Enter a letter: k
+
+Word: f a _ e
+Remaining attempts: 1
+Enter a letter: l
+
+Word: f a _ e
+Remaining attempts: 0
+You lost!

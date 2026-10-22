@@ -1,0 +1,21 @@
+test_create_request_and_returned_id (test_hangman_client.ApiTests.test_create_request_and_returned_id) ... ok
+test_create_requires_nonempty_string_id (test_hangman_client.ApiTests.test_create_requires_nonempty_string_id) ... ok
+test_get_accepts_real_state_without_game_id (test_hangman_client.ApiTests.test_get_accepts_real_state_without_game_id) ... ok
+test_guess_accepts_real_state_without_game_id (test_hangman_client.ApiTests.test_guess_accepts_real_state_without_game_id) ... ok
+test_http_404_is_rejected_before_parsing_json (test_hangman_client.ApiTests.test_http_404_is_rejected_before_parsing_json) ... ok
+test_invalid_json (test_hangman_client.ApiTests.test_invalid_json) ... ok
+test_invalid_state_fields (test_hangman_client.ApiTests.test_invalid_state_fields) ... ok
+test_missing_state_fields (test_hangman_client.ApiTests.test_missing_state_fields) ... ok
+test_non_object_response (test_hangman_client.ApiTests.test_non_object_response) ... ok
+test_timeout_and_connection_failure (test_hangman_client.ApiTests.test_timeout_and_connection_failure) ... ok
+test_complete_win_retains_id_and_stops (test_hangman_client.GameLoopTests.test_complete_win_retains_id_and_stops) ... ok
+test_creation_failure_exits_without_asking_for_input (test_hangman_client.GameLoopTests.test_creation_failure_exits_without_asking_for_input) ... ok
+test_failed_guess_exits_without_claiming_result (test_hangman_client.GameLoopTests.test_failed_guess_exits_without_claiming_result) ... ok
+test_input_interruptions_exit_cleanly (test_hangman_client.GameLoopTests.test_input_interruptions_exit_cleanly) ... ok
+test_invalid_inputs_normalization_and_repeated_guess (test_hangman_client.GameLoopTests.test_invalid_inputs_normalization_and_repeated_guess) ... ok
+test_loss_displays_final_state_and_stops (test_hangman_client.GameLoopTests.test_loss_displays_final_state_and_stops) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.036s
+
+OK
