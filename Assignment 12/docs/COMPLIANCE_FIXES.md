@@ -2,6 +2,12 @@
 
 User scope: lifetime aggregates with storage/migration tests, the intermittent mobile Statistics-menu active indicator, and narrow-screen session-length labels. Original audit evidence remains in [ASSIGNMENT_12_AUDIT.md](ASSIGNMENT_12_AUDIT.md) and output/audit-*; it is not rewritten as evidence for the new implementation.
 
+## Published verification
+
+Application commit `5799564925babde7318659c954bb5c08e07e7e78` passed [the complete CI gate and deployment](https://github.com/Jnuso/CSE-4095/actions/runs/39718024568): 338 unit/component/service, 185 Chromium/restart, 33 Pages and 91 Firefox tests passed (647 total), with one expected Firefox CPU-simulation skip and no failures. Formatting, lint, app/browser types and production/Pages builds passed. The site is live at https://jnuso.github.io/CSE-4095/.
+
+Disposable hosted smoke passed: 505 lifetime attempts with 100 details and 101 summaries; version-3 migration/save/reload; cross-tab reset and stale-tab save; 30 mobile menu jumps and a layout-shift marker check; no captured runtime/console errors. Visually inspected the 320px screenshot: session-length labels are readable without split words. Logs: output/compliance-hosted-final.txt and output/playwright/compliance-focused-results/smoke.json. Local failures and focused repairs below are retained as separate historical results.
+
 ## Implementation
 
 - Preserve lifetime overall, operation and difficulty totals through per-session aggregate snapshots while retaining only 100 detailed sessions. Summaries are captured before trimming, merge idempotently by session identity/monotonic attempt count, and obey history reset fences. Disk/memory merges retain pending quota-failure progress.
@@ -19,7 +25,7 @@ User scope: lifetime aggregates with storage/migration tests, the intermittent m
 
 Logs: math-practice-app/output/compliance-*.txt. User-confirmed screen-reader, zoom, Safari and sound checks remain dated manual evidence, separate from these automated results.
 
-## Final verification in progress
+## Local final verification history
 
 The final standard gate passed formatting and lint, then stalled at default Vitest fork-worker startup before reporting tests. Its log is retained separately. A complete single-thread Vitest run subsequently passed all 338 tests across 32 files (266.51 seconds). App/browser TypeScript and the production build passed again.
 

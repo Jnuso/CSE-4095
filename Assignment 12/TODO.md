@@ -1,4 +1,4 @@
-> Original review: [ASSIGNMENT_12_AUDIT.md](docs/ASSIGNMENT_12_AUDIT.md). The authorized lifetime-total, Statistics-menu and narrow-label corrections are implemented locally with focused verification; see [COMPLIANCE_FIXES.md](docs/COMPLIANCE_FIXES.md). Independent review, final gate and publication are separate. Final completion order: [FINAL_TODO.md](docs/FINAL_TODO.md).
+> Published corrections: [COMPLIANCE_FIXES.md](docs/COMPLIANCE_FIXES.md). All three fixes passed independent review, the full CI gate (647 passes, one expected skip) and hosted smoke. Original failed audit evidence remains separate in [ASSIGNMENT_12_AUDIT.md](docs/ASSIGNMENT_12_AUDIT.md). Remaining submission/manual items: [FINAL_TODO.md](docs/FINAL_TODO.md).
 
 # Math Practice App — Implementation Todo List
 
@@ -1263,11 +1263,11 @@ Focused implementation/checks only; final full gate deferred by student request.
 
 - [ ] Test on an iPad or tablet emulator.
 
-- [x] Test on a mobile device or emulator. (Chromium mobile emulation and 320px hosted layouts exercised; physical-device review remains separate. Session-length word wrapping still needs repair.)
+- [x] Test on a mobile device or emulator. (Chromium mobile emulation and hosted 320px labels verified; physical-device review remains separate.)
 
 ### 88\. Prepare the Production Build
 
-- [ ] Run all tests. —Original release passed 631 tests; fresh CI attempt 2 on 5edc6d2 failed the mobile Statistics-menu marker check. See docs/ASSIGNMENT_12_AUDIT.md for the latest full/isolated results.
+- [x] Run all tests. —Application 5799564 passed the full CI gate: 647 passes, one expected Firefox skip, no failures. Earlier failed attempts remain separately documented in docs/COMPLIANCE_FIXES.md and docs/ASSIGNMENT_12_AUDIT.md.
 
 - [x] Resolve linting errors. (Fresh CI and local lint passed.)
 

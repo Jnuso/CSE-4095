@@ -33,7 +33,8 @@ The standard build writes `dist/`; preview serves it locally, normally on port 4
 - Multiple-choice question cards, answer reveal and right/wrong self-reporting.
 - Fixed-length or continuous sessions, progress and performance recaps.
 - Remembered mistakes, similar-question review and configurable mastery.
-- Statistics, preferences and browser-local persistence without registration.
+- Lifetime overall, operation and difficulty statistics, with the newest 100 detailed sessions retained.
+- Preferences and browser-local persistence without registration.
 - Active-session recovery, navigation confirmation and responsive keyboard-accessible controls.
 
 Practice data stays in the browser; clearing its saved data removes progress.
@@ -51,10 +52,18 @@ Practice data stays in the browser; clearing its saved data removes progress.
 
 ## Verification and submission
 
-Latest review: [the 2026-10-21 assignment audit](docs/ASSIGNMENT_12_AUDIT.md) records fresh hosted checks, a failed mobile Statistics-menu CI check, the 100-session total-statistics limitation, and unfinished submission deliverables. The successful release result below is historical evidence, not a clean result for the latest rerun.
+Application revision: [`5799564`](https://github.com/Jnuso/CSE-4095/commit/5799564925babde7318659c954bb5c08e07e7e78). The [complete GitHub Actions verification and deployment](https://github.com/Jnuso/CSE-4095/actions/runs/39718024568) succeeded: **647 tests passed, one expected Firefox skip, no failures**. This includes 338 unit/component/service tests, 185 Chromium/restart checks, 33 Pages checks and 91 Firefox checks, plus formatting, lint, TypeScript and production builds.
 
-The published application revision passed **631 automated tests with one expected Firefox skip**. See [release evidence and limitations](docs/RELEASE_SIGNOFF.md) and the [remaining review checklist](docs/FINAL_TODO.md). The student confirmed screen-reader, browser zoom, Safari and sound testing complete on 2026-10-21. Enlarged system fonts, physical devices and remaining installed-browser checks are separate; the broader repository has older-demo failures.
+The final release fixes lifetime aggregate preservation, the mobile Statistics-menu active indicator and narrow-screen session-length labels. Isolated hosted verification confirmed 505 lifetime attempts with 100 detailed sessions retained, migration/save/reload, cross-tab reset, 30 mobile menu jumps and readable 320px labels, with no captured runtime or console errors. See [final compliance and release evidence](docs/COMPLIANCE_FIXES.md). Earlier failed audit results remain separately documented in [the original audit](docs/ASSIGNMENT_12_AUDIT.md).
+
+The student confirmed screen-reader, browser zoom, Safari and sound testing complete on 2026-10-21. Enlarged operating-system fonts, physical-device testing and remaining installed Chrome/Edge checks are not claimed complete. Migration preserves available full-session records; answers already discarded by an older release cannot be reconstructed.
 
 To run the full suite later, install the test browsers once with `npm.cmd run test:install`, then use `npm.cmd run check:all`. See [testing details](docs/TESTING.md).
 
-The assignment requires the repository URL, deployed URL, a roughly 2–3 page development report and AI conversation evidence. The report and selected conversation evidence still need to be assembled and reviewed for submission; the long development log is supporting material rather than the finished report. See the [full assignment instructions](docs/ASSIGNMENT_INSTRUCTIONS.txt).
+Submission links:
+
+- Repository: https://github.com/Jnuso/CSE-4095/tree/main/Assignment%2012
+- Deployed application: https://jnuso.github.io/CSE-4095/
+- Development report: prepared separately by the student; include it with the submission and the required authentic AI conversation evidence.
+
+See the [full assignment instructions](docs/ASSIGNMENT_INSTRUCTIONS.txt). The development log and historical test records provide supporting evidence. GitHub Pages uses hash routes for refresh-safe navigation; the separate Cloudflare base site is unchanged.

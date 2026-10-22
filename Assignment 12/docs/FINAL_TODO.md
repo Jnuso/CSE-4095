@@ -50,9 +50,9 @@ GitHub Pages hosting, hash routing and deployment infrastructure already exist. 
 
 Historical in-Codex UI observations are in [IN_CODEX_BROWSER_TESTING.md](IN_CODEX_BROWSER_TESTING.md). The previous automated gate passed603tests/1expectedskip/exit0. Subsequent edge-case repairs passed42focusedunit/component +21browserchecks; repeat the full gate on the final sources before publication (EDGE_CASE_REVIEW.md). See [FINAL_RELEASE_TESTING.md](FINAL_RELEASE_TESTING.md) for full evidence and sandbox diagnostics.
 
-- [ ] Run the complete check:all gate: formatting, lint, unit/component tests, app/browser TypeScript, production builds, Chromium, Firefox, accessibility and Pages checks. Fresh attempt 2 failed the mobile Statistics-menu active-marker assertion; resolve it before a new release signoff.
+- [x] Run the complete check:all gate: formatting, lint, unit/component tests, app/browser TypeScript, production builds, Chromium, Firefox, accessibility and Pages checks. Commit 5799564 passed CI run 39718024568: 647 passes, one expected skip, no failures.
 - [x] Confirm recovery/navigation behavior: selected and revealed cards, refresh, Back/Forward, leave/stay, completion, reset, invalid snapshots, duplicate callbacks and multiple tabs.
-- [ ] Confirm large-history migration, compaction, lifetime aggregate preservation, storage size and quota failure on isolated data. Journal compaction passes, but lifetime regular-practice totals are not preserved beyond the newest 100 sessions; see the audit's 505-versus-500 reproduction.
+- [x] Confirm large-history migration, compaction, lifetime aggregate preservation, storage size and quota failure on isolated data. Version-3 lifetime snapshots, 505-attempt retention, reset/reload and stale-tab behavior passed unit/browser/hosted checks; see COMPLIANCE_FIXES.md.
 - [ ] Finish the installed Chrome/Edge browser matrix; automated Firefox evidence is recorded separately.
 - [x] Test Safari. Student confirmed completion on 2026-10-21.
 - [x] Test audible sound effects. Student confirmed completion on 2026-10-21.
