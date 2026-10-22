@@ -51,7 +51,9 @@ Practice data stays in the browser; clearing its saved data removes progress.
 
 ## Verification and submission
 
-The published application revision passed **631 automated tests with one expected Firefox skip**. See [release evidence and limitations](docs/RELEASE_SIGNOFF.md) and the [remaining review checklist](docs/FINAL_TODO.md). Actual speech, browser zoom and physical-device review remain pending; the broader repository has separate older-demo failures.
+Latest review: [the 2026-10-21 assignment audit](docs/ASSIGNMENT_12_AUDIT.md) records fresh hosted checks, a failed mobile Statistics-menu CI check, the 100-session total-statistics limitation, and unfinished submission deliverables. The successful release result below is historical evidence, not a clean result for the latest rerun.
+
+The published application revision passed **631 automated tests with one expected Firefox skip**. See [release evidence and limitations](docs/RELEASE_SIGNOFF.md) and the [remaining review checklist](docs/FINAL_TODO.md). The student confirmed screen-reader, browser zoom, Safari and sound testing complete on 2026-10-21. Enlarged system fonts, physical devices and remaining installed-browser checks are separate; the broader repository has older-demo failures.
 
 To run the full suite later, install the test browsers once with `npm.cmd run test:install`, then use `npm.cmd run check:all`. See [testing details](docs/TESTING.md).
 

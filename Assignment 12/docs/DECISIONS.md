@@ -2,6 +2,16 @@
 
 Read the relevant entries when changing settings, storage, practice review or statistics. These preserve accepted decisions; they do not authorize future phases. Historical evidence remains in DEVELOPMENT_LOG.md.
 
+## Current compliance corrections (2026-10-21)
+
+The student authorized lifetime totals, Statistics-menu reliability and small-screen label fixes. This supersedes the historical newest-100 overall-statistics contract below. Only detailed session history is capped at 100; overall/operation/difficulty totals retain every available session through compact per-session aggregate snapshots, including incomplete sessions. Snapshots merge by session identity and highest reported-attempt count; deterministic ties converge. Repeated/stale snapshots do not increment totals. Reset fences discard both details and summaries, and quota failures retain pending totals in memory with existing warnings.
+
+New writes use persistent version 3, with optional tuple-v1 journal encoding for large saves. In-memory models remain version 1; v0/v1/v2 saves still load without being rewritten on read. Available full records are summarized before trimming; older answers already discarded by earlier versions cannot be recreated. Version-3 aggregate entries are validated independently and repaired from available records where possible. Older clients protect unknown version 3 rather than silently overwriting lifetime totals. Explicit confirmed Clear All may replace protected data and clears summaries too.
+
+Statistics-menu jumps pin the selected heading while it remains visible, including bottom-clamped targets through layout/scroll-anchor changes. Wheel, touch move, pointer input and scrolling keys release the pin so ordinary scroll tracking resumes. Focus, section labels, read-only browsing and axe rules remain unchanged. Session-length options use one full-width column at 520px and below, matching the narrow operation selector.
+
+## Historical phase contracts
+
 - Accepted Phase 10 defaults: count every reported answer including incomplete sessions; label incomplete recent sessions; statistics reset preserves preferences; initially show 10 recent sessions with Show more. These decisions do not authorize implementing Phase 10 until requested.
 
 - Phase 11 defaults are saved explicitly through Settings; individual session setup overrides must not rewrite them. Sound defaults off; animation and explanations default on. Keep browser audio failures from interrupting practice.

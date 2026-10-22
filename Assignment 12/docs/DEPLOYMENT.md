@@ -1,4 +1,4 @@
-> **Release verified 2026-10-21:** Application commit `450b094` passed the full GitHub Actions gate: **628 passed, 1 expected Firefox skip, 0 failures**, and deployed successfully. [CI evidence](https://github.com/Jnuso/CSE-4095/actions/runs/39676377754). Hosted Firefox smoke passed in a fresh disposable profile: deep-link refresh, complete five-question session, 60% recap persistence and Statistics. Live Settings also exposes the new mastery threshold. See [RELEASE_SIGNOFF.md](RELEASE_SIGNOFF.md). Earlier results below are historical.
+> **Current deployment — 2026-10-21:** Application commit `5edc6d2` remains live from [successful attempt 1](https://github.com/Jnuso/CSE-4095/actions/runs/39693837598/attempts/1). Fresh audit attempt 2 failed the mobile Statistics-menu marker check and did not deploy a replacement. See [the assignment audit](ASSIGNMENT_12_AUDIT.md) for current readiness and [the release history](RELEASE_SIGNOFF.md) for earlier successful milestones.
 
 # Math Practice on GitHub Pages
 
@@ -12,7 +12,7 @@ The repository-root `.github/workflows/math-practice-pages.yml` runs on relevant
 
 The first deployment was started manually after GitHub indexed the new workflow. If a future eligible push does not create a run, open Actions, select Math Practice checks and Pages deployment, and use Run workflow on main. Verification still runs before publishing.
 
-Future authorized development phases follow: explanation and useful clarifications, implementation, tests, independent and focused Gemma review, verified commit/push, deployment confirmation, then student review steps. A failed check blocks publishing that version. Gemma requests keep their one-call job cap and one-minute spacing; they are not run inside public CI and no Google API key is required there.
+Future authorized development follows AGENTS.md and REVIEW.md: implementation, focused checks, one independent review for substantial changes, the final full gate, then verified publication and hosted review. A failed check blocks publishing that version. Gemma reviews are paused until the student requests resumption; no Google API key is required in public CI. See ASSIGNMENT_12_AUDIT.md for the latest failed verification attempt and remaining work.
 
 ## Pages-specific build
 
@@ -53,7 +53,7 @@ Normal reports remain in regression-report; Pages reports/results are separate a
 4. On setup, focus Skip to content with Tab and activate it. Focus should move to main content while the setup route remains intact.
 5. Try the URL on your phone and check that controls fit and can be tapped. Phone and computer histories are independent.
 
-Hosted localStorage belongs to the hosted browser origin. Existing localhost progress is not automatically transferred, and sharing the URL does not synchronize progress across browsers/devices. Refreshing an active question still starts a new session as documented in Phase 9; completed reported attempts remain saved. The later session-recovery phase will address resuming the current question.
+Hosted localStorage belongs to the hosted browser origin. Existing localhost progress is not automatically transferred, and sharing the URL does not synchronize progress across browsers/devices. Refreshing active practice in the same tab restores its validated session, current question/choices, selection and revealed state when recovery storage is available. Completed reported attempts remain in saved history. Browser restrictions can suppress native reload warnings, so recovery remains important; see FINAL_IMPLEMENTATION.md.
 
 ## References
 

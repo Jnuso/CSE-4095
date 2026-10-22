@@ -1,8 +1,10 @@
-> **Statistics menu published — 2026-10-21:** Application commit `5edc6d2` passed the complete release gate (**631 passed, 1 expected Firefox skip**) and deployed successfully. [CI and deployment](https://github.com/Jnuso/CSE-4095/actions/runs/39693837598). The hosted Codex-browser check confirmed the section menu and Recent sessions jump/focus. Earlier local-only statements below are historical.
+> **Latest verification — 2026-10-21:** [The assignment audit](ASSIGNMENT_12_AUDIT.md) records fresh CI attempt 2: 331 units passed; Chromium 177 passed, one mobile Statistics-menu active-indicator failure and one not run. This attempt failed before Pages/Firefox and did not deploy. Separate local/hosted checks and remaining manual limitations are recorded in the audit. The successful release counts below are historical.
 
 > **Release verified 2026-10-21:** Application commit `450b094` passed the full GitHub Actions gate: **628 passed, 1 expected Firefox skip, 0 failures**, and deployed successfully. [CI evidence](https://github.com/Jnuso/CSE-4095/actions/runs/39676377754). Hosted Firefox smoke passed in a fresh disposable profile: deep-link refresh, complete five-question session, 60% recap persistence and Statistics. Live Settings also exposes the new mastery threshold. See [RELEASE_SIGNOFF.md](RELEASE_SIGNOFF.md). Earlier results below are historical.
 
 # Automated regression tests
+
+Manual verification update (2026-10-21): the student confirmed completing screen-reader, browser zoom, Safari and audible sound tests. These are student-performed checks, separate from the assistant's automated results. Enlarged operating-system fonts, physical devices and remaining installed Chrome/Edge coverage are not included in that confirmation. Older phase notes below preserve what was pending at their original milestone.
 
 Latest follow-up: EDGE_CASE_REVIEW.md records four reproduced/fixed edge cases after the full gate below. Final42unit/component and21browseredgechecks passed. Repeat check:all before publishing these newer sources; retain actual manual-accessibility/device limitations.
 

@@ -8,3 +8,4 @@ output/playwright/regression-results/
 output/playwright/regression-report/
 output/playwright/pages-results/
 output/playwright/pages-report/
+output/playwright/compliance-focused-results/

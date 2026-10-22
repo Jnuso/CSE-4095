@@ -11,13 +11,18 @@ const sections = [
 
 export default function StatisticsNavigation() {
   const [active, setActive] = useState<string>('statistics-title')
-  const jumpedTo = useRef<number | null>(null)
+  const jumpedTo = useRef<string | null>(null)
 
   useEffect(() => {
     let frame = 0
     const update = () => {
-      // A final section may not reach the top when the document ends first.
-      if (jumpedTo.current === window.scrollY) return
+      // A bottom-clamped target can remain below the top. Scroll anchoring/layout changes
+      // must not replace the user's chosen section merely because scrollY changed.
+      const pinned = jumpedTo.current && document.getElementById(jumpedTo.current)
+      if (pinned) {
+        const top = pinned.getBoundingClientRect().top
+        if (top >= -1 && top < window.innerHeight) return
+      }
       jumpedTo.current = null
       const headings = sections.map(([id]) => document.getElementById(id))
       let current: string = sections[0][0]
@@ -30,13 +35,35 @@ export default function StatisticsNavigation() {
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(update)
     }
+    const release = () => {
+      jumpedTo.current = null
+      schedule()
+    }
+    const keyboardScroll = (event: KeyboardEvent) => {
+      if (
+        ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key) &&
+        !(
+          event.target instanceof Element &&
+          event.target.closest('input, textarea, select, [contenteditable="true"]')
+        )
+      )
+        release()
+    }
     window.addEventListener('scroll', schedule, { passive: true })
     window.addEventListener('resize', schedule)
+    window.addEventListener('wheel', release, { passive: true })
+    window.addEventListener('touchmove', release, { passive: true })
+    window.addEventListener('pointerdown', release, { passive: true })
+    window.addEventListener('keydown', keyboardScroll)
     update()
     return () => {
       cancelAnimationFrame(frame)
       window.removeEventListener('scroll', schedule)
       window.removeEventListener('resize', schedule)
+      window.removeEventListener('wheel', release)
+      window.removeEventListener('touchmove', release)
+      window.removeEventListener('pointerdown', release)
+      window.removeEventListener('keydown', keyboardScroll)
     }
   }, [])
 
@@ -53,7 +80,7 @@ export default function StatisticsNavigation() {
                 const heading = document.getElementById(id)
                 heading?.focus({ preventScroll: true })
                 heading?.scrollIntoView({ block: 'start', behavior: 'instant' })
-                jumpedTo.current = window.scrollY
+                jumpedTo.current = id
                 setActive(id)
               }}
             >

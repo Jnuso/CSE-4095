@@ -12,6 +12,11 @@ import type { CompletedSession } from './sessionSummary'
 import { isCompletedSession } from './sessionSummary'
 import { isPracticeConfiguration } from './practiceConfiguration'
 import { packEvent, unpackEvent, packPattern, unpackPattern } from './compactStorage'
+import {
+  isSessionAggregate,
+  mergeSessionAggregates,
+  type SessionAggregate,
+} from './lifetimeStatistics'
 
 export const STORAGE_KEY = 'mathPractice.data'
 export const SCHEMA_VERSION = 1
@@ -21,6 +26,7 @@ export interface SavedData {
   version: 1
   settings: AppSettings
   records: StoredSession[]
+  sessionTotals?: SessionAggregate[]
   reviewEvents?: MistakeEvent[]
   mistakeEvents?: MistakeEvent[]
   mistakePatterns?: MistakePattern[]
@@ -142,6 +148,14 @@ export function recentRecords(records: readonly StoredSession[]): StoredSession[
 }
 
 export function trackMistakes(data: SavedData): SavedData {
+  data = {
+    ...data,
+    sessionTotals: mergeSessionAggregates(
+      data.sessionTotals ?? [],
+      data.records,
+      data.historyResetAt,
+    ),
+  }
   const fromRecords = data.records.flatMap((record) =>
     record.attempts
       .filter(
@@ -185,7 +199,9 @@ export function trackMistakes(data: SavedData): SavedData {
 // Only these documented legacy layouts are supported; unknown versions are read-only.
 function migrate(value: Record<string, unknown>): Record<string, unknown> | null {
   if (value.version === SCHEMA_VERSION) return value
-  if (value.version === 2 && value.journalFormat === 'tuple-v1') {
+  if (value.version === 3 && value.journalFormat === undefined)
+    return { ...value, version: SCHEMA_VERSION }
+  if ((value.version === 2 || value.version === 3) && value.journalFormat === 'tuple-v1') {
     return {
       ...value,
       version: SCHEMA_VERSION,
@@ -275,6 +291,18 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
     typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : undefined
   const historyResetAt = marker(migrated.historyResetAt)
   const appResetAt = marker(migrated.appResetAt)
+  const sessionTotals = Array.isArray(migrated.sessionTotals)
+    ? migrated.sessionTotals.filter(isSessionAggregate)
+    : []
+  if (
+    (object(parsed) && parsed.version === 3 && !Array.isArray(migrated.sessionTotals)) ||
+    (migrated.sessionTotals !== undefined &&
+      (!Array.isArray(migrated.sessionTotals) ||
+        sessionTotals.length !== migrated.sessionTotals.length))
+  )
+    warnings.push(
+      'Some saved lifetime totals could not be read. Valid totals and available session history were kept.',
+    )
   const reviews = Array.isArray(migrated.reviewEvents)
     ? migrated.reviewEvents.filter(isReviewEvent)
     : []
@@ -305,6 +333,7 @@ export function readSavedData(access: StorageAccess = browserStorage): LoadResul
   const data = trackMistakes({
     version: SCHEMA_VERSION,
     settings,
+    sessionTotals,
     records: records.filter(
       (record) =>
         historyResetAt === undefined || Date.parse(record.session.startedAt) > historyResetAt,
@@ -327,6 +356,7 @@ export function writeSavedData(
     data.version !== SCHEMA_VERSION ||
     !isAppSettings(data.settings) ||
     !data.records.every(isStoredSession) ||
+    (data.sessionTotals !== undefined && !data.sessionTotals.every(isSessionAggregate)) ||
     (data.reviewEvents !== undefined && !data.reviewEvents.every(isReviewEvent)) ||
     (data.mistakeEvents !== undefined && !data.mistakeEvents.every(isMistakeEvent)) ||
     (data.mistakePatterns !== undefined && !data.mistakePatterns.every(isMistakePattern))
@@ -334,14 +364,14 @@ export function writeSavedData(
     return 'Practice data was not saved because it failed validation.'
   try {
     const tracked = trackMistakes(data)
-    const payload = { ...tracked, records: recentRecords(tracked.records) }
+    const payload = { ...tracked, version: 3, records: recentRecords(tracked.records) }
     let serialized = JSON.stringify(payload)
-    // Small saves retain their readable legacy layout. Large journals shed repeated JSON keys,
+    // Version 3 protects lifetime totals from older clients. Large journals shed repeated JSON keys,
     // never evidence, identities or cached legacy progress. Reads do not rewrite either format.
     if (serialized.length > 512 * 1024) {
       const compact = JSON.stringify({
         ...payload,
-        version: 2,
+        version: 3,
         journalFormat: 'tuple-v1',
         ...(tracked.mistakeEvents === undefined
           ? {}
@@ -374,9 +404,14 @@ export function clearSavedData(access: StorageAccess = browserStorage): {
 } {
   const old = readSavedData(access).data
   const cutoff = Math.max(Date.now(), (old.historyResetAt ?? 0) + 1, (old.appResetAt ?? 0) + 1)
-  const data: SavedData = { ...emptySavedData(), historyResetAt: cutoff, appResetAt: cutoff }
+  const data: SavedData = {
+    ...emptySavedData(),
+    sessionTotals: [],
+    historyResetAt: cutoff,
+    appResetAt: cutoff,
+  }
   try {
-    access().setItem(STORAGE_KEY, JSON.stringify(data))
+    access().setItem(STORAGE_KEY, JSON.stringify({ ...data, version: 3, sessionTotals: [] }))
     return { data, error: null }
   } catch {
     return {

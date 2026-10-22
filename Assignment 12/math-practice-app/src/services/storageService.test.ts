@@ -28,7 +28,7 @@ describe('browser storage service', () => {
     data.settings.cardAnimationEnabled = false
     localStorage.setItem('unrelated-user-data', 'keep me')
     expect(writeSavedData(data)).toBeNull()
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).version).toBe(1)
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).version).toBe(3)
     expect(readSavedData().data).toMatchObject(data)
     expect(readSavedData().data.mistakePatterns).toHaveLength(1)
     expect(localStorage.getItem('unrelated-user-data')).toBe('keep me')
@@ -58,7 +58,7 @@ describe('browser storage service', () => {
     expect(localStorage.getItem(STORAGE_KEY)).toBe(raw)
   })
   it.each([undefined, 0])(
-    'loads supported legacy version %s and writes version 1 on next save',
+    'loads supported legacy version %s and writes version 3 on next save',
     (version) => {
       const legacy = { version, settings: defaultSettings(), sessions: [completedFixture()] }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(legacy))
@@ -68,7 +68,7 @@ describe('browser storage service', () => {
       expect(loaded.warnings[0]).toContain('Older')
       expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).version).toBe(version)
       expect(writeSavedData(loaded.data)).toBeNull()
-      expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).version).toBe(1)
+      expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).version).toBe(3)
     },
   )
   it('recovers invalid settings and individual records while retaining valid sessions', () => {

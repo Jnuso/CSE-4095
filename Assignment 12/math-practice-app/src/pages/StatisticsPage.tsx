@@ -37,7 +37,10 @@ export default function StatisticsPage() {
   const [notice, setNotice] = useState('')
   const dialog = useRef<HTMLDialogElement>(null)
   const records = useMemo(() => recentRecords(data.records), [data.records])
-  const totals = useMemo(() => calculateStatistics(records), [records])
+  const totals = useMemo(
+    () => calculateStatistics(records, data.sessionTotals),
+    [records, data.sessionTotals],
+  )
   function confirmReset() {
     const error = resetHistory()
     setNotice(
@@ -56,12 +59,17 @@ export default function StatisticsPage() {
             Your statistics
           </h1>
           <p>
-            Every question is a step forward. Results cover your newest {MAX_SAVED_SESSIONS} saved
-            sessions on this browser, including unfinished sessions.
+            Every question is a step forward. Totals include all saved practice on this browser,
+            including unfinished sessions. Detailed history shows your newest {MAX_SAVED_SESSIONS}{' '}
+            sessions.
           </p>
           <p className="field-help">
             Accuracy uses how you marked each answer, rounded to the nearest whole percent. With no
             attempts, accuracy is 0%.
+          </p>
+          <p className="field-help">
+            Totals include available saved progress and all new practice. Answers already removed
+            from this browser cannot be restored.
           </p>
           <Metrics totals={totals} label="Overall results" />
           {totals.attempted === 0 && (

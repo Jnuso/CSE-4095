@@ -782,3 +782,19 @@ The first deployment gate for the Statistics menu stopped at two desktop/mobile 
 
 
 Statistics navigation release: application commit 5edc6d2 passed GitHub Actions run 39693837598 and deployed. Counts: 331 unit/component, 179 Chromium/restart, 33 Pages, 88 Firefox; total 631 passed and one expected Firefox skip. Hosted menu and Recent sessions jump/focus verified in Codex. Saved history was not reset.
+
+## 2026-10-21 - Thorough assignment audit
+
+Reviewed the supplied assignment/specification/TODO/transcript and professor example against current source, tests and documentation. Fresh disposable hosted testing passed 83 reports across all 16 operation/difficulty combinations plus review mastery, persistence/settings/routes; professor mixed five-question recap passed 3 right/2 wrong/60%. Reproduced the newest-100-session aggregate gap (505 expected, 500 displayed) and 320px session-label word splitting. Required student report/selected AI evidence remain unassembled.
+
+Fresh CI attempt 2 on unchanged application 5edc6d2: 331 unit passes, Chromium 177 passes/1 mobile Statistics-marker failure/1 dependency not run; no deployment. Separate Pages: 32 passes/1 Firefox page-fixture timeout. Separate Firefox: 86 passes/2 timeouts/1 expected skip. Real-process restart passed. All 17 focused component and five focused browser reproductions passed; 30 hosted mobile menu jumps did not reproduce the intermittent CI failure. Retained failed logs without weakening assertions/deadlines or adding retries. Corrected current status/deployment/review/checklist documentation, preserved historical phase evidence, and added ASSIGNMENT_12_AUDIT.md with evidence and limitations. No application behavior, normal-profile data, commit or push changed. No independent reviewer was requested for these documentation-only corrections.
+
+## 2026-10-21 - Student-confirmed manual testing
+
+The student confirmed completion of screen-reader, browser zoom, Safari and sound tests. Marked these complete in TODO and the current final checklist, audit, status, testing, release and README documents, explicitly attributed to student-performed verification. Browser/reader versions were not supplied. Enlarged operating-system font testing, physical devices and remaining installed Chrome/Edge checks remain separate. Documentation only; no application changes, automated test reruns or independent review were needed.
+
+## 2026-10-21 - Authorized compliance corrections
+
+Implemented per-session lifetime aggregate snapshots and version-3 persistence/migration while retaining 100 detailed sessions, preserving reset fences and duplicate/stale-tab merge behavior. Available legacy full records establish the migration baseline; previously discarded regular answers cannot be reconstructed. Fixed Statistics menu pinning through layout-induced scrolling and stacked narrow-screen session-length labels. Existing audit CI failures, isolated reproductions and hosted results remain historical evidence in ASSIGNMENT_12_AUDIT.md.
+
+Focused verification: 39 lifetime/storage tests passed; compact/statistics/large-history cases passed separately; eight Chromium desktop/mobile regression cases passed, including 505 attempts with 100 details, reload/reset/stale-tab behavior, menu layout shifts, original full axe coverage and 320px label geometry. Build, TypeScript and lint passed. One independent read-only reviewer found no concrete defects. Final full-gate attempt passed formatting/lint but its default Vitest fork workers stalled before results; a separate complete single-thread unit run is in progress. Publication remains pending final verification. No assertions, accessibility rules, timeouts or retries were weakened.

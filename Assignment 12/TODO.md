@@ -1,4 +1,4 @@
-> Final completion order and all remaining work: see [FINAL_TODO.md](docs/FINAL_TODO.md). Run focused checks during implementation; defer the full suite until the final gate.
+> Original review: [ASSIGNMENT_12_AUDIT.md](docs/ASSIGNMENT_12_AUDIT.md). The authorized lifetime-total, Statistics-menu and narrow-label corrections are implemented locally with focused verification; see [COMPLIANCE_FIXES.md](docs/COMPLIANCE_FIXES.md). Independent review, final gate and publication are separate. Final completion order: [FINAL_TODO.md](docs/FINAL_TODO.md).
 
 # Math Practice App — Implementation Todo List
 
@@ -997,7 +997,7 @@ Initial routes:
 
 - [x] Add text or icons to selected states.
 
-- [ ] Test at 200% browser zoom.
+- [x] Test at 200% browser zoom. (Student confirmed completion on 2026-10-21.)
 
 - [ ] Test with larger system font sizes.
 
@@ -1185,11 +1185,11 @@ Initial routes:
 
 - [x] Complete a session using only the keyboard.
 
-- [ ] Test with a screen reader.
+- [x] Test with a screen reader. (Student confirmed completion on 2026-10-21.)
 
 - [x] Test reduced-motion mode.
 
-- [ ] Test browser zoom.
+- [x] Test browser zoom. (Student confirmed completion on 2026-10-21.)
 
 - [x] Run an automated accessibility checker.
 
@@ -1221,7 +1221,7 @@ Focused implementation/checks only; final full gate deferred by student request.
 
 - [x] Summarize older attempt records if necessary. (Lossless versioned journal compaction; no evidence discarded.)
 
-- [x] Preserve aggregate statistics when archiving details. (Round-trip and mastery preservation checked.)
+- [x] Preserve aggregate statistics when archiving details. (Version-3 per-session summaries preserve lifetime totals before detail trimming; focused migration/reload/reset/stale-snapshot tests and 505-attempt browser regression passed. Final release gate remains separate.)
 
 ### 85\. Improve Loading Performance
 
@@ -1255,7 +1255,7 @@ Focused implementation/checks only; final full gate deferred by student request.
 
 - [ ] Test in Chrome.
 
-- [ ] Test in Safari.
+- [x] Test in Safari. (Student confirmed completion on 2026-10-21.)
 
 - [x] Test in Firefox. —Automated Firefox and Pages Firefox passed in final gate; physical/manual matrix remains separate.
 
@@ -1263,17 +1263,17 @@ Focused implementation/checks only; final full gate deferred by student request.
 
 - [ ] Test on an iPad or tablet emulator.
 
-- [ ] Test on a mobile device or emulator.
+- [x] Test on a mobile device or emulator. (Chromium mobile emulation and 320px hosted layouts exercised; physical-device review remains separate. Session-length word wrapping still needs repair.)
 
 ### 88\. Prepare the Production Build
 
-- [x] Run all tests. —Final CI on application commit 450b094 passed 628 tests with one expected Firefox skip; see RELEASE_SIGNOFF.md.
+- [ ] Run all tests. —Original release passed 631 tests; fresh CI attempt 2 on 5edc6d2 failed the mobile Statistics-menu marker check. See docs/ASSIGNMENT_12_AUDIT.md for the latest full/isolated results.
 
-- [ ] Resolve linting errors.
+- [x] Resolve linting errors. (Fresh CI and local lint passed.)
 
-- [ ] Resolve TypeScript errors.
+- [x] Resolve TypeScript errors. (Application/browser types passed.)
 
-- [ ] Create the production build.
+- [x] Create the production build. (Normal and Pages builds passed.)
 
 - [x] Test the production build locally. —Normal and Pages builds tested in the full release gate.
 
@@ -1283,15 +1283,15 @@ Focused implementation/checks only; final full gate deferred by student request.
 
 - [x] Select a hosting service. (Existing GitHub Pages.)
 
-- [ ] Deploy the production build.
+- [x] Deploy the production build. (5edc6d2 published in original successful CI attempt 1; failed audit attempt 2 did not redeploy.)
 
-- [ ] Verify every route.
+- [x] Verify every route. (Hosted walkthrough and Pages Chromium deep-route refresh checks; a separate Pages Firefox fixture-startup timeout is recorded in the audit.)
 
-- [ ] Verify local-storage persistence.
+- [x] Verify local-storage persistence. (Hosted recap/settings reload and 83 reported answers; recovery and restart evidence tracked separately.)
 
-- [ ] Verify responsive behavior.
+- [x] Verify responsive behavior. (320px single-column session lengths now preserve readable labels; focused desktop/mobile layout checks passed. Physical-device review remains separate.)
 
-- [ ] Verify that no development errors appear in the console.
+- [x] Verify that no development errors appear in the console. (Zero runtime/console errors captured during the 83-report hosted walkthrough.)
 
 ---
 

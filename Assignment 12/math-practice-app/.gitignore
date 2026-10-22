@@ -21,6 +21,7 @@ output/playwright/pages-results/
 output/playwright/pages-report/
 output/playwright/firefox-results/
 output/playwright/firefox-report/
+output/playwright/compliance-focused-results/
 output/playwright/pages-live/
 output/playwright/phase-10-live/
 output/playwright/phase-11-live/

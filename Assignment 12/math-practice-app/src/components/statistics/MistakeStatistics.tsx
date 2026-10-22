@@ -65,8 +65,8 @@ function MistakeStatistics({ data }: { data: SavedData }) {
         </h2>
         <p>
           Remembered facts and available review answers on this browser, including unfinished
-          sessions. These can outlast the newest 100 session details above. Older review answers
-          without a saved journal count only while their session details remain.
+          sessions. These can outlast the newest 100 detailed sessions. Older review answers without
+          a saved journal count only while their session details remain.
         </p>
         <dl className="summary-metrics" aria-label="Mistake and review totals">
           <div>

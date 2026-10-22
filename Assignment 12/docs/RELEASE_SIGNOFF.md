@@ -1,4 +1,4 @@
-> **Statistics menu published — 2026-10-21:** Application commit `5edc6d2` passed the complete release gate (**631 passed, 1 expected Firefox skip**) and deployed successfully. [CI and deployment](https://github.com/Jnuso/CSE-4095/actions/runs/39693837598). The hosted Codex-browser check confirmed the section menu and Recent sessions jump/focus. Earlier local-only statements below are historical.
+> **Current readiness — 2026-10-21:** [The assignment audit](ASSIGNMENT_12_AUDIT.md) supersedes this historical release certificate for current readiness. Fresh CI attempt 2 on `5edc6d2` failed a mobile Statistics-menu marker assertion after 331 unit and 177 browser passes. No replacement was deployed. Original successful publication is [attempt 1](https://github.com/Jnuso/CSE-4095/actions/runs/39693837598/attempts/1): 631 passes, one expected skip.
 
 # Release verification — 2026-10-21
 
@@ -30,7 +30,7 @@ The Firefox smoke used `notes/phase-20-firefox-live-check.mjs`; its screenshot i
 
 ## Remaining manual review
 
-Actual screen-reader speech remains deferred at the student's request. Actual 200% browser zoom/enlarged system fonts, physical devices and actual Safari/installed Chrome/Edge coverage remain unverified. Automated accessibility, viewport and text-size simulation results do not replace those checks.
+On 2026-10-21 the student confirmed completing screen-reader, browser zoom, Safari and audible sound tests. These are recorded as student-performed manual checks, not assistant-observed tests. Enlarged operating-system fonts, physical devices and the remaining installed Chrome/Edge matrix are still separate unconfirmed checks. Automated accessibility, viewport and text-size simulations remain separate evidence.
 
 ## Separate repository workflow
 

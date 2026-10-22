@@ -64,6 +64,12 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
           ? latest.current.data
           : trackMistakes({
               ...disk.data,
+              sessionTotals: [
+                ...(disk.data.sessionTotals ?? []),
+                ...(disk.data.historyResetAt === latest.current.data.historyResetAt
+                  ? (latest.current.data.sessionTotals ?? [])
+                  : []),
+              ],
               reviewEvents: [
                 ...(disk.data.reviewEvents ?? []),
                 ...(disk.data.historyResetAt === latest.current.data.historyResetAt
@@ -101,6 +107,12 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
       version: 1,
       historyResetAt: disk.data.historyResetAt ?? memory.data.historyResetAt,
       appResetAt: disk.data.appResetAt ?? memory.data.appResetAt,
+      sessionTotals: [
+        ...(disk.data.sessionTotals ?? []),
+        ...(!disk.canWrite || disk.data.historyResetAt === memory.data.historyResetAt
+          ? (memory.data.sessionTotals ?? [])
+          : []),
+      ],
       reviewEvents: [
         ...(disk.data.reviewEvents ?? []),
         ...(!disk.canWrite || disk.data.historyResetAt === memory.data.historyResetAt
@@ -158,6 +170,7 @@ export default function PracticeStorageProvider({ children }: { children: ReactN
       version: 1,
       settings: { ...disk.data.settings, ...pendingSettings.current },
       records: [],
+      sessionTotals: [],
       historyResetAt: Math.max(Date.now(), (disk.data.historyResetAt ?? 0) + 1),
       appResetAt: disk.data.appResetAt,
     }

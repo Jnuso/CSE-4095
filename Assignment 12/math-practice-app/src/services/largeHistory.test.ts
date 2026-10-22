@@ -56,6 +56,9 @@ it.each([3000, 6000])(
     expect(restored.warnings).toEqual([])
     expect(restored.data.records).toHaveLength(100)
     expect(calculateStatistics(restored.data.records).attempted).toBe(2000)
+    expect(calculateStatistics(restored.data.records, restored.data.sessionTotals).attempted).toBe(
+      count,
+    )
     expect(restored.data.mistakeEvents).toHaveLength(count)
     expect(restored.data.mistakePatterns).toHaveLength(count)
     expect(restored.data.mistakePatterns!.reduce((sum, p) => sum + p.incorrectCount, 0)).toBe(count)
@@ -67,7 +70,7 @@ it.each([3000, 6000])(
     // Lossless encoding retains all identities and aggregates within this reference budget.
     expect(bytes).toBeLessThan(5 * 1024 * 1024)
     expect(bytes).toBeLessThan(JSON.stringify(data).length * 2)
-    expect(JSON.parse(memory.get(STORAGE_KEY)!).version).toBe(2)
+    expect(JSON.parse(memory.get(STORAGE_KEY)!).version).toBe(3)
     const before = memory.get(STORAGE_KEY)
     const quotaStorage = () => ({
       getItem: storage().getItem,

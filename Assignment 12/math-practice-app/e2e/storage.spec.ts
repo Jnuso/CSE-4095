@@ -22,7 +22,7 @@ test('every report persists full attempt data and a fresh recap works after relo
   await start(page)
   for (const right of [true, false]) await report(page, right)
   const data = await saved(page)
-  expect(data.version).toBe(1)
+  expect(data.version).toBe(3)
   expect(data.records).toHaveLength(1)
   expect(data.records[0].session.completedAt).toBeUndefined()
   expect(data.records[0].attempts).toHaveLength(2)
@@ -110,7 +110,7 @@ for (const version of [undefined, 0]) {
     )
     await page.getByRole('button', { name: 'Start Session', exact: true }).click()
     // Session persistence runs in a React effect after navigation; wait for its actual write.
-    await expect.poll(async () => (await saved(page)).version).toBe(1)
+    await expect.poll(async () => (await saved(page)).version).toBe(3)
     expect((await saved(page)).records.some((record) => record.session.id === 'session-1')).toBe(
       true,
     )

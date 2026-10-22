@@ -710,6 +710,9 @@ h2 {
   .operations-grid {
     grid-template-columns: 1fr;
   }
+  .length-grid {
+    grid-template-columns: 1fr;
+  }
   .choice-card {
     min-height: 56px;
   }

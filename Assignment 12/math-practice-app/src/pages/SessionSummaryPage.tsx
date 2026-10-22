@@ -148,7 +148,8 @@ export default function SessionSummaryPage() {
           </p>
           <p className="field-help">
             Reported answers are saved on this browser when storage is available. The newest{' '}
-            {MAX_SAVED_SESSIONS} sessions and their attempts are retained.
+            {MAX_SAVED_SESSIONS} detailed sessions are retained; lifetime totals continue to include
+            older saved practice.
           </p>
         </div>
       </section>

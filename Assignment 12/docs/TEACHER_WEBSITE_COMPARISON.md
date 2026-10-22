@@ -1,5 +1,7 @@
 # Teacher example versus current Math Practice app
 
+> Historical comparison and follow-up record. The opening table describes the initial comparison before the approved alignment and deployment. For the current source, fresh professor/student walkthrough and unresolved findings, use [the assignment audit](ASSIGNMENT_12_AUDIT.md). The mastery editor, custom End Session dialog and recap mode/length are now deployed.
+
 Compared on 2026-10-21 using the Codex in-app browser.
 
 Teacher example: https://harmonious-puffpuff-ac1acc.netlify.app/
