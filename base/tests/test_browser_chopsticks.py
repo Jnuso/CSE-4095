@@ -184,7 +184,8 @@ def test_experiment_buttons_populate_results(chopsticks) -> None:
     WebDriverWait(page, 10).until(
         lambda driver: len(driver.find_elements(By.CSS_SELECTOR, "#advantage-results tr")) >= 4
     )
-    assert "Opening score" in page.find_element(By.ID, "advantage-results").text
+    results_text = page.find_element(By.ID, "advantage-results").get_attribute("textContent")
+    assert "Opening score" in results_text
     assert page.find_elements(By.CSS_SELECTOR, "#advantage-results tr.is-current-depth")
 
     page.find_element(By.CSS_SELECTOR, "#comparison-details > summary").click()

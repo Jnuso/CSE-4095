@@ -27,6 +27,7 @@ let currentFrame = 0;
 let activeN = Number(checkerCountInput.value);
 let timerId = null;
 let isPlaying = false;
+let hasStarted = false;
 let activeAnimations = [];
 let motionGeneration = 0;
 
@@ -105,6 +106,7 @@ function getValidCheckerCount(showMessage = true) {
 
 function prepareSolution(n) {
   cancelMotion();
+  hasStarted = false;
   activeN = n;
   frames = buildRecursiveSolution(n);
   currentFrame = 0;
@@ -220,6 +222,7 @@ function startAnimation() {
     prepareSolution(n);
   }
 
+  hasStarted = true;
   isPlaying = true;
   statusMessage.textContent = currentFrame === 0
     ? "Starting recursive solution…"
@@ -391,7 +394,7 @@ function renderControls() {
 
   startButton.textContent = atEnd && currentFrame > 0 ? "Replay" : "Play";
   startButton.disabled = isPlaying;
-  pauseButton.disabled = !isPlaying && (atStart || atEnd);
+  pauseButton.disabled = !isPlaying && (atEnd || (atStart && !hasStarted));
   pauseButton.textContent = isPlaying ? "Pause" : "Resume";
   previousButton.disabled = atStart;
   nextButton.disabled = atEnd;

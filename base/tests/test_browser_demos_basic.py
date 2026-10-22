@@ -124,7 +124,7 @@ def test_card_game_buttons_and_solution(browser, site_root):
     mode = element(browser, "solvable-mode")
     mode.click()
     assert mode.get_attribute("aria-pressed") == "true"
-    assert element(browser, "mode-state").text == "On"
+    assert element(browser, "mode-state").get_attribute("textContent") == "On"
 
     element(browser, "show-solution").click()
     panel = element(browser, "solution-panel")

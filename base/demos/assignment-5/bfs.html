@@ -1524,7 +1524,7 @@
 
     configurationInputs.forEach(input => {
       input.addEventListener("focus", event => event.target.select());
-      input.addEventListener("input", () => {
+      const invalidateSolution = () => {
         searchVersion += 1;
         isSearching = false;
         solveButton.textContent = "Solve";
@@ -1534,7 +1534,9 @@
         clearSolutionStatistics();
         showConfigurationState(false);
         updateControls();
-      });
+      };
+      input.addEventListener("input", invalidateSolution);
+      input.addEventListener("change", invalidateSolution);
     });
 
     document.addEventListener("keydown", event => {
